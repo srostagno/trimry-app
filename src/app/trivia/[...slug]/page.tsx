@@ -6,8 +6,8 @@ import { Transition } from '@headlessui/react';
 
 export default function AppDownloadView() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-black p-24">
-        <div className="max-w-5xl w-full bg-gray-700 p-10 rounded-lg shadow-md text-white">
+    <main className="flex min-h-screen items-center justify-center bg-black p-10">
+        <div className="bg-gray-700 p-10 rounded-lg shadow-md text-white">
             <a
                 className="flex items-center gap-2 mb-6"
                 href="#"

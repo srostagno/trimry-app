@@ -7,7 +7,7 @@ export async function GET() {
       "details": [
         {
           "appID": "K895NCT6XV.com.Trimry",
-          "paths": [ "/trivia/*" ]
+          "paths": [ "/trivia/*", "/user/*" ]
         }
       ]
     }

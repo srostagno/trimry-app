@@ -33,6 +33,9 @@ export default {
       maxWidth: {
         '2xl': '40rem',
       },
+      colors: {
+        'custom-green': '#18cc19',
+      },
     },
   },
   plugins: [formsPlugin, headlessuiPlugin],

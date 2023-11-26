@@ -21,7 +21,7 @@ export function Footer() {
         <div className="flex flex-col items-center border-t border-slate-400/10 dark:border-slate-600 py-10 sm:flex-row-reverse sm:justify-between">
           <p className="mt-6 text-sm text-slate-500 dark:text-slate-300 sm:mt-0">
           Copyright &copy; {new Date().getFullYear()} Trimry. All rights
-            reserved. Trimry Limited, registered in Ireland. Company number: 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland.
+            reserved. Trimry Limited, registered in Ireland. Company number: 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Bealaric Islands, Mallorca, 07181.
           </p>
         </div>
       </Container>

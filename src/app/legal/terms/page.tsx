@@ -335,6 +335,45 @@ export default function Terms() {
                                     Provisions of these Terms that, by their nature, should survive termination will remain in effect, including but not limited to intellectual property provisions, warranty disclaimers, indemnity, and limitations of liability.
                                 </p>
                             </section>
+                            {/* New Section: License Grant */}
+                            <section className="pt-6 text-gray-700">
+                                <h2 className="text-xl font-semibold mb-4">10. License Grant</h2>
+                                <p className="mb-4">
+                                    Trimry grants you a revocable, non-exclusive, non-transferable, limited license to download, install, and use the app strictly in accordance with the terms of this Agreement.
+                                </p>
+                            </section>
+
+                            {/* New Section: Warranty Disclaimer */}
+                            <section className="pt-6 text-gray-700">
+                                <h2 className="text-xl font-semibold mb-4">11. Warranty Disclaimer</h2>
+                                <p className="mb-4">
+                                    Trimry is provided `&quot;`as is,`&quot;` with all faults, and without warranty of any kind. The entire risk as to the quality and performance of the app is with you. Should the app prove defective, you assume the cost of all necessary servicing, repair, or correction.
+                                </p>
+                            </section>
+
+                            {/* New Section: Liability Limitations */}
+                            <section className="pt-6 text-gray-700">
+                                <h2 className="text-xl font-semibold mb-4">12. Liability Limitations</h2>
+                                <p className="mb-4">
+                                    To the extent not prohibited by law, in no event shall Trimry be liable for personal injury, or any incidental, special, indirect, or consequential damages whatsoever, including, without limitation, damages for loss of profits, loss of data, business interruption, or any other commercial damages or losses, arising out of or related to your use or inability to use the app, however caused.
+                                </p>
+                            </section>
+
+                            {/* New Section: Compliance with Laws */}
+                            <section className="pt-6 text-gray-700">
+                                <h2 className="text-xl font-semibold mb-4">13. Compliance with Laws</h2>
+                                <p className="mb-4">
+                                    You agree to use the app in compliance with all applicable laws, including local laws of the country or region in which you reside or in which you download or use the app.
+                                </p>
+                            </section>
+
+                            {/* New Section: Governing Law */}
+                            <section className="pt-6 text-gray-700">
+                                <h2 className="text-xl font-semibold mb-4">14. Governing Law</h2>
+                                <p className="mb-4">
+                                    This Agreement shall be governed by and interpreted according to the laws of the jurisdiction in which Trimry operates, without regard to its conflicts of law principles.
+                                </p>
+                            </section>
                         </div>
                     </div>
                 </div>

@@ -115,7 +115,7 @@ export function Header() {
             {/* <div className="hidden md:block">
               <NavLink href="/login">Sign in</NavLink>
             </div> */}
-            <Button href="/register" color="green">
+            <Button href="https://apps.apple.com/app/trimry/id6473744504" color="green">
               <span>
                 Download the app
               </span>

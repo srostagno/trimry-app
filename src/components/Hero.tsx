@@ -31,7 +31,7 @@ export function Hero() {
       Dive into a world of brain-teasing fun! Craft your own games, share with friends, and ignite friendly competitions. Play, create, and connect in a cerebral playground.
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
-        <Button href="/register">Download iOS App</Button>
+        <Button href="https://apps.apple.com/app/trimry/id6473744504">Download iOS App</Button>
       </div>
     </Container>
   )

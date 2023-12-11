@@ -33,7 +33,7 @@ export default function AppDownloadView() {
             </Transition>
             <h1 className="text-2xl font-bold mb-2">Welcome!</h1>
             <p className="mb-6">Experience the best features and seamless functionalities by downloading our mobile app.</p>
-            <a href="https://apps.apple.com/app/idYOUR_APP_ID" target="_blank" rel="noopener noreferrer">
+            <a href="https://apps.apple.com/app/trimry/id6473744504" target="_blank" rel="noopener noreferrer">
                 <button className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
                     Download on the App Store
                 </button>

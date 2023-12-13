@@ -10,7 +10,12 @@ export const metadata: Metadata = {
     default: 'Trimry - Train your brain',
   },
   description:
-    'Most bookkeeping software is accurate, but hard to use. We make the opposite trade-off, and hope you don’t get audited.',
+    'Craft your own games, share with friends, and ignite friendly competitions. Play, create, and connect in a cerebral playground.',
+  verification: {
+    other: {
+      'facebook-domain-verification': 'c6u5evblmks2uyl105g7ph2e2yankn',
+    },
+  },
 }
 
 const inter = Inter({

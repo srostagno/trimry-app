@@ -1,24 +1,23 @@
-import { CallToAction } from '@/components/CallToAction'
-import { Faqs } from '@/components/Faqs'
-import { Footer } from '@/components/Footer'
-import { Header } from '@/components/Header'
-import { Hero } from '@/components/Hero'
-import { Pricing } from '@/components/Pricing'
-import { PrimaryFeatures } from '@/components/PrimaryFeatures'
-import { SecondaryFeatures } from '@/components/SecondaryFeatures'
-import { Testimonials } from '@/components/Testimonials'
+import { JsonLd } from '@/components/json-ld'
+import { HomePageClient } from '@/components/home-page-client'
+import { createPageMetadata, homePageJsonLd } from '@/lib/seo'
 
-export default function Home() {
+export const metadata = createPageMetadata({
+  description:
+    'Trimry helps you catch lucky haircut days and weekly release timing with one ritual forecast every Monday by email, WhatsApp, or both.',
+  keywords: [
+    'lucky haircut day app',
+    'weekly ritual forecast',
+    'fortune guidance subscription',
+  ],
+  path: '/',
+})
+
+export default function HomePage() {
   return (
     <>
-      <Header />
-      <main>
-        <Hero />
-        <Testimonials />
-        <CallToAction />
-        <Faqs />
-      </main>
-      <Footer />
+      <JsonLd data={homePageJsonLd} />
+      <HomePageClient />
     </>
   )
 }

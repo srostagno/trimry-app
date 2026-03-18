@@ -1,50 +1,39 @@
-import { Inter, Lexend } from 'next/font/google'
-import clsx from 'clsx'
+import type { ReactNode } from 'react'
+import { cookies } from 'next/headers'
 
-import '@/styles/tailwind.css'
-import { type Metadata } from 'next'
+import './globals.css'
+import { GoogleAnalytics } from '@/components/google-analytics'
+import { JsonLd } from '@/components/json-ld'
+import { LanguageProvider } from '@/components/language-provider'
+import { SiteShell } from '@/components/site-shell'
+import { getAuthenticatedViewer } from '@/lib/auth-viewer'
+import { DEFAULT_LANGUAGE, isLanguageCode, type LanguageCode } from '@/lib/i18n'
+import { rootMetadata, sitewideJsonLd } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: {
-    template: '%s - Trimry',
-    default: 'Trimry - Train your brain',
-  },
-  description:
-    'Craft your own games, share with friends, and ignite friendly competitions. Play, create, and connect in a cerebral playground.',
-  verification: {
-    other: {
-      'facebook-domain-verification': 'c6u5evblmks2uyl105g7ph2e2yankn',
-    },
-  },
-}
+export const metadata = rootMetadata
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const cookieStore = await cookies()
+  const viewer = await getAuthenticatedViewer()
+  const cookieLanguage = cookieStore.get('trimry-language')?.value
+  const viewerLanguage = viewer?.locale
+  let initialLanguage: LanguageCode = DEFAULT_LANGUAGE
 
-const lexend = Lexend({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-lexend',
-})
+  if (cookieLanguage && isLanguageCode(cookieLanguage)) {
+    initialLanguage = cookieLanguage
+  } else if (viewerLanguage && isLanguageCode(viewerLanguage)) {
+    initialLanguage = viewerLanguage
+  }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
   return (
-    <html
-      lang="en"
-      className={clsx(
-        'h-full scroll-smooth dark antialiased',
-        inter.variable,
-        lexend.variable,
-      )}
-    >
-      <body className="flex h-full flex-col dark:bg-black">{children}</body>
+    <html lang={initialLanguage} className="h-full antialiased">
+      <body className="min-h-full font-sans">
+        <LanguageProvider initialLanguage={initialLanguage}>
+          <GoogleAnalytics />
+          <JsonLd data={sitewideJsonLd} />
+          <SiteShell viewer={viewer}>{children}</SiteShell>
+        </LanguageProvider>
+      </body>
     </html>
   )
 }

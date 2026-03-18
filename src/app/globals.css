@@ -3,25 +3,453 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --cosmic-night: #040711;
+  --cosmic-deep: #0a1a33;
+  --cosmic-aqua: #57f2da;
+  --cosmic-blue: #6ab8ff;
+  --cosmic-gold: #f7dd91;
+  --cosmic-text: #e7f0ff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  margin: 0;
+  font-family: 'Trebuchet MS', 'Gill Sans', 'Segoe UI', sans-serif;
+  color: var(--cosmic-text);
+  background:
+    radial-gradient(circle at 12% 15%, rgba(92, 232, 214, 0.2), transparent 22%),
+    radial-gradient(circle at 90% 8%, rgba(106, 184, 255, 0.24), transparent 25%),
+    radial-gradient(circle at 50% 90%, rgba(247, 221, 145, 0.12), transparent 30%),
+    linear-gradient(145deg, #03050c 8%, #071225 44%, #0a1a33 100%);
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+  letter-spacing: 0.02em;
+}
+
+a {
+  color: inherit;
+}
+
+.luck-glow {
+  box-shadow:
+    0 0 0 1px rgba(136, 255, 228, 0.24),
+    0 34px 90px rgba(30, 119, 196, 0.3),
+    inset 0 0 60px rgba(20, 44, 80, 0.35);
+}
+
+.cosmic-nebula {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(92, 232, 214, 0.19), transparent 28%),
+    radial-gradient(circle at 87% 9%, rgba(106, 184, 255, 0.23), transparent 28%),
+    radial-gradient(circle at 80% 84%, rgba(247, 221, 145, 0.14), transparent 30%);
+  animation: nebulaShift 14s ease-in-out infinite alternate;
+}
+
+.cosmic-stars {
+  background-image:
+    radial-gradient(2px 2px at 8% 12%, rgba(255, 255, 255, 0.7), transparent 55%),
+    radial-gradient(1px 1px at 14% 42%, rgba(171, 237, 255, 0.72), transparent 60%),
+    radial-gradient(1px 1px at 30% 24%, rgba(255, 251, 228, 0.76), transparent 60%),
+    radial-gradient(1px 1px at 44% 68%, rgba(117, 212, 255, 0.7), transparent 60%),
+    radial-gradient(1px 1px at 62% 17%, rgba(255, 255, 255, 0.75), transparent 60%),
+    radial-gradient(2px 2px at 74% 52%, rgba(214, 243, 255, 0.72), transparent 60%),
+    radial-gradient(1px 1px at 91% 36%, rgba(255, 238, 180, 0.76), transparent 60%),
+    radial-gradient(2px 2px at 84% 78%, rgba(123, 239, 224, 0.72), transparent 60%);
+  opacity: 0.8;
+  animation: starDrift 36s linear infinite;
+}
+
+.cosmic-grid {
+  background-image:
+    linear-gradient(rgba(113, 168, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(113, 168, 255, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at center, black 30%, transparent 78%);
+  opacity: 0.45;
+}
+
+.cosmic-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(0.6px);
+  animation: orbFloat 10s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 260px;
+  height: 260px;
+  top: -70px;
+  right: -60px;
+  background: radial-gradient(circle at 30% 30%, rgba(99, 250, 228, 0.52), rgba(47, 97, 170, 0.06) 70%);
+}
+
+.orb-2 {
+  width: 220px;
+  height: 220px;
+  bottom: 15%;
+  left: -80px;
+  background: radial-gradient(circle at 35% 35%, rgba(113, 177, 255, 0.46), rgba(7, 19, 48, 0.02) 72%);
+  animation-delay: 2.2s;
+}
+
+.orb-3 {
+  width: 170px;
+  height: 170px;
+  top: 44%;
+  right: 16%;
+  background: radial-gradient(circle at 40% 30%, rgba(247, 221, 145, 0.42), rgba(9, 17, 39, 0.04) 74%);
+  animation-delay: 4.3s;
+}
+
+.cosmic-panel {
+  border: 1px solid rgba(132, 235, 255, 0.22);
   background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    135deg,
+    rgba(5, 15, 34, 0.74),
+    rgba(8, 22, 47, 0.72) 45%,
+    rgba(10, 27, 54, 0.64)
+  );
+  backdrop-filter: blur(14px);
+}
+
+.cosmic-card {
+  border: 1px solid rgba(132, 235, 255, 0.2);
+  background: linear-gradient(
+    160deg,
+    rgba(7, 20, 40, 0.82),
+    rgba(7, 26, 53, 0.64)
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(227, 245, 255, 0.08),
+    0 18px 45px rgba(5, 18, 38, 0.5);
+}
+
+.cosmic-cta {
+  background: linear-gradient(130deg, rgba(89, 246, 223, 0.15), rgba(90, 146, 255, 0.22), rgba(247, 221, 145, 0.11));
+}
+
+.cosmic-button-primary {
+  background: linear-gradient(120deg, #d8fff6, #8ef4e0 45%, #7be0ff 100%);
+  color: #04121f;
+  box-shadow:
+    0 10px 30px rgba(95, 231, 212, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.cosmic-button-primary:hover {
+  transform: translateY(-2px) scale(1.015);
+}
+
+.cosmic-button-secondary {
+  border: 1px solid rgba(151, 230, 255, 0.34);
+  background: rgba(95, 159, 242, 0.08);
+}
+
+.cosmic-input {
+  border: 1px solid rgba(247, 221, 145, 0.28);
+  background: linear-gradient(180deg, rgba(4, 7, 17, 0.88), rgba(10, 20, 39, 0.82));
+  color: #f8fbff;
+  caret-color: var(--cosmic-aqua);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 24px rgba(2, 6, 23, 0.2);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+  color-scheme: dark;
+}
+
+.cosmic-input::placeholder {
+  color: rgba(231, 240, 255, 0.45);
+}
+
+.cosmic-input:hover {
+  border-color: rgba(247, 221, 145, 0.42);
+  background: linear-gradient(180deg, rgba(5, 11, 24, 0.92), rgba(12, 25, 48, 0.86));
+}
+
+.cosmic-input:focus,
+.cosmic-input:focus-visible {
+  outline: none;
+  border-color: rgba(87, 242, 218, 0.72);
+  box-shadow:
+    0 0 0 4px rgba(87, 242, 218, 0.15),
+    0 18px 42px rgba(17, 58, 109, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.cosmic-input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.cosmic-input::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.cosmic-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.82;
+  filter: invert(91%) sepia(11%) saturate(489%) hue-rotate(122deg) brightness(99%) contrast(101%);
+}
+
+.cosmic-input:-webkit-autofill,
+.cosmic-input:-webkit-autofill:hover,
+.cosmic-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fbff;
+  box-shadow:
+    0 0 0 1000px rgba(7, 18, 37, 0.96) inset,
+    0 18px 42px rgba(17, 58, 109, 0.2);
+  transition: background-color 9999s ease-out 0s;
+}
+
+.cosmic-badge {
+  border: 1px solid rgba(191, 239, 255, 0.46);
+  background: rgba(93, 154, 239, 0.13);
+  box-shadow: inset 0 0 20px rgba(109, 168, 253, 0.15);
+}
+
+.oracle-tone-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  padding: 0.68rem 1.15rem 0.68rem 0.88rem;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.24em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 1px 12px rgba(5, 10, 24, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 14px 34px rgba(4, 10, 24, 0.32);
+  animation: oracleBadgePulse 2.8s ease-in-out infinite;
+}
+
+.oracle-tone-badge-compact {
+  gap: 0.44rem;
+  padding: 0.5rem 0.88rem 0.5rem 0.72rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+}
+
+.oracle-tone-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.02) 28%,
+    rgba(255, 255, 255, 0.34) 48%,
+    rgba(255, 255, 255, 0.02) 68%,
+    transparent 100%
+  );
+  transform: translateX(-140%);
+  animation: oracleBadgeSweep 3.6s ease-in-out infinite;
+}
+
+.oracle-tone-badge-icon {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 0 18px rgba(255, 255, 255, 0.14);
+}
+
+.oracle-tone-badge-compact .oracle-tone-badge-icon {
+  min-width: 1.28rem;
+  height: 1.28rem;
+  font-size: 0.68rem;
+}
+
+.oracle-tone-badge-good {
+  color: #ebfff8;
+  border-color: rgba(126, 255, 224, 0.7);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(206, 255, 240, 0.34), transparent 32%),
+    linear-gradient(135deg, rgba(12, 135, 111, 0.94), rgba(39, 204, 171, 0.92) 52%, rgba(121, 255, 226, 0.82) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 0 0 1px rgba(147, 255, 228, 0.22),
+    0 18px 38px rgba(9, 113, 92, 0.34),
+    0 0 26px rgba(76, 255, 201, 0.22);
+}
+
+.oracle-tone-badge-bad {
+  color: #fff1f3;
+  border-color: rgba(255, 145, 171, 0.7);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 217, 227, 0.22), transparent 34%),
+    linear-gradient(135deg, rgba(123, 18, 46, 0.96), rgba(202, 36, 89, 0.92) 50%, rgba(255, 118, 151, 0.84) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px rgba(255, 149, 179, 0.2),
+    0 18px 40px rgba(112, 17, 46, 0.34),
+    0 0 28px rgba(255, 96, 141, 0.2);
+}
+
+.oracle-tone-badge-rare {
+  color: #f7f1ff;
+  border-color: rgba(212, 164, 255, 0.74);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(250, 235, 255, 0.24), transparent 34%),
+    linear-gradient(135deg, rgba(79, 26, 146, 0.96), rgba(151, 63, 243, 0.92) 48%, rgba(217, 126, 255, 0.84) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px rgba(220, 161, 255, 0.18),
+    0 18px 42px rgba(83, 30, 150, 0.34),
+    0 0 30px rgba(186, 97, 255, 0.22);
+}
+
+.twinkle {
+  animation: twinkle 3.8s ease-in-out infinite;
+}
+
+.twinkle-delay {
+  animation: twinkle 4.8s ease-in-out infinite;
+  animation-delay: 1.1s;
+}
+
+.slide-up {
+  animation: slideUp 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.slide-up-delay {
+  animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: 0.12s;
+}
+
+.orbit-ring {
+  animation: orbit 18s linear infinite;
+}
+
+.pulse-soft {
+  animation: pulseSoft 3.6s ease-in-out infinite;
+}
+
+@keyframes starDrift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-90px, 55px, 0) scale(1.08);
+  }
+}
+
+@keyframes nebulaShift {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.03) translateY(-8px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.01) translateY(5px);
+    opacity: 0.9;
+  }
+}
+
+@keyframes orbFloat {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-14px) translateX(8px);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseSoft {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(132, 235, 255, 0.25),
+      0 22px 50px rgba(19, 47, 98, 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(132, 235, 255, 0.44),
+      0 30px 70px rgba(81, 186, 255, 0.35);
+  }
+}
+
+@keyframes oracleBadgeSweep {
+  0% {
+    transform: translateX(-140%);
+  }
+  55%,
+  100% {
+    transform: translateX(140%);
+  }
+}
+
+@keyframes oracleBadgePulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.04);
+  }
 }

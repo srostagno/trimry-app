@@ -26,7 +26,7 @@ export function CallToAction() {
           <p className="mt-4 text-lg tracking-tight text-white">
             Engage your mind with captivating games. Play, challenge, and unwind. Dive into a smarter way to relax. Explore now.
           </p>
-          <Button href="/register" color="white" className="mt-10">
+          <Button href="https://apps.apple.com/app/trimry/id6473744504" color="white" className="mt-10">
             Download iOS App
           </Button>
         </div>

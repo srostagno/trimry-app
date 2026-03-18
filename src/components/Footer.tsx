@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="bg-slate-50 dark:bg-slate-800">
       <Container>
         <div className="py-16">
-          <Logo className="h-10 w-auto" width={100} height={40} />
+          <Logo className="h-10 w-auto" />
           <nav className="mt-10 text-sm" aria-label="quick links">
             <div className="-my-1 flex justify-center gap-x-6">
               <NavLink href="#testimonials">Testimonials</NavLink>
@@ -28,4 +28,3 @@ export function Footer() {
     </footer>
   )
 }
-

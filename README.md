@@ -1,34 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Trimry Web
 
-## Getting Started
+Trimry is a subscription web app that delivers one WhatsApp message every Monday with favorable and challenging days for grooming and symbolic release rituals, inspired by Tibetan calendar timing traditions.
 
-First, run the development server:
+## Stack
+
+- Next.js 13 (App Router)
+- TypeScript
+- Tailwind CSS
+- External API integration over `fetch` with credentialed cookies
+
+## Features
+
+- New lucky-themed landing page and branding
+- Language switcher with top 20 global languages (English default)
+- Secure user registration and login through external API
+- Dashboard account profile editor
+  - First name
+  - Last name
+  - Birth date
+- Dashboard for subscription management
+  - Real Stripe Checkout session handoff
+  - Stripe Billing Portal access from dashboard
+  - Update WhatsApp number
+- Legal pages: Terms, Privacy, Ritual Disclaimer
+
+## Environment Variables
+
+Copy `.env.example` and set real values:
+
+- `NEXT_PUBLIC_API_BASE_URL` (for example `http://localhost:4000/api/v1`)
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Contract
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+The web app expects the API to expose:
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/logout`
+- `POST /auth/refresh`
+- `GET /me`
+- `PATCH /users/me`
+- `DELETE /users/me`
+- `POST /subscription`
+- `POST /billing/checkout-session`
+- `POST /billing/portal-session`

@@ -6,7 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackEventOnce } from '@/lib/analytics'
-import { createBillingSession } from '@/lib/billing'
+import { apiFetch, readApiError } from '@/lib/api-client'
+import { BillingSessionError, createBillingSession } from '@/lib/billing'
 import {
   fetchAccountSnapshot,
   requiresWhatsappDelivery,
@@ -63,10 +64,68 @@ export default function CheckoutStartPage() {
           return
         }
 
-        const checkoutUrl = await createBillingSession(
-          '/billing/checkout-session',
-          messages.checkout.openError,
-        )
+        let checkoutUrl: string | null = null
+
+        try {
+          checkoutUrl = await createBillingSession(
+            '/billing/checkout-session',
+            messages.checkout.openError,
+          )
+        } catch (error) {
+          if (!(error instanceof BillingSessionError)) {
+            throw error
+          }
+
+          if (error.status === 401) {
+            router.replace('/account/login')
+            return
+          }
+
+          if (error.status === 409) {
+            router.replace('/dashboard')
+            return
+          }
+
+          if (error.status !== 404) {
+            throw error
+          }
+
+          // Recovery path: if pending checkout data exists in client but is missing in API,
+          // recreate the subscription row and retry opening Stripe checkout once.
+          const repairResponse = await apiFetch(
+            '/subscription',
+            {
+              method: 'POST',
+              body: JSON.stringify({
+                action: 'subscribe',
+                deliveryPreference: subscription.deliveryPreference,
+                deliveryHourLocal: subscription.deliveryHourLocal,
+                whatsappNumber: subscription.whatsappNumber,
+              }),
+            },
+            { retryUnauthorized: false },
+          )
+
+          if (repairResponse.status === 401) {
+            router.replace('/account/login')
+            return
+          }
+
+          if (!repairResponse.ok) {
+            throw new Error(
+              await readApiError(repairResponse, messages.checkout.openError),
+            )
+          }
+
+          checkoutUrl = await createBillingSession(
+            '/billing/checkout-session',
+            messages.checkout.openError,
+          )
+        }
+
+        if (!checkoutUrl) {
+          return
+        }
 
         trackEvent('begin_checkout', {
           currency: subscription.currency,

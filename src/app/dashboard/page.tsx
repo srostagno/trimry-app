@@ -428,10 +428,20 @@ export default function DashboardPage() {
     setLogoutBusy(true)
 
     try {
+      // Clear API auth cookies (cross-subdomain) and best-effort clear legacy local session.
       await apiFetch('/auth/logout', { method: 'POST' }, { retryUnauthorized: false })
-      router.push('/')
-      router.refresh()
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+    } catch {
+      // Even when remote logout fails, still clear local session and continue navigation.
+      try {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+      } catch {
+        // Ignore secondary cleanup failures and continue.
+      }
     } finally {
+      router.replace('/')
+      router.refresh()
+      window.location.assign('/')
       setLogoutBusy(false)
     }
   }

@@ -80,7 +80,7 @@ export default function ActivationGatewayPage() {
 
   if (loading) {
     return (
-      <section className="mx-auto max-w-3xl rounded-[2rem] border border-cyan-200/20 bg-slate-950/45 p-8 text-cyan-100">
+      <section className="cosmic-shell cosmic-shell-copy mx-auto max-w-3xl rounded-[2rem] p-8">
         {messages.activate.loading}
       </section>
     )
@@ -88,11 +88,11 @@ export default function ActivationGatewayPage() {
 
   if (!account) {
     return (
-      <section className="mx-auto max-w-3xl rounded-[2rem] border border-rose-300/30 bg-rose-950/20 p-8 text-rose-100">
+      <section className="cosmic-danger-shell mx-auto max-w-3xl rounded-[2rem] p-8 text-rose-100">
         <p>{error || messages.activate.unavailable}</p>
         <Link
           href="/account/login"
-          className="mt-5 inline-flex rounded-full border border-rose-200/30 px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
+          className="cosmic-danger-button mt-5 inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
         >
           {messages.common.backToLogin}
         </Link>
@@ -144,7 +144,7 @@ export default function ActivationGatewayPage() {
                     destination: '/account/delivery?edit=1',
                   })
                 }
-                className="inline-flex rounded-full border border-cyan-200/28 px-7 py-3 text-sm font-black uppercase tracking-[0.17em] text-cyan-50"
+                className="cosmic-outline-button inline-flex rounded-full px-7 py-3 text-sm font-black uppercase tracking-[0.17em]"
               >
                 {messages.activate.secondaryButton}
               </Link>

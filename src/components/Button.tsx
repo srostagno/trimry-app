@@ -3,25 +3,26 @@ import clsx from 'clsx'
 
 const baseStyles = {
   solid:
-    'group inline-flex items-center justify-center rounded-full py-2 px-4 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+    'group inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
   outline:
-    'group inline-flex ring-1 items-center justify-center rounded-full py-2 px-4 text-sm focus:outline-none',
+    'group inline-flex items-center justify-center rounded-full px-4 py-2 text-sm transition focus:outline-none',
 }
 
 const variantStyles = {
   solid: {
     slate:
-      'bg-slate-900 text-white hover:bg-slate-700 hover:text-slate-100 active:bg-slate-800 active:text-slate-300 focus-visible:outline-slate-900',
-    blue: 'bg-blue-600 text-white hover:text-slate-100 hover:bg-blue-500 active:bg-blue-800 active:text-blue-100 focus-visible:outline-blue-600',
+      'border border-[rgba(138,196,255,0.28)] bg-[linear-gradient(140deg,rgba(8,18,43,0.88),rgba(23,28,78,0.72))] text-slate-50 hover:-translate-y-[1px] hover:border-[rgba(171,224,255,0.44)] hover:bg-[linear-gradient(140deg,rgba(10,24,58,0.92),rgba(31,37,95,0.8))] focus-visible:outline-[rgba(121,242,255,0.6)]',
+    blue: 'border border-white/35 bg-[linear-gradient(120deg,#f3fff5,#9af8ff_42%,#70bcff_68%,#8c78ff)] text-slate-950 hover:-translate-y-[1px] hover:saturate-110 focus-visible:outline-[rgba(121,242,255,0.6)]',
     white:
-      'bg-white text-slate-900 hover:bg-blue-50 active:bg-blue-200 active:text-slate-600 focus-visible:outline-white',
-      green: 'bg-custom-green text-white hover:bg-green-500 active:bg-green-800 active:text-green-100 focus-visible:ring-green-600',
+      'border border-[rgba(138,196,255,0.3)] bg-[rgba(10,20,47,0.82)] text-slate-50 hover:-translate-y-[1px] hover:border-[rgba(171,224,255,0.46)] focus-visible:outline-[rgba(121,242,255,0.6)]',
+    green:
+      'border border-white/35 bg-[linear-gradient(120deg,#f3fff5,#9af8ff_42%,#70bcff_68%,#8c78ff)] text-slate-950 hover:-translate-y-[1px] hover:saturate-110 focus-visible:outline-[rgba(121,242,255,0.6)]',
   },
   outline: {
     slate:
-      'ring-slate-200 text-slate-700 hover:text-slate-900 hover:ring-slate-300 active:bg-slate-100 active:text-slate-600 focus-visible:outline-blue-600 focus-visible:ring-slate-300',
+      'border border-[rgba(138,196,255,0.3)] bg-[rgba(10,20,47,0.42)] text-slate-50 hover:-translate-y-[1px] hover:border-[rgba(171,224,255,0.44)] hover:bg-[rgba(18,30,66,0.68)] focus-visible:outline-[rgba(121,242,255,0.6)]',
     white:
-      'ring-slate-700 text-white hover:ring-slate-500 active:ring-slate-700 active:text-slate-400 focus-visible:outline-white',
+      'border border-white/26 bg-white/6 text-white hover:-translate-y-[1px] hover:border-white/42 hover:bg-white/12 focus-visible:outline-[rgba(121,242,255,0.6)]',
   },
 }
 

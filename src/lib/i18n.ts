@@ -206,6 +206,7 @@ export type MessageSection = {
     tabs: {
       account: string
       predictionCalendar: string
+      sends: string
     }
     status: string
     nextMessage: string
@@ -289,6 +290,8 @@ export type MessageSection = {
       none: string
       summaryLabel: string
       notesLabel: string
+      notesEnglishLabel: string
+      notesSpanishLabel: string
       notesHint: string
       goodOption: string
       badOption: string
@@ -307,6 +310,88 @@ export type MessageSection = {
       saveSuccess: string
       saveError: string
       loadError: string
+    }
+    sendCampaigns: {
+      settingsTitle: string
+      settingsSubtitle: string
+      settingsWhatsappTitle: string
+      settingsMailersendTitle: string
+      settingsStored: string
+      settingsMissing: string
+      settingsSave: string
+      settingsSaved: string
+      title: string
+      subtitle: string
+      templateEditorTitle: string
+      templateEditorSubtitle: string
+      templateSave: string
+      templateSaveBusy: string
+      templateSaved: string
+      createNew: string
+      currentDraft: string
+      nameLabel: string
+      whatsappReferenceNameLabel: string
+      campaignNameLabel: string
+      templateDescriptionLabel: string
+      channelLabel: string
+      channelWhatsapp: string
+      channelEmail: string
+      audienceTitle: string
+      audienceHint: string
+      eligibleRecipients: string
+      variableValuesTitle: string
+      variableValuesSubtitle: string
+      noVariables: string
+      testingLabel: string
+      testingPlaceholderWhatsapp: string
+      testingPlaceholderEmail: string
+      testingHintWhatsapp: string
+      testingHintEmail: string
+      saveDraft: string
+      saveDraftBusy: string
+      sendTest: string
+      sendTestBusy: string
+      sendCampaign: string
+      sendCampaignBusy: string
+      externalTemplateNameLabel: string
+      externalTemplateNameHint: string
+      whatsappLanguageLabel: string
+      headerTextLabel: string
+      bodyTextLabel: string
+      whatsappSectionHint: string
+      whatsappButtonHint: string
+      buttonsTitle: string
+      addVariable: string
+      addButton: string
+      removeVariable: string
+      removeButton: string
+      variableKeyLabel: string
+      variableContentLabel: string
+      emailSubjectLabel: string
+      emailHtmlLabel: string
+      emailTextLabel: string
+      historyTitle: string
+      historySubtitle: string
+      emptyState: string
+      metricsRecipients: string
+      metricsAccepted: string
+      metricsFailed: string
+      sentAt: string
+      updatedAt: string
+      lastTestedAt: string
+      lastTestRecipient: string
+      notSentYet: string
+      neverTested: string
+      draftStatus: string
+      sentStatus: string
+      partiallySentStatus: string
+      failedStatus: string
+      loadError: string
+      saveSuccess: string
+      testSuccess: string
+      sendSuccess: string
+      sendPartial: string
+      sendFailed: string
     }
   }
   statuses: {
@@ -615,6 +700,7 @@ const englishMessages: MessageSection = {
     tabs: {
       account: 'Account',
       predictionCalendar: 'Prediction calendar',
+      sends: 'Sends',
     },
     status: 'Status',
     nextMessage: 'Next Monday message',
@@ -716,14 +802,17 @@ const englishMessages: MessageSection = {
       none: 'None',
       summaryLabel: 'Prediction',
       notesLabel: 'Prediction note',
-      notesHint: 'This note appears as the daily guidance for that date.',
+      notesEnglishLabel: 'Note (English)',
+      notesSpanishLabel: 'Note (Spanish)',
+      notesHint:
+        'Both notes are required and will be used according to the active language.',
       goodOption: 'Good',
       badOption: 'Bad',
       rareOption: 'Rare',
       importFromImage: 'Fill month from image',
       importFromImageBusy: 'Generating from image',
       importFromImageHint:
-        'Upload a reference calendar image and ChatGPT will generate fresh Good, Bad, and Rare notes for this month.',
+        'Upload a reference calendar image and ChatGPT will generate fresh Good, Bad, and Rare notes in English and Spanish for this month.',
       importFromImageConfirm:
         'Replace the visible month with a new image-based prediction import?',
       importFromImageSuccess: 'Prediction month imported from image.',
@@ -737,6 +826,98 @@ const englishMessages: MessageSection = {
       saveSuccess: 'Prediction saved.',
       saveError: 'Unable to save this prediction right now.',
       loadError: 'Unable to load the admin prediction calendar right now.',
+    },
+    sendCampaigns: {
+      settingsTitle: 'Provider settings',
+      settingsSubtitle:
+        'Store WhatsApp Cloud API and MailerSend credentials in MongoDB. Secret values stay blank in the form unless you want to replace them.',
+      settingsWhatsappTitle: 'WhatsApp settings',
+      settingsMailersendTitle: 'MailerSend settings',
+      settingsStored: 'Stored',
+      settingsMissing: 'Missing',
+      settingsSave: 'Save settings',
+      settingsSaved: 'Provider settings saved.',
+      title: 'Admin sends',
+      subtitle:
+        'Create WhatsApp and email campaigns for active subscribers, run a testing delivery first, then send the live campaign from the dashboard.',
+      templateEditorTitle: 'Send setup',
+      templateEditorSubtitle:
+        'For email you can save the content here. For WhatsApp you do not edit the Meta template here: you only save its exact Meta name, language, and the `key: content` values you want to reuse in testing and sending.',
+      templateSave: 'Save setup',
+      templateSaveBusy: 'Saving setup',
+      templateSaved: 'Setup saved.',
+      createNew: 'New campaign',
+      currentDraft: 'Current setup',
+      nameLabel: 'Internal reference name',
+      whatsappReferenceNameLabel: 'Internal reference name (optional)',
+      campaignNameLabel: 'Campaign name',
+      templateDescriptionLabel: 'Template description',
+      channelLabel: 'Channel',
+      channelWhatsapp: 'WhatsApp',
+      channelEmail: 'Email',
+      audienceTitle: 'Audience',
+      audienceHint:
+        'Live sends target active subscribers who currently have this delivery channel enabled.',
+      eligibleRecipients: 'Eligible recipients right now: {count}',
+      variableValuesTitle: 'Testing data and variables',
+      variableValuesSubtitle:
+        'Each template variable appears here. For WhatsApp, the saved content from each section is loaded here first, and you can adjust it before testing or sending.',
+      noVariables: 'This template has no dynamic variables.',
+      testingLabel: 'Testing recipient',
+      testingPlaceholderWhatsapp: '+14155550123',
+      testingPlaceholderEmail: 'test@example.com',
+      testingHintWhatsapp:
+        'WhatsApp testing sends the configured template directly to one number.',
+      testingHintEmail:
+        'Email testing sends the current subject and body to one address through MailerSend.',
+      saveDraft: 'Save draft',
+      saveDraftBusy: 'Saving draft',
+      sendTest: 'Send testing',
+      sendTestBusy: 'Sending test',
+      sendCampaign: 'Send campaign',
+      sendCampaignBusy: 'Sending campaign',
+      externalTemplateNameLabel: 'Exact Meta template name (not ID)',
+      externalTemplateNameHint:
+        'WhatsApp Cloud API sends by template name and language code, not by a template ID.',
+      whatsappLanguageLabel: 'Template language',
+      headerTextLabel: 'Header variables',
+      bodyTextLabel: 'Body variables',
+      whatsappSectionHint: 'Store each entry as key and default content.',
+      whatsappButtonHint:
+        'Store the dynamic button variable key and the sample content you want to test.',
+      buttonsTitle: 'Dynamic buttons',
+      addVariable: 'Add variable',
+      addButton: 'Add button',
+      removeVariable: 'Remove variable',
+      removeButton: 'Remove button',
+      variableKeyLabel: 'Key',
+      variableContentLabel: 'Content',
+      emailSubjectLabel: 'Email subject',
+      emailHtmlLabel: 'HTML body',
+      emailTextLabel: 'Plain text body',
+      historyTitle: 'Campaign history',
+      historySubtitle:
+        'Every saved or sent campaign stays here so you can inspect metrics and the variable values used for the send.',
+      emptyState: 'No campaigns yet.',
+      metricsRecipients: 'Recipients',
+      metricsAccepted: 'Accepted',
+      metricsFailed: 'Failed',
+      sentAt: 'Sent at',
+      updatedAt: 'Updated at',
+      lastTestedAt: 'Last test',
+      lastTestRecipient: 'Test recipient',
+      notSentYet: 'Not sent yet',
+      neverTested: 'Never tested',
+      draftStatus: 'Draft',
+      sentStatus: 'Sent',
+      partiallySentStatus: 'Partially sent',
+      failedStatus: 'Failed',
+      loadError: 'Unable to load the admin sends workspace right now.',
+      saveSuccess: 'Campaign draft saved.',
+      testSuccess: 'Testing delivery processed.',
+      sendSuccess: 'Campaign sent successfully.',
+      sendPartial: 'Campaign finished with partial delivery failures.',
+      sendFailed: 'Campaign send failed.',
     },
   },
   statuses: {
@@ -861,8 +1042,8 @@ const spanishMessages: MessageSection = {
     next: 'Siguiente',
     cancel: 'Cancelar',
     continue: 'Continuar',
-    backToLogin: 'Volver al login',
-    backToDashboard: 'Volver al dashboard',
+    backToLogin: 'Volver al inicio de sesión',
+    backToDashboard: 'Volver al panel',
     tryAgain: 'Intentar de nuevo',
     returnHome: 'Volver al inicio',
   },
@@ -871,140 +1052,140 @@ const spanishMessages: MessageSection = {
   },
   nav: {
     home: 'Inicio',
-    howItWorks: 'Como funciona',
-    pricing: 'Precio',
+    howItWorks: 'Cómo funciona',
+    pricing: 'Precios',
     faq: 'FAQ',
     legal: 'Legal',
     login: 'Ingresar',
     register: 'Crear cuenta',
-    dashboard: 'Dashboard',
+    dashboard: 'Panel',
     profile: 'Perfil',
     admin: 'Admin',
     logout: 'Salir',
   },
   footer: {
     rightsReserved: 'Todos los derechos reservados.',
-    companyNumber: 'Numero de compania',
+    companyNumber: 'Número de compañía',
     registeredOffice: 'Oficina registrada',
     operationsOffice: 'Oficina operativa',
     contact: 'Contacto',
   },
   hero: {
     badge: 'Servicio de fortuna del calendario tibetano',
-    title: 'Encuentra los dias de suerte antes de tu proximo corte.',
+    title: 'Encuentra los días de suerte antes de tu próximo corte.',
     subtitle:
-      'Trimry envia un pronostico ritual semanal cada lunes por email, WhatsApp o ambos, con senales de dias buenos, malos y raros inspiradas en una tradicion poco conocida del sutra tibetano, junto con pistas concretas sobre suerte, dinero y amor.',
+      'Trimry envía un pronóstico ritual semanal cada lunes por email, WhatsApp o ambos, con señales de días buenos, malos y raros inspiradas en una tradición poco conocida del sutra tibetano, junto con pistas concretas sobre suerte, dinero y amor.',
     primary: 'Empieza por $2.99/mes',
-    secondary: 'Ver el teaser de hoy',
+    secondary: 'Ver el avance de hoy',
   },
   home: {
-    releaseBadge: 'Soltar tambien tiene timing',
+    releaseBadge: 'Soltar también tiene su momento',
     releaseText:
-      'Un corte puede ser cosmetico. En el momento correcto, se siente como un corte limpio con la duda, el peso y la energia estancada.',
+      'Un corte puede ser cosmético. En el momento correcto, se siente como un corte limpio con la duda, el peso y la energía estancada.',
     releaseChannels: 'Elige recibirlo por email, WhatsApp o ambos.',
     releaseImageAlt:
-      'Una persona cortandose el pelo mientras sale energia luminosa del corte como una liberacion ritual.',
-    beliefBadge: 'Motor de creencia',
+      'Una persona cortándose el pelo mientras surge una energía luminosa del corte, como una liberación ritual.',
+    beliefBadge: 'Motor de la creencia',
     beliefTitle: 'Sentirse con suerte cambia la forma en que entras a la sala.',
     beliefSubtitle:
-      'La tesis de Trimry es simple: cuando sientes que el timing esta a tu favor, notas oportunidades mas rapido, actuas con mas optimismo y haces visible un mejor momentum.',
-    teaserEyebrow: 'Teaser cosmico diario',
-    couldBe: 'Podria ser...',
+      'La tesis de Trimry es simple: cuando sientes que el momento está a tu favor, detectas oportunidades más rápido, actúas con más optimismo y haces visible un mejor impulso.',
+    teaserEyebrow: 'Avance cósmico diario',
+    couldBe: 'Podría ser...',
     teaserNote:
-      'Suscribete para revelar la transmision real dia por dia y recibir la guia del lunes por email, WhatsApp o ambos.',
-    teaserButton: 'Revelar mi pronostico real',
+      'Suscríbete para revelar la transmisión real día por día y recibir la guía del lunes por email, WhatsApp o ambos.',
+    teaserButton: 'Revelar mi pronóstico real',
     predictions: [
       {
         tone: 'good',
-        text: 'la buena fortuna se expande a tu alrededor. Podria llegar un mensaje relacionado con dinero o una oportunidad util.',
+        text: 'La buena fortuna se expande a tu alrededor. Podría llegar un mensaje relacionado con dinero o una oportunidad útil.',
       },
       {
         tone: 'good',
-        text: 'la energia del amor se abre. Podrias conocer a alguien magnetico o recibir una senal romantica inesperada.',
+        text: 'La energía del amor se abre. Podrías conocer a alguien magnético o recibir una señal romántica inesperada.',
       },
       {
         tone: 'bad',
-        text: 'los malentendidos pueden crecer rapido hoy. Evita decisiones emocionales y gastos riesgosos.',
+        text: 'Los malentendidos pueden crecer rápido hoy. Evita decisiones emocionales y gastos riesgosos.',
       },
       {
         tone: 'bad',
-        text: 'los planes pueden estancarse y el apoyo sentirse lejano. Mantenlo practico y posterga compromisos grandes.',
+        text: 'Los planes pueden estancarse y el apoyo sentirse lejano. Mantenlo práctico y posterga compromisos grandes.',
       },
       {
         tone: 'rare',
-        text: 'dia comodin raro: una coincidencia extrana podria traer un regalo, un dato o una invitacion repentina.',
+        text: 'Día comodín raro: una coincidencia extraña podría traer un regalo, un dato o una invitación repentina.',
       },
       {
         tone: 'rare',
-        text: 'cruce karmico: un amor o un asunto antiguo podria volver pidiendo cierre.',
+        text: 'Cruce kármico: un amor o un asunto antiguo podría volver pidiendo cierre.',
       },
       {
         tone: 'good',
-        text: 'ventana de prosperidad: podria aparecer de forma inesperada un pago atrasado, un descuento o un aliado util.',
+        text: 'Ventana de prosperidad: podría aparecer de forma inesperada un pago atrasado, un descuento o un aliado útil.',
       },
       {
         tone: 'bad',
-        text: 'la energia se siente pesada y reactiva. Protege tu paz y evita discusiones sobre dinero o relaciones.',
+        text: 'La energía se siente pesada y reactiva. Protege tu paz y evita discusiones sobre dinero o relaciones.',
       },
       {
         tone: 'rare',
-        text: 'te rodea un magnetismo inusual. Alguien influyente podria compartir un consejo confidencial o una oportunidad oculta.',
+        text: 'Te rodea un magnetismo inusual. Alguien influyente podría compartir un consejo confidencial o una oportunidad oculta.',
       },
     ],
   },
   story: {
-    title: 'Disenado para sentirse como momentum, no supersticion.',
+    title: 'Diseñado para sentirse como impulso, no como superstición.',
     subtitle:
-      'Trimry mezcla ritual, calendario y recordatorios practicos para que tu semana empiece con intencion y confianza.',
+      'Trimry mezcla ritual, calendario y recordatorios prácticos para que tu semana empiece con intención y confianza.',
     card1Title: 'Ritmo inspirado en sutras',
     card1Text:
-      'Nuestro patron semanal sigue una interpretacion menos conocida de las tradiciones tibetanas de timing del calendario.',
+      'Nuestro patrón semanal sigue una interpretación menos conocida de las tradiciones tibetanas del calendario.',
     card2Title: 'Un mensaje, cero ruido',
     card2Text:
-      'Cada lunes: un pronostico ritual conciso entregado por email, WhatsApp o ambos.',
-    card3Title: 'Rituales de liberacion',
+      'Cada lunes: un pronóstico ritual conciso entregado por email, WhatsApp o ambos.',
+    card3Title: 'Rituales de liberación',
     card3Text:
-      'Mas alla del grooming, cada senal sugiere fortuna, relaciones y oportunidades de dinero.',
+      'Más allá del grooming, cada señal sugiere fortuna, relaciones y oportunidades de dinero.',
   },
   pricing: {
     title: 'Plan mensual simple',
-    subtitle: 'Un solo plan. Sin cargos ocultos. Cancela cuando quieras desde tu dashboard.',
+    subtitle: 'Un solo plan. Sin cargos ocultos. Cancela cuando quieras desde tu panel.',
     planTitle: 'Entrega semanal de fortuna',
     billing: '$2.99 USD / mes',
-    include1: '1 pronostico ritual cada lunes por email, WhatsApp o ambos',
-    include2: 'Senales good/bad/rare con pistas practicas sobre suerte, dinero y amor',
-    include3: 'Elige tu canal de entrega, actualizalo cuando quieras y cancela cuando te acomode',
+    include1: '1 pronóstico ritual cada lunes por email, WhatsApp o ambos',
+    include2: 'Señales de días buenos, malos y raros con pistas prácticas sobre suerte, dinero y amor',
+    include3: 'Elige tu canal de entrega, actualízalo cuando quieras y cancela cuando te acomode',
     cta: 'Crear mi cuenta',
   },
   weekly: {
-    title: 'Prediccion cosmica de hoy',
+    title: 'Predicción cósmica de hoy',
     subtitle:
-      'Un teaser rotativo sobre fortuna, amor, dinero y suerte. Suscribete para desbloquear la transmision semanal real.',
-    good: 'Good',
-    bad: 'Bad',
-    rare: 'Rare',
+      'Un avance rotativo sobre fortuna, amor, dinero y suerte. Suscríbete para desbloquear la transmisión semanal real.',
+    good: 'Bueno',
+    bad: 'Malo',
+    rare: 'Raro',
   },
   faq: {
     title: 'Preguntas frecuentes',
-    q1: 'Es una recomendacion medica o cientifica?',
+    q1: '¿Es una recomendación médica o científica?',
     a1: 'No. Trimry es un servicio cultural y ritual de timing para rutinas personales.',
-    q2: 'Cuando recibo el mensaje?',
-    a2: 'Cada lunes a la hora local que elijas, se entrega un pronostico ritual con el resumen de tu semana por el canal que selecciones.',
-    q3: 'Como administro el cobro?',
-    a3: 'Desde tu dashboard, donde puedes cancelar cuando quieras, reactivar despues y tambien abrir el portal seguro de Stripe para metodos de pago e invoices.',
-    q4: 'Que zona horaria se usa?',
-    a4: 'Usamos la zona horaria IANA guardada en tu cuenta y puedes cambiar tanto la zona horaria como la hora local del lunes desde tu dashboard.',
+    q2: '¿Cuándo recibo el mensaje?',
+    a2: 'Cada lunes, a la hora local que elijas, se entrega un pronóstico ritual con el resumen de tu semana por el canal que selecciones.',
+    q3: '¿Cómo administro el cobro?',
+    a3: 'Desde tu panel, donde puedes cancelar cuando quieras, reactivar después y también abrir el portal seguro de Stripe para métodos de pago y facturas.',
+    q4: '¿Qué zona horaria se usa?',
+    a4: 'Usamos la zona horaria IANA guardada en tu cuenta y puedes cambiar tanto la zona horaria como la hora local del lunes desde tu panel.',
   },
   cta: {
-    title: 'Empieza tu semana con intencion.',
+    title: 'Empieza tu semana con intención.',
     subtitle:
-      'Crea tu cuenta Trimry, elige email, WhatsApp o ambos, y recibe tu primera guia de dias con suerte el proximo lunes.',
+      'Crea tu cuenta Trimry, elige email, WhatsApp o ambos, y recibe tu primera guía de días con suerte el próximo lunes.',
     button: 'Abrir mi cuenta',
   },
   auth: {
     registerTitle: 'Crea tu cuenta Trimry',
     registerSubtitle:
-      'Registro seguro con cookies de sesion cifradas y timing local para el lunes.',
+      'Registro seguro con cookies de sesión cifradas y horario local para el lunes.',
     loginTitle: 'Bienvenido de vuelta',
     loginSubtitle: 'Ingresa para administrar tu entrega ritual semanal.',
     firstNameLabel: 'Nombre',
@@ -1012,242 +1193,338 @@ const spanishMessages: MessageSection = {
     birthDateLabel: 'Fecha de nacimiento',
     timeZoneLabel: 'Zona horaria',
     timeZoneHint:
-      'Usamos esto para programar tu proyeccion del lunes a la hora local correcta.',
-    emailLabel: 'Correo electronico',
-    passwordLabel: 'Contrasena',
-    whatsappLabel: 'Numero de WhatsApp',
+      'Usamos esto para programar tu proyección del lunes a la hora local correcta.',
+    emailLabel: 'Correo electrónico',
+    passwordLabel: 'Contraseña',
+    whatsappLabel: 'Número de WhatsApp',
     passwordHint:
-      'Minimo 10 caracteres, incluyendo mayuscula, minuscula y numero.',
+      'Mínimo 10 caracteres, incluyendo mayúscula, minúscula y número.',
     registerButton: 'Crear cuenta',
     loginButton: 'Ingresar',
-    needAccount: 'Necesitas una cuenta?',
-    alreadyHaveAccount: 'Ya tienes una cuenta?',
+    needAccount: '¿Necesitas una cuenta?',
+    alreadyHaveAccount: '¿Ya tienes una cuenta?',
   },
   deliveryChannels: {
     bothTitle: 'Email + WhatsApp',
     bothDescription: 'La mejor mezcla entre presencia ritual y entrega inmediata.',
     emailTitle: 'Solo email',
-    emailDescription: 'Recibe la guia semanal directo en tu inbox.',
+    emailDescription: 'Recibe la guía semanal directo en tu correo.',
     whatsappTitle: 'Solo WhatsApp',
-    whatsappDescription: 'Rapido, directo y pensado para el telefono.',
+    whatsappDescription: 'Rápido, directo y pensado para el teléfono.',
   },
   deliveryOnboarding: {
     loading: 'Cargando tu onboarding...',
     loadError: 'No pudimos cargar tu cuenta en este momento.',
-    prepBadge: 'Encendido de fortuna',
+    prepBadge: 'Activación de fortuna',
     prepTitle: 'Preparando tu fortuna...',
     prepSubtitle:
-      'Estamos uniendo tu canal elegido con el ritmo ritual de esta semana y preparando el paso de activacion de tu suscripcion.',
+      'Estamos uniendo tu canal elegido con el ritmo ritual de esta semana y preparando el paso de activación de tu suscripción.',
     preparationSteps: [
       'Eligiendo tu ritual de entrega',
-      'Ajustando tu timing de liberacion',
+      'Ajustando tu momento de liberación',
       'Cargando el optimismo del lunes',
-      'Preparando tu puerta de activacion',
+      'Preparando tu puerta de activación',
     ],
     editBadge: 'Ajustes de entrega',
-    createBadge: 'Onboarding paso 1',
-    editTitle: 'Actualiza donde Trimry debe entregar tu ritual semanal',
-    createTitle: 'Como quieres que Trimry entregue tu ritual semanal?',
+    createBadge: 'Paso 1',
+    editTitle: 'Actualiza dónde Trimry debe entregar tu ritual semanal',
+    createTitle: '¿Cómo quieres que Trimry entregue tu ritual semanal?',
     editSubtitle:
       'Cambia tu preferencia de entrega cuando quieras. Usa email, WhatsApp o mantén ambos canales activos.',
     createSubtitle:
-      'Elige email, WhatsApp o ambos. Una vez guardado, te llevaremos a un paso corto de activacion antes del checkout seguro de Stripe.',
+      'Elige email, WhatsApp o ambos. Una vez guardado, te llevaremos a un paso breve de activación antes del checkout seguro de Stripe.',
     activationChecklist: [
       'Elige tu preferencia de entrega.',
-      'Agrega WhatsApp solo si ese canal esta activo.',
-      'Tu pagina de activacion se abre antes de Stripe.',
+      'Agrega WhatsApp solo si ese canal está activo.',
+      'Tu página de activación se abre antes de Stripe.',
     ],
     dashboardChecklist: [
       'Elige tu preferencia de entrega.',
       'Agrega WhatsApp solo si quieres tenerlo activo.',
-      'Luego vuelves a tu dashboard.',
+      'Luego vuelves a tu panel.',
     ],
-    setupTitle: 'Configuracion de entrega',
+    setupTitle: 'Configuración de entrega',
     setupSubtitle:
       'El email usa la bandeja de tu cuenta. Si activas WhatsApp, usa formato internacional para que la entrega funcione al instante.',
     channelLabel: 'Canal de entrega',
-    mondayTimeLabel: 'Hora de la proyeccion del lunes',
+    mondayTimeLabel: 'Hora de la proyección del lunes',
     mondayTimeHint: 'Programado para los lunes a las {time} en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffHint:
-      'WhatsApp esta desactivado para esta suscripcion. Activalo arriba si tambien quieres entrega inmediata al telefono.',
-    submitContinue: 'Continuar a la activacion',
+      'WhatsApp está desactivado para esta suscripción. Actívalo arriba si también quieres entrega inmediata al teléfono.',
+    submitContinue: 'Continuar a la activación',
     submitSave: 'Guardar ajustes de entrega',
     saveError: 'No pudimos guardar tus ajustes de entrega en este momento.',
   },
   activate: {
-    loading: 'Cargando tu paso de activacion...',
-    loadError: 'No pudimos cargar tu activacion en este momento.',
+    loading: 'Cargando tu paso de activación...',
+    loadError: 'No pudimos cargar tu activación en este momento.',
     unavailable: 'No es posible continuar ahora.',
-    badge: 'Puerta de activacion',
+    badge: 'Puerta de activación',
     title: 'Convierte tu mensaje semanal de Trimry en un ritual real de suerte.',
     subtitle:
-      'La gente se mueve distinto cuando siente que el timing la favorece. Detecta aperturas mas rapido, sostiene mejor energia y se mantiene optimista por mas tiempo. Trimry esta construido para activar ese momentum cada lunes.',
+      'La gente se mueve distinto cuando siente que el momento la favorece. Detecta aperturas más rápido, sostiene mejor la energía y se mantiene optimista por más tiempo. Trimry está construido para activar ese impulso cada lunes.',
     cards: [
-      'Tu preferencia de entrega ya esta guardada.',
+      'Tu preferencia de entrega ya está guardada.',
       'Stripe se abre en el siguiente paso con checkout alojado.',
       'Tu ritual semanal empieza apenas se confirma el cobro.',
     ],
     primaryButton: 'Activar en checkout seguro de Stripe',
     secondaryButton: 'Cambiar ajustes de entrega',
-    snapshotTitle: 'Tu resumen de activacion',
+    snapshotTitle: 'Tu resumen de activación',
     deliveryPreferenceLabel: 'Preferencia de entrega',
     emailDeliveryLabel: 'Entrega por email',
-    projectionTimingLabel: 'Horario de proyeccion',
+    projectionTimingLabel: 'Horario de proyección',
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Cobro',
     billingValue: '$2.99 USD / mes',
-    whyItWorksLabel: 'Por que funciona',
+    whyItWorksLabel: 'Por qué funciona',
     whyItWorksText:
-      'El ritual no es magia. El apalancamiento viene de la atencion, la confianza y una mejor accion cuando te sientes alineado.',
-    carouselBadge: 'Psicologia del momentum',
-    carouselTitle: 'La suerte se vuelve mas fuerte cuando tu mente empieza a moverse con ella.',
+      'El ritual no es magia. El apalancamiento viene de la atención, la confianza y una mejor acción cuando te sientes alineado.',
+    carouselBadge: 'Psicología del impulso',
+    carouselTitle: 'La suerte se vuelve más fuerte cuando tu mente empieza a moverse con ella.',
     carouselSubtitle:
-      'Todas estas voces apuntan al mismo mecanismo: la creencia cambia la postura, la postura cambia la accion y la accion cambia lo que se siente posible.',
+      'Todas estas voces apuntan al mismo mecanismo: la creencia cambia la postura, la postura cambia la acción y la acción cambia lo que se siente posible.',
   },
   checkout: {
-    badge: 'Paso hacia checkout',
-    title: 'Abriendo Stripe checkout...',
-    titleCancelled: 'Volver a Stripe checkout',
+    badge: 'Paso hacia el checkout',
+    title: 'Abriendo checkout de Stripe...',
+    titleCancelled: 'Volver al checkout de Stripe',
     subtitle:
-      'Tus ajustes de entrega ya estan guardados. Te estamos enviando a Stripe para terminar la suscripcion.',
+      'Tus ajustes de entrega ya están guardados. Te estamos enviando a Stripe para terminar la suscripción.',
     subtitleCancelled:
-      'Tu ultimo intento de checkout fue cancelado. Tus ajustes de entrega siguen guardados y podemos llevarte directo de vuelta a Stripe.',
-    openError: 'No pudimos abrir Stripe checkout en este momento.',
+      'Tu último intento de checkout fue cancelado. Tus ajustes de entrega siguen guardados y podemos llevarte directo de vuelta a Stripe.',
+    openError: 'No pudimos abrir el checkout de Stripe en este momento.',
     helper:
-      'Si no pasa nada, espera un segundo o recarga esta pagina. El checkout de Stripe se esta creando de forma segura desde la API.',
+      'Si no pasa nada, espera un segundo o recarga esta página. El checkout de Stripe se está creando de forma segura desde la API.',
   },
   dashboard: {
-    title: 'Tu dashboard de suscripcion',
+    title: 'Tu panel de suscripción',
     intro: 'Administra tus canales de entrega y tu plan semanal de Trimry.',
     loading: 'Cargando tu cuenta...',
-    noData: 'Ingresa para acceder a tu dashboard.',
+    noData: 'Ingresa para acceder a tu panel.',
     tabs: {
       account: 'Cuenta',
       predictionCalendar: 'Calendario',
+      sends: 'Envíos',
     },
     status: 'Estado',
-    nextMessage: 'Proximo mensaje del lunes',
-    subscribeButton: 'Activar suscripcion',
-    noSubscription: 'Todavia no tienes una suscripcion activa.',
+    nextMessage: 'Próximo mensaje del lunes',
+    subscribeButton: 'Activar suscripción',
+    noSubscription: 'Todavía no tienes una suscripción activa.',
     paymentPending: 'Pago pendiente',
     paymentIssue: 'Problema de pago',
     billingSuccess:
-      'Stripe reporto un checkout exitoso. Estamos sincronizando tu suscripcion ahora.',
+      'Stripe reportó un checkout exitoso. Estamos sincronizando tu suscripción ahora.',
     profileTitle: 'Perfil de cuenta',
     profileSubtitle:
-      'Actualiza tus datos de identidad y la zona horaria usada para tu proyeccion semanal.',
+      'Actualiza tus datos de identidad y la zona horaria usada para tu proyección semanal.',
     profileSave: 'Guardar perfil',
     profileTimeZoneHint: 'La entrega del lunes se calcula desde esta zona horaria IANA.',
     dangerTitle: 'Zona de riesgo',
     dangerSubtitle:
-      'Elimina tu cuenta y cierra sesion al instante. Conservamos un registro soft-deleted por auditoria, pero tu email de login se anonimiza y se detienen tus canales activos de entrega.',
+      'Elimina tu cuenta y cierra sesión al instante. Conservamos un registro marcado como eliminado para auditoría, pero tu email de acceso se anonimiza y se detienen tus canales activos de entrega.',
     deleteButton: 'Eliminar cuenta',
     deleteLoading: 'Eliminando...',
     deleteConfirm:
-      'Eliminar tu cuenta? Esto cerrara tu sesion de inmediato y detendra tus canales actuales de entrega.',
+      '¿Eliminar tu cuenta? Esto cerrará tu sesión de inmediato y detendrá tus canales actuales de entrega.',
     deleteError: 'No pudimos eliminar tu cuenta en este momento.',
     noSubscriptionSubtitle:
-      '$2.99 USD/mes · pronostico ritual semanal por email, WhatsApp o ambos',
-    mondayProjectionTime: 'Hora de la proyeccion del lunes',
-    sentOnMondaysAt: 'Se envia los lunes a las {time} en {zone}.',
+      '$2.99 USD/mes · pronóstico ritual semanal por email, WhatsApp o ambos',
+    mondayProjectionTime: 'Hora de la proyección del lunes',
+    sentOnMondaysAt: 'Se envía los lunes a las {time} en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffSetup:
-      'WhatsApp esta apagado. Puedes activarlo por email solamente o volver a habilitarlo cuando quieras.',
-    pendingTitle: 'Activa tu suscripcion Trimry',
+      'WhatsApp está apagado. Puedes dejar solo email o volver a habilitarlo cuando quieras.',
+    pendingTitle: 'Activa tu suscripción Trimry',
     pendingSubtitle:
-      'Tu preferencia de entrega ya esta guardada. Antes del pago, te llevamos por un paso corto de activacion que enmarca el ritual semanal y luego abre el checkout seguro de Stripe.',
+      'Tu preferencia de entrega ya está guardada. Antes del pago, te llevamos por un paso breve de activación que enmarca el ritual semanal y luego abre el checkout seguro de Stripe.',
     pendingDeliveryPreferenceLabel: 'Preferencia de entrega',
     pendingEmailDeliveryLabel: 'Entrega por email',
-    pendingProjectionTimingLabel: 'Horario de proyeccion',
+    pendingProjectionTimingLabel: 'Horario de proyección',
     pendingWhatsappLabel: 'Entrega por WhatsApp',
-    continueActivation: 'Continuar activacion',
+    continueActivation: 'Continuar activación',
     changeDeliverySettings: 'Cambiar ajustes de entrega',
     activePlanTitle: 'Entrega semanal de fortuna Trimry',
-    canceledPlanTitle: 'Tu suscripcion Trimry esta cancelada',
+    canceledPlanTitle: 'Tu suscripción Trimry está cancelada',
     canceledNote:
-      'Puedes reactivarla cuando quieras desde esta cuenta. Tus canales de entrega y horario del lunes siguen guardados abajo.',
+      'Puedes reactivarla cuando quieras desde esta cuenta. Tus canales de entrega y el horario del lunes siguen guardados abajo.',
     activeNote:
-      'Cancela cuando quieras desde este dashboard. Si vuelves despues, puedes reactivarla desde la misma cuenta.',
+      'Cancela cuando quieras desde este panel. Si vuelves después, puedes reactivarla desde la misma cuenta.',
     deliveryPreferenceLabel: 'Preferencia de entrega',
-    nextMessageIfReactivated: 'Si la reactivaras hoy, tu proximo mensaje seria',
-    weeklyProjectionTimeLabel: 'Hora semanal de proyeccion',
-    futureMessagesHint: 'Los futuros mensajes semanales seguiran esta hora en {zone}.',
+    nextMessageIfReactivated: 'Si la reactivaras hoy, tu próximo mensaje sería',
+    weeklyProjectionTimeLabel: 'Hora semanal de proyección',
+    futureMessagesHint: 'Los futuros mensajes semanales seguirán este horario en {zone}.',
     whatsappOffActive:
-      'WhatsApp esta desactivado para esta suscripcion. Activalo arriba si tambien quieres entrega al telefono.',
+      'WhatsApp está desactivado para esta suscripción. Actívalo arriba si también quieres entrega al teléfono.',
     saveDeliverySettings: 'Guardar ajustes de entrega',
-    reactivateButton: 'Reactivar suscripcion',
-    reactivateLoading: 'Preparando reactivacion...',
-    cancelButton: 'Cancelar suscripcion',
+    reactivateButton: 'Reactivar suscripción',
+    reactivateLoading: 'Preparando reactivación...',
+    cancelButton: 'Cancelar suscripción',
     cancelLoading: 'Cancelando...',
     manageBillingButton: 'Administrar cobro en Stripe',
     manageBillingLoading: 'Abriendo Stripe...',
     billingFootnoteCanceled:
-      'Puedes reactivar desde esta cuenta cuando quieras. Stripe Billing sigue disponible para invoices e historial de cobros.',
+      'Puedes reactivar desde esta cuenta cuando quieras. Stripe Billing sigue disponible para facturas e historial de cobros.',
     billingFootnoteActive:
-      'Los cambios de metodo de pago y el historial de invoices siguen viviendo en Stripe Billing, pero ahora tambien puedes cancelar directo desde este dashboard cuando quieras.',
+      'Los cambios de método de pago y el historial de facturas siguen disponibles en Stripe Billing, pero ahora también puedes cancelar directamente desde este panel cuando quieras.',
     cancelConfirm:
-      'Cancelar tu suscripcion ahora? Se detendra el cobro futuro de inmediato y podras reactivarla mas adelante desde esta cuenta.',
+      '¿Cancelar tu suscripción ahora? Se detendrá el cobro futuro de inmediato y podrás reactivarla más adelante desde esta cuenta.',
     cancelSuccess:
-      'Tu suscripcion fue cancelada. Tus ajustes de entrega siguen guardados aqui y puedes reactivarla cuando quieras.',
-    cancelError: 'No pudimos cancelar tu suscripcion en este momento.',
-    reactivateError: 'No pudimos reactivar tu suscripcion en este momento.',
+      'Tu suscripción fue cancelada. Tus ajustes de entrega siguen guardados aquí y puedes reactivarla cuando quieras.',
+    cancelError: 'No pudimos cancelar tu suscripción en este momento.',
+    reactivateError: 'No pudimos reactivar tu suscripción en este momento.',
     openBillingError: 'No pudimos abrir Stripe Billing en este momento.',
     saveDeliveryError: 'No pudimos guardar tus ajustes de entrega.',
     predictionCalendar: {
-      title: 'Calendario de prediccion admin',
+      title: 'Calendario admin de predicción',
       subtitle:
-        'Revisa el patron ritual del mes antes de que salga. Usa el mismo sistema Good, Bad y Rare que aparece en el home.',
+        'Revisa el patrón ritual del mes antes de que salga. Usa el mismo sistema Bueno, Malo y Raro que aparece en el inicio.',
       monthSummary: 'Resumen del mes',
-      daysInMonth: 'dias de este mes',
-      goodDays: 'Dias good',
-      badDays: 'Dias bad',
-      rareDays: 'Dias rare',
-      customDays: 'Dias custom',
-      customDaysText: 'dias ajustados manualmente en este mes',
-      selectedDay: 'Dia seleccionado',
+      daysInMonth: 'días de este mes',
+      goodDays: 'Días buenos',
+      badDays: 'Días malos',
+      rareDays: 'Días raros',
+      customDays: 'Días personalizados',
+      customDaysText: 'días ajustados manualmente en este mes',
+      selectedDay: 'Día seleccionado',
       jumpToCurrentMonth: 'Mes actual',
       today: 'Hoy',
-      goodTone: 'Good',
-      badTone: 'Bad',
-      rareTone: 'Rare',
+      goodTone: 'Bueno',
+      badTone: 'Malo',
+      rareTone: 'Raro',
       goodSummaryText:
-        'El impulso favorece cambios visibles y timing afortunado.',
+        'El impulso favorece cambios visibles y un momento afortunado.',
       badSummaryText:
-        'Aqui es mas probable que haya friccion, retraso o timing torcido.',
+        'Aquí es más probable que haya fricción, retraso o un momento torcido.',
       rareSummaryText:
-        'El patron inusual. Puede traer coincidencia, novedad o una apertura rara.',
+        'Un patrón inusual. Puede traer coincidencia, novedad o una apertura rara.',
       alignedActivities: 'Actividades alineadas',
       cautionActivities: 'Usar con cautela',
       haircut: 'Corte',
       shave: 'Afeitado',
-      nails: 'Unas',
-      release: 'Liberacion',
+      nails: 'Uñas',
+      release: 'Liberación',
       none: 'Ninguna',
-      summaryLabel: 'Prediccion',
-      notesLabel: 'Nota de prediccion',
-      notesHint: 'Esta nota aparece como guidance diaria para esa fecha.',
-      goodOption: 'Good',
-      badOption: 'Bad',
-      rareOption: 'Rare',
+      summaryLabel: 'Predicción',
+      notesLabel: 'Nota de predicción',
+      notesEnglishLabel: 'Nota (inglés)',
+      notesSpanishLabel: 'Nota (español)',
+      notesHint:
+        'Ambas notas son obligatorias y se usan según el idioma activo.',
+      goodOption: 'Bueno',
+      badOption: 'Malo',
+      rareOption: 'Raro',
       importFromImage: 'Rellenar mes con imagen',
-      importFromImageBusy: 'Generando desde imagen',
+      importFromImageBusy: 'Generando desde la imagen',
       importFromImageHint:
-        'Sube una imagen de referencia del calendario y ChatGPT generara notas nuevas Good, Bad y Rare para este mes.',
+        'Sube una imagen de referencia del calendario y ChatGPT generará notas nuevas de Bueno, Malo y Raro en inglés y español para este mes.',
       importFromImageConfirm:
-        'Reemplazar el mes visible con una nueva importacion basada en la imagen?',
+        '¿Reemplazar el mes visible con una nueva importación basada en la imagen?',
       importFromImageSuccess: 'Mes de predicciones importado desde imagen.',
       importFromImageError:
         'No pudimos generar un mes de predicciones desde esa imagen en este momento.',
-      saveDay: 'Guardar dia',
-      resetDay: 'Resetear override',
-      resetConfirm: 'Resetear este dia al patron generado de Trimry?',
-      overrideBadge: 'Override manual',
-      generatedBadge: 'Patron generado',
-      saveSuccess: 'Prediccion guardada.',
-      saveError: 'No pudimos guardar esta prediccion en este momento.',
+      saveDay: 'Guardar día',
+      resetDay: 'Restablecer ajuste manual',
+      resetConfirm: '¿Restablecer este día al patrón generado de Trimry?',
+      overrideBadge: 'Ajuste manual',
+      generatedBadge: 'Patrón generado',
+      saveSuccess: 'Predicción guardada.',
+      saveError: 'No pudimos guardar esta predicción en este momento.',
       loadError:
         'No pudimos cargar el calendario admin de predicciones en este momento.',
+    },
+    sendCampaigns: {
+      settingsTitle: 'Settings de proveedores',
+      settingsSubtitle:
+        'Guarda en MongoDB las credenciales de WhatsApp Cloud API y MailerSend. Los secretos quedan vacíos en el formulario salvo que quieras reemplazarlos.',
+      settingsWhatsappTitle: 'Settings de WhatsApp',
+      settingsMailersendTitle: 'Settings de MailerSend',
+      settingsStored: 'Guardado',
+      settingsMissing: 'Falta',
+      settingsSave: 'Guardar settings',
+      settingsSaved: 'Settings guardados.',
+      title: 'Envíos admin',
+      subtitle:
+        'Crea campañas de WhatsApp y mailing para suscriptores activos, prueba primero un envío de testing y luego lanza la campaña real desde el dashboard.',
+      templateEditorTitle: 'Configuración de envío',
+      templateEditorSubtitle:
+        'Para mailing puedes guardar el contenido aquí. Para WhatsApp no editas el template de Meta acá: solo guardas su nombre exacto en Meta, el idioma y los valores `key: content` que quieres reutilizar al probar y enviar.',
+      templateSave: 'Guardar configuración',
+      templateSaveBusy: 'Guardando configuración',
+      templateSaved: 'Configuración guardada.',
+      createNew: 'Nueva campaña',
+      currentDraft: 'Configuración actual',
+      nameLabel: 'Nombre interno de referencia',
+      whatsappReferenceNameLabel: 'Nombre interno de referencia (opcional)',
+      campaignNameLabel: 'Nombre de la campaña',
+      templateDescriptionLabel: 'Descripción del template',
+      channelLabel: 'Canal',
+      channelWhatsapp: 'WhatsApp',
+      channelEmail: 'Mailing',
+      audienceTitle: 'Audiencia',
+      audienceHint:
+        'Los envíos reales apuntan a suscriptores activos que hoy tienen este canal habilitado.',
+      eligibleRecipients: 'Destinatarios elegibles ahora: {count}',
+      variableValuesTitle: 'Datos de testing y variables',
+      variableValuesSubtitle:
+        'Cada variable del template aparece aquí. En WhatsApp, el content guardado en cada sección se carga primero y luego lo puedes ajustar antes de probar o enviar.',
+      noVariables: 'Este template no tiene variables dinámicas.',
+      testingLabel: 'Destino de testing',
+      testingPlaceholderWhatsapp: '+56912345678',
+      testingPlaceholderEmail: 'test@ejemplo.com',
+      testingHintWhatsapp:
+        'El testing de WhatsApp envía la plantilla configurada directo a un número.',
+      testingHintEmail:
+        'El testing de mailing envía el asunto y contenido actual a una sola casilla por MailerSend.',
+      saveDraft: 'Guardar borrador',
+      saveDraftBusy: 'Guardando borrador',
+      sendTest: 'Enviar testing',
+      sendTestBusy: 'Enviando testing',
+      sendCampaign: 'Enviar campaña',
+      sendCampaignBusy: 'Enviando campaña',
+      externalTemplateNameLabel: 'Nombre exacto del template en Meta (no ID)',
+      externalTemplateNameHint:
+        'WhatsApp Cloud API envía usando el nombre del template y el código de idioma, no un template ID.',
+      whatsappLanguageLabel: 'Idioma de plantilla',
+      headerTextLabel: 'Variables del header',
+      bodyTextLabel: 'Variables del body',
+      whatsappSectionHint: 'Guarda cada fila como key y contenido por defecto.',
+      whatsappButtonHint:
+        'Guarda la key del botón dinámico y el content de ejemplo que quieres usar en testing.',
+      buttonsTitle: 'Botones dinámicos',
+      addVariable: 'Agregar variable',
+      addButton: 'Agregar botón',
+      removeVariable: 'Eliminar variable',
+      removeButton: 'Eliminar botón',
+      variableKeyLabel: 'Key',
+      variableContentLabel: 'Content',
+      emailSubjectLabel: 'Asunto del email',
+      emailHtmlLabel: 'Cuerpo HTML',
+      emailTextLabel: 'Cuerpo texto plano',
+      historyTitle: 'Historial de campañas',
+      historySubtitle:
+        'Cada campaña guardada o enviada queda aquí para revisar métricas y los valores variables usados en el envío.',
+      emptyState: 'Aún no hay campañas.',
+      metricsRecipients: 'Destinatarios',
+      metricsAccepted: 'Aceptados',
+      metricsFailed: 'Fallidos',
+      sentAt: 'Enviada el',
+      updatedAt: 'Actualizada el',
+      lastTestedAt: 'Último test',
+      lastTestRecipient: 'Destino de test',
+      notSentYet: 'Todavía no enviada',
+      neverTested: 'Nunca probada',
+      draftStatus: 'Borrador',
+      sentStatus: 'Enviada',
+      partiallySentStatus: 'Envío parcial',
+      failedStatus: 'Fallida',
+      loadError: 'No pudimos cargar el espacio admin de envíos en este momento.',
+      saveSuccess: 'Borrador guardado.',
+      testSuccess: 'El envío de testing fue procesado.',
+      sendSuccess: 'La campaña fue enviada correctamente.',
+      sendPartial: 'La campaña terminó con fallas parciales de entrega.',
+      sendFailed: 'El envío de la campaña falló.',
     },
   },
   statuses: {
@@ -1256,26 +1533,26 @@ const spanishMessages: MessageSection = {
     canceled: 'Cancelada',
   },
   legal: {
-    terms: 'Terminos del servicio',
-    privacy: 'Politica de privacidad',
-    disclaimer: 'Disclaimer ritual',
+    terms: 'Términos del servicio',
+    privacy: 'Política de privacidad',
+    disclaimer: 'Descargo ritual',
     englishNotice:
-      'El texto legal maestro se mantiene en ingles. Esta traduccion se ofrece por conveniencia.',
+      'El texto legal maestro se mantiene en inglés. Esta traducción se ofrece por conveniencia.',
     termsSections: [
       {
-        title: '1. Descripcion del servicio',
+        title: '1. Descripción del servicio',
         body:
-          'Trimry entrega guidance semanal sobre timing para cortes de pelo, afeitado, corte de unas y rutinas simbolicas de liberacion inspiradas en tradiciones del calendario tibetano. La entrega esta disponible por email, WhatsApp o ambos.',
+          'Trimry entrega orientación semanal sobre el momento ideal para cortes de pelo, afeitado, corte de uñas y rutinas simbólicas de liberación inspiradas en tradiciones del calendario tibetano. La entrega está disponible por email, WhatsApp o ambos.',
       },
       {
-        title: '2. Suscripcion y cobro',
+        title: '2. Suscripción y cobro',
         body:
-          'El plan Trimry se cobra a USD 2.99 por mes. Incluye un pronostico ritual entregado cada lunes por el canal que elijas: email, WhatsApp o ambos. Puedes cancelar tu suscripcion en cualquier momento desde tu dashboard. Si decides volver mas adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, metodos de pago, invoices e historial de facturacion siguen disponibles a traves de las herramientas de Stripe enlazadas desde tu dashboard.',
+          'El plan Trimry se cobra a USD 2.99 por mes. Incluye un pronóstico ritual entregado cada lunes por el canal que elijas: email, WhatsApp o ambos. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
       },
       {
         title: '3. Seguridad de la cuenta',
         body:
-          'Debes mantener tus credenciales de acceso confidenciales. Eres responsable de todas las acciones realizadas a traves de tu cuenta.',
+          'Debes mantener tus credenciales de acceso confidenciales. Eres responsable de todas las acciones realizadas a través de tu cuenta.',
       },
       {
         title: '4. Uso aceptable',
@@ -1283,83 +1560,83 @@ const spanishMessages: MessageSection = {
           'Aceptas no hacer mal uso del servicio, no intentar accesos no autorizados y no usar Trimry para actividades ilegales.',
       },
       {
-        title: '5. Sin asesoria profesional',
+        title: '5. Sin asesoría profesional',
         body:
-          'Trimry entrega contenido cultural y ritual de timing solamente. No constituye asesoria medica, legal ni financiera.',
+          'Trimry entrega contenido cultural y ritual únicamente. No constituye asesoría médica, legal ni financiera.',
       },
       {
-        title: '6. Informacion de la compania',
+        title: '6. Información de la compañía',
         body:
-          'Trimry Limited, numero de compania 752517. Oficina registrada: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Oficina operativa: Carrer Emili Darder 1, Bealaric Islands, Mallorca, 07181. Contacto: support@trimry.com.',
+          'Trimry Limited, número de compañía 752517. Oficina registrada: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Oficina operativa: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181. Contacto: support@trimry.com.',
       },
     ],
     privacySections: [
       {
         title: '1. Datos que recopilamos',
         body:
-          'Recopilamos tu nombre, correo electronico, hash cifrado de contrasena, preferencia de idioma, preferencia de entrega y numero de WhatsApp cuando ese canal esta habilitado en tu suscripcion.',
+          'Recopilamos tu nombre, correo electrónico, hash cifrado de contraseña, preferencia de idioma, preferencia de entrega y número de WhatsApp cuando ese canal está habilitado en tu suscripción.',
       },
       {
-        title: '2. Como usamos los datos',
+        title: '2. Cómo usamos los datos',
         body:
-          'Los datos se usan para autenticar tu cuenta, administrar el estado de la suscripcion, entregar mensajes semanales y operar soporte al cliente.',
+          'Los datos se usan para autenticar tu cuenta, administrar el estado de la suscripción, entregar mensajes semanales y operar soporte al cliente.',
       },
       {
         title: '3. Almacenamiento de datos',
         body:
-          'Los datos de la cuenta se almacenan en infraestructura MongoDB configurada por Trimry. Las cookies de sesion son HTTP-only y estan firmadas por seguridad.',
+          'Los datos de la cuenta se almacenan en infraestructura MongoDB configurada por Trimry. Las cookies de sesión son HTTP-only y están firmadas por seguridad.',
       },
       {
-        title: '4. Comparticion de datos',
+        title: '4. Uso compartido de datos',
         body:
-          'No vendemos tus datos personales. Solo compartimos informacion con proveedores necesarios para operar la entrega y la infraestructura.',
+          'No vendemos tus datos personales. Solo compartimos información con proveedores necesarios para operar la entrega y la infraestructura.',
       },
       {
         title: '5. Derechos del usuario',
         body:
-          'Puedes solicitar acceso a tu cuenta, correcciones o eliminacion escribiendo a support@trimry.com.',
+          'Puedes solicitar acceso a tu cuenta, correcciones o eliminación escribiendo a support@trimry.com.',
       },
       {
-        title: '6. Contacto de la compania',
+        title: '6. Contacto de la compañía',
         body:
-          'Trimry Limited, numero de compania 752517. Oficina registrada: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Oficina operativa: Carrer Emili Darder 1, Bealaric Islands, Mallorca, 07181.',
+          'Trimry Limited, número de compañía 752517. Oficina registrada: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Oficina operativa: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181.',
       },
     ],
     disclaimerSections: [
       {
         title: 'Contenido cultural',
         body:
-          'La guidance de timing de Trimry se basa en interpretacion cultural y tradicion ritual. Esta pensada para reflexion personal y planificacion de rutinas.',
+          'La orientación de Trimry se basa en interpretación cultural y tradición ritual. Está pensada para la reflexión personal y la planificación de rutinas.',
       },
       {
-        title: 'Sin garantia de resultados',
+        title: 'Sin garantía de resultados',
         body:
-          'Trimry no garantiza suerte, resultados financieros, resultados de salud ni ningun resultado especifico por seguir la guidance.',
+          'Trimry no garantiza suerte, resultados financieros, resultados de salud ni ningún resultado específico por seguir esta orientación.',
       },
       {
         title: 'Responsabilidad personal',
         body:
-          'Sigues siendo plenamente responsable de tus decisiones de grooming, salud y cualquier accion tomada a partir del contenido del servicio.',
+          'Sigues siendo plenamente responsable de tus decisiones de grooming, salud y cualquier acción tomada a partir del contenido del servicio.',
       },
     ],
   },
   notifications: {
     success: 'Guardado correctamente.',
-    error: 'Algo salio mal. Intentalo de nuevo.',
+    error: 'Algo salió mal. Inténtalo de nuevo.',
   },
   carousel: {
-    proofLabel: 'Prueba rotativa de mindset',
-    whyTitle: 'Por que importa',
+    proofLabel: 'Prueba rotativa de mentalidad',
+    whyTitle: 'Por qué importa',
     whyText:
-      'Cuando una persona siente que el timing la favorece, carga mas confianza, detecta mas aperturas y se mueve con menos duda.',
+      'Cuando una persona siente que el momento la favorece, carga más confianza, detecta más aperturas y se mueve con menos duda.',
     effectTitle: 'Efecto Trimry',
     effectText:
-      'El mensaje semanal esta disenado para agudizar la atencion, reforzar el optimismo y convertir el ritual en un momentum que realmente se siente.',
+      'El mensaje semanal está diseñado para agudizar la atención, reforzar el optimismo y convertir el ritual en un impulso que realmente se siente.',
     sequenceLabel: 'Secuencia de citas',
   },
   notFound: {
-    title: 'Pagina no encontrada',
-    description: 'La pagina que solicitaste no esta disponible.',
+    title: 'Página no encontrada',
+    description: 'La página que solicitaste no está disponible.',
     cta: 'Volver al inicio',
   },
 }

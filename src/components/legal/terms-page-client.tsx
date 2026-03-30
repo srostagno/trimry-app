@@ -6,14 +6,14 @@ export function TermsPageClient() {
   const { messages } = useLanguage()
 
   return (
-    <section className="mx-auto max-w-4xl rounded-[2rem] border border-amber-100/20 bg-black/30 p-8 sm:p-10">
-      <h1 className="text-3xl text-amber-50 sm:text-4xl">{messages.legal.terms}</h1>
-      <p className="mt-3 text-sm text-amber-100/75">{messages.legal.englishNotice}</p>
+    <section className="cosmic-shell mx-auto max-w-4xl rounded-[2rem] p-8 sm:p-10">
+      <h1 className="cosmic-shell-title text-3xl sm:text-4xl">{messages.legal.terms}</h1>
+      <p className="cosmic-shell-meta mt-3 text-sm">{messages.legal.englishNotice}</p>
 
-      <div className="mt-8 space-y-7 text-amber-100/90">
+      <div className="cosmic-shell-copy mt-8 space-y-7">
         {messages.legal.termsSections.map((section) => (
           <section key={section.title}>
-            <h2 className="text-2xl text-amber-50">{section.title}</h2>
+            <h2 className="text-2xl text-slate-50">{section.title}</h2>
             <p className="mt-2">{section.body}</p>
           </section>
         ))}

@@ -64,10 +64,8 @@ export function SiteShell({
 
   const desktopNavLinkClass = (active: boolean) =>
     clsx(
-      'rounded-full border px-4 py-2.5 text-sm font-semibold transition',
-      active
-        ? 'border-cyan-200/45 bg-cyan-300/20 text-cyan-50'
-        : 'border-cyan-200/18 bg-slate-800/26 text-slate-100/88 hover:border-cyan-200/42 hover:bg-cyan-300/12',
+      'rounded-full px-4 py-2.5 text-sm font-semibold',
+      active ? 'cosmic-tab-active-alt' : 'cosmic-tab',
     )
 
   return (
@@ -81,7 +79,7 @@ export function SiteShell({
 
       <Disclosure
         as="header"
-        className="relative z-20 border-b border-cyan-200/20 bg-slate-950/45 backdrop-blur-xl"
+        className="relative z-20 border-b border-[rgba(134,190,255,0.2)] bg-[linear-gradient(180deg,rgba(5,11,28,0.82),rgba(8,18,45,0.62))] backdrop-blur-xl"
       >
         {({ open }) => (
           <>
@@ -110,7 +108,7 @@ export function SiteShell({
                       href="/dashboard"
                       aria-label={messages.nav.profile}
                       title={viewer?.fullName || viewer?.email || messages.nav.profile}
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-amber-100/28 bg-[linear-gradient(135deg,rgba(247,221,145,0.22),rgba(87,242,218,0.18),rgba(106,184,255,0.2))] text-sm font-black uppercase tracking-[0.12em] text-amber-50 shadow-[0_10px_28px_rgba(5,18,38,0.35)] transition hover:scale-[1.03] hover:border-amber-100/44"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(247,223,161,0.3)] bg-[linear-gradient(135deg,rgba(241,191,85,0.2),rgba(121,242,255,0.16),rgba(120,88,255,0.24))] text-sm font-black uppercase tracking-[0.12em] text-slate-50 shadow-[0_10px_28px_rgba(5,18,38,0.35)] transition hover:scale-[1.03] hover:border-[rgba(247,223,161,0.44)]"
                     >
                       {avatarLabel}
                     </Link>
@@ -118,7 +116,7 @@ export function SiteShell({
                     <>
                       <Link
                         href="/account/login"
-                        className="rounded-full border border-slate-200/18 bg-slate-800/28 px-4 py-2.5 text-sm font-semibold transition hover:bg-slate-700/38"
+                        className="cosmic-outline-button rounded-full px-4 py-2.5 text-sm font-semibold"
                       >
                         {messages.nav.login}
                       </Link>
@@ -138,13 +136,13 @@ export function SiteShell({
                       href="/dashboard"
                       aria-label={messages.nav.profile}
                       title={viewer?.fullName || viewer?.email || messages.nav.profile}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-100/28 bg-[linear-gradient(135deg,rgba(247,221,145,0.22),rgba(87,242,218,0.18),rgba(106,184,255,0.2))] text-xs font-black uppercase tracking-[0.12em] text-amber-50"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(247,223,161,0.28)] bg-[linear-gradient(135deg,rgba(241,191,85,0.18),rgba(121,242,255,0.16),rgba(120,88,255,0.2))] text-xs font-black uppercase tracking-[0.12em] text-slate-50"
                     >
                       {avatarLabel}
                     </Link>
                   ) : null}
 
-                  <Disclosure.Button className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-cyan-200/18 bg-slate-900/34 text-cyan-50 transition hover:border-cyan-200/36 hover:bg-cyan-300/10">
+                  <Disclosure.Button className="cosmic-outline-button inline-flex h-11 w-11 items-center justify-center rounded-full p-0 text-cyan-50">
                     <span className="sr-only">Toggle menu</span>
                     <MenuIcon open={open} />
                   </Disclosure.Button>
@@ -152,7 +150,7 @@ export function SiteShell({
               </div>
             </div>
 
-            <Disclosure.Panel className="border-t border-cyan-200/12 bg-slate-950/78 px-4 pb-5 pt-3 backdrop-blur-xl lg:hidden">
+            <Disclosure.Panel className="border-t border-[rgba(134,190,255,0.12)] bg-[linear-gradient(180deg,rgba(5,11,28,0.9),rgba(12,17,47,0.86))] px-4 pb-5 pt-3 backdrop-blur-xl lg:hidden">
               <div className="mx-auto max-w-7xl space-y-5">
                 <nav className="grid gap-2">
                   {baseLinks.map((link) => (
@@ -161,10 +159,10 @@ export function SiteShell({
                       as={Link}
                       href={link.href}
                       className={clsx(
-                        'rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition',
+                        'rounded-2xl px-4 py-3 text-left text-sm font-semibold',
                         link.active
-                          ? 'border-cyan-200/38 bg-cyan-300/18 text-cyan-50'
-                          : 'border-cyan-200/14 bg-slate-900/30 text-slate-100/88 hover:border-cyan-200/28 hover:bg-cyan-300/10',
+                          ? 'cosmic-tab-active-alt'
+                          : 'cosmic-tab',
                       )}
                     >
                       {link.label}
@@ -172,7 +170,7 @@ export function SiteShell({
                   ))}
                 </nav>
 
-                <div className="rounded-[1.5rem] border border-cyan-200/14 bg-slate-900/26 p-4">
+                <div className="cosmic-info-box rounded-[1.5rem] p-4">
                   <LanguageSwitcher fullWidth />
                 </div>
 
@@ -180,17 +178,17 @@ export function SiteShell({
                   <Disclosure.Button
                     as={Link}
                     href="/dashboard"
-                    className="flex items-center justify-between rounded-[1.5rem] border border-amber-100/18 bg-slate-900/28 px-4 py-3 text-left transition hover:border-amber-100/32 hover:bg-slate-900/38"
+                    className="cosmic-info-box flex items-center justify-between rounded-[1.5rem] px-4 py-3 text-left transition hover:border-[rgba(247,223,161,0.28)]"
                   >
                     <div>
-                      <p className="text-sm font-semibold text-amber-50">
+                      <p className="text-sm font-semibold text-slate-50">
                         {viewer?.fullName || viewer?.email}
                       </p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-amber-100/62">
+                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[rgba(247,223,161,0.72)]">
                         {messages.nav.profile}
                       </p>
                     </div>
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-100/28 bg-[linear-gradient(135deg,rgba(247,221,145,0.22),rgba(87,242,218,0.18),rgba(106,184,255,0.2))] text-xs font-black uppercase tracking-[0.12em] text-amber-50">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(247,223,161,0.28)] bg-[linear-gradient(135deg,rgba(241,191,85,0.18),rgba(121,242,255,0.16),rgba(120,88,255,0.2))] text-xs font-black uppercase tracking-[0.12em] text-slate-50">
                       {avatarLabel}
                     </span>
                   </Disclosure.Button>
@@ -199,7 +197,7 @@ export function SiteShell({
                     <Disclosure.Button
                       as={Link}
                       href="/account/login"
-                      className="rounded-2xl border border-slate-200/14 bg-slate-900/28 px-4 py-3 text-center text-sm font-semibold transition hover:bg-slate-800/38"
+                      className="cosmic-outline-button rounded-2xl px-4 py-3 text-center text-sm font-semibold"
                     >
                       {messages.nav.login}
                     </Disclosure.Button>
@@ -220,9 +218,9 @@ export function SiteShell({
 
       <main className="relative z-10 mx-auto max-w-7xl px-6 py-10 lg:px-8">{children}</main>
 
-      <footer className="relative z-10 border-t border-cyan-200/18 bg-slate-950/45 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 text-sm text-slate-100/85 lg:px-8">
-          <p className="font-semibold text-cyan-100/95">
+      <footer className="relative z-10 border-t border-[rgba(134,190,255,0.18)] bg-[linear-gradient(180deg,rgba(4,10,27,0.78),rgba(8,15,38,0.9))] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 text-sm text-[color:var(--cosmic-copy)] lg:px-8">
+          <p className="font-semibold text-slate-50">
             © {new Date().getFullYear()} {COMPANY.legalName}. {messages.footer.rightsReserved}
           </p>
           <p>
@@ -234,14 +232,14 @@ export function SiteShell({
             {messages.footer.contact}:{' '}
             <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a>
           </p>
-          <div className="flex flex-wrap gap-4 text-cyan-100/90">
-            <Link href="/legal/terms" className="underline decoration-cyan-300/70">
+          <div className="flex flex-wrap gap-4">
+            <Link href="/legal/terms" className="cosmic-link">
               {messages.legal.terms}
             </Link>
-            <Link href="/legal/privacy" className="underline decoration-cyan-300/70">
+            <Link href="/legal/privacy" className="cosmic-link">
               {messages.legal.privacy}
             </Link>
-            <Link href="/legal/disclaimer" className="underline decoration-cyan-300/70">
+            <Link href="/legal/disclaimer" className="cosmic-link">
               {messages.legal.disclaimer}
             </Link>
           </div>

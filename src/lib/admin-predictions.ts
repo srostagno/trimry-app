@@ -4,12 +4,17 @@ import type { FortuneActivity } from '@/lib/fortune'
 export type PredictionTone = 'good' | 'bad' | 'rare'
 
 export type PredictionActivities = Record<FortuneActivity, PredictionTone>
+export type PredictionNotesByLanguage = {
+  en: string
+  es: string
+}
 
 export type AdminPredictionDay = {
   date: string
   weekday: string
   summary: PredictionTone
   notes: string
+  notesByLanguage: PredictionNotesByLanguage
   activities: PredictionActivities
   dayOfMonth: number
   inCurrentMonth: boolean
@@ -46,7 +51,8 @@ export async function saveAdminPredictionDay(
   date: string,
   payload: {
     summary: PredictionTone
-    notes: string
+    notes?: string
+    notesByLanguage: PredictionNotesByLanguage
     activities: PredictionActivities
   },
   fallbackMessage: string,

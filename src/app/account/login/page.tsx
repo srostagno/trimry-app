@@ -72,12 +72,12 @@ export default function LoginPage() {
   }
 
   return (
-    <section className="mx-auto max-w-xl rounded-[2rem] border border-amber-100/20 bg-black/30 p-8">
-      <h1 className="text-3xl text-amber-50">{messages.auth.loginTitle}</h1>
-      <p className="mt-2 text-amber-100/85">{messages.auth.loginSubtitle}</p>
+    <section className="cosmic-shell mx-auto max-w-xl rounded-[2rem] p-8">
+      <h1 className="cosmic-shell-title text-3xl">{messages.auth.loginTitle}</h1>
+      <p className="cosmic-shell-copy mt-2">{messages.auth.loginSubtitle}</p>
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-        <label className="block text-sm font-semibold text-amber-100/90">
+        <label className="cosmic-field-label block text-sm font-semibold">
           {messages.auth.emailLabel}
           <input
             type="email"
@@ -88,7 +88,7 @@ export default function LoginPage() {
           />
         </label>
 
-        <label className="block text-sm font-semibold text-amber-100/90">
+        <label className="cosmic-field-label block text-sm font-semibold">
           {messages.auth.passwordLabel}
           <input
             type="password"
@@ -100,7 +100,7 @@ export default function LoginPage() {
         </label>
 
         {error ? (
-          <p className="rounded-xl border border-rose-300/60 bg-rose-900/40 px-4 py-3 text-sm text-rose-100">
+          <p className="cosmic-error-box rounded-xl px-4 py-3 text-sm">
             {error}
           </p>
         ) : null}
@@ -108,15 +108,15 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-full bg-amber-200 px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-amber-950 disabled:opacity-70"
+          className="cosmic-button-primary w-full rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] disabled:opacity-70"
         >
           {loading ? messages.common.loading : messages.auth.loginButton}
         </button>
       </form>
 
-      <p className="mt-5 text-sm text-amber-100/80">
+      <p className="cosmic-shell-meta mt-5 text-sm">
         {messages.auth.needAccount}{' '}
-        <Link href="/account/register" className="font-bold text-amber-200 underline">
+        <Link href="/account/register" className="cosmic-link font-bold">
           {messages.auth.registerButton}
         </Link>
       </p>

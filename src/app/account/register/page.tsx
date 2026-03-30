@@ -77,12 +77,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <section className="mx-auto max-w-xl rounded-[2rem] border border-amber-100/20 bg-black/30 p-8">
-      <h1 className="text-3xl text-amber-50">{messages.auth.registerTitle}</h1>
-      <p className="mt-2 text-amber-100/85">{messages.auth.registerSubtitle}</p>
+    <section className="cosmic-shell mx-auto max-w-xl rounded-[2rem] p-8">
+      <h1 className="cosmic-shell-title text-3xl">{messages.auth.registerTitle}</h1>
+      <p className="cosmic-shell-copy mt-2">{messages.auth.registerSubtitle}</p>
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-        <label className="block text-sm font-semibold text-amber-100/90">
+        <label className="cosmic-field-label block text-sm font-semibold">
           {messages.auth.firstNameLabel}
           <input
             type="text"
@@ -94,7 +94,7 @@ export default function RegisterPage() {
           />
         </label>
 
-        <label className="block text-sm font-semibold text-amber-100/90">
+        <label className="cosmic-field-label block text-sm font-semibold">
           {messages.auth.lastNameLabel}
           <input
             type="text"
@@ -106,7 +106,7 @@ export default function RegisterPage() {
           />
         </label>
 
-        <label className="block text-sm font-semibold text-amber-100/90">
+        <label className="cosmic-field-label block text-sm font-semibold">
           {messages.auth.birthDateLabel}
           <input
             type="date"
@@ -116,19 +116,19 @@ export default function RegisterPage() {
           />
         </label>
 
-        <label className="block text-sm font-semibold text-amber-100/90">
+        <label className="cosmic-field-label block text-sm font-semibold">
           {messages.auth.timeZoneLabel}
           <TimeZoneSelect
             value={timeZone}
             onChange={setTimeZone}
             className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
           />
-          <span className="mt-2 block text-xs text-amber-100/70">
+          <span className="cosmic-shell-meta mt-2 block text-xs">
             {messages.auth.timeZoneHint}
           </span>
         </label>
 
-        <label className="block text-sm font-semibold text-amber-100/90">
+        <label className="cosmic-field-label block text-sm font-semibold">
           {messages.auth.emailLabel}
           <input
             type="email"
@@ -139,7 +139,7 @@ export default function RegisterPage() {
           />
         </label>
 
-        <label className="block text-sm font-semibold text-amber-100/90">
+        <label className="cosmic-field-label block text-sm font-semibold">
           {messages.auth.passwordLabel}
           <input
             type="password"
@@ -149,13 +149,13 @@ export default function RegisterPage() {
             minLength={10}
             className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
           />
-          <span className="mt-2 block text-xs text-amber-100/70">
+          <span className="cosmic-shell-meta mt-2 block text-xs">
             {messages.auth.passwordHint}
           </span>
         </label>
 
         {error ? (
-          <p className="rounded-xl border border-rose-300/60 bg-rose-900/40 px-4 py-3 text-sm text-rose-100">
+          <p className="cosmic-error-box rounded-xl px-4 py-3 text-sm">
             {error}
           </p>
         ) : null}
@@ -163,15 +163,15 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-full bg-amber-200 px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-amber-950 disabled:opacity-70"
+          className="cosmic-button-primary w-full rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] disabled:opacity-70"
         >
           {loading ? messages.common.loading : messages.auth.registerButton}
         </button>
       </form>
 
-      <p className="mt-5 text-sm text-amber-100/80">
+      <p className="cosmic-shell-meta mt-5 text-sm">
         {messages.auth.alreadyHaveAccount}{' '}
-        <Link href="/account/login" className="font-bold text-amber-200 underline">
+        <Link href="/account/login" className="cosmic-link font-bold">
           {messages.auth.loginButton}
         </Link>
       </p>

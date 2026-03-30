@@ -45,8 +45,8 @@ export function DeliveryPreferenceSelector({
             key={option.value}
             className={`cursor-pointer rounded-2xl border px-4 py-4 transition ${
               active
-                ? 'border-cyan-200/45 bg-cyan-300/14 text-slate-50'
-                : 'border-cyan-200/16 bg-slate-950/32 text-slate-100/78'
+                ? 'border-[rgba(255,255,255,0.36)] bg-[linear-gradient(140deg,rgba(16,40,88,0.68),rgba(41,31,102,0.52))] text-slate-50 shadow-[0_16px_36px_rgba(17,38,84,0.24)]'
+                : 'border-[rgba(128,178,255,0.18)] bg-[linear-gradient(145deg,rgba(7,15,36,0.72),rgba(16,18,54,0.42))] text-slate-100/78 hover:border-[rgba(157,212,255,0.28)]'
             }`}
           >
             <input
@@ -62,13 +62,13 @@ export function DeliveryPreferenceSelector({
                 <p className="text-sm font-black uppercase tracking-[0.16em]">
                   {option.title}
                 </p>
-                <p className="mt-2 text-sm text-slate-100/76">{option.description}</p>
+                <p className="mt-2 text-sm text-[color:var(--cosmic-copy)]">{option.description}</p>
               </div>
               <span
                 className={`mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full border ${
                   active
-                    ? 'border-cyan-100 bg-cyan-100 text-slate-950'
-                    : 'border-cyan-100/35 text-transparent'
+                    ? 'border-white/50 bg-[linear-gradient(135deg,#f6fff5,#9cf6ff_42%,#8175ff)] text-slate-950'
+                    : 'border-[rgba(160,220,255,0.35)] text-transparent'
                 }`}
               >
                 •

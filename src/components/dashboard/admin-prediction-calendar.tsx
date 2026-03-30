@@ -12,6 +12,7 @@ import {
   type AdminPredictionDay,
   type AdminPredictionMonth,
   type PredictionActivities,
+  type PredictionNotesByLanguage,
   type PredictionTone,
 } from '@/lib/admin-predictions'
 
@@ -60,6 +61,24 @@ function buildUniformActivities(summary: PredictionTone): PredictionActivities {
     nails: summary,
     release: summary,
   }
+}
+
+function normalizeNotesByLanguage(
+  notesByLanguage: Partial<PredictionNotesByLanguage> | null | undefined,
+  fallback = '',
+): PredictionNotesByLanguage {
+  const fallbackNote = fallback.trim()
+  const english = notesByLanguage?.en?.trim() ?? ''
+  const spanish = notesByLanguage?.es?.trim() ?? ''
+
+  return {
+    en: english || fallbackNote || spanish,
+    es: spanish || fallbackNote || english,
+  }
+}
+
+function readDayNotesByLanguage(day: Pick<AdminPredictionDay, 'notes' | 'notesByLanguage'>) {
+  return normalizeNotesByLanguage(day.notesByLanguage, day.notes)
 }
 
 function truncate(text: string, maxLength: number) {
@@ -227,7 +246,10 @@ export function AdminPredictionCalendar() {
     toDayKey(normalizeUtcDate(new Date()).toISOString()),
   )
   const [summary, setSummary] = useState<PredictionTone>('good')
-  const [notes, setNotes] = useState('')
+  const [notesByLanguage, setNotesByLanguage] = useState<PredictionNotesByLanguage>({
+    en: '',
+    es: '',
+  })
   const [saveBusy, setSaveBusy] = useState(false)
   const [importBusy, setImportBusy] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
@@ -316,9 +338,13 @@ export function AdminPredictionCalendar() {
     }
 
     setSummary(selectedDay.summary)
-    setNotes(selectedDay.notes)
+    setNotesByLanguage(readDayNotesByLanguage(selectedDay))
     setSaveError('')
   }, [selectedDay])
+
+  const noteLanguageFromUi = language === 'es' ? 'es' : 'en'
+  const notesReadyToSave =
+    notesByLanguage.en.trim().length > 0 && notesByLanguage.es.trim().length > 0
 
   const selectedDayLabelFormatter = useMemo(
     () =>
@@ -352,7 +378,7 @@ export function AdminPredictionCalendar() {
     if (nextSelectedDay) {
       setSelectedDateKey(toDayKey(nextSelectedDay.date))
       setSummary(nextSelectedDay.summary)
-      setNotes(nextSelectedDay.notes)
+      setNotesByLanguage(readDayNotesByLanguage(nextSelectedDay))
     }
   }
 
@@ -363,7 +389,7 @@ export function AdminPredictionCalendar() {
 
     setSelectedDateKey(toDayKey(day.date))
     setSummary(day.summary)
-    setNotes(day.notes)
+    setNotesByLanguage(readDayNotesByLanguage(day))
     setSaveMessage('')
     setSaveError('')
     setEditorOpen(true)
@@ -374,7 +400,7 @@ export function AdminPredictionCalendar() {
     setSaveError('')
     if (selectedDay) {
       setSummary(selectedDay.summary)
-      setNotes(selectedDay.notes)
+      setNotesByLanguage(readDayNotesByLanguage(selectedDay))
     }
   }
 
@@ -454,11 +480,14 @@ export function AdminPredictionCalendar() {
     setSaveMessage('')
 
     try {
+      const normalizedNotesByLanguage = normalizeNotesByLanguage(notesByLanguage)
+
       await saveAdminPredictionDay(
         toDayKey(selectedDay.date),
         {
           summary,
-          notes: notes.trim(),
+          notes: normalizedNotesByLanguage[noteLanguageFromUi],
+          notesByLanguage: normalizedNotesByLanguage,
           activities: buildUniformActivities(summary),
         },
         messages.dashboard.predictionCalendar.saveError,
@@ -515,7 +544,7 @@ export function AdminPredictionCalendar() {
 
   if (loading && !calendar) {
     return (
-      <section className="rounded-[2rem] border border-cyan-200/18 bg-black/30 p-8 text-amber-100">
+      <section className="cosmic-shell cosmic-shell-copy rounded-[2rem] p-8">
         {messages.common.loading}
       </section>
     )
@@ -523,8 +552,8 @@ export function AdminPredictionCalendar() {
 
   if (!calendar || !selectedDay) {
     return (
-      <section className="rounded-[2rem] border border-cyan-200/18 bg-black/30 p-8">
-        <p className="text-rose-100">
+      <section className="cosmic-shell rounded-[2rem] p-8">
+        <p className="cosmic-error-box rounded-2xl px-4 py-3 text-sm">
           {error || messages.dashboard.predictionCalendar.loadError}
         </p>
       </section>
@@ -554,10 +583,10 @@ export function AdminPredictionCalendar() {
               <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-100/70">
                 {messages.dashboard.predictionCalendar.title}
               </p>
-              <h2 className="mt-3 text-3xl text-amber-50 sm:text-4xl">
+              <h2 className="cosmic-shell-title mt-3 text-3xl sm:text-4xl">
                 {calendar.monthLabel}
               </h2>
-              <p className="mt-3 max-w-2xl text-amber-100/82">
+              <p className="cosmic-shell-copy mt-3 max-w-2xl">
                 {messages.dashboard.predictionCalendar.subtitle}
               </p>
             </div>
@@ -577,7 +606,7 @@ export function AdminPredictionCalendar() {
                 type="button"
                 onClick={() => goToMonth(-1)}
                 disabled={importBusy}
-                className="cosmic-button-secondary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-amber-50 transition hover:border-amber-100/45 disabled:opacity-50"
+                className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.common.previous}
               </button>
@@ -585,7 +614,7 @@ export function AdminPredictionCalendar() {
                 type="button"
                 onClick={goToCurrentMonth}
                 disabled={importBusy}
-                className="rounded-full border border-cyan-200/28 bg-cyan-400/10 px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-50 transition hover:border-cyan-100/45 disabled:opacity-50"
+                className="cosmic-tab-active rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.dashboard.predictionCalendar.jumpToCurrentMonth}
               </button>
@@ -593,7 +622,7 @@ export function AdminPredictionCalendar() {
                 type="button"
                 onClick={() => goToMonth(1)}
                 disabled={importBusy}
-                className="cosmic-button-secondary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-amber-50 transition hover:border-amber-100/45 disabled:opacity-50"
+                className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.common.next}
               </button>
@@ -609,10 +638,10 @@ export function AdminPredictionCalendar() {
               <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/68">
                 {messages.dashboard.predictionCalendar.monthSummary}
               </p>
-              <p className="mt-3 text-3xl text-amber-50">
+              <p className="cosmic-shell-title mt-3 text-3xl">
                 {calendar.currentMonthDays.length}
               </p>
-              <p className="mt-1 text-sm text-amber-100/78">
+              <p className="cosmic-shell-meta mt-1 text-sm">
                 {messages.dashboard.predictionCalendar.daysInMonth}
               </p>
             </div>
@@ -656,19 +685,19 @@ export function AdminPredictionCalendar() {
 
           {overriddenDaysCount > 0 ? (
             <p className="mt-4 text-sm text-slate-100/74">
-              <span className="font-semibold text-amber-50">{overriddenDaysCount}</span>{' '}
+              <span className="font-semibold text-slate-50">{overriddenDaysCount}</span>{' '}
               {messages.dashboard.predictionCalendar.customDaysText}
             </p>
           ) : null}
 
           {saveMessage ? (
-            <p className="mt-6 rounded-2xl border border-emerald-300/40 bg-emerald-900/18 px-4 py-3 text-sm text-emerald-100">
+            <p className="cosmic-success-box mt-6 rounded-2xl px-4 py-3 text-sm">
               {saveMessage}
             </p>
           ) : null}
 
           {error ? (
-            <p className="mt-6 rounded-2xl border border-rose-300/40 bg-rose-900/20 px-4 py-3 text-sm text-rose-100">
+            <p className="cosmic-error-box mt-6 rounded-2xl px-4 py-3 text-sm">
               {error}
             </p>
           ) : null}
@@ -679,7 +708,7 @@ export function AdminPredictionCalendar() {
                 {calendar.weekdayLabels.map((weekdayLabel) => (
                   <div
                     key={weekdayLabel}
-                    className="px-2 pb-2 text-center text-xs font-black uppercase tracking-[0.18em] text-amber-100/66"
+                    className="cosmic-shell-meta px-2 pb-2 text-center text-xs font-black uppercase tracking-[0.18em]"
                   >
                     {weekdayLabel}
                   </div>
@@ -741,7 +770,7 @@ export function AdminPredictionCalendar() {
                         <span
                           className={clsx(
                             'text-2xl font-semibold',
-                            day.inCurrentMonth ? 'text-amber-50' : 'text-slate-100/42',
+                            day.inCurrentMonth ? 'text-slate-50' : 'text-slate-100/42',
                           )}
                         >
                           {day.dayOfMonth}
@@ -781,7 +810,7 @@ export function AdminPredictionCalendar() {
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/68">
                     {messages.dashboard.predictionCalendar.selectedDay}
                   </p>
-                  <h3 className="mt-3 text-3xl text-amber-50">
+                  <h3 className="cosmic-shell-title mt-3 text-3xl">
                     {selectedDayLabelFormatter.format(new Date(selectedDay.date))}
                   </h3>
                   <div className="mt-4 flex flex-wrap gap-2">
@@ -813,7 +842,7 @@ export function AdminPredictionCalendar() {
                 <button
                   type="button"
                   onClick={closeEditor}
-                  className="cosmic-button-secondary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-amber-50"
+                  className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
                 >
                   {messages.common.cancel}
                 </button>
@@ -834,25 +863,56 @@ export function AdminPredictionCalendar() {
                   />
                 </div>
 
-                <label className="block">
-                  <span className="mb-3 block text-xs font-black uppercase tracking-[0.18em] text-cyan-100/68">
+                <div>
+                  <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-cyan-100/68">
                     {messages.dashboard.predictionCalendar.notesLabel}
-                  </span>
-                  <textarea
-                    value={notes}
-                    onChange={(event) => setNotes(event.target.value)}
-                    rows={6}
-                    maxLength={600}
-                    disabled={saveBusy}
-                    className="cosmic-input min-h-[10rem] w-full rounded-2xl px-4 py-3"
-                  />
-                  <span className="mt-2 block text-xs text-amber-100/68">
+                  </p>
+                  <div className="grid gap-4">
+                    <label className="block">
+                      <span className="mb-2 block text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                        {messages.dashboard.predictionCalendar.notesEnglishLabel}
+                      </span>
+                      <textarea
+                        value={notesByLanguage.en}
+                        onChange={(event) =>
+                          setNotesByLanguage((current) => ({
+                            ...current,
+                            en: event.target.value,
+                          }))
+                        }
+                        rows={4}
+                        maxLength={600}
+                        disabled={saveBusy}
+                        className="cosmic-input min-h-[7.6rem] w-full rounded-2xl px-4 py-3"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="mb-2 block text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                        {messages.dashboard.predictionCalendar.notesSpanishLabel}
+                      </span>
+                      <textarea
+                        value={notesByLanguage.es}
+                        onChange={(event) =>
+                          setNotesByLanguage((current) => ({
+                            ...current,
+                            es: event.target.value,
+                          }))
+                        }
+                        rows={4}
+                        maxLength={600}
+                        disabled={saveBusy}
+                        className="cosmic-input min-h-[7.6rem] w-full rounded-2xl px-4 py-3"
+                      />
+                    </label>
+                  </div>
+                  <span className="cosmic-shell-meta mt-2 block text-xs">
                     {messages.dashboard.predictionCalendar.notesHint}
                   </span>
-                </label>
+                </div>
 
                 {saveError ? (
-                  <p className="rounded-2xl border border-rose-300/40 bg-rose-900/20 px-4 py-3 text-sm text-rose-100">
+                  <p className="cosmic-error-box rounded-2xl px-4 py-3 text-sm">
                     {saveError}
                   </p>
                 ) : null}
@@ -860,7 +920,7 @@ export function AdminPredictionCalendar() {
                 <div className="flex flex-wrap gap-3">
                   <button
                     type="submit"
-                    disabled={saveBusy || notes.trim().length === 0}
+                    disabled={saveBusy || !notesReadyToSave}
                     className="cosmic-button-primary rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
                   >
                     {saveBusy
@@ -871,7 +931,7 @@ export function AdminPredictionCalendar() {
                     type="button"
                     onClick={handleReset}
                     disabled={saveBusy || !selectedDay.isOverridden}
-                    className="rounded-full border border-amber-100/25 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-amber-50 disabled:opacity-40"
+                    className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-40"
                   >
                     {messages.dashboard.predictionCalendar.resetDay}
                   </button>

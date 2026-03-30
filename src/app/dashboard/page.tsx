@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 
+import { AdminSendCampaigns } from '@/components/dashboard/admin-send-campaigns'
 import { AdminPredictionCalendar } from '@/components/dashboard/admin-prediction-calendar'
 import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
@@ -79,9 +80,9 @@ export default function DashboardPage() {
   const [deleteError, setDeleteError] = useState('')
   const [billingBusy, setBillingBusy] = useState(false)
   const [logoutBusy, setLogoutBusy] = useState(false)
-  const [activeTab, setActiveTab] = useState<'account' | 'prediction-calendar'>(
-    'account',
-  )
+  const [activeTab, setActiveTab] = useState<
+    'account' | 'prediction-calendar' | 'sends'
+  >('account')
   const billingSuccess = searchParams.get('billing') === 'success'
   const deliveryLabel = (preference: DeliveryPreference) => {
     if (preference === 'both') {
@@ -167,17 +168,23 @@ export default function DashboardPage() {
     setActiveTab(
       searchParams.get('tab') === 'prediction-calendar'
         ? 'prediction-calendar'
-        : 'account',
+        : searchParams.get('tab') === 'sends'
+          ? 'sends'
+          : 'account',
     )
   }, [data?.user.admin, searchParams])
 
-  const setDashboardTab = (nextTab: 'account' | 'prediction-calendar') => {
+  const setDashboardTab = (
+    nextTab: 'account' | 'prediction-calendar' | 'sends',
+  ) => {
     setActiveTab(nextTab)
 
     const params = new URLSearchParams(searchParams.toString())
 
     if (nextTab === 'prediction-calendar') {
       params.set('tab', 'prediction-calendar')
+    } else if (nextTab === 'sends') {
+      params.set('tab', 'sends')
     } else {
       params.delete('tab')
     }
@@ -431,7 +438,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <section className="rounded-3xl border border-amber-100/20 bg-black/30 p-8 text-amber-100">
+      <section className="cosmic-shell cosmic-shell-copy rounded-3xl p-8">
         {messages.dashboard.loading}
       </section>
     )
@@ -439,11 +446,11 @@ export default function DashboardPage() {
 
   if (!data) {
     return (
-      <section className="rounded-3xl border border-amber-100/20 bg-black/30 p-8 text-amber-100">
+      <section className="cosmic-shell cosmic-shell-copy rounded-3xl p-8">
         <p>{error || messages.dashboard.noData}</p>
         <Link
           href="/account/login"
-          className="mt-4 inline-flex rounded-full bg-amber-200 px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-amber-950"
+          className="cosmic-button-primary mt-4 inline-flex rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
         >
           {messages.nav.login}
         </Link>
@@ -453,12 +460,12 @@ export default function DashboardPage() {
 
   const accountContent = (
     <>
-      <section className="rounded-[2rem] border border-amber-100/20 bg-black/30 p-8">
-        <h2 className="text-2xl text-amber-50">{messages.dashboard.profileTitle}</h2>
-        <p className="mt-2 text-amber-100/85">{messages.dashboard.profileSubtitle}</p>
+      <section className="cosmic-shell rounded-[2rem] p-8">
+        <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.profileTitle}</h2>
+        <p className="cosmic-shell-copy mt-2">{messages.dashboard.profileSubtitle}</p>
 
         <form className="mt-5 grid gap-4 sm:grid-cols-2" onSubmit={saveProfile}>
-          <label className="text-sm font-semibold text-amber-100/90">
+          <label className="cosmic-field-label text-sm font-semibold">
             {messages.auth.firstNameLabel}
             <input
               type="text"
@@ -469,7 +476,7 @@ export default function DashboardPage() {
             />
           </label>
 
-          <label className="text-sm font-semibold text-amber-100/90">
+          <label className="cosmic-field-label text-sm font-semibold">
             {messages.auth.lastNameLabel}
             <input
               type="text"
@@ -480,7 +487,7 @@ export default function DashboardPage() {
             />
           </label>
 
-          <label className="text-sm font-semibold text-amber-100/90 sm:col-span-2">
+          <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
             {messages.auth.birthDateLabel}
             <input
               type="date"
@@ -490,14 +497,14 @@ export default function DashboardPage() {
             />
           </label>
 
-          <label className="text-sm font-semibold text-amber-100/90 sm:col-span-2">
+          <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
             {messages.auth.timeZoneLabel}
             <TimeZoneSelect
               value={profileTimeZone}
               onChange={setProfileTimeZone}
               className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
             />
-            <span className="mt-2 block text-xs text-amber-100/70">
+            <span className="cosmic-shell-meta mt-2 block text-xs">
               {messages.dashboard.profileTimeZoneHint}
             </span>
           </label>
@@ -506,7 +513,7 @@ export default function DashboardPage() {
             <button
               type="submit"
               disabled={profileBusy}
-              className="rounded-full border border-amber-100/30 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-amber-50 disabled:opacity-70"
+              className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-70"
             >
               {profileBusy ? messages.common.saving : messages.dashboard.profileSave}
             </button>
@@ -514,19 +521,19 @@ export default function DashboardPage() {
         </form>
 
         {profileError ? (
-          <p className="mt-4 rounded-xl border border-rose-300/60 bg-rose-900/40 px-4 py-3 text-sm text-rose-100">
+          <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
             {profileError}
           </p>
         ) : null}
 
         {profileSuccess ? (
-          <p className="mt-4 rounded-xl border border-emerald-300/60 bg-emerald-900/40 px-4 py-3 text-sm text-emerald-100">
+          <p className="cosmic-success-box mt-4 rounded-xl px-4 py-3 text-sm">
             {profileSuccess}
           </p>
         ) : null}
       </section>
 
-      <section className="rounded-[2rem] border border-rose-300/25 bg-rose-950/12 p-8">
+      <section className="cosmic-danger-shell rounded-[2rem] p-8">
         <h2 className="text-2xl text-rose-100">{messages.dashboard.dangerTitle}</h2>
         <p className="mt-2 max-w-2xl text-rose-100/82">{messages.dashboard.dangerSubtitle}</p>
         <div className="mt-5 flex flex-wrap gap-3">
@@ -534,24 +541,24 @@ export default function DashboardPage() {
             type="button"
             onClick={deleteAccount}
             disabled={deleteBusy}
-            className="rounded-full border border-rose-300/45 bg-rose-900/35 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-rose-100 disabled:opacity-60"
+            className="cosmic-danger-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
           >
             {deleteBusy ? messages.dashboard.deleteLoading : messages.dashboard.deleteButton}
           </button>
         </div>
 
         {deleteError ? (
-          <p className="mt-4 rounded-xl border border-rose-300/60 bg-rose-900/40 px-4 py-3 text-sm text-rose-100">
+          <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
             {deleteError}
           </p>
         ) : null}
       </section>
 
-      <section className="rounded-[2rem] border border-amber-100/20 bg-black/30 p-8">
+      <section className="cosmic-shell rounded-[2rem] p-8">
         {!data.subscription ? (
           <>
-            <h2 className="text-2xl text-amber-50">{messages.dashboard.noSubscription}</h2>
-            <p className="mt-2 text-amber-100/85">{messages.dashboard.noSubscriptionSubtitle}</p>
+            <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.noSubscription}</h2>
+            <p className="cosmic-shell-copy mt-2">{messages.dashboard.noSubscriptionSubtitle}</p>
             <form className="mt-5 space-y-4" onSubmit={(event) => runAction('subscribe', event)}>
               <DeliveryPreferenceSelector
                 value={deliveryPreference}
@@ -560,7 +567,7 @@ export default function DashboardPage() {
               <div>
                 <label
                   htmlFor="subscription-delivery-hour"
-                  className="mb-3 block text-sm font-semibold text-amber-100/90"
+                  className="cosmic-field-label mb-3 block text-sm font-semibold"
                 >
                   {messages.dashboard.mondayProjectionTime}
                 </label>
@@ -571,14 +578,14 @@ export default function DashboardPage() {
                   locale={language}
                   className="cosmic-input block w-full rounded-xl px-4 py-3"
                 />
-                <p className="mt-2 text-xs text-amber-100/70">
+                <p className="cosmic-shell-meta mt-2 text-xs">
                   {interpolate(messages.dashboard.sentOnMondaysAt, {
                     time: formatDeliveryHourLabel(deliveryHourLocal, language),
                     zone: data.user.timeZone,
                   })}
                 </p>
               </div>
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/82">
+              <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
                   {messages.dashboard.emailDeliveryLabel}
                 </p>
@@ -594,14 +601,14 @@ export default function DashboardPage() {
                   className="cosmic-input w-full rounded-xl px-4 py-3"
                 />
               ) : (
-                <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/76">
+                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/76">
                   {messages.dashboard.whatsappOffSetup}
                 </div>
               )}
               <button
                 type="submit"
                 disabled={busyAction !== null}
-                className="rounded-full bg-amber-200 px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-amber-950 disabled:opacity-70"
+                className="cosmic-button-primary rounded-full px-6 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-70"
               >
                 {messages.dashboard.subscribeButton}
               </button>
@@ -609,23 +616,23 @@ export default function DashboardPage() {
           </>
         ) : data.subscription.status === 'pending_checkout' ? (
           <>
-            <h2 className="text-2xl text-amber-50">{messages.dashboard.pendingTitle}</h2>
-            <p className="mt-2 text-amber-100/85">{messages.dashboard.pendingSubtitle}</p>
+            <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.pendingTitle}</h2>
+            <p className="cosmic-shell-copy mt-2">{messages.dashboard.pendingSubtitle}</p>
             <div className="mt-5 space-y-3 text-sm text-cyan-100/86">
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
+              <div className="cosmic-info-box rounded-2xl p-4">
                 {messages.dashboard.pendingDeliveryPreferenceLabel}:{' '}
                 {deliveryLabel(data.subscription.deliveryPreference)}
               </div>
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
+              <div className="cosmic-info-box rounded-2xl p-4">
                 {messages.dashboard.pendingEmailDeliveryLabel}: {data.user.email}
               </div>
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
+              <div className="cosmic-info-box rounded-2xl p-4">
                 {messages.dashboard.pendingProjectionTimingLabel}:{' '}
                 {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
                 {data.user.timeZone})
               </div>
               {requiresWhatsappDelivery(data.subscription.deliveryPreference) ? (
-                <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
+                <div className="cosmic-info-box rounded-2xl p-4">
                   {messages.dashboard.pendingWhatsappLabel}: {data.subscription.whatsappNumber}
                 </div>
               ) : null}
@@ -639,7 +646,7 @@ export default function DashboardPage() {
               </Link>
               <Link
                 href="/account/delivery?edit=1"
-                className="rounded-full border border-amber-100/30 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-amber-50"
+                className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
               >
                 {messages.dashboard.changeDeliverySettings}
               </Link>
@@ -647,38 +654,38 @@ export default function DashboardPage() {
           </>
         ) : (
           <>
-            <h2 className="text-2xl text-amber-50">
+            <h2 className="cosmic-shell-title text-2xl">
               {data.subscription.status === 'canceled'
                 ? messages.dashboard.canceledPlanTitle
                 : messages.dashboard.activePlanTitle}
             </h2>
-            <p className="mt-2 text-amber-100/85">
+            <p className="cosmic-shell-copy mt-2">
               {messages.dashboard.status}:{' '}
-              <span className="font-bold text-amber-50">
+              <span className="font-bold text-slate-50">
                 {statusLabel[data.subscription.status]}
               </span>
             </p>
             {data.subscription.status === 'canceled' ? (
-              <p className="mt-2 text-amber-100/85">{messages.dashboard.canceledNote}</p>
+              <p className="cosmic-shell-copy mt-2">{messages.dashboard.canceledNote}</p>
             ) : (
-              <p className="mt-2 text-amber-100/85">{messages.dashboard.activeNote}</p>
+              <p className="cosmic-shell-copy mt-2">{messages.dashboard.activeNote}</p>
             )}
-            <p className="mt-1 text-amber-100/85">
+            <p className="cosmic-shell-copy mt-1">
               {messages.dashboard.deliveryPreferenceLabel}:{' '}
-              <span className="font-bold text-amber-50">
+              <span className="font-bold text-slate-50">
                 {deliveryLabel(data.subscription.deliveryPreference)}
               </span>
             </p>
-            <p className="mt-1 text-amber-100/85">
+            <p className="cosmic-shell-copy mt-1">
               {data.subscription.status === 'canceled'
                 ? messages.dashboard.nextMessageIfReactivated
                 : messages.dashboard.nextMessage}
               :{' '}
               {formatNextDelivery(data.subscription.nextMessageAt, language, data.user.timeZone)}
             </p>
-            <p className="mt-1 text-amber-100/85">
+            <p className="cosmic-shell-copy mt-1">
               {messages.dashboard.weeklyProjectionTimeLabel}:{' '}
-              <span className="font-bold text-amber-50">
+              <span className="font-bold text-slate-50">
                 {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
                 {data.user.timeZone})
               </span>
@@ -692,7 +699,7 @@ export default function DashboardPage() {
               <div>
                 <label
                   htmlFor="active-delivery-hour"
-                  className="mb-3 block text-sm font-semibold text-amber-100/90"
+                  className="cosmic-field-label mb-3 block text-sm font-semibold"
                 >
                   {messages.dashboard.mondayProjectionTime}
                 </label>
@@ -703,13 +710,13 @@ export default function DashboardPage() {
                   locale={language}
                   className="cosmic-input block w-full rounded-xl px-4 py-3"
                 />
-                <p className="mt-2 text-xs text-amber-100/70">
+                <p className="cosmic-shell-meta mt-2 text-xs">
                   {interpolate(messages.dashboard.futureMessagesHint, {
                     zone: data.user.timeZone,
                   })}
                 </p>
               </div>
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/82">
+              <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
                   {messages.dashboard.emailDeliveryLabel}
                 </p>
@@ -725,14 +732,14 @@ export default function DashboardPage() {
                   className="cosmic-input w-full rounded-xl px-4 py-3"
                 />
               ) : (
-                <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/76">
+                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/76">
                   {messages.dashboard.whatsappOffActive}
                 </div>
               )}
               <button
                 type="submit"
                 disabled={busyAction !== null}
-                className="rounded-full border border-amber-100/30 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-amber-50 disabled:opacity-70"
+                className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-70"
               >
                 {messages.dashboard.saveDeliverySettings}
               </button>
@@ -756,7 +763,7 @@ export default function DashboardPage() {
                   type="button"
                   onClick={cancelSubscription}
                   disabled={busyAction !== null}
-                  className="rounded-full border border-rose-300/45 bg-rose-900/25 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-rose-100 disabled:opacity-60"
+                  className="cosmic-danger-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
                 >
                   {busyAction === 'cancel-subscription'
                     ? messages.dashboard.cancelLoading
@@ -768,7 +775,7 @@ export default function DashboardPage() {
                   type="button"
                   onClick={openBillingPortal}
                   disabled={billingBusy}
-                  className="rounded-full border border-cyan-200/30 bg-cyan-400/10 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-cyan-50 disabled:opacity-60"
+                  className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
                 >
                   {billingBusy
                     ? messages.dashboard.manageBillingLoading
@@ -777,7 +784,7 @@ export default function DashboardPage() {
               ) : null}
             </div>
 
-            <p className="mt-4 text-sm text-amber-100/72">
+            <p className="cosmic-shell-meta mt-4 text-sm">
               {data.subscription.status === 'canceled'
                 ? messages.dashboard.billingFootnoteCanceled
                 : messages.dashboard.billingFootnoteActive}
@@ -786,13 +793,13 @@ export default function DashboardPage() {
         )}
 
         {subscriptionSuccess ? (
-          <p className="mt-4 rounded-xl border border-emerald-300/60 bg-emerald-900/40 px-4 py-3 text-sm text-emerald-100">
+          <p className="cosmic-success-box mt-4 rounded-xl px-4 py-3 text-sm">
             {subscriptionSuccess}
           </p>
         ) : null}
 
         {error ? (
-          <p className="mt-4 rounded-xl border border-rose-300/60 bg-rose-900/40 px-4 py-3 text-sm text-rose-100">
+          <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
             {error}
           </p>
         ) : null}
@@ -802,15 +809,15 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[2rem] border border-amber-100/20 bg-black/30 p-8">
-        <h1 className="text-3xl text-amber-50">{messages.dashboard.title}</h1>
-        <p className="mt-2 text-amber-100/85">{messages.dashboard.intro}</p>
-        <p className="mt-3 text-sm text-amber-100/85">
+      <section className="cosmic-shell rounded-[2rem] p-8">
+        <h1 className="cosmic-shell-title text-3xl">{messages.dashboard.title}</h1>
+        <p className="cosmic-shell-copy mt-2">{messages.dashboard.intro}</p>
+        <p className="cosmic-shell-meta mt-3 text-sm">
           {data.user.fullName} · {data.user.email}
         </p>
 
         {billingSuccess ? (
-          <p className="mt-5 rounded-2xl border border-emerald-300/45 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-100">
+          <p className="cosmic-success-box mt-5 rounded-2xl px-4 py-3 text-sm">
             {messages.dashboard.billingSuccess}
           </p>
         ) : null}
@@ -819,10 +826,10 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => setDashboardTab('account')}
-              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] transition ${
+              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
                 activeTab === 'account'
-                  ? 'bg-amber-200 text-amber-950'
-                  : 'border border-amber-100/30 text-amber-50 hover:border-amber-100/50'
+                  ? 'cosmic-tab-active'
+                  : 'cosmic-tab'
               }`}
             >
               {messages.dashboard.tabs.account}
@@ -830,13 +837,22 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => setDashboardTab('prediction-calendar')}
-              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] transition ${
+              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
                 activeTab === 'prediction-calendar'
-                  ? 'bg-cyan-100 text-slate-950'
-                  : 'border border-cyan-200/28 text-cyan-50 hover:border-cyan-100/48'
+                  ? 'cosmic-tab-active-alt'
+                  : 'cosmic-tab'
               }`}
             >
               {messages.dashboard.tabs.predictionCalendar}
+            </button>
+            <button
+              type="button"
+              onClick={() => setDashboardTab('sends')}
+              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
+                activeTab === 'sends' ? 'cosmic-tab-active' : 'cosmic-tab'
+              }`}
+            >
+              {messages.dashboard.tabs.sends}
             </button>
           </div>
         ) : null}
@@ -844,15 +860,17 @@ export default function DashboardPage() {
 
       {data.user.admin && activeTab === 'prediction-calendar' ? (
         <AdminPredictionCalendar />
+      ) : data.user.admin && activeTab === 'sends' ? (
+        <AdminSendCampaigns />
       ) : (
         accountContent
       )}
 
-      <section className="rounded-[2rem] border border-amber-100/16 bg-black/25 p-6">
+      <section className="cosmic-shell rounded-[2rem] p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-amber-100/72">{data.user.email}</p>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-100/54">
+            <p className="cosmic-shell-copy text-sm">{data.user.email}</p>
+            <p className="cosmic-shell-meta mt-1 text-xs font-semibold uppercase tracking-[0.18em]">
               {messages.nav.dashboard}
             </p>
           </div>
@@ -860,7 +878,7 @@ export default function DashboardPage() {
             type="button"
             onClick={logout}
             disabled={logoutBusy}
-            className="self-start rounded-full border border-rose-200/25 bg-rose-400/10 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-rose-100 transition hover:bg-rose-400/18 disabled:opacity-60 sm:self-auto"
+            className="cosmic-danger-button self-start rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60 sm:self-auto"
           >
             {logoutBusy ? messages.common.loading : messages.nav.logout}
           </button>

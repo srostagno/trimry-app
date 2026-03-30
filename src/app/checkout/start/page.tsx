@@ -99,22 +99,22 @@ export default function CheckoutStartPage() {
   }, [checkoutCancelled, messages.checkout.openError, router])
 
   return (
-    <section className="mx-auto max-w-2xl rounded-[2rem] border border-cyan-200/20 bg-slate-950/45 p-8 text-slate-100">
+    <section className="cosmic-shell mx-auto max-w-2xl rounded-[2rem] p-8 text-slate-100">
       <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
         {messages.checkout.badge}
       </p>
-      <h1 className="mt-6 text-4xl text-slate-50">
+      <h1 className="cosmic-shell-title mt-6 text-4xl">
         {checkoutCancelled ? messages.checkout.titleCancelled : messages.checkout.title}
       </h1>
-      <p className="mt-4 text-lg text-slate-100/82">
+      <p className="cosmic-shell-copy mt-4 text-lg">
         {checkoutCancelled
           ? messages.checkout.subtitleCancelled
           : messages.checkout.subtitle}
       </p>
 
       {error ? (
-        <div className="mt-6 rounded-3xl border border-rose-300/45 bg-rose-950/35 p-5">
-          <p className="text-rose-100">{error}</p>
+        <div className="cosmic-error-box mt-6 rounded-3xl p-5">
+          <p>{error}</p>
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
@@ -130,14 +130,14 @@ export default function CheckoutStartPage() {
             </button>
             <Link
               href="/dashboard"
-              className="rounded-full border border-cyan-200/30 px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-cyan-50"
+              className="cosmic-outline-button rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.14em]"
             >
               {messages.common.backToDashboard}
             </Link>
           </div>
         </div>
       ) : (
-        <div className="mt-6 rounded-3xl border border-cyan-200/18 bg-slate-900/55 p-5 text-cyan-100/88">
+        <div className="cosmic-info-box cosmic-shell-copy mt-6 rounded-3xl p-5">
           {messages.checkout.helper}
         </div>
       )}

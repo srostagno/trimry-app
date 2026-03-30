@@ -468,7 +468,7 @@ const englishMessages: MessageSection = {
     title: 'Catch the lucky days before your next cut.',
     subtitle:
       'Trimry sends one weekly ritual forecast every Monday by email, WhatsApp, or both, with good, bad, and rare day signals inspired by a little-known Tibetan sutra tradition plus concrete hints about luck, money, and love momentum.',
-    primary: 'Start for $2.99/month',
+    primary: 'Start for {billingCompact}',
     secondary: 'See today’s teaser',
   },
   home: {
@@ -544,7 +544,7 @@ const englishMessages: MessageSection = {
     title: 'Simple monthly plan',
     subtitle: 'A single plan. No hidden fees. Cancel anytime from your dashboard.',
     planTitle: 'Weekly fortune delivery',
-    billing: '$2.99 USD / month',
+    billing: '{billingInline}',
     include1: '1 ritual forecast every Monday by email, WhatsApp, or both',
     include2: 'Good/bad/rare signals with practical luck, money, and love hints',
     include3:
@@ -671,7 +671,7 @@ const englishMessages: MessageSection = {
     projectionTimingLabel: 'Projection timing',
     whatsappDeliveryLabel: 'WhatsApp delivery',
     billingLabel: 'Billing',
-    billingValue: '$2.99 USD / month',
+    billingValue: '{billingInline}',
     whyItWorksLabel: 'Why it works',
     whyItWorksText:
       'The ritual is not magic. The leverage comes from attention, confidence, and better action when you feel aligned.',
@@ -724,7 +724,7 @@ const englishMessages: MessageSection = {
       'Delete your account? This will sign you out immediately and stop your current delivery channels.',
     deleteError: 'Unable to delete your account right now.',
     noSubscriptionSubtitle:
-      '$2.99 USD/month · weekly ritual forecast by email, WhatsApp, or both',
+      '{billingCompact} · weekly ritual forecast by email, WhatsApp, or both',
     mondayProjectionTime: 'Monday projection time',
     sentOnMondaysAt: 'Sent on Mondays at {time} in {zone}.',
     emailDeliveryLabel: 'Email delivery',
@@ -940,7 +940,7 @@ const englishMessages: MessageSection = {
       {
         title: '2. Subscription and billing',
         body:
-          'The Trimry plan is billed at USD 2.99 per month. It includes one ritual forecast delivered each Monday by your selected channel: email, WhatsApp, or both. You can cancel your subscription at any time from your account dashboard. If you decide to come back later, you can reactivate from the same account by starting a new Stripe checkout. Billing details, payment methods, invoices, and historical billing records remain available through the Stripe-hosted billing tools linked from your dashboard.',
+          'The Trimry plan is billed at {billingLegal}. It includes one ritual forecast delivered each Monday by your selected channel: email, WhatsApp, or both. You can cancel your subscription at any time from your account dashboard. If you decide to come back later, you can reactivate from the same account by starting a new Stripe checkout. Billing details, payment methods, invoices, and historical billing records remain available through the Stripe-hosted billing tools linked from your dashboard.',
       },
       {
         title: '3. Account security',
@@ -1075,7 +1075,7 @@ const spanishMessages: MessageSection = {
     title: 'Encuentra los días de suerte antes de tu próximo corte.',
     subtitle:
       'Trimry envía un pronóstico ritual semanal cada lunes por email, WhatsApp o ambos, con señales de días buenos, malos y raros inspiradas en una tradición poco conocida del sutra tibetano, junto con pistas concretas sobre suerte, dinero y amor.',
-    primary: 'Empieza por $2.99/mes',
+    primary: 'Empieza por {billingCompact}',
     secondary: 'Ver el avance de hoy',
   },
   home: {
@@ -1151,7 +1151,7 @@ const spanishMessages: MessageSection = {
     title: 'Plan mensual simple',
     subtitle: 'Un solo plan. Sin cargos ocultos. Cancela cuando quieras desde tu panel.',
     planTitle: 'Entrega semanal de fortuna',
-    billing: '$2.99 USD / mes',
+    billing: '{billingInline}',
     include1: '1 pronóstico ritual cada lunes por email, WhatsApp o ambos',
     include2: 'Señales de días buenos, malos y raros con pistas prácticas sobre suerte, dinero y amor',
     include3: 'Elige tu canal de entrega, actualízalo cuando quieras y cancela cuando te acomode',
@@ -1277,7 +1277,7 @@ const spanishMessages: MessageSection = {
     projectionTimingLabel: 'Horario de proyección',
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Cobro',
-    billingValue: '$2.99 USD / mes',
+    billingValue: '{billingInline}',
     whyItWorksLabel: 'Por qué funciona',
     whyItWorksText:
       'El ritual no es magia. El apalancamiento viene de la atención, la confianza y una mejor acción cuando te sientes alineado.',
@@ -1330,7 +1330,7 @@ const spanishMessages: MessageSection = {
       '¿Eliminar tu cuenta? Esto cerrará tu sesión de inmediato y detendrá tus canales actuales de entrega.',
     deleteError: 'No pudimos eliminar tu cuenta en este momento.',
     noSubscriptionSubtitle:
-      '$2.99 USD/mes · pronóstico ritual semanal por email, WhatsApp o ambos',
+      '{billingCompact} · pronóstico ritual semanal por email, WhatsApp o ambos',
     mondayProjectionTime: 'Hora de la proyección del lunes',
     sentOnMondaysAt: 'Se envía los lunes a las {time} en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
@@ -1547,7 +1547,7 @@ const spanishMessages: MessageSection = {
       {
         title: '2. Suscripción y cobro',
         body:
-          'El plan Trimry se cobra a USD 2.99 por mes. Incluye un pronóstico ritual entregado cada lunes por el canal que elijas: email, WhatsApp o ambos. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
+          'El plan Trimry se cobra a {billingLegal}. Incluye un pronóstico ritual entregado cada lunes por el canal que elijas: email, WhatsApp o ambos. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
       },
       {
         title: '3. Seguridad de la cuenta',

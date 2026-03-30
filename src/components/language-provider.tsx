@@ -15,6 +15,12 @@ import {
   trackEvent,
 } from '@/lib/analytics'
 import {
+  applyPricingTemplateValues,
+  parseCheckoutPlanPricing,
+  resolvePricingTemplateValues,
+  type CheckoutPlanPricing,
+} from '@/lib/plan-pricing'
+import {
   DEFAULT_LANGUAGE,
   getMessages,
   isLanguageCode,
@@ -44,6 +50,7 @@ export function LanguageProvider({
   initialLanguage?: LanguageCode
 }) {
   const [language, setLanguageState] = useState<LanguageCode>(initialLanguage)
+  const [planPricing, setPlanPricing] = useState<CheckoutPlanPricing | null>(null)
 
   useEffect(() => {
     const storedLanguage = window.localStorage.getItem('trimry-language')
@@ -61,6 +68,40 @@ export function LanguageProvider({
       preferred_language: language,
     })
   }, [language])
+
+  useEffect(() => {
+    let cancelled = false
+
+    const loadPlanPricing = async () => {
+      try {
+        const response = await apiFetch(
+          '/billing/plan',
+          { cache: 'no-store' },
+          { retryUnauthorized: false },
+        )
+
+        if (!response.ok) {
+          return
+        }
+
+        const parsed = parseCheckoutPlanPricing(await response.json())
+
+        if (!parsed || cancelled) {
+          return
+        }
+
+        setPlanPricing(parsed)
+      } catch {
+        return
+      }
+    }
+
+    void loadPlanPricing()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const setLanguage = (value: LanguageCode, options?: SetLanguageOptions) => {
     if (value === language) {
@@ -93,7 +134,12 @@ export function LanguageProvider({
     })
   }
 
-  const messages = useMemo(() => getMessages(language), [language])
+  const messages = useMemo(() => {
+    const baseMessages = getMessages(language)
+    const pricingTemplateValues = resolvePricingTemplateValues(planPricing, language)
+
+    return applyPricingTemplateValues(baseMessages, pricingTemplateValues)
+  }, [language, planPricing])
 
   return (
     <LanguageContext.Provider

@@ -1,4 +1,4 @@
-# Trimry Web
+# Trimry App Web 
 
 Trimry is a subscription web app that delivers one WhatsApp message every Monday with favorable and challenging days for grooming and symbolic release rituals, inspired by Tibetan calendar timing traditions.
 

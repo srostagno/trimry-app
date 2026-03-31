@@ -35,6 +35,7 @@ export default function DeliveryOnboardingPage() {
     DEFAULT_WEEKLY_DELIVERY_HOUR,
   )
   const [whatsappNumber, setWhatsappNumber] = useState('')
+  const [whatsappConsentAccepted, setWhatsappConsentAccepted] = useState(false)
   const [phase, setPhase] = useState<'form' | 'preparing'>('form')
   const [activeStep, setActiveStep] = useState(0)
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
@@ -76,6 +77,7 @@ export default function DeliveryOnboardingPage() {
 
         if (!cancelled && existingWhatsappNumber) {
           setWhatsappNumber(existingWhatsappNumber)
+          setWhatsappConsentAccepted(true)
         }
 
         const deliverySetupComplete = account.subscription
@@ -133,6 +135,12 @@ export default function DeliveryOnboardingPage() {
     setSubmitting(true)
     setError('')
 
+    if (requiresWhatsappDelivery(deliveryPreference) && !whatsappConsentAccepted) {
+      setError(messages.deliveryOnboarding.whatsappConsentError)
+      setSubmitting(false)
+      return
+    }
+
     try {
       const response = await apiFetch('/subscription', {
         method: 'POST',
@@ -141,6 +149,9 @@ export default function DeliveryOnboardingPage() {
           deliveryPreference,
           deliveryHourLocal,
           whatsappNumber,
+          whatsappConsentAccepted: requiresWhatsappDelivery(deliveryPreference)
+            ? whatsappConsentAccepted
+            : undefined,
         }),
       })
 
@@ -305,17 +316,38 @@ export default function DeliveryOnboardingPage() {
             </div>
 
             {requiresWhatsappDelivery(deliveryPreference) ? (
-              <label className="block text-sm font-semibold text-cyan-100/90">
-                {messages.auth.whatsappLabel}
-                <input
-                  type="tel"
-                  value={whatsappNumber}
-                  onChange={(event) => setWhatsappNumber(event.target.value)}
-                  placeholder="+14155550123"
-                  required
-                  className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-                />
-              </label>
+              <>
+                <label className="block text-sm font-semibold text-cyan-100/90">
+                  {messages.auth.whatsappLabel}
+                  <input
+                    type="tel"
+                    value={whatsappNumber}
+                    onChange={(event) => setWhatsappNumber(event.target.value)}
+                    placeholder="+14155550123"
+                    required
+                    className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+                  />
+                </label>
+                <label className="cosmic-info-box flex items-start gap-3 rounded-2xl p-4 text-sm text-slate-100/88">
+                  <input
+                    type="checkbox"
+                    checked={whatsappConsentAccepted}
+                    onChange={(event) =>
+                      setWhatsappConsentAccepted(event.target.checked)
+                    }
+                    required
+                    className="mt-0.5 h-4 w-4 accent-cyan-300"
+                  />
+                  <span>
+                    <span className="block text-slate-50">
+                      {messages.deliveryOnboarding.whatsappConsentLabel}
+                    </span>
+                    <span className="cosmic-shell-meta mt-1 block text-xs">
+                      {messages.deliveryOnboarding.whatsappConsentHint}
+                    </span>
+                  </span>
+                </label>
+              </>
             ) : (
               <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/76">
                 {messages.deliveryOnboarding.whatsappOffHint}

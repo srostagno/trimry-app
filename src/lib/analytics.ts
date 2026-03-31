@@ -1,3 +1,5 @@
+import { hasGrantedAnalyticsConsent } from '@/lib/analytics-consent'
+
 export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || 'G-2JFX4TVBCP'
 
@@ -27,6 +29,10 @@ function sanitizeAnalyticsParams(params: AnalyticsParams) {
 
 function dispatchAnalytics(...args: unknown[]) {
   if (typeof window === 'undefined' || !GA_MEASUREMENT_ID) {
+    return
+  }
+
+  if (!hasGrantedAnalyticsConsent()) {
     return
   }
 

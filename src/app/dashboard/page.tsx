@@ -67,6 +67,7 @@ export default function DashboardPage() {
     DEFAULT_WEEKLY_DELIVERY_HOUR,
   )
   const [whatsappNumber, setWhatsappNumber] = useState('')
+  const [whatsappConsentAccepted, setWhatsappConsentAccepted] = useState(false)
   const [busyAction, setBusyAction] = useState<string | null>(null)
   const [profileFirstName, setProfileFirstName] = useState('')
   const [profileLastName, setProfileLastName] = useState('')
@@ -126,6 +127,7 @@ export default function DashboardPage() {
         typedPayload.subscription?.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR,
       )
       setWhatsappNumber(typedPayload.subscription?.whatsappNumber ?? '')
+      setWhatsappConsentAccepted(Boolean(typedPayload.subscription?.whatsappNumber))
       setProfileFirstName(typedPayload.user.firstName)
       setProfileLastName(typedPayload.user.lastName)
       setProfileBirthDate(typedPayload.user.birthDate ?? '')
@@ -205,6 +207,12 @@ export default function DashboardPage() {
     setError('')
     setSubscriptionSuccess('')
 
+    if (requiresWhatsappDelivery(deliveryPreference) && !whatsappConsentAccepted) {
+      setError(messages.dashboard.whatsappConsentError)
+      setBusyAction(null)
+      return
+    }
+
     try {
       const response = await apiFetch('/subscription', {
         method: 'POST',
@@ -213,6 +221,9 @@ export default function DashboardPage() {
           deliveryPreference,
           deliveryHourLocal,
           whatsappNumber,
+          whatsappConsentAccepted: requiresWhatsappDelivery(deliveryPreference)
+            ? whatsappConsentAccepted
+            : undefined,
         }),
       })
 
@@ -602,14 +613,35 @@ export default function DashboardPage() {
                 <p className="mt-2 text-base text-slate-50">{data.user.email}</p>
               </div>
               {requiresWhatsappDelivery(deliveryPreference) ? (
-                <input
-                  type="tel"
-                  value={whatsappNumber}
-                  onChange={(event) => setWhatsappNumber(event.target.value)}
-                  placeholder="+14155550123"
-                  required
-                  className="cosmic-input w-full rounded-xl px-4 py-3"
-                />
+                <>
+                  <input
+                    type="tel"
+                    value={whatsappNumber}
+                    onChange={(event) => setWhatsappNumber(event.target.value)}
+                    placeholder="+14155550123"
+                    required
+                    className="cosmic-input w-full rounded-xl px-4 py-3"
+                  />
+                  <label className="cosmic-info-box flex items-start gap-3 rounded-2xl p-4 text-sm text-slate-100/88">
+                    <input
+                      type="checkbox"
+                      checked={whatsappConsentAccepted}
+                      onChange={(event) =>
+                        setWhatsappConsentAccepted(event.target.checked)
+                      }
+                      required
+                      className="mt-0.5 h-4 w-4 accent-cyan-300"
+                    />
+                    <span>
+                      <span className="block text-slate-50">
+                        {messages.dashboard.whatsappConsentLabel}
+                      </span>
+                      <span className="cosmic-shell-meta mt-1 block text-xs">
+                        {messages.dashboard.whatsappConsentHint}
+                      </span>
+                    </span>
+                  </label>
+                </>
               ) : (
                 <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/76">
                   {messages.dashboard.whatsappOffSetup}
@@ -733,14 +765,35 @@ export default function DashboardPage() {
                 <p className="mt-2 text-base text-slate-50">{data.user.email}</p>
               </div>
               {requiresWhatsappDelivery(deliveryPreference) ? (
-                <input
-                  type="tel"
-                  value={whatsappNumber}
-                  onChange={(event) => setWhatsappNumber(event.target.value)}
-                  placeholder="+14155550123"
-                  required
-                  className="cosmic-input w-full rounded-xl px-4 py-3"
-                />
+                <>
+                  <input
+                    type="tel"
+                    value={whatsappNumber}
+                    onChange={(event) => setWhatsappNumber(event.target.value)}
+                    placeholder="+14155550123"
+                    required
+                    className="cosmic-input w-full rounded-xl px-4 py-3"
+                  />
+                  <label className="cosmic-info-box flex items-start gap-3 rounded-2xl p-4 text-sm text-slate-100/88">
+                    <input
+                      type="checkbox"
+                      checked={whatsappConsentAccepted}
+                      onChange={(event) =>
+                        setWhatsappConsentAccepted(event.target.checked)
+                      }
+                      required
+                      className="mt-0.5 h-4 w-4 accent-cyan-300"
+                    />
+                    <span>
+                      <span className="block text-slate-50">
+                        {messages.dashboard.whatsappConsentLabel}
+                      </span>
+                      <span className="cosmic-shell-meta mt-1 block text-xs">
+                        {messages.dashboard.whatsappConsentHint}
+                      </span>
+                    </span>
+                  </label>
+                </>
               ) : (
                 <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/76">
                   {messages.dashboard.whatsappOffActive}

@@ -22,6 +22,9 @@ const localeByLanguage = {
 } as const
 
 const PLACEHOLDER_REGEX = /{{\s*([a-zA-Z0-9_]+)\s*}}/g
+const TRIMRY_WEBSITE_URL = 'https://trimry.com'
+const TRIMRY_LOGO_URL = `${TRIMRY_WEBSITE_URL}/logo-horizontal.png`
+const FULL_HTML_DOCUMENT_REGEX = /<\s*(?:!doctype\s+html|html[\s>])/i
 
 type WhatsappVariableDraft = {
   id: string
@@ -33,6 +36,15 @@ type WhatsappButtonDraft = {
   id: string
   key: string
   content: string
+}
+
+type WeeklyEmailPreset = {
+  templateName: string
+  templateDescription: string
+  subjectTemplate: string
+  htmlTemplate: string
+  textTemplate: string
+  variableDefaults: Record<string, string>
 }
 
 function extractPlaceholders(value: string) {
@@ -75,6 +87,250 @@ function createButtonDraft(
     id: createDraftId(),
     key: value?.key ?? '',
     content: value?.content ?? '',
+  }
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function buildTrimryEmailBaseHtml(input: {
+  language: keyof typeof localeByLanguage
+  subject: string
+  htmlBody: string
+  preheader: string
+}) {
+  const visitLabel = input.language === 'en' ? 'Visit' : 'Visita'
+  const footerHint =
+    input.language === 'en'
+      ? 'to view your full outlook.'
+      : 'para ver tu detalle completo.'
+
+  return `<!doctype html>
+<html lang="${input.language}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>${escapeHtml(input.subject)}</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#f2f4f7;">
+    <div style="display:none;max-height:0;max-width:0;opacity:0;overflow:hidden;font-size:1px;line-height:1px;color:#f2f4f7;">
+      ${escapeHtml(input.preheader)}
+    </div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#f2f4f7;">
+      <tr>
+        <td align="center" style="padding:24px 12px;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:640px;background-color:#ffffff;border:1px solid #e5e7eb;border-radius:18px;overflow:hidden;">
+            <tr>
+              <td align="center" style="padding:24px 32px 16px 32px;border-bottom:1px solid #eef2f7;">
+                <a href="${TRIMRY_WEBSITE_URL}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+                  <img src="${TRIMRY_LOGO_URL}" alt="Trimry" width="156" style="display:block;width:156px;max-width:100%;height:auto;border:0;" />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px 32px 24px 32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.62;color:#111827;">
+                ${input.htmlBody}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 32px 28px 32px;border-top:1px solid #eef2f7;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#6b7280;">
+                <p style="margin:0 0 8px 0;">Trimry weekly ritual forecast.</p>
+                <p style="margin:0;">
+                  ${visitLabel}
+                  <a href="${TRIMRY_WEBSITE_URL}" target="_blank" rel="noopener noreferrer" style="color:#0f766e;text-decoration:underline;">trimry.com</a>
+                  ${footerHint}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
+}
+
+function ensureFullHtmlDocument(input: {
+  language: keyof typeof localeByLanguage
+  subject: string
+  htmlBody: string
+  preheader: string
+}) {
+  const htmlBody = input.htmlBody.trim()
+
+  if (!htmlBody) {
+    return ''
+  }
+
+  if (FULL_HTML_DOCUMENT_REGEX.test(htmlBody)) {
+    return htmlBody
+  }
+
+  return buildTrimryEmailBaseHtml({
+    language: input.language,
+    subject: input.subject.trim(),
+    htmlBody,
+    preheader: input.preheader.trim(),
+  })
+}
+
+function createWeeklyEmailPreset(language: keyof typeof localeByLanguage): WeeklyEmailPreset {
+  if (language === 'en') {
+    const subjectTemplate =
+      'Your Trimry weekly ritual summary: {{week_label}}'
+    const htmlBody = `
+<p style="margin:0 0 16px 0;">Hi {{first_name}},</p>
+<p style="margin:0 0 16px 0;">Here is your weekly ritual outlook with good, challenging, and rare timing for haircut, shave, nails, and release.</p>
+<h2 style="margin:22px 0 10px 0;font-size:20px;line-height:1.3;color:#0f172a;">Week {{week_label}}</h2>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px 0;border-collapse:collapse;">
+  <tr>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Good days</td>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{good_days}}</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Challenging days</td>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{bad_days}}</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Rare days</td>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{rare_days}}</td>
+  </tr>
+</table>
+<p style="margin:0 0 8px 0;"><strong>Haircut:</strong> {{haircut_summary}}</p>
+<p style="margin:0 0 8px 0;"><strong>Shave:</strong> {{shave_summary}}</p>
+<p style="margin:0 0 8px 0;"><strong>Nails:</strong> {{nails_summary}}</p>
+<p style="margin:0 0 16px 0;"><strong>Release:</strong> {{release_summary}}</p>
+<p style="margin:0 0 18px 0;"><strong>Weekly tip:</strong> {{weekly_tip}}</p>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:18px 0 0 0;">
+  <tr>
+    <td style="border-radius:999px;background:#0f766e;">
+      <a href="${TRIMRY_WEBSITE_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Open trimry.com</a>
+    </td>
+  </tr>
+</table>`
+    const textTemplate = `Hi {{first_name}},
+
+Weekly Trimry ritual summary for {{week_label}}
+- Good days: {{good_days}}
+- Challenging days: {{bad_days}}
+- Rare days: {{rare_days}}
+
+Haircut: {{haircut_summary}}
+Shave: {{shave_summary}}
+Nails: {{nails_summary}}
+Release: {{release_summary}}
+
+Weekly tip: {{weekly_tip}}
+
+View your full outlook on ${TRIMRY_WEBSITE_URL}`
+
+    return {
+      templateName: 'Trimry Weekly Ritual Email',
+      templateDescription:
+        'Weekly summary with good, challenging, and rare ritual days.',
+      subjectTemplate,
+      htmlTemplate: ensureFullHtmlDocument({
+        language: 'en',
+        subject: subjectTemplate,
+        htmlBody,
+        preheader:
+          'Weekly timing for haircut, shave, nails, and release.',
+      }),
+      textTemplate,
+      variableDefaults: {
+        first_name: 'there',
+        week_label: 'Apr 6 - Apr 12',
+        good_days: 'Monday, Thursday',
+        bad_days: 'Tuesday',
+        rare_days: 'Saturday',
+        haircut_summary: 'Wednesday afternoon and Friday morning feel aligned.',
+        shave_summary: 'Use caution Tuesday night.',
+        nails_summary: 'Thursday morning has smoother momentum.',
+        release_summary: 'Sunday before 20:00 is best for symbolic release.',
+        weekly_tip: 'Keep rituals simple and consistent for better momentum.',
+      },
+    }
+  }
+
+  const subjectTemplate = 'Tu resumen semanal Trimry: {{week_label}}'
+  const htmlBody = `
+<p style="margin:0 0 16px 0;">Hola {{first_name}},</p>
+<p style="margin:0 0 16px 0;">Este es tu resumen semanal con días buenos, malos y raros para corte, afeitado, uñas y liberación.</p>
+<h2 style="margin:22px 0 10px 0;font-size:20px;line-height:1.3;color:#0f172a;">Semana {{week_label}}</h2>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px 0;border-collapse:collapse;">
+  <tr>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Días buenos</td>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{good_days}}</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Días malos</td>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{bad_days}}</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Días raros</td>
+    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{rare_days}}</td>
+  </tr>
+</table>
+<p style="margin:0 0 8px 0;"><strong>Corte:</strong> {{haircut_summary}}</p>
+<p style="margin:0 0 8px 0;"><strong>Afeitado:</strong> {{shave_summary}}</p>
+<p style="margin:0 0 8px 0;"><strong>Uñas:</strong> {{nails_summary}}</p>
+<p style="margin:0 0 16px 0;"><strong>Liberación:</strong> {{release_summary}}</p>
+<p style="margin:0 0 18px 0;"><strong>Tip semanal:</strong> {{weekly_tip}}</p>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:18px 0 0 0;">
+  <tr>
+    <td style="border-radius:999px;background:#0f766e;">
+      <a href="${TRIMRY_WEBSITE_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Ir a trimry.com</a>
+    </td>
+  </tr>
+</table>`
+  const textTemplate = `Hola {{first_name}},
+
+Resumen semanal Trimry para {{week_label}}
+- Días buenos: {{good_days}}
+- Días malos: {{bad_days}}
+- Días raros: {{rare_days}}
+
+Corte: {{haircut_summary}}
+Afeitado: {{shave_summary}}
+Uñas: {{nails_summary}}
+Liberación: {{release_summary}}
+
+Tip semanal: {{weekly_tip}}
+
+Revisa tu detalle completo en ${TRIMRY_WEBSITE_URL}`
+
+  return {
+    templateName: 'Resumen Semanal Trimry',
+    templateDescription:
+      'Resumen semanal con días buenos, malos y raros para rituales.',
+    subjectTemplate,
+    htmlTemplate: ensureFullHtmlDocument({
+      language: 'es',
+      subject: subjectTemplate,
+      htmlBody,
+      preheader:
+        'Resumen semanal de corte, afeitado, uñas y liberación.',
+    }),
+    textTemplate,
+    variableDefaults: {
+      first_name: 'amigo',
+      week_label: '6 al 12 de abril',
+      good_days: 'Lunes y jueves',
+      bad_days: 'Martes',
+      rare_days: 'Sábado',
+      haircut_summary: 'Miércoles por la tarde y viernes temprano se ven alineados.',
+      shave_summary: 'Conviene evitar martes por la noche.',
+      nails_summary: 'Jueves en la mañana trae mejor fluidez.',
+      release_summary: 'Domingo antes de las 20:00 favorece cerrar ciclos.',
+      weekly_tip: 'Mantén rituales simples y consistentes para sostener el impulso.',
+    },
   }
 }
 
@@ -567,6 +823,23 @@ export function AdminSendCampaigns() {
     channel === 'whatsapp'
       ? templateName.trim() || whatsappExternalTemplateName.trim()
       : templateName
+
+  const applyWeeklyEmailTemplate = () => {
+    const preset = createWeeklyEmailPreset(language)
+
+    setChannel('email')
+    setTemplateName((current) => current.trim() || preset.templateName)
+    setTemplateDescription(
+      (current) => current.trim() || preset.templateDescription,
+    )
+    setCampaignName((current) => current.trim() || preset.templateName)
+    setEmailSubjectTemplate(preset.subjectTemplate)
+    setEmailHtmlTemplate(preset.htmlTemplate)
+    setEmailTextTemplate(preset.textTemplate)
+    setVariableValues(preset.variableDefaults)
+    setError('')
+    setSuccess(messages.dashboard.sendCampaigns.emailTemplateGenerated)
+  }
 
   if (loading) {
     return (
@@ -1092,6 +1365,23 @@ export function AdminSendCampaigns() {
               </div>
             ) : (
               <div className="space-y-4">
+                <div className="rounded-[1.5rem] border border-white/12 bg-black/18 p-4">
+                  <p className="text-sm font-semibold text-slate-50">
+                    {messages.dashboard.sendCampaigns.emailTemplateGeneratorTitle}
+                  </p>
+                  <p className="cosmic-shell-meta mt-2 text-xs">
+                    {messages.dashboard.sendCampaigns.emailTemplateGeneratorHint}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={applyWeeklyEmailTemplate}
+                    disabled={busyAction !== null}
+                    className="cosmic-outline-button mt-4 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] disabled:opacity-60"
+                  >
+                    {messages.dashboard.sendCampaigns.emailGenerateTemplate}
+                  </button>
+                </div>
+
                 <label className="cosmic-field-label text-sm font-semibold">
                   {messages.dashboard.sendCampaigns.emailSubjectLabel}
                   <input

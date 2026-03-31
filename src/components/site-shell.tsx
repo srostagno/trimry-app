@@ -242,6 +242,9 @@ export function SiteShell({
             <Link href="/legal/disclaimer" className="cosmic-link">
               {messages.legal.disclaimer}
             </Link>
+            <Link href="/legal/data-deletion" className="cosmic-link">
+              {messages.legal.dataDeletion}
+            </Link>
           </div>
         </div>
       </footer>

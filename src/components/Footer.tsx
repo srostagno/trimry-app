@@ -17,11 +17,27 @@ export function Footer() {
               <NavLink href="#faq">Questions</NavLink>
             </div>
           </nav>
+          <nav className="mt-6 text-sm" aria-label="legal links">
+            <div className="-my-1 flex flex-wrap justify-center gap-x-6 gap-y-2">
+              <Link href="/legal/terms" className="text-[color:var(--cosmic-copy)] transition hover:text-slate-100">
+                Terms
+              </Link>
+              <Link href="/legal/privacy" className="text-[color:var(--cosmic-copy)] transition hover:text-slate-100">
+                Privacy
+              </Link>
+              <Link href="/legal/disclaimer" className="text-[color:var(--cosmic-copy)] transition hover:text-slate-100">
+                Disclaimer
+              </Link>
+              <Link href="/legal/data-deletion" className="text-[color:var(--cosmic-copy)] transition hover:text-slate-100">
+                Data deletion
+              </Link>
+            </div>
+          </nav>
         </div>
         <div className="flex flex-col items-center border-t border-[rgba(134,190,255,0.12)] py-10 sm:flex-row-reverse sm:justify-between">
           <p className="mt-6 text-sm text-[color:var(--cosmic-copy)] sm:mt-0">
           Copyright &copy; {new Date().getFullYear()} Trimry. All rights
-            reserved. Trimry Limited, registered in Ireland. Company number: 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Bealaric Islands, Mallorca, 07181.
+            reserved. Trimry Limited, registered in Ireland. Company number: 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181.
           </p>
         </div>
       </Container>

@@ -5,7 +5,7 @@ export const COMPANY = {
   websiteUrl: 'https://trimry.com',
   registeredOffice:
     '71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland',
-  operationsOffice: 'Carrer Emili Darder 1, Bealaric Islands, Mallorca, 07181',
+  operationsOffice: 'Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181',
   supportEmail: 'support@trimry.com',
 } as const
 

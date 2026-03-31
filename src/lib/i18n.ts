@@ -162,9 +162,12 @@ export type MessageSection = {
     mondayTimeHint: string
     emailDeliveryLabel: string
     whatsappOffHint: string
+    whatsappConsentLabel: string
+    whatsappConsentHint: string
     submitContinue: string
     submitSave: string
     saveError: string
+    whatsappConsentError: string
   }
   activate: {
     loading: string
@@ -230,6 +233,9 @@ export type MessageSection = {
     sentOnMondaysAt: string
     emailDeliveryLabel: string
     whatsappOffSetup: string
+    whatsappConsentLabel: string
+    whatsappConsentHint: string
+    whatsappConsentError: string
     pendingTitle: string
     pendingSubtitle: string
     pendingDeliveryPreferenceLabel: string
@@ -370,6 +376,10 @@ export type MessageSection = {
       emailSubjectLabel: string
       emailHtmlLabel: string
       emailTextLabel: string
+      emailTemplateGeneratorTitle: string
+      emailTemplateGeneratorHint: string
+      emailGenerateTemplate: string
+      emailTemplateGenerated: string
       historyTitle: string
       historySubtitle: string
       emptyState: string
@@ -403,10 +413,19 @@ export type MessageSection = {
     terms: string
     privacy: string
     disclaimer: string
+    dataDeletion: string
     englishNotice: string
     termsSections: LegalSection[]
     privacySections: LegalSection[]
     disclaimerSections: LegalSection[]
+    dataDeletionSections: LegalSection[]
+  }
+  cookieConsent: {
+    title: string
+    description: string
+    accept: string
+    decline: string
+    learnMore: string
   }
   notifications: {
     success: string
@@ -646,9 +665,15 @@ const englishMessages: MessageSection = {
     emailDeliveryLabel: 'Email delivery',
     whatsappOffHint:
       'WhatsApp is off for this subscription. Turn it on above if you want instant phone delivery too.',
+    whatsappConsentLabel:
+      'I consent to receive Trimry subscription messages on WhatsApp at this number.',
+    whatsappConsentHint:
+      'You can opt out anytime by replying STOP in WhatsApp or by disabling WhatsApp delivery in your dashboard.',
     submitContinue: 'Continue to activation',
     submitSave: 'Save delivery settings',
     saveError: 'Unable to save your delivery settings right now.',
+    whatsappConsentError:
+      'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
   },
   activate: {
     loading: 'Loading your activation step...',
@@ -730,6 +755,12 @@ const englishMessages: MessageSection = {
     emailDeliveryLabel: 'Email delivery',
     whatsappOffSetup:
       'WhatsApp is off. You can activate by email only or re-enable it at any time.',
+    whatsappConsentLabel:
+      'I consent to receive Trimry subscription messages on WhatsApp at this number.',
+    whatsappConsentHint:
+      'You can opt out anytime by replying STOP in WhatsApp or by disabling WhatsApp delivery here.',
+    whatsappConsentError:
+      'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
     pendingTitle: 'Activate your Trimry subscription',
     pendingSubtitle:
       'Your delivery preference is already saved. Before payment, we take you through a short activation step that frames the weekly ritual and then opens secure Stripe checkout.',
@@ -895,6 +926,11 @@ const englishMessages: MessageSection = {
       emailSubjectLabel: 'Email subject',
       emailHtmlLabel: 'HTML body',
       emailTextLabel: 'Plain text body',
+      emailTemplateGeneratorTitle: 'Email template generator',
+      emailTemplateGeneratorHint:
+        'Generate a professional weekly Trimry email with logo, inbox-friendly structure, and a CTA to trimry.com.',
+      emailGenerateTemplate: 'Generate weekly template',
+      emailTemplateGenerated: 'Weekly email template generated.',
       historyTitle: 'Campaign history',
       historySubtitle:
         'Every saved or sent campaign stays here so you can inspect metrics and the variable values used for the send.',
@@ -929,6 +965,7 @@ const englishMessages: MessageSection = {
     terms: 'Terms of Service',
     privacy: 'Privacy Policy',
     disclaimer: 'Ritual Disclaimer',
+    dataDeletion: 'Data Deletion Instructions',
     englishNotice:
       'Legal master text is maintained in English. Localized interface labels are provided for convenience.',
     termsSections: [
@@ -943,56 +980,86 @@ const englishMessages: MessageSection = {
           'The Trimry plan is billed at {billingLegal}. It includes one ritual forecast delivered each Monday by your selected channel: email, WhatsApp, or both. You can cancel your subscription at any time from your account dashboard. If you decide to come back later, you can reactivate from the same account by starting a new Stripe checkout. Billing details, payment methods, invoices, and historical billing records remain available through the Stripe-hosted billing tools linked from your dashboard.',
       },
       {
-        title: '3. Account security',
+        title: '3. WhatsApp consent and contact rules',
+        body:
+          'You must only provide phone numbers for recipients who have consented to receive your requested Trimry subscription communications. If you enable WhatsApp delivery, you authorize Trimry to send subscription and service-related WhatsApp messages to that number. You can opt out at any time by replying STOP (or equivalent command) in WhatsApp or by disabling WhatsApp delivery from your account settings.',
+      },
+      {
+        title: '4. Account security',
         body:
           'You must keep your login credentials confidential. You are responsible for all actions performed through your account.',
       },
       {
-        title: '4. Acceptable use',
+        title: '5. Acceptable use',
         body:
           'You agree not to misuse the service, attempt unauthorized access, or use Trimry for unlawful activity.',
       },
       {
-        title: '5. No professional advice',
+        title: '6. Service providers',
+        body:
+          'Trimry relies on third-party providers to operate the service, including payment processing (Stripe), WhatsApp delivery infrastructure (Meta/WhatsApp), cloud hosting, and database infrastructure. Provider availability, policy controls, and technical limits may affect delivery outcomes.',
+      },
+      {
+        title: '7. No professional advice',
         body:
           'Trimry provides cultural and ritual timing content only. It is not medical, legal, or financial advice.',
       },
       {
-        title: '6. Company information',
+        title: '8. Company information',
         body:
-          'Trimry Limited, company number 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Bealaric Islands, Mallorca, 07181. Contact: support@trimry.com.',
+          'Trimry Limited, company number 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181. Contact: support@trimry.com.',
       },
     ],
     privacySections: [
       {
         title: '1. Data we collect',
         body:
-          'We collect your name, email address, encrypted password hash, language preference, delivery preference, and WhatsApp number when that channel is enabled for your subscription.',
+          'We collect account and subscription data needed to operate Trimry, including name, email address, password hash, locale, time zone, optional birth date, delivery preferences, and WhatsApp number when enabled. We also process operational security and delivery metadata such as session/IP and user-agent records, message delivery status metadata, and billing identifiers from Stripe.',
       },
       {
         title: '2. How we use data',
         body:
-          'Data is used to authenticate your account, manage subscription status, deliver weekly messages, and operate customer support.',
+          'We use data to authenticate accounts, secure sessions, manage subscriptions, send weekly content, process billing and account operations, handle support, and monitor service reliability and fraud/security risks.',
       },
       {
-        title: '3. Data storage',
+        title: '3. WhatsApp communications and consent',
         body:
-          'Account data is stored in MongoDB infrastructure configured by Trimry. Session cookies are HTTP-only and signed for security.',
+          'We send WhatsApp messages only when WhatsApp delivery is enabled with your consent. You can withdraw WhatsApp consent by replying STOP (or equivalent command) or by disabling WhatsApp delivery in your account. We record consent and opt-out events for compliance and abuse prevention.',
       },
       {
         title: '4. Data sharing',
         body:
-          'We do not sell your personal data. We only share data with providers needed to operate delivery and infrastructure.',
+          'We do not sell personal data. We share data only with processors required to operate the service, such as Meta/WhatsApp (message transport and status), Stripe (billing), and infrastructure providers for hosting and database operations.',
       },
       {
-        title: '5. User rights',
+        title: '5. Cookies and analytics',
         body:
-          'You may request account access, corrections, or deletion by contacting support@trimry.com.',
+          'We use essential cookies for authentication and session continuity. We may also use optional analytics cookies/tools to measure product usage. You can accept or decline optional analytics cookies from the website prompt.',
       },
       {
-        title: '6. Company contact',
+        title: '6. International transfers',
         body:
-          'Trimry Limited, company number 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Bealaric Islands, Mallorca, 07181.',
+          'Because our providers operate globally, your data may be processed outside your country of residence. We use provider contractual and technical safeguards appropriate to service operations.',
+      },
+      {
+        title: '7. Retention',
+        body:
+          'We keep personal data only as long as needed for service operation, legal obligations, fraud/security handling, billing/audit records, and dispute resolution. Retention periods vary by data type and legal requirement.',
+      },
+      {
+        title: '8. User rights',
+        body:
+          'You may request account access, corrections, or deletion by contacting support@trimry.com. You can also delete your account from your dashboard. Some records may be retained where required by law or for legitimate security/audit needs.',
+      },
+      {
+        title: '9. Data storage',
+        body:
+          'Account data is stored in MongoDB infrastructure configured by Trimry. Session cookies are HTTP-only and signed for security.',
+      },
+      {
+        title: '10. Company contact',
+        body:
+          'Trimry Limited, company number 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181.',
       },
     ],
     disclaimerSections: [
@@ -1012,6 +1079,36 @@ const englishMessages: MessageSection = {
           'You remain fully responsible for personal grooming, health decisions, and any action taken based on service content.',
       },
     ],
+    dataDeletionSections: [
+      {
+        title: '1. Delete from your Trimry dashboard',
+        body:
+          'Sign in to your Trimry account, open your dashboard settings, and use the account deletion option. This is the fastest way to request deletion of your user account data.',
+      },
+      {
+        title: '2. Delete by email request',
+        body:
+          'If you cannot access your account, email support@trimry.com from your registered address with subject "Data Deletion Request". We may request account verification before processing.',
+      },
+      {
+        title: '3. What is deleted and what may be retained',
+        body:
+          'When a deletion request is completed, account profile data, delivery preferences, and active subscription delivery settings are removed or anonymized according to system design. Limited records may be retained when required for legal compliance, billing audit trails, security/fraud prevention, or dispute resolution.',
+      },
+      {
+        title: '4. Processing timeline',
+        body:
+          'We process deletion requests as soon as reasonably possible after verification. If a provider-managed record exists (for example payment invoices in Stripe), retention may follow that provider legal obligations.',
+      },
+    ],
+  },
+  cookieConsent: {
+    title: 'Cookies and analytics',
+    description:
+      'We use essential cookies for login/session and optional analytics cookies to improve Trimry. You can accept or decline optional analytics.',
+    accept: 'Accept analytics',
+    decline: 'Decline analytics',
+    learnMore: 'Read privacy policy',
   },
   notifications: {
     success: 'Saved successfully.',
@@ -1252,9 +1349,15 @@ const spanishMessages: MessageSection = {
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffHint:
       'WhatsApp está desactivado para esta suscripción. Actívalo arriba si también quieres entrega inmediata al teléfono.',
+    whatsappConsentLabel:
+      'Consiento recibir mensajes de suscripción de Trimry por WhatsApp en este número.',
+    whatsappConsentHint:
+      'Puedes salir cuando quieras respondiendo STOP en WhatsApp o desactivando WhatsApp desde tu panel.',
     submitContinue: 'Continuar a la activación',
     submitSave: 'Guardar ajustes de entrega',
     saveError: 'No pudimos guardar tus ajustes de entrega en este momento.',
+    whatsappConsentError:
+      'Confirma el consentimiento de WhatsApp antes de habilitar la entrega por WhatsApp.',
   },
   activate: {
     loading: 'Cargando tu paso de activación...',
@@ -1336,6 +1439,12 @@ const spanishMessages: MessageSection = {
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffSetup:
       'WhatsApp está apagado. Puedes dejar solo email o volver a habilitarlo cuando quieras.',
+    whatsappConsentLabel:
+      'Consiento recibir mensajes de suscripción de Trimry por WhatsApp en este número.',
+    whatsappConsentHint:
+      'Puedes salir cuando quieras respondiendo STOP en WhatsApp o desactivando WhatsApp aquí.',
+    whatsappConsentError:
+      'Confirma el consentimiento de WhatsApp antes de habilitar la entrega por WhatsApp.',
     pendingTitle: 'Activa tu suscripción Trimry',
     pendingSubtitle:
       'Tu preferencia de entrega ya está guardada. Antes del pago, te llevamos por un paso breve de activación que enmarca el ritual semanal y luego abre el checkout seguro de Stripe.',
@@ -1502,6 +1611,11 @@ const spanishMessages: MessageSection = {
       emailSubjectLabel: 'Asunto del email',
       emailHtmlLabel: 'Cuerpo HTML',
       emailTextLabel: 'Cuerpo texto plano',
+      emailTemplateGeneratorTitle: 'Generador de plantilla email',
+      emailTemplateGeneratorHint:
+        'Genera un email semanal profesional de Trimry con logo, estructura amigable para inbox y CTA a trimry.com.',
+      emailGenerateTemplate: 'Generar plantilla semanal',
+      emailTemplateGenerated: 'Plantilla semanal generada.',
       historyTitle: 'Historial de campañas',
       historySubtitle:
         'Cada campaña guardada o enviada queda aquí para revisar métricas y los valores variables usados en el envío.',
@@ -1536,6 +1650,7 @@ const spanishMessages: MessageSection = {
     terms: 'Términos del servicio',
     privacy: 'Política de privacidad',
     disclaimer: 'Descargo ritual',
+    dataDeletion: 'Instrucciones de eliminación de datos',
     englishNotice:
       'El texto legal maestro se mantiene en inglés. Esta traducción se ofrece por conveniencia.',
     termsSections: [
@@ -1550,22 +1665,32 @@ const spanishMessages: MessageSection = {
           'El plan Trimry se cobra a {billingLegal}. Incluye un pronóstico ritual entregado cada lunes por el canal que elijas: email, WhatsApp o ambos. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
       },
       {
-        title: '3. Seguridad de la cuenta',
+        title: '3. Consentimiento y contacto por WhatsApp',
+        body:
+          'Solo debes proporcionar números de teléfono de destinatarios que hayan consentido recibir las comunicaciones de suscripción de Trimry que solicitaste. Si habilitas WhatsApp, autorizas a Trimry a enviar mensajes de suscripción y servicio a ese número. Puedes darte de baja en cualquier momento respondiendo STOP (u orden equivalente) en WhatsApp o desactivando WhatsApp desde tu cuenta.',
+      },
+      {
+        title: '4. Seguridad de la cuenta',
         body:
           'Debes mantener tus credenciales de acceso confidenciales. Eres responsable de todas las acciones realizadas a través de tu cuenta.',
       },
       {
-        title: '4. Uso aceptable',
+        title: '5. Uso aceptable',
         body:
           'Aceptas no hacer mal uso del servicio, no intentar accesos no autorizados y no usar Trimry para actividades ilegales.',
       },
       {
-        title: '5. Sin asesoría profesional',
+        title: '6. Proveedores del servicio',
+        body:
+          'Trimry depende de proveedores externos para operar, incluyendo procesamiento de pagos (Stripe), infraestructura de entrega por WhatsApp (Meta/WhatsApp), hosting en la nube e infraestructura de base de datos. La disponibilidad del proveedor, controles de políticas y límites técnicos pueden afectar la entrega.',
+      },
+      {
+        title: '7. Sin asesoría profesional',
         body:
           'Trimry entrega contenido cultural y ritual únicamente. No constituye asesoría médica, legal ni financiera.',
       },
       {
-        title: '6. Información de la compañía',
+        title: '8. Información de la compañía',
         body:
           'Trimry Limited, número de compañía 752517. Oficina registrada: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Oficina operativa: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181. Contacto: support@trimry.com.',
       },
@@ -1574,30 +1699,50 @@ const spanishMessages: MessageSection = {
       {
         title: '1. Datos que recopilamos',
         body:
-          'Recopilamos tu nombre, correo electrónico, hash cifrado de contraseña, preferencia de idioma, preferencia de entrega y número de WhatsApp cuando ese canal está habilitado en tu suscripción.',
+          'Recopilamos datos de cuenta y suscripción necesarios para operar Trimry, incluyendo nombre, correo electrónico, hash de contraseña, idioma, zona horaria, fecha de nacimiento opcional, preferencias de entrega y número de WhatsApp cuando está habilitado. También procesamos metadatos operativos y de seguridad como registros de sesión/IP y user-agent, metadatos de estado de entrega y metadatos de facturación de Stripe.',
       },
       {
         title: '2. Cómo usamos los datos',
         body:
-          'Los datos se usan para autenticar tu cuenta, administrar el estado de la suscripción, entregar mensajes semanales y operar soporte al cliente.',
+          'Usamos los datos para autenticar cuentas, asegurar sesiones, administrar suscripciones, enviar contenido semanal, procesar cobros y operaciones de cuenta, atender soporte y monitorear confiabilidad del servicio y riesgos de fraude/seguridad.',
       },
       {
-        title: '3. Almacenamiento de datos',
+        title: '3. WhatsApp y consentimiento',
+        body:
+          'Enviamos mensajes por WhatsApp solo cuando habilitas ese canal con tu consentimiento. Puedes retirar ese consentimiento respondiendo STOP (u orden equivalente) o desactivando WhatsApp en tu cuenta. Registramos eventos de consentimiento y baja por cumplimiento y prevención de abuso.',
+      },
+      {
+        title: '4. Compartición de datos',
+        body:
+          'No vendemos datos personales. Solo compartimos datos con procesadores necesarios para operar el servicio, como Meta/WhatsApp (transporte y estados de mensajes), Stripe (facturación) y proveedores de infraestructura para hosting y base de datos.',
+      },
+      {
+        title: '5. Cookies y analítica',
+        body:
+          'Usamos cookies esenciales para autenticación y continuidad de sesión. También podemos usar cookies/herramientas de analítica opcionales para medir uso del producto. Puedes aceptar o rechazar la analítica opcional desde el aviso del sitio.',
+      },
+      {
+        title: '6. Transferencias internacionales',
+        body:
+          'Como nuestros proveedores operan globalmente, tus datos pueden procesarse fuera de tu país de residencia. Aplicamos salvaguardas contractuales y técnicas apropiadas para la operación del servicio.',
+      },
+      {
+        title: '7. Retención',
+        body:
+          'Conservamos datos personales solo mientras sean necesarios para operar el servicio, cumplir obligaciones legales, gestionar seguridad/fraude, mantener registros de cobro/auditoría y resolver disputas. Los plazos varían según tipo de dato y exigencia legal.',
+      },
+      {
+        title: '8. Derechos del usuario',
+        body:
+          'Puedes solicitar acceso, corrección o eliminación escribiendo a support@trimry.com. También puedes eliminar tu cuenta desde el panel. Algunos registros pueden conservarse cuando lo exija la ley o por necesidades legítimas de seguridad/auditoría.',
+      },
+      {
+        title: '9. Almacenamiento de datos',
         body:
           'Los datos de la cuenta se almacenan en infraestructura MongoDB configurada por Trimry. Las cookies de sesión son HTTP-only y están firmadas por seguridad.',
       },
       {
-        title: '4. Uso compartido de datos',
-        body:
-          'No vendemos tus datos personales. Solo compartimos información con proveedores necesarios para operar la entrega y la infraestructura.',
-      },
-      {
-        title: '5. Derechos del usuario',
-        body:
-          'Puedes solicitar acceso a tu cuenta, correcciones o eliminación escribiendo a support@trimry.com.',
-      },
-      {
-        title: '6. Contacto de la compañía',
+        title: '10. Contacto de la compañía',
         body:
           'Trimry Limited, número de compañía 752517. Oficina registrada: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Oficina operativa: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181.',
       },
@@ -1619,6 +1764,36 @@ const spanishMessages: MessageSection = {
           'Sigues siendo plenamente responsable de tus decisiones de grooming, salud y cualquier acción tomada a partir del contenido del servicio.',
       },
     ],
+    dataDeletionSections: [
+      {
+        title: '1. Eliminar desde tu panel de Trimry',
+        body:
+          'Inicia sesión en tu cuenta Trimry, abre la configuración del panel y usa la opción de eliminación de cuenta. Es la forma más rápida de solicitar eliminación de datos de usuario.',
+      },
+      {
+        title: '2. Eliminar por solicitud por correo',
+        body:
+          'Si no puedes acceder a tu cuenta, escribe a support@trimry.com desde tu correo registrado con el asunto "Data Deletion Request". Podemos solicitar verificación de cuenta antes de procesar.',
+      },
+      {
+        title: '3. Qué se elimina y qué puede conservarse',
+        body:
+          'Cuando se completa una solicitud de eliminación, los datos de perfil, preferencias de entrega y configuraciones activas de suscripción se eliminan o anonimizan según el diseño del sistema. Algunos registros limitados pueden conservarse por cumplimiento legal, trazabilidad de facturación, prevención de fraude/seguridad o resolución de disputas.',
+      },
+      {
+        title: '4. Plazo de procesamiento',
+        body:
+          'Procesamos las solicitudes de eliminación lo antes posible una vez verificada la identidad. Si existen registros gestionados por proveedores (por ejemplo, facturas de Stripe), la retención puede seguir obligaciones legales del proveedor.',
+      },
+    ],
+  },
+  cookieConsent: {
+    title: 'Cookies y analítica',
+    description:
+      'Usamos cookies esenciales para inicio de sesión/sesión y cookies opcionales de analítica para mejorar Trimry. Puedes aceptar o rechazar la analítica opcional.',
+    accept: 'Aceptar analítica',
+    decline: 'Rechazar analítica',
+    learnMore: 'Ver política de privacidad',
   },
   notifications: {
     success: 'Guardado correctamente.',

@@ -9,6 +9,14 @@ function normalizeUrl(value: string) {
   return value.replace(/\/+$/, '')
 }
 
+function resolveHostname(value: string) {
+  try {
+    return new URL(value).hostname.toLowerCase()
+  } catch {
+    return ''
+  }
+}
+
 function resolveSiteUrl() {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL
 
@@ -26,6 +34,7 @@ function resolveSiteUrl() {
 }
 
 export const SITE_URL = resolveSiteUrl()
+export const IS_INDEXING_ALLOWED = resolveIndexingAllowed(SITE_URL)
 export const SITE_NAME = COMPANY.brandName
 export const SITE_TITLE =
   'Trimry | Lucky timing for haircuts, weekly fortune, and ritual release guidance'
@@ -49,6 +58,30 @@ export const SOCIAL_IMAGE_PATH = '/opengraph-image'
 export const TWITTER_IMAGE_PATH = '/twitter-image'
 
 const englishMessages = getMessages(DEFAULT_LANGUAGE)
+const rootCanonicalUrl = absoluteUrl('/')
+
+function resolveIndexingAllowed(siteUrl: string) {
+  const explicitIndexing = process.env.NEXT_PUBLIC_ALLOW_INDEXING
+
+  if (explicitIndexing === 'true') {
+    return true
+  }
+
+  if (explicitIndexing === 'false') {
+    return false
+  }
+
+  const vercelEnv = process.env.VERCEL_ENV
+
+  if (vercelEnv && vercelEnv !== 'production') {
+    return false
+  }
+
+  const siteHostname = resolveHostname(siteUrl)
+  const productionHostname = resolveHostname(DEFAULT_PRODUCTION_SITE_URL)
+
+  return siteHostname.length > 0 && siteHostname === productionHostname
+}
 
 function buildTitle(title?: string) {
   return title ? `${title} | ${SITE_NAME}` : SITE_TITLE
@@ -56,6 +89,35 @@ function buildTitle(title?: string) {
 
 export function absoluteUrl(path = '/') {
   return new URL(path, METADATA_BASE).toString()
+}
+
+function robotsDirectives(noIndex: boolean): Metadata['robots'] {
+  if (noIndex) {
+    return {
+      index: false,
+      follow: false,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+        'max-snippet': 0,
+        'max-video-preview': 0,
+      },
+    }
+  }
+
+  return {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
+    },
+  }
 }
 
 type PageMetadataOptions = {
@@ -73,13 +135,14 @@ export function createPageMetadata({
   keywords = [],
   noIndex = false,
 }: PageMetadataOptions): Metadata {
+  const shouldNoIndex = noIndex || !IS_INDEXING_ALLOWED
   const canonical = absoluteUrl(path)
 
   return {
     title,
     description,
     keywords: [...SITE_KEYWORDS, ...keywords],
-    alternates: noIndex ? undefined : { canonical },
+    alternates: shouldNoIndex ? undefined : { canonical },
     openGraph: {
       type: 'website',
       locale: SITE_LOCALE,
@@ -102,40 +165,30 @@ export function createPageMetadata({
       description,
       images: [absoluteUrl(TWITTER_IMAGE_PATH)],
     },
-    robots: noIndex
-      ? {
-          index: false,
-          follow: false,
-          nocache: true,
-          googleBot: {
-            index: false,
-            follow: false,
-            noimageindex: true,
-            'max-snippet': 0,
-            'max-video-preview': 0,
-          },
-        }
-      : {
-          index: true,
-          follow: true,
-          googleBot: {
-            index: true,
-            follow: true,
-            'max-snippet': -1,
-            'max-image-preview': 'large',
-            'max-video-preview': -1,
-          },
-        },
+    robots: robotsDirectives(shouldNoIndex),
   }
 }
 
-export function createNoIndexMetadata(title: string, description = SITE_DESCRIPTION): Metadata {
+type NoIndexMetadataOptions = {
+  title: string
+  description?: string
+  path?: string
+}
+
+export function createNoIndexMetadata({
+  title,
+  description = SITE_DESCRIPTION,
+  path = '/',
+}: NoIndexMetadataOptions): Metadata {
   return createPageMetadata({
     title,
     description,
+    path,
     noIndex: true,
   })
 }
+
+const rootShouldNoIndex = !IS_INDEXING_ALLOWED
 
 export const rootMetadata: Metadata = {
   metadataBase: METADATA_BASE,
@@ -157,13 +210,11 @@ export const rootMetadata: Metadata = {
     address: false,
     telephone: false,
   },
-  alternates: {
-    canonical: absoluteUrl('/'),
-  },
+  alternates: rootShouldNoIndex ? undefined : { canonical: rootCanonicalUrl },
   openGraph: {
     type: 'website',
     locale: SITE_LOCALE,
-    url: absoluteUrl('/'),
+    url: rootCanonicalUrl,
     siteName: SITE_NAME,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
@@ -182,17 +233,7 @@ export const rootMetadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [absoluteUrl(TWITTER_IMAGE_PATH)],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-snippet': -1,
-      'max-image-preview': 'large',
-      'max-video-preview': -1,
-    },
-  },
+  robots: robotsDirectives(rootShouldNoIndex),
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',

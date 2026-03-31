@@ -1,8 +1,12 @@
 import type { MetadataRoute } from 'next'
 
-import { absoluteUrl } from '@/lib/seo'
+import { IS_INDEXING_ALLOWED, absoluteUrl } from '@/lib/seo'
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!IS_INDEXING_ALLOWED) {
+    return []
+  }
+
   const lastModified = new Date()
 
   return [
@@ -26,6 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: absoluteUrl('/legal/disclaimer'),
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.2,
+    },
+    {
+      url: absoluteUrl('/legal/data-deletion'),
       lastModified,
       changeFrequency: 'monthly',
       priority: 0.2,

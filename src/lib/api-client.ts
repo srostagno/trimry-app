@@ -21,16 +21,21 @@ function buildUrl(path: string) {
 }
 
 function withDefaultHeaders(init: RequestInit) {
-  if (init.body instanceof FormData) {
+  const hasBody = init.body !== undefined && init.body !== null
+
+  if (!hasBody || init.body instanceof FormData) {
     return init
+  }
+
+  const headers = new Headers(init.headers)
+
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
   }
 
   return {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init.headers ?? {}),
-    },
+    headers,
   }
 }
 

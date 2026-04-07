@@ -28,6 +28,7 @@ export type MessageSection = {
   }
   nav: {
     home: string
+    guide: string
     howItWorks: string
     pricing: string
     faq: string
@@ -65,6 +66,10 @@ export type MessageSection = {
     couldBe: string
     teaserNote: string
     teaserButton: string
+    seoGuideBadge: string
+    seoGuideTitle: string
+    seoGuideSubtitle: string
+    seoGuideButton: string
     predictions: Array<{
       tone: 'good' | 'bad' | 'rare'
       text: string
@@ -464,6 +469,7 @@ const englishMessages: MessageSection = {
   },
   nav: {
     home: 'Home',
+    guide: 'Guide',
     howItWorks: 'How it works',
     pricing: 'Pricing',
     faq: 'FAQ',
@@ -484,9 +490,9 @@ const englishMessages: MessageSection = {
   },
   hero: {
     badge: 'Tibetan Calendar Fortune Service',
-    title: 'Catch the lucky days before your next cut.',
+    title: 'Good and Bad Days to Cut Your Hair, Nails and More.',
     subtitle:
-      'Trimry sends one weekly ritual forecast every Monday by email, WhatsApp, or both, with good, bad, and rare day signals inspired by a little-known Tibetan sutra tradition plus concrete hints about luck, money, and love momentum.',
+      'Trimry sends one weekly ritual forecast every Monday by email, WhatsApp, or both, with good, bad, and rare day signals for haircuts, nail trimming, shaving, and symbolic release timing.',
     primary: 'Start for {billingCompact}',
     secondary: 'See today’s teaser',
   },
@@ -506,6 +512,11 @@ const englishMessages: MessageSection = {
     teaserNote:
       'Subscribe to reveal the true day-by-day transmission and receive the real Monday guidance by email, WhatsApp, or both.',
     teaserButton: 'Reveal my real forecast',
+    seoGuideBadge: 'SEO guide',
+    seoGuideTitle: 'Need the full guide on good and bad haircut and nail days?',
+    seoGuideSubtitle:
+      'Read our English guide built around the query “Good and Bad Days to Cut your Hair, Nails and more” with practical weekly timing rules.',
+    seoGuideButton: 'Read the full guide',
     predictions: [
       {
         tone: 'good',
@@ -1149,6 +1160,7 @@ const spanishMessages: MessageSection = {
   },
   nav: {
     home: 'Inicio',
+    guide: 'Guía',
     howItWorks: 'Cómo funciona',
     pricing: 'Precios',
     faq: 'FAQ',
@@ -1169,9 +1181,9 @@ const spanishMessages: MessageSection = {
   },
   hero: {
     badge: 'Servicio de fortuna del calendario tibetano',
-    title: 'Encuentra los días de suerte antes de tu próximo corte.',
+    title: 'Días buenos y malos para cortar tu pelo, uñas y más.',
     subtitle:
-      'Trimry envía un pronóstico ritual semanal cada lunes por email, WhatsApp o ambos, con señales de días buenos, malos y raros inspiradas en una tradición poco conocida del sutra tibetano, junto con pistas concretas sobre suerte, dinero y amor.',
+      'Trimry envía un pronóstico ritual semanal cada lunes por email, WhatsApp o ambos, con señales de días buenos, malos y raros para corte de pelo, uñas, afeitado y liberación simbólica.',
     primary: 'Empieza por {billingCompact}',
     secondary: 'Ver el avance de hoy',
   },
@@ -1191,6 +1203,11 @@ const spanishMessages: MessageSection = {
     teaserNote:
       'Suscríbete para revelar la transmisión real día por día y recibir la guía del lunes por email, WhatsApp o ambos.',
     teaserButton: 'Revelar mi pronóstico real',
+    seoGuideBadge: 'Guía SEO',
+    seoGuideTitle: '¿Quieres la guía completa de días buenos y malos?',
+    seoGuideSubtitle:
+      'Lee nuestra guía en inglés creada para la búsqueda “Good and Bad Days to Cut your Hair, Nails and more” con reglas prácticas por semana.',
+    seoGuideButton: 'Leer guía completa',
     predictions: [
       {
         tone: 'good',

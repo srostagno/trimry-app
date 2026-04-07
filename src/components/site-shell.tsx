@@ -11,6 +11,7 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 import { useLanguage } from '@/components/language-provider'
 import type { AuthViewer } from '@/lib/auth-viewer'
 import { COMPANY } from '@/lib/company'
+import { GOOD_BAD_GUIDE_PATH } from '@/lib/seo'
 
 function MenuIcon({ open }: { open: boolean }) {
   return (
@@ -57,6 +58,11 @@ export function SiteShell({
 
   const baseLinks = [
     { href: '/', label: messages.nav.home, active: pathname === '/' },
+    {
+      href: GOOD_BAD_GUIDE_PATH,
+      label: messages.nav.guide,
+      active: pathname === GOOD_BAD_GUIDE_PATH,
+    },
     { href: '/#how-it-works', label: messages.nav.howItWorks, active: false },
     { href: '/#pricing', label: messages.nav.pricing, active: false },
     { href: '/#faq', label: messages.nav.faq, active: false },
@@ -233,6 +239,9 @@ export function SiteShell({
             <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a>
           </p>
           <div className="flex flex-wrap gap-4">
+            <Link href={GOOD_BAD_GUIDE_PATH} className="cosmic-link">
+              Good/Bad Days Guide
+            </Link>
             <Link href="/legal/terms" className="cosmic-link">
               {messages.legal.terms}
             </Link>

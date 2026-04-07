@@ -1,6 +1,6 @@
 import { createSocialImage } from '@/lib/social-image'
 
-export const alt = 'Trimry weekly ritual timing and fortune guidance'
+export const alt = 'Good and bad days to cut your hair, nails, and more with Trimry'
 export const size = {
   width: 1200,
   height: 630,
@@ -9,9 +9,9 @@ export const contentType = 'image/png'
 
 export default function OpenGraphImage() {
   return createSocialImage({
-    eyebrow: 'Weekly ritual timing',
-    title: 'Catch the lucky days before your next cut.',
+    eyebrow: 'Good and bad timing',
+    title: 'Good and Bad Days to Cut Your Hair and Nails',
     subtitle:
-      'One weekly Trimry forecast with lucky, challenging, and rare day signals by email, WhatsApp, or both.',
+      'One Monday Trimry forecast with Good, Bad, and Rare signals for haircuts, nail trimming, and more.',
   })
 }

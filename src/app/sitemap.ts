@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { IS_INDEXING_ALLOWED, absoluteUrl } from '@/lib/seo'
+import { GOOD_BAD_GUIDE_PATH, IS_INDEXING_ALLOWED, absoluteUrl } from '@/lib/seo'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!IS_INDEXING_ALLOWED) {
@@ -15,6 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: 'weekly',
       priority: 1,
+    },
+    {
+      url: absoluteUrl(GOOD_BAD_GUIDE_PATH),
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     {
       url: absoluteUrl('/legal/terms'),

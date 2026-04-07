@@ -1,12 +1,14 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 
 import { LuckBeliefCarousel } from '@/components/luck-belief-carousel'
 import { StartFlowButton } from '@/components/start-flow-button'
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent } from '@/lib/analytics'
+import { GOOD_BAD_GUIDE_PATH } from '@/lib/seo'
 
 type OracleTone = 'good' | 'bad' | 'rare'
 
@@ -236,6 +238,20 @@ export function HomePageClient() {
             {messages.home.teaserButton}
           </StartFlowButton>
         </article>
+      </section>
+
+      <section className="cosmic-card rounded-3xl p-6 sm:p-8">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-100/78">
+          {messages.home.seoGuideBadge}
+        </p>
+        <h2 className="mt-3 text-3xl text-slate-50 sm:text-4xl">{messages.home.seoGuideTitle}</h2>
+        <p className="mt-3 max-w-3xl text-slate-100/84">{messages.home.seoGuideSubtitle}</p>
+        <Link
+          href={GOOD_BAD_GUIDE_PATH}
+          className="cosmic-button-secondary mt-6 inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.15em] text-cyan-50 transition hover:bg-cyan-300/14"
+        >
+          {messages.home.seoGuideButton}
+        </Link>
       </section>
 
       <section id="pricing" className="cosmic-panel relative overflow-hidden rounded-[2rem] p-8 sm:p-10">

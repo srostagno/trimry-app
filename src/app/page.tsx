@@ -4,11 +4,13 @@ import { createPageMetadata, homePageJsonLd } from '@/lib/seo'
 
 export const metadata = createPageMetadata({
   description:
-    'Trimry helps you catch lucky haircut days and weekly release timing with one ritual forecast every Monday by email, WhatsApp, or both.',
+    'Good and bad days to cut your hair, nails, and more in one weekly Trimry forecast. Get Monday timing guidance for haircuts, shaving, nail trimming, and ritual release.',
   keywords: [
-    'lucky haircut day app',
+    'good and bad days to cut your hair nails and more',
+    'good and bad days to cut hair',
+    'good and bad days to cut nails',
+    'best day to cut hair and nails',
     'weekly ritual forecast',
-    'fortune guidance subscription',
   ],
   path: '/',
 })

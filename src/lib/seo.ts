@@ -17,6 +17,10 @@ function resolveHostname(value: string) {
   }
 }
 
+function normalizeHostname(hostname: string) {
+  return hostname.replace(/^www\./, '')
+}
+
 function resolveSiteUrl() {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL
 
@@ -37,12 +41,19 @@ export const SITE_URL = resolveSiteUrl()
 export const IS_INDEXING_ALLOWED = resolveIndexingAllowed(SITE_URL)
 export const SITE_NAME = COMPANY.brandName
 export const SITE_TITLE =
-  'Trimry | Lucky timing for haircuts, weekly fortune, and ritual release guidance'
+  'Good and Bad Days to Cut Your Hair, Nails and More | Trimry'
 export const SITE_DESCRIPTION =
-  'Trimry delivers one weekly ritual forecast every Monday by email, WhatsApp, or both, with favorable, challenging, and rare day signals for haircuts, shaving, nail cutting, and symbolic release timing.'
+  'Discover good and bad days to cut your hair, trim nails, shave, and reset your week. Trimry sends one Monday forecast with good, bad, and rare timing signals by email, WhatsApp, or both.'
 export const SITE_KEYWORDS = [
+  'good and bad days to cut your hair',
+  'good and bad days to cut your hair nails and more',
+  'best day to cut hair and nails',
+  'bad day to cut hair',
   'lucky haircut days',
+  'lucky nail cutting days',
+  'hair and nails timing calendar',
   'haircut timing',
+  'nail cutting timing',
   'weekly fortune forecast',
   'ritual release guidance',
   'Tibetan calendar timing',
@@ -56,6 +67,7 @@ export const SITE_LOCALE = 'en_US'
 export const METADATA_BASE = new URL(SITE_URL)
 export const SOCIAL_IMAGE_PATH = '/opengraph-image'
 export const TWITTER_IMAGE_PATH = '/twitter-image'
+export const GOOD_BAD_GUIDE_PATH = '/good-and-bad-days-to-cut-your-hair-nails-and-more'
 
 const englishMessages = getMessages(DEFAULT_LANGUAGE)
 const rootCanonicalUrl = absoluteUrl('/')
@@ -80,7 +92,10 @@ function resolveIndexingAllowed(siteUrl: string) {
   const siteHostname = resolveHostname(siteUrl)
   const productionHostname = resolveHostname(DEFAULT_PRODUCTION_SITE_URL)
 
-  return siteHostname.length > 0 && siteHostname === productionHostname
+  return (
+    siteHostname.length > 0 &&
+    normalizeHostname(siteHostname) === normalizeHostname(productionHostname)
+  )
 }
 
 function buildTitle(title?: string) {
@@ -155,7 +170,7 @@ export function createPageMetadata({
           url: absoluteUrl(SOCIAL_IMAGE_PATH),
           width: 1200,
           height: 630,
-          alt: 'Trimry weekly ritual timing and fortune guidance',
+          alt: 'Good and bad days to cut your hair, nails, and more with Trimry',
         },
       ],
     },
@@ -223,7 +238,7 @@ export const rootMetadata: Metadata = {
         url: absoluteUrl(SOCIAL_IMAGE_PATH),
         width: 1200,
         height: 630,
-        alt: 'Trimry weekly ritual timing and fortune guidance',
+        alt: 'Good and bad days to cut your hair, nails, and more with Trimry',
       },
     ],
   },
@@ -278,6 +293,7 @@ export const sitewideJsonLd = [
     '@id': absoluteUrl('/#website'),
     name: SITE_NAME,
     url: SITE_URL,
+    description: SITE_DESCRIPTION,
     inLanguage: 'en',
     publisher: {
       '@id': absoluteUrl('/#organization'),
@@ -307,7 +323,7 @@ export const homePageJsonLd = [
     '@id': absoluteUrl('/#service'),
     name: SUBSCRIPTION_PLAN.name,
     description: SITE_DESCRIPTION,
-    serviceType: 'Weekly ritual timing and fortune guidance subscription',
+    serviceType: 'Good and bad days to cut your hair, nails, and more',
     areaServed: 'Worldwide',
     provider: {
       '@id': absoluteUrl('/#organization'),

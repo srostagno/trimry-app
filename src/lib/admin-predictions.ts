@@ -9,6 +9,15 @@ export type PredictionNotesByLanguage = {
   es: string
 }
 
+export type AdminPredictionDayImage = {
+  dataUrl: string
+  model: string
+  promptTemplate: string
+  prompt: string
+  revisedPrompt: string | null
+  updatedAt: string
+}
+
 export type AdminPredictionDay = {
   date: string
   weekday: string
@@ -22,6 +31,7 @@ export type AdminPredictionDay = {
   alignedActivities: FortuneActivity[]
   cautionActivities: FortuneActivity[]
   isOverridden?: boolean
+  generatedImage: AdminPredictionDayImage | null
 }
 
 export type AdminPredictionMonth = {
@@ -101,5 +111,29 @@ export async function resetAdminPredictionDay(
 
   if (!response.ok) {
     throw new Error(await readApiError(response, fallbackMessage))
+  }
+}
+
+export async function generateAdminPredictionWeekImages(
+  payload: {
+    dates: string[]
+    locale: string
+    promptTemplate: string
+  },
+  fallbackMessage: string,
+) {
+  const response = await apiFetch('/admin/predictions/generate-week-images', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    generatedDays: number
+    dates: string[]
   }
 }

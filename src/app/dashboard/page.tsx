@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import { AdminSendCampaigns } from '@/components/dashboard/admin-send-campaigns'
 import { AdminPredictionCalendar } from '@/components/dashboard/admin-prediction-calendar'
@@ -14,6 +14,12 @@ import { apiFetch, readApiError } from '@/lib/api-client'
 import { trackEvent, trackEventOnce } from '@/lib/analytics'
 import { createBillingSession } from '@/lib/billing'
 import { interpolate } from '@/lib/i18n'
+import {
+  fetchMemberPredictionMonth,
+  type MemberPredictionDay,
+  type MemberPredictionMonth,
+  type MemberPredictionTone,
+} from '@/lib/member-predictions'
 import {
   DEFAULT_WEEKLY_DELIVERY_HOUR,
   formatDeliveryHourLabel,
@@ -54,6 +60,43 @@ type MeResponse = {
   subscription: Subscription | null
 }
 
+const localeByLanguage = {
+  en: 'en-US',
+  es: 'es-CL',
+} as const
+
+const projectionActivityOrder = ['haircut', 'shave', 'nails', 'release'] as const
+
+function createUtcDate(year: number, month: number, day: number) {
+  return new Date(Date.UTC(year, month, day, 12))
+}
+
+function normalizeUtcDate(date: Date) {
+  return createUtcDate(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+  )
+}
+
+function startOfMonth(date: Date) {
+  return createUtcDate(date.getUTCFullYear(), date.getUTCMonth(), 1)
+}
+
+function addMonths(date: Date, offset: number) {
+  return createUtcDate(date.getUTCFullYear(), date.getUTCMonth() + offset, 1)
+}
+
+function toMonthKey(date: Date) {
+  const year = date.getUTCFullYear()
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+  return `${year}-${month}`
+}
+
+function toDayKey(isoDate: string) {
+  return isoDate.slice(0, 10)
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -76,6 +119,12 @@ export default function DashboardPage() {
   const [profileBusy, setProfileBusy] = useState(false)
   const [profileError, setProfileError] = useState('')
   const [profileSuccess, setProfileSuccess] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [passwordBusy, setPasswordBusy] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
   const [subscriptionSuccess, setSubscriptionSuccess] = useState('')
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [deleteError, setDeleteError] = useState('')
@@ -84,6 +133,17 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<
     'account' | 'prediction-calendar' | 'sends'
   >('account')
+  const [projectionMonth, setProjectionMonth] = useState(() =>
+    startOfMonth(new Date()),
+  )
+  const [projectionCalendar, setProjectionCalendar] =
+    useState<MemberPredictionMonth | null>(null)
+  const [projectionLoading, setProjectionLoading] = useState(false)
+  const [projectionError, setProjectionError] = useState('')
+  const [selectedProjectionDateKey, setSelectedProjectionDateKey] = useState(() =>
+    toDayKey(normalizeUtcDate(new Date()).toISOString()),
+  )
+  const selectedProjectionDateKeyRef = useRef(selectedProjectionDateKey)
   const billingSuccess = searchParams.get('billing') === 'success'
   const deliveryLabel = (preference: DeliveryPreference) => {
     if (preference === 'both') {
@@ -105,6 +165,7 @@ export default function DashboardPage() {
     }),
     [messages.dashboard.paymentIssue, messages.dashboard.paymentPending, messages.statuses],
   )
+  const projectionLocale = localeByLanguage[language] ?? 'en-US'
 
   const loadData = async () => {
     setLoading(true)
@@ -194,6 +255,173 @@ export default function DashboardPage() {
     const query = params.toString()
     router.replace(query ? `/dashboard?${query}` : '/dashboard', { scroll: false })
   }
+
+  const goToProjectionMonth = (offset: number) => {
+    setProjectionMonth((currentMonth) => addMonths(currentMonth, offset))
+    setProjectionError('')
+  }
+
+  const goToCurrentProjectionMonth = () => {
+    const today = normalizeUtcDate(new Date())
+    setProjectionMonth(startOfMonth(today))
+    setSelectedProjectionDateKey(toDayKey(today.toISOString()))
+    setProjectionError('')
+  }
+
+  const openProjectionUnlockFlow = async () => {
+    if (!data?.subscription) {
+      router.push('/account/delivery')
+      return
+    }
+
+    if (data.subscription.status === 'pending_checkout') {
+      router.push('/activate')
+      return
+    }
+
+    if (data.subscription.status === 'canceled') {
+      await reactivateSubscription()
+      return
+    }
+
+    if (data.subscription.status === 'paused' && data.subscription.canManageBilling) {
+      await openBillingPortal()
+      return
+    }
+
+    router.push('/account/delivery?edit=1')
+  }
+
+  useEffect(() => {
+    selectedProjectionDateKeyRef.current = selectedProjectionDateKey
+  }, [selectedProjectionDateKey])
+
+  useEffect(() => {
+    if (!data) {
+      setProjectionCalendar(null)
+      setProjectionError('')
+      return
+    }
+
+    let canceled = false
+
+    const loadProjectionCalendar = async () => {
+      setProjectionLoading(true)
+      setProjectionError('')
+
+      try {
+        const nextCalendar = await fetchMemberPredictionMonth(
+          toMonthKey(projectionMonth),
+          projectionLocale,
+        )
+
+        if (canceled) {
+          return
+        }
+
+        setProjectionCalendar(nextCalendar)
+
+        const nextSelectedDay =
+          nextCalendar.currentMonthDays.find(
+            (day) => toDayKey(day.date) === selectedProjectionDateKeyRef.current,
+          ) ??
+          nextCalendar.currentMonthDays.find((day) => day.isToday) ??
+          nextCalendar.currentMonthDays[0] ??
+          null
+
+        if (nextSelectedDay) {
+          setSelectedProjectionDateKey(toDayKey(nextSelectedDay.date))
+        }
+      } catch (calendarError) {
+        if (canceled) {
+          return
+        }
+
+        setProjectionError(
+          calendarError instanceof Error
+            ? calendarError.message
+            : messages.dashboard.projectionCalendar.loadError,
+        )
+      } finally {
+        if (!canceled) {
+          setProjectionLoading(false)
+        }
+      }
+    }
+
+    void loadProjectionCalendar()
+
+    return () => {
+      canceled = true
+    }
+  }, [
+    data,
+    messages.dashboard.projectionCalendar.loadError,
+    projectionLocale,
+    projectionMonth,
+  ])
+
+  const selectedProjectionDay = useMemo(() => {
+    if (!projectionCalendar) {
+      return null
+    }
+
+    return (
+      projectionCalendar.currentMonthDays.find(
+        (day) => toDayKey(day.date) === selectedProjectionDateKey,
+      ) ??
+      projectionCalendar.currentMonthDays[0] ??
+      null
+    )
+  }, [projectionCalendar, selectedProjectionDateKey])
+
+  const projectionStatus = data?.subscription?.status ?? null
+  const projectionUnlockBusy =
+    busyAction === 'reactivate-subscription' || billingBusy
+  const projectionHasFullAccess =
+    projectionCalendar?.hasFullMonthAccess ??
+    (projectionStatus === 'active' || projectionStatus === 'past_due')
+  const projectionUnlockButtonLabel =
+    projectionStatus === 'pending_checkout'
+      ? messages.dashboard.continueActivation
+      : projectionStatus === 'canceled'
+        ? messages.dashboard.reactivateButton
+        : projectionStatus === 'paused'
+          ? messages.dashboard.manageBillingButton
+          : messages.dashboard.subscribeButton
+  const projectionToneClass = (tone: MemberPredictionTone) =>
+    tone === 'good'
+      ? 'oracle-tone-badge oracle-tone-badge-good'
+      : tone === 'bad'
+        ? 'oracle-tone-badge oracle-tone-badge-bad'
+        : 'oracle-tone-badge oracle-tone-badge-rare'
+  const projectionToneLabel = (tone: MemberPredictionTone) =>
+    tone === 'good'
+      ? messages.dashboard.predictionCalendar.goodTone
+      : tone === 'bad'
+        ? messages.dashboard.predictionCalendar.badTone
+        : messages.dashboard.predictionCalendar.rareTone
+  const projectionActivityLabel = (
+    activity: (typeof projectionActivityOrder)[number],
+  ) =>
+    activity === 'haircut'
+      ? messages.dashboard.predictionCalendar.haircut
+      : activity === 'shave'
+        ? messages.dashboard.predictionCalendar.shave
+        : activity === 'nails'
+          ? messages.dashboard.predictionCalendar.nails
+          : messages.dashboard.predictionCalendar.release
+  const projectionSelectedDayLabelFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(projectionLocale, {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC',
+      }),
+    [projectionLocale],
+  )
 
   const runAction = async (
     action: 'subscribe' | 'update-delivery',
@@ -330,6 +558,54 @@ export default function DashboardPage() {
       setProfileError(messages.notifications.error)
     } finally {
       setProfileBusy(false)
+    }
+  }
+
+  const savePassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setPasswordBusy(true)
+    setPasswordError('')
+    setPasswordSuccess('')
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError(messages.dashboard.passwordMismatchError)
+      setPasswordBusy(false)
+      return
+    }
+
+    if (currentPassword === newPassword) {
+      setPasswordError(messages.dashboard.passwordDifferentError)
+      setPasswordBusy(false)
+      return
+    }
+
+    try {
+      const response = await apiFetch('/users/me/password', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      })
+
+      if (!response.ok) {
+        setPasswordError(
+          await readApiError(response, messages.dashboard.passwordSaveError),
+        )
+        return
+      }
+
+      trackEvent('password_updated', {
+        source: 'dashboard',
+      })
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmNewPassword('')
+      setPasswordSuccess(messages.dashboard.passwordSuccess)
+    } catch {
+      setPasswordError(messages.dashboard.passwordSaveError)
+    } finally {
+      setPasswordBusy(false)
     }
   }
 
@@ -551,6 +827,274 @@ export default function DashboardPage() {
           <p className="cosmic-success-box mt-4 rounded-xl px-4 py-3 text-sm">
             {profileSuccess}
           </p>
+        ) : null}
+      </section>
+
+      <section className="cosmic-shell rounded-[2rem] p-8">
+        <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.passwordTitle}</h2>
+        <p className="cosmic-shell-copy mt-2">{messages.dashboard.passwordSubtitle}</p>
+
+        <form className="mt-5 grid gap-4 sm:grid-cols-2" onSubmit={savePassword}>
+          <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
+            {messages.dashboard.currentPasswordLabel}
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              required
+              autoComplete="current-password"
+              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+            />
+          </label>
+
+          <label className="cosmic-field-label text-sm font-semibold">
+            {messages.dashboard.newPasswordLabel}
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              required
+              minLength={10}
+              autoComplete="new-password"
+              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+            />
+          </label>
+
+          <label className="cosmic-field-label text-sm font-semibold">
+            {messages.dashboard.confirmPasswordLabel}
+            <input
+              type="password"
+              value={confirmNewPassword}
+              onChange={(event) => setConfirmNewPassword(event.target.value)}
+              required
+              minLength={10}
+              autoComplete="new-password"
+              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+            />
+          </label>
+
+          <p className="cosmic-shell-meta text-xs sm:col-span-2">
+            {messages.auth.passwordHint}
+          </p>
+
+          <div className="sm:col-span-2">
+            <button
+              type="submit"
+              disabled={passwordBusy}
+              className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-70"
+            >
+              {passwordBusy ? messages.common.saving : messages.dashboard.passwordSave}
+            </button>
+          </div>
+        </form>
+
+        {passwordError ? (
+          <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
+            {passwordError}
+          </p>
+        ) : null}
+
+        {passwordSuccess ? (
+          <p className="cosmic-success-box mt-4 rounded-xl px-4 py-3 text-sm">
+            {passwordSuccess}
+          </p>
+        ) : null}
+      </section>
+
+      <section className="cosmic-shell rounded-[2rem] p-8">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-3xl">
+            <h2 className="cosmic-shell-title text-2xl">
+              {messages.dashboard.projectionCalendar.title}
+            </h2>
+            <p className="cosmic-shell-copy mt-2">
+              {messages.dashboard.projectionCalendar.subtitle}
+            </p>
+            <p className="cosmic-shell-meta mt-3 text-xs">
+              {projectionHasFullAccess
+                ? messages.dashboard.projectionCalendar.fullAccessHint
+                : messages.dashboard.projectionCalendar.lockedAccessHint}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => goToProjectionMonth(-1)}
+              className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
+            >
+              {messages.common.previous}
+            </button>
+            <button
+              type="button"
+              onClick={goToCurrentProjectionMonth}
+              className="cosmic-tab-active rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
+            >
+              {messages.dashboard.predictionCalendar.today}
+            </button>
+            <button
+              type="button"
+              onClick={() => goToProjectionMonth(1)}
+              className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
+            >
+              {messages.common.next}
+            </button>
+          </div>
+        </div>
+
+        {projectionCalendar && !projectionHasFullAccess ? (
+          <div className="cosmic-info-box mt-5 flex flex-col gap-3 rounded-2xl p-4 text-sm text-slate-100/86 sm:flex-row sm:items-center sm:justify-between">
+            <span>{messages.dashboard.projectionCalendar.lockedAccessHint}</span>
+            <button
+              type="button"
+              onClick={() => {
+                void openProjectionUnlockFlow()
+              }}
+              disabled={projectionUnlockBusy}
+              className="cosmic-button-primary rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+            >
+              {projectionUnlockButtonLabel}
+            </button>
+          </div>
+        ) : null}
+
+        {projectionError ? (
+          <p className="cosmic-error-box mt-5 rounded-xl px-4 py-3 text-sm">
+            {projectionError}
+          </p>
+        ) : null}
+
+        {projectionLoading && !projectionCalendar ? (
+          <p className="cosmic-shell-copy mt-5">{messages.common.loading}</p>
+        ) : null}
+
+        {projectionCalendar ? (
+          <>
+            <div className="mt-5">
+              <p className="cosmic-shell-title text-xl">{projectionCalendar.monthLabel}</p>
+            </div>
+
+            <div className="mt-4 overflow-x-auto">
+              <div className="grid min-w-[560px] grid-cols-7 gap-2">
+                {projectionCalendar.weekdayLabels.map((weekdayLabel) => (
+                  <p
+                    key={weekdayLabel}
+                    className="cosmic-shell-meta px-2 pb-1 text-center text-xs font-black uppercase tracking-[0.16em]"
+                  >
+                    {weekdayLabel}
+                  </p>
+                ))}
+
+                {projectionCalendar.weeks.flat().map((day) => {
+                  const dayKey = toDayKey(day.date)
+                  const isSelected = dayKey === selectedProjectionDateKey
+                  const dayTone = day.summary
+
+                  return (
+                    <button
+                      key={day.date}
+                      type="button"
+                      onClick={() => setSelectedProjectionDateKey(dayKey)}
+                      className={`relative min-h-[74px] rounded-xl border px-2 py-2 text-left transition ${
+                        isSelected ? 'ring-2 ring-cyan-200/65' : ''
+                      } ${
+                        day.inCurrentMonth
+                          ? 'opacity-100'
+                          : 'opacity-42'
+                      } ${
+                        day.isLocked
+                          ? 'border-slate-700/80 bg-slate-900/55'
+                          : 'border-cyan-200/18 bg-slate-900/36 hover:border-cyan-200/46'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold text-slate-100">
+                          {day.dayOfMonth}
+                        </span>
+                        {day.isToday ? (
+                          <span className="cosmic-shell-meta text-[10px] uppercase tracking-[0.14em] text-cyan-100/75">
+                            {messages.dashboard.predictionCalendar.today}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {day.isLocked ? (
+                        <p className="cosmic-shell-meta mt-2 text-[10px] uppercase tracking-[0.14em] text-slate-300/72">
+                          {messages.dashboard.projectionCalendar.lockedDayBadge}
+                        </p>
+                      ) : dayTone ? (
+                        <span className={`${projectionToneClass(dayTone)} mt-2 scale-[0.78] origin-left`}>
+                          {projectionToneLabel(dayTone)}
+                        </span>
+                      ) : null}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {selectedProjectionDay ? (
+              <div className="mt-6 rounded-2xl border border-cyan-200/20 bg-slate-900/42 p-5">
+                <p className="cosmic-shell-meta text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
+                  {projectionSelectedDayLabelFormatter.format(
+                    new Date(selectedProjectionDay.date),
+                  )}
+                </p>
+
+                {selectedProjectionDay.isLocked ? (
+                  <>
+                    <h3 className="cosmic-shell-title mt-3 text-xl">
+                      {messages.dashboard.projectionCalendar.lockedDayTitle}
+                    </h3>
+                    <p className="cosmic-shell-copy mt-2">
+                      {messages.dashboard.projectionCalendar.lockedDaySubtitle}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void openProjectionUnlockFlow()
+                      }}
+                      disabled={projectionUnlockBusy}
+                      className="cosmic-button-primary mt-4 rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+                    >
+                      {projectionUnlockButtonLabel}
+                    </button>
+                  </>
+                ) : selectedProjectionDay.summary ? (
+                  <>
+                    <span
+                      className={`${projectionToneClass(
+                        selectedProjectionDay.summary,
+                      )} mt-3`}
+                    >
+                      {projectionToneLabel(selectedProjectionDay.summary)}
+                    </span>
+                    <p className="cosmic-shell-copy mt-3">
+                      {selectedProjectionDay.notes}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {projectionActivityOrder.map((activity) => {
+                        const tone = selectedProjectionDay.activities?.[activity]
+
+                        if (!tone) {
+                          return null
+                        }
+
+                        return (
+                          <span
+                            key={activity}
+                            className="cosmic-info-box rounded-full px-3 py-1 text-xs text-slate-100/92"
+                          >
+                            {projectionActivityLabel(activity)} · {projectionToneLabel(tone)}
+                          </span>
+                        )
+                      })}
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            ) : null}
+          </>
         ) : null}
       </section>
 

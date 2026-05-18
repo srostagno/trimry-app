@@ -6,6 +6,7 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 're
 import { useLanguage } from '@/components/language-provider'
 import {
   fetchAdminPredictionMonth,
+  generateAdminPredictionWeekImages,
   importAdminPredictionMonthFromImage,
   resetAdminPredictionDay,
   saveAdminPredictionDay,
@@ -23,6 +24,19 @@ const localeByLanguage = {
 
 const MAX_IMPORT_IMAGE_DIMENSION = 1600
 const MAX_IMPORT_IMAGE_DATA_URL_LENGTH = 3_200_000
+const MAX_WEEK_IMAGE_PROMPT_LENGTH = 2_800
+const DEFAULT_WEEK_IMAGE_PROMPT_TEMPLATE = [
+  'Create a premium editorial image for a daily grooming prediction.',
+  'Day: {localizedDate} ({date}).',
+  'Weekday label: {weekday}.',
+  'Tone: {summary}.',
+  'Day note in English: "{noteEn}"',
+  'Day note in Spanish: "{noteEs}"',
+  'Weekly context:',
+  '{weekContext}',
+  'Visual style: cinematic, symbolic, modern, and polished.',
+  'Do not include text, letters, numbers, logos, or watermarks.',
+].join('\n')
 
 function createUtcDate(year: number, month: number, day: number) {
   return new Date(Date.UTC(year, month, day, 12))
@@ -252,6 +266,10 @@ export function AdminPredictionCalendar() {
   })
   const [saveBusy, setSaveBusy] = useState(false)
   const [importBusy, setImportBusy] = useState(false)
+  const [weekImageBusy, setWeekImageBusy] = useState(false)
+  const [weekImagePrompt, setWeekImagePrompt] = useState(
+    DEFAULT_WEEK_IMAGE_PROMPT_TEMPLATE,
+  )
   const [saveMessage, setSaveMessage] = useState('')
   const [saveError, setSaveError] = useState('')
   const selectedDateKeyRef = useRef(selectedDateKey)
@@ -332,6 +350,20 @@ export function AdminPredictionCalendar() {
     )
   }, [calendar, selectedDateKey])
 
+  const selectedWeek = useMemo(() => {
+    if (!calendar) {
+      return []
+    }
+
+    return (
+      calendar.weeks.find((week) =>
+        week.some((day) => toDayKey(day.date) === selectedDateKey),
+      ) ??
+      calendar.weeks[0] ??
+      []
+    )
+  }, [calendar, selectedDateKey])
+
   useEffect(() => {
     if (!selectedDay) {
       return
@@ -345,6 +377,33 @@ export function AdminPredictionCalendar() {
   const noteLanguageFromUi = language === 'es' ? 'es' : 'en'
   const notesReadyToSave =
     notesByLanguage.en.trim().length > 0 && notesByLanguage.es.trim().length > 0
+  const selectedWeekDayKeys = useMemo(
+    () => selectedWeek.map((day) => toDayKey(day.date)),
+    [selectedWeek],
+  )
+  const selectedWeekImagesCount = useMemo(
+    () => selectedWeek.filter((day) => day.generatedImage).length,
+    [selectedWeek],
+  )
+  const selectedWeekRangeFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC',
+      }),
+    [locale],
+  )
+  const selectedWeekRangeLabel = useMemo(() => {
+    if (selectedWeek.length === 0) {
+      return ''
+    }
+
+    const firstDate = new Date(selectedWeek[0]!.date)
+    const lastDate = new Date(selectedWeek[selectedWeek.length - 1]!.date)
+
+    return `${selectedWeekRangeFormatter.format(firstDate)} - ${selectedWeekRangeFormatter.format(lastDate)}`
+  }, [selectedWeek, selectedWeekRangeFormatter])
 
   const selectedDayLabelFormatter = useMemo(
     () =>
@@ -465,6 +524,50 @@ export function AdminPredictionCalendar() {
       )
     } finally {
       setImportBusy(false)
+    }
+  }
+
+  const handleGenerateWeekImages = async () => {
+    if (selectedWeekDayKeys.length !== 7) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      messages.dashboard.predictionCalendar.generateWeekImagesConfirm,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    const normalizedPrompt =
+      weekImagePrompt.trim() || DEFAULT_WEEK_IMAGE_PROMPT_TEMPLATE
+
+    setWeekImagePrompt(normalizedPrompt)
+    setWeekImageBusy(true)
+    setError('')
+    setSaveError('')
+    setSaveMessage('')
+
+    try {
+      await generateAdminPredictionWeekImages(
+        {
+          dates: selectedWeekDayKeys,
+          locale,
+          promptTemplate: normalizedPrompt,
+        },
+        messages.dashboard.predictionCalendar.generateWeekImagesError,
+      )
+      await refreshMonth(selectedDateKeyRef.current)
+      setSaveMessage(messages.dashboard.predictionCalendar.generateWeekImagesSuccess)
+    } catch (generationError) {
+      setError(
+        generationError instanceof Error
+          ? generationError.message
+          : messages.dashboard.predictionCalendar.generateWeekImagesError,
+      )
+    } finally {
+      setWeekImageBusy(false)
     }
   }
 
@@ -595,7 +698,7 @@ export function AdminPredictionCalendar() {
               <button
                 type="button"
                 onClick={handleImportImageClick}
-                disabled={importBusy}
+                disabled={importBusy || weekImageBusy}
                 className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
               >
                 {importBusy
@@ -605,7 +708,7 @@ export function AdminPredictionCalendar() {
               <button
                 type="button"
                 onClick={() => goToMonth(-1)}
-                disabled={importBusy}
+                disabled={importBusy || weekImageBusy}
                 className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.common.previous}
@@ -613,7 +716,7 @@ export function AdminPredictionCalendar() {
               <button
                 type="button"
                 onClick={goToCurrentMonth}
-                disabled={importBusy}
+                disabled={importBusy || weekImageBusy}
                 className="cosmic-tab-active rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.dashboard.predictionCalendar.jumpToCurrentMonth}
@@ -621,7 +724,7 @@ export function AdminPredictionCalendar() {
               <button
                 type="button"
                 onClick={() => goToMonth(1)}
-                disabled={importBusy}
+                disabled={importBusy || weekImageBusy}
                 className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.common.next}
@@ -632,6 +735,53 @@ export function AdminPredictionCalendar() {
           <p className="mt-4 max-w-3xl text-sm text-slate-100/72">
             {messages.dashboard.predictionCalendar.importFromImageHint}
           </p>
+
+          <div className="cosmic-card mt-6 rounded-[1.8rem] p-4 sm:p-5">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/68">
+                  {messages.dashboard.predictionCalendar.weekImagePromptLabel}
+                </p>
+                <p className="cosmic-shell-meta mt-2 text-sm">
+                  {messages.dashboard.predictionCalendar.selectedWeekLabel}:{' '}
+                  <span className="font-semibold text-slate-100">
+                    {selectedWeekRangeLabel}
+                  </span>
+                </p>
+                <p className="cosmic-shell-meta mt-1 text-sm">
+                  {messages.dashboard.predictionCalendar.imagesInSelectedWeek}:{' '}
+                  <span className="font-semibold text-slate-100">
+                    {selectedWeekImagesCount}
+                  </span>
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGenerateWeekImages}
+                disabled={weekImageBusy || importBusy || selectedWeekDayKeys.length !== 7}
+                className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+              >
+                {weekImageBusy
+                  ? messages.dashboard.predictionCalendar.generateWeekImagesBusy
+                  : messages.dashboard.predictionCalendar.generateWeekImages}
+              </button>
+            </div>
+
+            <label className="mt-4 block">
+              <textarea
+                value={weekImagePrompt}
+                onChange={(event) => setWeekImagePrompt(event.target.value)}
+                rows={7}
+                maxLength={MAX_WEEK_IMAGE_PROMPT_LENGTH}
+                disabled={weekImageBusy || importBusy}
+                className="cosmic-input min-h-[10rem] w-full rounded-2xl px-4 py-3"
+              />
+            </label>
+            <span className="cosmic-shell-meta mt-2 block text-xs">
+              {messages.dashboard.predictionCalendar.weekImagePromptHint}
+            </span>
+          </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div className="cosmic-card rounded-[1.8rem] p-4">
@@ -759,11 +909,18 @@ export function AdminPredictionCalendar() {
                             </span>
                           ) : null}
                           {day.inCurrentMonth ? (
-                            <span className="mt-2 inline-flex rounded-full border border-white/16 bg-slate-950/26 px-2 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-slate-100/76">
-                              {day.isOverridden
-                                ? messages.dashboard.predictionCalendar.overrideBadge
-                                : messages.dashboard.predictionCalendar.generatedBadge}
-                            </span>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <span className="inline-flex rounded-full border border-white/16 bg-slate-950/26 px-2 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-slate-100/76">
+                                {day.isOverridden
+                                  ? messages.dashboard.predictionCalendar.overrideBadge
+                                  : messages.dashboard.predictionCalendar.generatedBadge}
+                              </span>
+                              {day.generatedImage ? (
+                                <span className="inline-flex rounded-full border border-cyan-200/24 bg-cyan-400/10 px-2 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-cyan-50">
+                                  {messages.dashboard.predictionCalendar.dayImageBadge}
+                                </span>
+                              ) : null}
+                            </div>
                           ) : null}
                         </div>
 
@@ -836,6 +993,11 @@ export function AdminPredictionCalendar() {
                         ? messages.dashboard.predictionCalendar.overrideBadge
                         : messages.dashboard.predictionCalendar.generatedBadge}
                     </span>
+                    {selectedDay.generatedImage ? (
+                      <span className="inline-flex rounded-full border border-cyan-200/24 bg-cyan-400/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-cyan-50">
+                        {messages.dashboard.predictionCalendar.dayImageBadge}
+                      </span>
+                    ) : null}
                   </div>
                 </div>
 
@@ -847,6 +1009,20 @@ export function AdminPredictionCalendar() {
                   {messages.common.cancel}
                 </button>
               </div>
+
+              {selectedDay.generatedImage ? (
+                <div className="mt-6">
+                  <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-cyan-100/68">
+                    {messages.dashboard.predictionCalendar.dayImagePreviewLabel}
+                  </p>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={selectedDay.generatedImage.dataUrl}
+                    alt={messages.dashboard.predictionCalendar.dayImagePreviewLabel}
+                    className="h-60 w-full rounded-2xl border border-white/16 bg-slate-900/38 object-cover"
+                  />
+                </div>
+              ) : null}
 
               <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
                 <div>

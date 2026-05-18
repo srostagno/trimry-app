@@ -2,14 +2,26 @@ import { hasGrantedAnalyticsConsent } from '@/lib/analytics-consent'
 
 export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || 'G-2JFX4TVBCP'
+export const META_PIXEL_ID =
+  process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || '3053148311487167'
 
 type AnalyticsPrimitive = string | number | boolean | null | undefined
 type AnalyticsParams = Record<string, AnalyticsPrimitive>
 
 declare global {
+  type FbqFunction = {
+    (...args: unknown[]): void
+    callMethod?: (...args: unknown[]) => void
+    queue?: unknown[]
+    loaded?: boolean
+    version?: string
+  }
+
   interface Window {
     dataLayer?: unknown[]
     gtag?: (...args: unknown[]) => void
+    fbq?: FbqFunction
+    _fbq?: FbqFunction
   }
 }
 
@@ -61,6 +73,16 @@ export function trackPageView(pagePath: string) {
     page_title: document.title,
     language: document.documentElement.lang,
   })
+}
+
+export function trackMetaPageView() {
+  if (typeof window === 'undefined' || !META_PIXEL_ID) {
+    return
+  }
+
+  if (typeof window.fbq === 'function') {
+    window.fbq('track', 'PageView')
+  }
 }
 
 export function setAnalyticsUserProperties(properties: AnalyticsParams) {

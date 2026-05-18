@@ -227,6 +227,26 @@ export type MessageSection = {
     profileSubtitle: string
     profileSave: string
     profileTimeZoneHint: string
+    projectionCalendar: {
+      title: string
+      subtitle: string
+      fullAccessHint: string
+      lockedAccessHint: string
+      loadError: string
+      lockedDayBadge: string
+      lockedDayTitle: string
+      lockedDaySubtitle: string
+    }
+    passwordTitle: string
+    passwordSubtitle: string
+    currentPasswordLabel: string
+    newPasswordLabel: string
+    confirmPasswordLabel: string
+    passwordSave: string
+    passwordSuccess: string
+    passwordMismatchError: string
+    passwordDifferentError: string
+    passwordSaveError: string
     dangerTitle: string
     dangerSubtitle: string
     deleteButton: string
@@ -313,6 +333,17 @@ export type MessageSection = {
       importFromImageConfirm: string
       importFromImageSuccess: string
       importFromImageError: string
+      weekImagePromptLabel: string
+      weekImagePromptHint: string
+      selectedWeekLabel: string
+      imagesInSelectedWeek: string
+      generateWeekImages: string
+      generateWeekImagesBusy: string
+      generateWeekImagesConfirm: string
+      generateWeekImagesSuccess: string
+      generateWeekImagesError: string
+      dayImageBadge: string
+      dayImagePreviewLabel: string
       saveDay: string
       resetDay: string
       resetConfirm: string
@@ -751,6 +782,32 @@ const englishMessages: MessageSection = {
       'Update your identity details and the time zone used for your weekly projection.',
     profileSave: 'Save profile',
     profileTimeZoneHint: 'Monday delivery is calculated from this IANA time zone.',
+    projectionCalendar: {
+      title: 'Projection calendar',
+      subtitle:
+        'Track your daily projection rhythm. Subscribers can access the full month.',
+      fullAccessHint:
+        'Full month unlocked. Review each day and plan your rituals ahead of time.',
+      lockedAccessHint:
+        'Only today is unlocked on this account. Activate your subscription to unlock the full month.',
+      loadError: 'Unable to load your projection calendar right now.',
+      lockedDayBadge: 'Locked',
+      lockedDayTitle: 'Day locked',
+      lockedDaySubtitle:
+        'Activate your subscription to reveal this day and unlock the full monthly projection.',
+    },
+    passwordTitle: 'Security',
+    passwordSubtitle:
+      'Change your password whenever needed. You must confirm your current password first.',
+    currentPasswordLabel: 'Current password',
+    newPasswordLabel: 'New password',
+    confirmPasswordLabel: 'Confirm new password',
+    passwordSave: 'Update password',
+    passwordSuccess: 'Password updated successfully.',
+    passwordMismatchError: 'New password and confirmation do not match.',
+    passwordDifferentError:
+      'New password must be different from your current password.',
+    passwordSaveError: 'Unable to update your password right now.',
     dangerTitle: 'Danger zone',
     dangerSubtitle:
       'Delete your account and sign out immediately. We keep a soft-deleted record for audit purposes, but your login email is anonymized and your active delivery channels are stopped.',
@@ -860,6 +917,21 @@ const englishMessages: MessageSection = {
       importFromImageSuccess: 'Prediction month imported from image.',
       importFromImageError:
         'Unable to generate a prediction month from that image right now.',
+      weekImagePromptLabel: 'Weekly image prompt',
+      weekImagePromptHint:
+        'You can edit placeholders like {date}, {weekday}, {summary}, {noteEn}, {noteEs}, {localizedDate}, and {weekContext}.',
+      selectedWeekLabel: 'Selected week',
+      imagesInSelectedWeek: 'Generated images in this week',
+      generateWeekImages: 'Generate week images',
+      generateWeekImagesBusy: 'Generating week images',
+      generateWeekImagesConfirm:
+        'Generate and save one image for each day in the selected week?',
+      generateWeekImagesSuccess:
+        'Week images generated and saved for each day.',
+      generateWeekImagesError:
+        'Unable to generate week images right now.',
+      dayImageBadge: 'Image ready',
+      dayImagePreviewLabel: 'Saved day image',
       saveDay: 'Save day',
       resetDay: 'Reset override',
       resetConfirm: 'Reset this day back to the generated Trimry pattern?',
@@ -1441,6 +1513,33 @@ const spanishMessages: MessageSection = {
       'Actualiza tus datos de identidad y la zona horaria usada para tu proyección semanal.',
     profileSave: 'Guardar perfil',
     profileTimeZoneHint: 'La entrega del lunes se calcula desde esta zona horaria IANA.',
+    projectionCalendar: {
+      title: 'Calendario de proyección',
+      subtitle:
+        'Sigue tu ritmo diario de proyección. Los suscriptores pueden ver el mes completo.',
+      fullAccessHint:
+        'Mes completo desbloqueado. Revisa cada día y planifica tus rituales con anticipación.',
+      lockedAccessHint:
+        'En esta cuenta solo hoy está desbloqueado. Activa tu suscripción para desbloquear todo el mes.',
+      loadError: 'No pudimos cargar tu calendario de proyección en este momento.',
+      lockedDayBadge: 'Bloqueado',
+      lockedDayTitle: 'Día bloqueado',
+      lockedDaySubtitle:
+        'Activa tu suscripción para revelar este día y desbloquear la proyección mensual completa.',
+    },
+    passwordTitle: 'Seguridad',
+    passwordSubtitle:
+      'Cambia tu contraseña cuando lo necesites. Debes confirmar primero tu contraseña actual.',
+    currentPasswordLabel: 'Contraseña actual',
+    newPasswordLabel: 'Nueva contraseña',
+    confirmPasswordLabel: 'Confirmar nueva contraseña',
+    passwordSave: 'Actualizar contraseña',
+    passwordSuccess: 'Contraseña actualizada correctamente.',
+    passwordMismatchError:
+      'La nueva contraseña y su confirmación no coinciden.',
+    passwordDifferentError:
+      'La nueva contraseña debe ser distinta de la contraseña actual.',
+    passwordSaveError: 'No pudimos actualizar tu contraseña en este momento.',
     dangerTitle: 'Zona de riesgo',
     dangerSubtitle:
       'Elimina tu cuenta y cierra sesión al instante. Conservamos un registro marcado como eliminado para auditoría, pero tu email de acceso se anonimiza y se detienen tus canales activos de entrega.',
@@ -1550,6 +1649,21 @@ const spanishMessages: MessageSection = {
       importFromImageSuccess: 'Mes de predicciones importado desde imagen.',
       importFromImageError:
         'No pudimos generar un mes de predicciones desde esa imagen en este momento.',
+      weekImagePromptLabel: 'Prompt semanal de imagen',
+      weekImagePromptHint:
+        'Puedes editar placeholders como {date}, {weekday}, {summary}, {noteEn}, {noteEs}, {localizedDate} y {weekContext}.',
+      selectedWeekLabel: 'Semana seleccionada',
+      imagesInSelectedWeek: 'Imágenes generadas en esta semana',
+      generateWeekImages: 'Generar imágenes semana',
+      generateWeekImagesBusy: 'Generando imágenes semana',
+      generateWeekImagesConfirm:
+        '¿Generar y guardar una imagen por cada día de la semana seleccionada?',
+      generateWeekImagesSuccess:
+        'Imágenes de la semana generadas y guardadas por día.',
+      generateWeekImagesError:
+        'No pudimos generar imágenes para la semana en este momento.',
+      dayImageBadge: 'Imagen lista',
+      dayImagePreviewLabel: 'Imagen guardada del día',
       saveDay: 'Guardar día',
       resetDay: 'Restablecer ajuste manual',
       resetConfirm: '¿Restablecer este día al patrón generado de Trimry?',

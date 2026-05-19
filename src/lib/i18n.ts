@@ -342,6 +342,20 @@ export type MessageSection = {
       selectedDaysCountLabel: string
       selectAllWeekDays: string
       clearSelectedWeekDays: string
+      weekHtmlGeneratorLabel: string
+      weekHtmlGeneratorHint: string
+      generateWeekHtml: string
+      generateWeekHtmlBusy: string
+      generateWeekHtmlConfirm: string
+      generateWeekHtmlSuccess: string
+      generateWeekHtmlError: string
+      copyWeekHtml: string
+      copyWeekHtmlSuccess: string
+      copyWeekHtmlError: string
+      weekHtmlPreviewLabel: string
+      weekHtmlSubjectLabel: string
+      weekHtmlPreviewTextLabel: string
+      weekHtmlCodeLabel: string
       generateWeekImages: string
       generateWeekImagesBusy: string
       generateWeekImagesConfirm: string
@@ -942,6 +956,23 @@ const englishMessages: MessageSection = {
       selectedDaysCountLabel: 'Selected days',
       selectAllWeekDays: 'Select full week',
       clearSelectedWeekDays: 'Clear selection',
+      weekHtmlGeneratorLabel: 'Weekly email HTML builder',
+      weekHtmlGeneratorHint:
+        'Build a ready-to-send email HTML with one selected day per row, then preview it before sending.',
+      generateWeekHtml: 'Generate email HTML',
+      generateWeekHtmlBusy: 'Generating email HTML',
+      generateWeekHtmlConfirm:
+        'Generate an email-ready weekly HTML using the selected days?',
+      generateWeekHtmlSuccess: 'Weekly email HTML generated.',
+      generateWeekHtmlError:
+        'Unable to generate weekly email HTML right now.',
+      copyWeekHtml: 'Copy HTML',
+      copyWeekHtmlSuccess: 'Weekly email HTML copied.',
+      copyWeekHtmlError: 'Unable to copy HTML right now.',
+      weekHtmlPreviewLabel: 'Email preview',
+      weekHtmlSubjectLabel: 'Email subject',
+      weekHtmlPreviewTextLabel: 'Preview text',
+      weekHtmlCodeLabel: 'Email HTML source',
       generateWeekImages: 'Generate week images',
       generateWeekImagesBusy: 'Generating week images',
       generateWeekImagesConfirm:
@@ -1695,6 +1726,23 @@ const spanishMessages: MessageSection = {
       selectedDaysCountLabel: 'Días seleccionados',
       selectAllWeekDays: 'Seleccionar semana completa',
       clearSelectedWeekDays: 'Limpiar selección',
+      weekHtmlGeneratorLabel: 'Generador HTML semanal para email',
+      weekHtmlGeneratorHint:
+        'Genera un HTML listo para correo con un día por fila y revísalo en preview antes de enviarlo.',
+      generateWeekHtml: 'Generar HTML de email',
+      generateWeekHtmlBusy: 'Generando HTML de email',
+      generateWeekHtmlConfirm:
+        '¿Generar un HTML semanal listo para email con los días seleccionados?',
+      generateWeekHtmlSuccess: 'HTML semanal de email generado.',
+      generateWeekHtmlError:
+        'No pudimos generar el HTML semanal de email en este momento.',
+      copyWeekHtml: 'Copiar HTML',
+      copyWeekHtmlSuccess: 'HTML semanal copiado.',
+      copyWeekHtmlError: 'No pudimos copiar el HTML en este momento.',
+      weekHtmlPreviewLabel: 'Vista previa del email',
+      weekHtmlSubjectLabel: 'Asunto del email',
+      weekHtmlPreviewTextLabel: 'Texto de preview',
+      weekHtmlCodeLabel: 'Código HTML del email',
       generateWeekImages: 'Generar imágenes semana',
       generateWeekImagesBusy: 'Generando imágenes semana',
       generateWeekImagesConfirm:

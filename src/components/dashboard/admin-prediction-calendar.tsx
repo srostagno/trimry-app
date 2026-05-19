@@ -6,7 +6,7 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 're
 import { useLanguage } from '@/components/language-provider'
 import {
   fetchAdminPredictionMonth,
-  generateAdminPredictionWeekImages,
+  generateAdminPredictionWeekHtml,
   importAdminPredictionMonthFromImage,
   resetAdminPredictionDay,
   saveAdminPredictionDay,
@@ -24,18 +24,6 @@ const localeByLanguage = {
 
 const MAX_IMPORT_IMAGE_DIMENSION = 1600
 const MAX_IMPORT_IMAGE_DATA_URL_LENGTH = 3_200_000
-const MAX_WEEK_IMAGE_PROMPT_LENGTH = 2_800
-const DEFAULT_WEEK_IMAGE_PROMPT_TEMPLATE = [
-  'Create a minimalist text-only poster for a daily grooming prediction.',
-  'Use a plain solid background and clean typography.',
-  'Render exactly two lines of visible text:',
-  'Line 1: {localizedDate}',
-  'Line 2: {summary}',
-  'The second line must be exactly one lowercase word: good, bad, or rare.',
-  'Do not render any other words, icons, logos, photos, illustrations, textures, shadows, gradients, or decorations.',
-  'Context only (do not display this text):',
-  'weekday={weekday}; date={date}; note_en={noteEn}; note_es={noteEs}; week={weekContext}',
-].join('\n')
 
 function createUtcDate(year: number, month: number, day: number) {
   return new Date(Date.UTC(year, month, day, 12))
@@ -269,10 +257,10 @@ export function AdminPredictionCalendar() {
   })
   const [saveBusy, setSaveBusy] = useState(false)
   const [importBusy, setImportBusy] = useState(false)
-  const [weekImageBusy, setWeekImageBusy] = useState(false)
-  const [weekImagePrompt, setWeekImagePrompt] = useState(
-    DEFAULT_WEEK_IMAGE_PROMPT_TEMPLATE,
-  )
+  const [weekHtmlBusy, setWeekHtmlBusy] = useState(false)
+  const [generatedWeekHtml, setGeneratedWeekHtml] = useState('')
+  const [generatedWeekSubject, setGeneratedWeekSubject] = useState('')
+  const [generatedWeekPreviewText, setGeneratedWeekPreviewText] = useState('')
   const [saveMessage, setSaveMessage] = useState('')
   const [saveError, setSaveError] = useState('')
   const selectedDateKeyRef = useRef(selectedDateKey)
@@ -431,10 +419,6 @@ export function AdminPredictionCalendar() {
       return selectedWeekDayKeys
     })
   }, [selectedWeekDayKeys])
-  const selectedWeekImagesCount = useMemo(
-    () => selectedWeek.filter((day) => day.generatedImage).length,
-    [selectedWeek],
-  )
   const selectedGenerationDaysCount = selectedGenerationDayKeys.length
   const selectedWeekRangeFormatter = useMemo(
     () =>
@@ -535,6 +519,9 @@ export function AdminPredictionCalendar() {
     setEditorOpen(false)
     setSaveMessage('')
     setSaveError('')
+    setGeneratedWeekHtml('')
+    setGeneratedWeekSubject('')
+    setGeneratedWeekPreviewText('')
   }
 
   const goToCurrentMonth = () => {
@@ -542,6 +529,9 @@ export function AdminPredictionCalendar() {
     setVisibleMonth(startOfMonth(today))
     setSelectedDateKey(toDayKey(today.toISOString()))
     setEditorOpen(false)
+    setGeneratedWeekHtml('')
+    setGeneratedWeekSubject('')
+    setGeneratedWeekPreviewText('')
   }
 
   const handleImportImageClick = () => {
@@ -618,41 +608,52 @@ export function AdminPredictionCalendar() {
     }
 
     const confirmed = window.confirm(
-      messages.dashboard.predictionCalendar.generateSelectedDaysConfirm,
+      messages.dashboard.predictionCalendar.generateWeekHtmlConfirm,
     )
 
     if (!confirmed) {
       return
     }
 
-    const normalizedPrompt =
-      weekImagePrompt.trim() || DEFAULT_WEEK_IMAGE_PROMPT_TEMPLATE
-
-    setWeekImagePrompt(normalizedPrompt)
-    setWeekImageBusy(true)
+    setWeekHtmlBusy(true)
     setError('')
     setSaveError('')
     setSaveMessage('')
 
     try {
-      await generateAdminPredictionWeekImages(
+      const generated = await generateAdminPredictionWeekHtml(
         {
           dates: selectedGenerationDayKeys,
           locale,
-          promptTemplate: normalizedPrompt,
         },
-        messages.dashboard.predictionCalendar.generateSelectedDaysError,
+        messages.dashboard.predictionCalendar.generateWeekHtmlError,
       )
-      await refreshMonth(selectedDateKeyRef.current)
-      setSaveMessage(messages.dashboard.predictionCalendar.generateSelectedDaysSuccess)
+      setGeneratedWeekHtml(generated.html)
+      setGeneratedWeekSubject(generated.subject)
+      setGeneratedWeekPreviewText(generated.previewText)
+      setSaveMessage(messages.dashboard.predictionCalendar.generateWeekHtmlSuccess)
     } catch (generationError) {
       setError(
         generationError instanceof Error
           ? generationError.message
-          : messages.dashboard.predictionCalendar.generateSelectedDaysError,
+          : messages.dashboard.predictionCalendar.generateWeekHtmlError,
       )
     } finally {
-      setWeekImageBusy(false)
+      setWeekHtmlBusy(false)
+    }
+  }
+
+  const handleCopyWeekHtml = async () => {
+    if (!generatedWeekHtml) {
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(generatedWeekHtml)
+      setSaveMessage(messages.dashboard.predictionCalendar.copyWeekHtmlSuccess)
+      setError('')
+    } catch {
+      setError(messages.dashboard.predictionCalendar.copyWeekHtmlError)
     }
   }
 
@@ -783,7 +784,7 @@ export function AdminPredictionCalendar() {
               <button
                 type="button"
                 onClick={handleImportImageClick}
-                disabled={importBusy || weekImageBusy}
+                disabled={importBusy || weekHtmlBusy}
                 className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
               >
                 {importBusy
@@ -793,7 +794,7 @@ export function AdminPredictionCalendar() {
               <button
                 type="button"
                 onClick={() => goToMonth(-1)}
-                disabled={importBusy || weekImageBusy}
+                disabled={importBusy || weekHtmlBusy}
                 className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.common.previous}
@@ -801,7 +802,7 @@ export function AdminPredictionCalendar() {
               <button
                 type="button"
                 onClick={goToCurrentMonth}
-                disabled={importBusy || weekImageBusy}
+                disabled={importBusy || weekHtmlBusy}
                 className="cosmic-tab-active rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.dashboard.predictionCalendar.jumpToCurrentMonth}
@@ -809,7 +810,7 @@ export function AdminPredictionCalendar() {
               <button
                 type="button"
                 onClick={() => goToMonth(1)}
-                disabled={importBusy || weekImageBusy}
+                disabled={importBusy || weekHtmlBusy}
                 className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
               >
                 {messages.common.next}
@@ -825,7 +826,7 @@ export function AdminPredictionCalendar() {
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-3xl">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/68">
-                  {messages.dashboard.predictionCalendar.weekImagePromptLabel}
+                  {messages.dashboard.predictionCalendar.weekHtmlGeneratorLabel}
                 </p>
                 <p className="cosmic-shell-meta mt-2 text-sm">
                   {messages.dashboard.predictionCalendar.selectedWeekLabel}:{' '}
@@ -834,23 +835,33 @@ export function AdminPredictionCalendar() {
                   </span>
                 </p>
                 <p className="cosmic-shell-meta mt-1 text-sm">
-                  {messages.dashboard.predictionCalendar.imagesInSelectedWeek}:{' '}
+                  {messages.dashboard.predictionCalendar.selectedDaysCountLabel}:{' '}
                   <span className="font-semibold text-slate-100">
-                    {selectedWeekImagesCount}
+                    {selectedGenerationDaysCount}
                   </span>
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={handleGenerateSelectedDays}
-                disabled={weekImageBusy || importBusy || selectedGenerationDaysCount === 0}
-                className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
-              >
-                {weekImageBusy
-                  ? messages.dashboard.predictionCalendar.generateSelectedDaysBusy
-                  : messages.dashboard.predictionCalendar.generateSelectedDays}
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleGenerateSelectedDays}
+                  disabled={weekHtmlBusy || importBusy || selectedGenerationDaysCount === 0}
+                  className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+                >
+                  {weekHtmlBusy
+                    ? messages.dashboard.predictionCalendar.generateWeekHtmlBusy
+                    : messages.dashboard.predictionCalendar.generateWeekHtml}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyWeekHtml}
+                  disabled={weekHtmlBusy || generatedWeekHtml.length === 0}
+                  className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+                >
+                  {messages.dashboard.predictionCalendar.copyWeekHtml}
+                </button>
+              </div>
             </div>
 
             <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(16rem,24rem)_1fr] lg:items-start">
@@ -862,7 +873,7 @@ export function AdminPredictionCalendar() {
                   value={selectedWeekKey}
                   onChange={(event) => setSelectedWeekKey(event.target.value)}
                   className="cosmic-input w-full rounded-2xl px-4 py-3"
-                  disabled={weekImageBusy || importBusy}
+                  disabled={weekHtmlBusy || importBusy}
                 >
                   {weekSelectionOptions.map((option) => {
                     const rangeLabel = `${selectedWeekRangeFormatter.format(new Date(option.firstDate))} - ${selectedWeekRangeFormatter.format(new Date(option.lastDate))}`
@@ -919,7 +930,7 @@ export function AdminPredictionCalendar() {
                   <button
                     type="button"
                     onClick={handleSelectAllWeekDays}
-                    disabled={weekImageBusy || importBusy || selectedWeekDayKeys.length === 0}
+                    disabled={weekHtmlBusy || importBusy || selectedWeekDayKeys.length === 0}
                     className="cosmic-outline-button rounded-full px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.14em] disabled:opacity-60"
                   >
                     {messages.dashboard.predictionCalendar.selectAllWeekDays}
@@ -927,7 +938,7 @@ export function AdminPredictionCalendar() {
                   <button
                     type="button"
                     onClick={handleClearSelectedWeekDays}
-                    disabled={weekImageBusy || importBusy || selectedGenerationDaysCount === 0}
+                    disabled={weekHtmlBusy || importBusy || selectedGenerationDaysCount === 0}
                     className="cosmic-outline-button rounded-full px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.14em] disabled:opacity-60"
                   >
                     {messages.dashboard.predictionCalendar.clearSelectedWeekDays}
@@ -935,20 +946,62 @@ export function AdminPredictionCalendar() {
                 </div>
               </div>
             </div>
-
-            <label className="mt-4 block">
-              <textarea
-                value={weekImagePrompt}
-                onChange={(event) => setWeekImagePrompt(event.target.value)}
-                rows={7}
-                maxLength={MAX_WEEK_IMAGE_PROMPT_LENGTH}
-                disabled={weekImageBusy || importBusy}
-                className="cosmic-input min-h-[10rem] w-full rounded-2xl px-4 py-3"
-              />
-            </label>
             <span className="cosmic-shell-meta mt-2 block text-xs">
-              {messages.dashboard.predictionCalendar.weekImagePromptHint}
+              {messages.dashboard.predictionCalendar.weekHtmlGeneratorHint}
             </span>
+
+            {generatedWeekHtml ? (
+              <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(16rem,22rem)_1fr]">
+                <div className="space-y-3">
+                  <label className="block">
+                    <span className="mb-2 block text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                      {messages.dashboard.predictionCalendar.weekHtmlSubjectLabel}
+                    </span>
+                    <input
+                      readOnly
+                      value={generatedWeekSubject}
+                      className="cosmic-input w-full rounded-2xl px-4 py-3 text-sm"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                      {messages.dashboard.predictionCalendar.weekHtmlPreviewTextLabel}
+                    </span>
+                    <textarea
+                      readOnly
+                      value={generatedWeekPreviewText}
+                      rows={3}
+                      className="cosmic-input w-full rounded-2xl px-4 py-3 text-sm"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                      {messages.dashboard.predictionCalendar.weekHtmlCodeLabel}
+                    </span>
+                    <textarea
+                      readOnly
+                      value={generatedWeekHtml}
+                      rows={14}
+                      className="cosmic-input w-full rounded-2xl px-4 py-3 font-mono text-[0.7rem]"
+                    />
+                  </label>
+                </div>
+
+                <div>
+                  <p className="mb-2 text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                    {messages.dashboard.predictionCalendar.weekHtmlPreviewLabel}
+                  </p>
+                  <iframe
+                    title={messages.dashboard.predictionCalendar.weekHtmlPreviewLabel}
+                    srcDoc={generatedWeekHtml}
+                    sandbox=""
+                    className="h-[560px] w-full rounded-2xl border border-white/16 bg-white"
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">

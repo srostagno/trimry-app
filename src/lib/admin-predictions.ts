@@ -137,3 +137,28 @@ export async function generateAdminPredictionWeekImages(
     dates: string[]
   }
 }
+
+export async function generateAdminPredictionWeekHtml(
+  payload: {
+    dates: string[]
+    locale: string
+  },
+  fallbackMessage: string,
+) {
+  const response = await apiFetch('/admin/predictions/generate-week-html', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    dates: string[]
+    subject: string
+    previewText: string
+    html: string
+  }
+}

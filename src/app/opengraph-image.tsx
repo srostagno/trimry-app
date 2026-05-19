@@ -10,7 +10,7 @@ export const contentType = 'image/png'
 export default function OpenGraphImage() {
   return createSocialImage({
     eyebrow: 'Good and bad timing',
-    title: 'Good and Bad Days to Cut Your Hair and Nails',
+    title: 'Good & Bad Days to Cut Your Hair',
     subtitle:
       'One Monday Trimry forecast with Good, Bad, and Rare signals for haircuts, nail trimming, and more.',
   })

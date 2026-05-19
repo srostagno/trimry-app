@@ -3,12 +3,13 @@ import Link from 'next/link'
 import { JsonLd } from '@/components/json-ld'
 import {
   GOOD_BAD_GUIDE_PATH,
+  SOCIAL_IMAGE_PATH,
   SITE_NAME,
   absoluteUrl,
   createPageMetadata,
 } from '@/lib/seo'
 
-const pageTitle = 'Good and Bad Days to Cut Your Hair, Nails and More'
+const pageTitle = 'Good & Bad Days to Cut Your Hair - Weekly Timing Guide'
 const pageDescription =
   'Learn how to read good, bad, and rare days to cut your hair, trim nails, shave, and plan release rituals. Get weekly Monday timing guidance from Trimry.'
 
@@ -36,6 +37,7 @@ const faq = [
 ] as const
 
 const pageUrl = absoluteUrl(GOOD_BAD_GUIDE_PATH)
+const pageImageUrl = absoluteUrl(SOCIAL_IMAGE_PATH)
 
 const seoGuideJsonLd = [
   {
@@ -49,9 +51,38 @@ const seoGuideJsonLd = [
     isPartOf: {
       '@id': absoluteUrl('/#website'),
     },
+    primaryImageOfPage: pageImageUrl,
+    mainEntity: {
+      '@id': `${pageUrl}#article`,
+    },
     breadcrumb: {
       '@id': `${pageUrl}#breadcrumb`,
     },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    '@id': `${pageUrl}#article`,
+    headline: 'Good & Bad Days to Cut Your Hair, Nails and More',
+    description: pageDescription,
+    image: pageImageUrl,
+    inLanguage: 'en',
+    mainEntityOfPage: {
+      '@id': `${pageUrl}#webpage`,
+    },
+    author: {
+      '@id': absoluteUrl('/#organization'),
+    },
+    publisher: {
+      '@id': absoluteUrl('/#organization'),
+    },
+    keywords: [
+      'good & bad days to cut your hair',
+      'good and bad days to cut your hair',
+      'best day to cut hair',
+      'best day to trim nails',
+      'weekly timing guide',
+    ],
   },
   {
     '@context': 'https://schema.org',
@@ -92,6 +123,7 @@ export const metadata = createPageMetadata({
   description: pageDescription,
   path: GOOD_BAD_GUIDE_PATH,
   keywords: [
+    'good & bad days to cut your hair',
     'good and bad days to cut your hair nails and more',
     'good and bad days to cut your hair',
     'best day to cut hair',
@@ -112,7 +144,7 @@ export default function GoodBadDaysGuidePage() {
             English SEO Guide
           </p>
           <h1 className="mt-4 max-w-4xl text-4xl leading-tight text-slate-50 sm:text-5xl">
-            Good and Bad Days to Cut Your Hair, Nails and More
+            Good & Bad Days to Cut Your Hair, Nails and More
           </h1>
           <p className="mt-4 max-w-3xl text-lg text-slate-100/84">
             If you are searching for good and bad days to cut your hair, nails and more, this

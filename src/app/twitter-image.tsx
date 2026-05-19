@@ -10,7 +10,7 @@ export const contentType = 'image/png'
 export default function TwitterImage() {
   return createSocialImage({
     eyebrow: 'Weekly timing guide',
-    title: 'Good and Bad Days to Cut Your Hair, Nails and More',
+    title: 'Good & Bad Days to Cut Your Hair',
     subtitle:
       'Trimry sends one Monday forecast with Good, Bad, and Rare timing signals by email or WhatsApp.',
   })

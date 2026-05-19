@@ -337,11 +337,26 @@ export type MessageSection = {
       weekImagePromptHint: string
       selectedWeekLabel: string
       imagesInSelectedWeek: string
+      weekSelectorLabel: string
+      weekDaysToGenerateLabel: string
+      selectedDaysCountLabel: string
+      selectAllWeekDays: string
+      clearSelectedWeekDays: string
       generateWeekImages: string
       generateWeekImagesBusy: string
       generateWeekImagesConfirm: string
       generateWeekImagesSuccess: string
       generateWeekImagesError: string
+      generateSelectedDays: string
+      generateSelectedDaysBusy: string
+      generateSelectedDaysConfirm: string
+      generateSelectedDaysSuccess: string
+      generateSelectedDaysError: string
+      generateSelectedDayImage: string
+      generateSelectedDayImageBusy: string
+      generateSelectedDayImageConfirm: string
+      generateSelectedDayImageSuccess: string
+      generateSelectedDayImageError: string
       dayImageBadge: string
       dayImagePreviewLabel: string
       saveDay: string
@@ -922,6 +937,11 @@ const englishMessages: MessageSection = {
         'You can edit placeholders like {date}, {weekday}, {summary}, {noteEn}, {noteEs}, {localizedDate}, and {weekContext}.',
       selectedWeekLabel: 'Selected week',
       imagesInSelectedWeek: 'Generated images in this week',
+      weekSelectorLabel: 'Week to edit',
+      weekDaysToGenerateLabel: 'Days to generate',
+      selectedDaysCountLabel: 'Selected days',
+      selectAllWeekDays: 'Select full week',
+      clearSelectedWeekDays: 'Clear selection',
       generateWeekImages: 'Generate week images',
       generateWeekImagesBusy: 'Generating week images',
       generateWeekImagesConfirm:
@@ -930,6 +950,22 @@ const englishMessages: MessageSection = {
         'Week images generated and saved for each day.',
       generateWeekImagesError:
         'Unable to generate week images right now.',
+      generateSelectedDays: 'Generate selected days',
+      generateSelectedDaysBusy: 'Generating selected days',
+      generateSelectedDaysConfirm:
+        'Generate and save images for the selected days?',
+      generateSelectedDaysSuccess:
+        'Selected day images generated and saved.',
+      generateSelectedDaysError:
+        'Unable to generate images for the selected days right now.',
+      generateSelectedDayImage: 'Generate selected day image',
+      generateSelectedDayImageBusy: 'Generating selected day image',
+      generateSelectedDayImageConfirm:
+        'Generate and save an image for the selected day only?',
+      generateSelectedDayImageSuccess:
+        'Selected day image generated and saved.',
+      generateSelectedDayImageError:
+        'Unable to generate the selected day image right now.',
       dayImageBadge: 'Image ready',
       dayImagePreviewLabel: 'Saved day image',
       saveDay: 'Save day',
@@ -1654,6 +1690,11 @@ const spanishMessages: MessageSection = {
         'Puedes editar placeholders como {date}, {weekday}, {summary}, {noteEn}, {noteEs}, {localizedDate} y {weekContext}.',
       selectedWeekLabel: 'Semana seleccionada',
       imagesInSelectedWeek: 'Imágenes generadas en esta semana',
+      weekSelectorLabel: 'Semana a editar',
+      weekDaysToGenerateLabel: 'Días a generar',
+      selectedDaysCountLabel: 'Días seleccionados',
+      selectAllWeekDays: 'Seleccionar semana completa',
+      clearSelectedWeekDays: 'Limpiar selección',
       generateWeekImages: 'Generar imágenes semana',
       generateWeekImagesBusy: 'Generando imágenes semana',
       generateWeekImagesConfirm:
@@ -1662,6 +1703,22 @@ const spanishMessages: MessageSection = {
         'Imágenes de la semana generadas y guardadas por día.',
       generateWeekImagesError:
         'No pudimos generar imágenes para la semana en este momento.',
+      generateSelectedDays: 'Generar días seleccionados',
+      generateSelectedDaysBusy: 'Generando días seleccionados',
+      generateSelectedDaysConfirm:
+        '¿Generar y guardar imágenes para los días seleccionados?',
+      generateSelectedDaysSuccess:
+        'Imágenes de los días seleccionados generadas y guardadas.',
+      generateSelectedDaysError:
+        'No pudimos generar imágenes para los días seleccionados en este momento.',
+      generateSelectedDayImage: 'Generar imagen del día',
+      generateSelectedDayImageBusy: 'Generando imagen del día',
+      generateSelectedDayImageConfirm:
+        '¿Generar y guardar una imagen solo para el día seleccionado?',
+      generateSelectedDayImageSuccess:
+        'Imagen del día seleccionado generada y guardada.',
+      generateSelectedDayImageError:
+        'No pudimos generar la imagen del día seleccionado en este momento.',
       dayImageBadge: 'Imagen lista',
       dayImagePreviewLabel: 'Imagen guardada del día',
       saveDay: 'Guardar día',

@@ -26,16 +26,15 @@ const MAX_IMPORT_IMAGE_DIMENSION = 1600
 const MAX_IMPORT_IMAGE_DATA_URL_LENGTH = 3_200_000
 const MAX_WEEK_IMAGE_PROMPT_LENGTH = 2_800
 const DEFAULT_WEEK_IMAGE_PROMPT_TEMPLATE = [
-  'Create a premium editorial image for a daily grooming prediction.',
-  'Day: {localizedDate} ({date}).',
-  'Weekday label: {weekday}.',
-  'Tone: {summary}.',
-  'Day note in English: "{noteEn}"',
-  'Day note in Spanish: "{noteEs}"',
-  'Weekly context:',
-  '{weekContext}',
-  'Visual style: cinematic, symbolic, modern, and polished.',
-  'Do not include text, letters, numbers, logos, or watermarks.',
+  'Create a minimalist text-only poster for a daily grooming prediction.',
+  'Use a plain solid background and clean typography.',
+  'Render exactly two lines of visible text:',
+  'Line 1: {localizedDate}',
+  'Line 2: {summary}',
+  'The second line must be exactly one lowercase word: good, bad, or rare.',
+  'Do not render any other words, icons, logos, photos, illustrations, textures, shadows, gradients, or decorations.',
+  'Context only (do not display this text):',
+  'weekday={weekday}; date={date}; note_en={noteEn}; note_es={noteEs}; week={weekContext}',
 ].join('\n')
 
 function createUtcDate(year: number, month: number, day: number) {
@@ -259,6 +258,10 @@ export function AdminPredictionCalendar() {
   const [selectedDateKey, setSelectedDateKey] = useState(() =>
     toDayKey(normalizeUtcDate(new Date()).toISOString()),
   )
+  const [selectedWeekKey, setSelectedWeekKey] = useState('')
+  const [selectedGenerationDayKeys, setSelectedGenerationDayKeys] = useState<string[]>(
+    [],
+  )
   const [summary, setSummary] = useState<PredictionTone>('good')
   const [notesByLanguage, setNotesByLanguage] = useState<PredictionNotesByLanguage>({
     en: '',
@@ -350,19 +353,48 @@ export function AdminPredictionCalendar() {
     )
   }, [calendar, selectedDateKey])
 
-  const selectedWeek = useMemo(() => {
+  const weekSelectionOptions = useMemo(() => {
     if (!calendar) {
       return []
     }
 
-    return (
-      calendar.weeks.find((week) =>
-        week.some((day) => toDayKey(day.date) === selectedDateKey),
-      ) ??
-      calendar.weeks[0] ??
-      []
+    return calendar.weeks.map((week, index) => ({
+      key: toDayKey(week[0]!.date),
+      index,
+      week,
+      firstDate: week[0]!.date,
+      lastDate: week[week.length - 1]!.date,
+    }))
+  }, [calendar])
+
+  useEffect(() => {
+    if (weekSelectionOptions.length === 0) {
+      return
+    }
+
+    const hasSelectedWeek = weekSelectionOptions.some(
+      (option) => option.key === selectedWeekKey,
     )
-  }, [calendar, selectedDateKey])
+
+    if (hasSelectedWeek) {
+      return
+    }
+
+    const containingWeek =
+      weekSelectionOptions.find((option) =>
+        option.week.some((day) => toDayKey(day.date) === selectedDateKey),
+      ) ?? weekSelectionOptions[0]
+
+    if (containingWeek) {
+      setSelectedWeekKey(containingWeek.key)
+    }
+  }, [selectedDateKey, selectedWeekKey, weekSelectionOptions])
+
+  const selectedWeek = useMemo(
+    () =>
+      weekSelectionOptions.find((option) => option.key === selectedWeekKey)?.week ?? [],
+    [selectedWeekKey, weekSelectionOptions],
+  )
 
   useEffect(() => {
     if (!selectedDay) {
@@ -381,14 +413,42 @@ export function AdminPredictionCalendar() {
     () => selectedWeek.map((day) => toDayKey(day.date)),
     [selectedWeek],
   )
+  useEffect(() => {
+    if (selectedWeekDayKeys.length === 0) {
+      setSelectedGenerationDayKeys([])
+      return
+    }
+
+    setSelectedGenerationDayKeys((current) => {
+      const filtered = current.filter((dayKey) =>
+        selectedWeekDayKeys.includes(dayKey),
+      )
+
+      if (filtered.length > 0) {
+        return filtered
+      }
+
+      return selectedWeekDayKeys
+    })
+  }, [selectedWeekDayKeys])
   const selectedWeekImagesCount = useMemo(
     () => selectedWeek.filter((day) => day.generatedImage).length,
     [selectedWeek],
   )
+  const selectedGenerationDaysCount = selectedGenerationDayKeys.length
   const selectedWeekRangeFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
         month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC',
+      }),
+    [locale],
+  )
+  const generationDayChipFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        weekday: 'short',
         day: 'numeric',
         timeZone: 'UTC',
       }),
@@ -447,6 +507,13 @@ export function AdminPredictionCalendar() {
     }
 
     setSelectedDateKey(toDayKey(day.date))
+    const containingWeek = weekSelectionOptions.find((option) =>
+      option.week.some((candidate) => candidate.date === day.date),
+    )
+
+    if (containingWeek) {
+      setSelectedWeekKey(containingWeek.key)
+    }
     setSummary(day.summary)
     setNotesByLanguage(readDayNotesByLanguage(day))
     setSaveMessage('')
@@ -527,13 +594,31 @@ export function AdminPredictionCalendar() {
     }
   }
 
-  const handleGenerateWeekImages = async () => {
-    if (selectedWeekDayKeys.length !== 7) {
+  const handleToggleGenerationDay = (dayKey: string) => {
+    setSelectedGenerationDayKeys((current) => {
+      if (current.includes(dayKey)) {
+        return current.filter((candidate) => candidate !== dayKey)
+      }
+
+      return [...current, dayKey]
+    })
+  }
+
+  const handleSelectAllWeekDays = () => {
+    setSelectedGenerationDayKeys(selectedWeekDayKeys)
+  }
+
+  const handleClearSelectedWeekDays = () => {
+    setSelectedGenerationDayKeys([])
+  }
+
+  const handleGenerateSelectedDays = async () => {
+    if (selectedGenerationDaysCount === 0) {
       return
     }
 
     const confirmed = window.confirm(
-      messages.dashboard.predictionCalendar.generateWeekImagesConfirm,
+      messages.dashboard.predictionCalendar.generateSelectedDaysConfirm,
     )
 
     if (!confirmed) {
@@ -552,19 +637,19 @@ export function AdminPredictionCalendar() {
     try {
       await generateAdminPredictionWeekImages(
         {
-          dates: selectedWeekDayKeys,
+          dates: selectedGenerationDayKeys,
           locale,
           promptTemplate: normalizedPrompt,
         },
-        messages.dashboard.predictionCalendar.generateWeekImagesError,
+        messages.dashboard.predictionCalendar.generateSelectedDaysError,
       )
       await refreshMonth(selectedDateKeyRef.current)
-      setSaveMessage(messages.dashboard.predictionCalendar.generateWeekImagesSuccess)
+      setSaveMessage(messages.dashboard.predictionCalendar.generateSelectedDaysSuccess)
     } catch (generationError) {
       setError(
         generationError instanceof Error
           ? generationError.message
-          : messages.dashboard.predictionCalendar.generateWeekImagesError,
+          : messages.dashboard.predictionCalendar.generateSelectedDaysError,
       )
     } finally {
       setWeekImageBusy(false)
@@ -758,14 +843,97 @@ export function AdminPredictionCalendar() {
 
               <button
                 type="button"
-                onClick={handleGenerateWeekImages}
-                disabled={weekImageBusy || importBusy || selectedWeekDayKeys.length !== 7}
+                onClick={handleGenerateSelectedDays}
+                disabled={weekImageBusy || importBusy || selectedGenerationDaysCount === 0}
                 className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
               >
                 {weekImageBusy
-                  ? messages.dashboard.predictionCalendar.generateWeekImagesBusy
-                  : messages.dashboard.predictionCalendar.generateWeekImages}
+                  ? messages.dashboard.predictionCalendar.generateSelectedDaysBusy
+                  : messages.dashboard.predictionCalendar.generateSelectedDays}
               </button>
+            </div>
+
+            <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(16rem,24rem)_1fr] lg:items-start">
+              <label className="block">
+                <span className="mb-2 block text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                  {messages.dashboard.predictionCalendar.weekSelectorLabel}
+                </span>
+                <select
+                  value={selectedWeekKey}
+                  onChange={(event) => setSelectedWeekKey(event.target.value)}
+                  className="cosmic-input w-full rounded-2xl px-4 py-3"
+                  disabled={weekImageBusy || importBusy}
+                >
+                  {weekSelectionOptions.map((option) => {
+                    const rangeLabel = `${selectedWeekRangeFormatter.format(new Date(option.firstDate))} - ${selectedWeekRangeFormatter.format(new Date(option.lastDate))}`
+
+                    return (
+                      <option key={option.key} value={option.key}>
+                        {`W${option.index + 1} · ${rangeLabel}`}
+                      </option>
+                    )
+                  })}
+                </select>
+              </label>
+
+              <div>
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                    {messages.dashboard.predictionCalendar.weekDaysToGenerateLabel}
+                  </span>
+                  <span className="cosmic-shell-meta text-xs">
+                    {messages.dashboard.predictionCalendar.selectedDaysCountLabel}:{' '}
+                    <span className="font-semibold text-slate-100">
+                      {selectedGenerationDaysCount}
+                    </span>
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {selectedWeek.map((day) => {
+                    const dayKey = toDayKey(day.date)
+                    const isSelected = selectedGenerationDayKeys.includes(dayKey)
+                    const dayLabel = generationDayChipFormatter.format(
+                      new Date(day.date),
+                    )
+
+                    return (
+                      <button
+                        key={day.date}
+                        type="button"
+                        onClick={() => handleToggleGenerationDay(dayKey)}
+                        className={clsx(
+                          'rounded-full border px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.14em] transition',
+                          isSelected
+                            ? 'border-cyan-200/30 bg-cyan-300/15 text-cyan-50'
+                            : 'border-white/16 bg-slate-900/32 text-slate-100/76 hover:border-cyan-200/22 hover:text-slate-50',
+                        )}
+                      >
+                        {`${dayLabel} · ${day.summary}`}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSelectAllWeekDays}
+                    disabled={weekImageBusy || importBusy || selectedWeekDayKeys.length === 0}
+                    className="cosmic-outline-button rounded-full px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.14em] disabled:opacity-60"
+                  >
+                    {messages.dashboard.predictionCalendar.selectAllWeekDays}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleClearSelectedWeekDays}
+                    disabled={weekImageBusy || importBusy || selectedGenerationDaysCount === 0}
+                    className="cosmic-outline-button rounded-full px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.14em] disabled:opacity-60"
+                  >
+                    {messages.dashboard.predictionCalendar.clearSelectedWeekDays}
+                  </button>
+                </div>
+              </div>
             </div>
 
             <label className="mt-4 block">
@@ -949,7 +1117,7 @@ export function AdminPredictionCalendar() {
       </section>
 
       {editorOpen && selectedDay ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
           <button
             type="button"
             aria-label={messages.common.cancel}
@@ -957,7 +1125,7 @@ export function AdminPredictionCalendar() {
             className="absolute inset-0 bg-slate-950/72 backdrop-blur-sm"
           />
 
-          <div className="luck-glow cosmic-panel relative z-10 w-full max-w-2xl overflow-hidden rounded-[2.2rem] p-6 shadow-[0_32px_120px_rgba(2,6,23,0.65)] sm:p-8">
+          <div className="luck-glow cosmic-panel relative z-10 my-4 max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[2.2rem] p-6 shadow-[0_32px_120px_rgba(2,6,23,0.65)] sm:p-8">
             <div className="pointer-events-none absolute inset-0 cosmic-nebula opacity-80" />
             <div className="pointer-events-none absolute inset-0 cosmic-stars opacity-25" />
 

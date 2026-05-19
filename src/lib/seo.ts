@@ -40,11 +40,12 @@ function resolveSiteUrl() {
 export const SITE_URL = resolveSiteUrl()
 export const IS_INDEXING_ALLOWED = resolveIndexingAllowed(SITE_URL)
 export const SITE_NAME = COMPANY.brandName
-export const SITE_TITLE =
-  'Good and Bad Days to Cut Your Hair, Nails and More | Trimry'
+export const SITE_SLOGAN = 'Good & Bad Days to Cut Your Hair'
+export const SITE_TITLE = `${SITE_SLOGAN} | ${SITE_NAME}`
 export const SITE_DESCRIPTION =
   'Discover good and bad days to cut your hair, trim nails, shave, and reset your week. Trimry sends one Monday forecast with good, bad, and rare timing signals by email, WhatsApp, or both.'
 export const SITE_KEYWORDS = [
+  'good & bad days to cut your hair',
   'good and bad days to cut your hair',
   'good and bad days to cut your hair nails and more',
   'best day to cut hair and nails',
@@ -268,6 +269,7 @@ export const sitewideJsonLd = [
     '@id': absoluteUrl('/#organization'),
     name: COMPANY.legalName,
     alternateName: SITE_NAME,
+    slogan: SITE_SLOGAN,
     url: SITE_URL,
     logo: absoluteUrl('/logo.png'),
     email: COMPANY.supportEmail,
@@ -276,7 +278,7 @@ export const sitewideJsonLd = [
         '@type': 'ContactPoint',
         contactType: 'customer support',
         email: COMPANY.supportEmail,
-        availableLanguage: ['en'],
+        availableLanguage: ['en', 'es'],
       },
     ],
     address: {
@@ -294,7 +296,7 @@ export const sitewideJsonLd = [
     name: SITE_NAME,
     url: SITE_URL,
     description: SITE_DESCRIPTION,
-    inLanguage: 'en',
+    inLanguage: ['en', 'es'],
     publisher: {
       '@id': absoluteUrl('/#organization'),
     },
@@ -309,7 +311,7 @@ export const homePageJsonLd = [
     name: buildTitle(),
     url: absoluteUrl('/'),
     description: SITE_DESCRIPTION,
-    inLanguage: 'en',
+    inLanguage: ['en', 'es'],
     isPartOf: {
       '@id': absoluteUrl('/#website'),
     },

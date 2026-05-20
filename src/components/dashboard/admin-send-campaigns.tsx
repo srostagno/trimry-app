@@ -8,6 +8,7 @@ import {
   fetchAdminSendWorkspace,
   runAdminSendCampaignAction,
   saveAdminSendSettings,
+  triggerAdminWelcomeFlowTest,
   upsertAdminSendTemplate,
   type SendCampaign,
   type SendCampaignChannel,
@@ -841,6 +842,37 @@ export function AdminSendCampaigns() {
     setSuccess(messages.dashboard.sendCampaigns.emailTemplateGenerated)
   }
 
+  const runWelcomeFlowTest = async () => {
+    setBusyAction('welcome-flow-test')
+    setError('')
+    setSuccess('')
+
+    try {
+      const response = await triggerAdminWelcomeFlowTest(
+        messages.dashboard.sendCampaigns.loadError,
+      )
+      const successMessage =
+        language === 'es'
+          ? `Flujo de bienvenida ejecutado para la suscripción ${response.subscriptionId}. WhatsApp semanal: ${
+              response.whatsappProjectionSent ? 'enviado' : 'omitido'
+            }. Email: ${response.emailProjectionSent ? 'enviado' : 'omitido'}.`
+          : `Welcome flow triggered for subscription ${response.subscriptionId}. Weekly WhatsApp: ${
+              response.whatsappProjectionSent ? 'sent' : 'skipped'
+            }. Email: ${response.emailProjectionSent ? 'sent' : 'skipped'}.`
+
+      setSuccess(successMessage)
+      await loadWorkspace()
+    } catch (nextError) {
+      setError(
+        nextError instanceof Error
+          ? nextError.message
+          : messages.dashboard.sendCampaigns.loadError,
+      )
+    } finally {
+      setBusyAction(null)
+    }
+  }
+
   if (loading) {
     return (
       <section className="cosmic-shell cosmic-shell-copy rounded-[2rem] p-8">
@@ -981,6 +1013,33 @@ export function AdminSendCampaigns() {
               </button>
             </div>
           </div>
+        </div>
+
+        <div className="mt-6 rounded-[1.75rem] border border-white/12 bg-black/18 p-5">
+          <h3 className="text-xl font-semibold text-slate-50">
+            {language === 'es'
+              ? 'Prueba de flujo de bienvenida'
+              : 'Welcome flow test'}
+          </h3>
+          <p className="cosmic-shell-meta mt-2 text-sm">
+            {language === 'es'
+              ? 'Dispara desde tu cuenta admin el flujo completo: template greetings de WhatsApp, proyección semanal por WhatsApp y correo de bienvenida con proyección.'
+              : 'Trigger the full welcome flow from your admin account: WhatsApp greetings template, weekly WhatsApp projection, and welcome projection email.'}
+          </p>
+          <button
+            type="button"
+            onClick={() => void runWelcomeFlowTest()}
+            disabled={busyAction !== null}
+            className="cosmic-outline-button mt-4 rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+          >
+            {busyAction === 'welcome-flow-test'
+              ? language === 'es'
+                ? 'Ejecutando'
+                : 'Running'
+              : language === 'es'
+                ? 'Ejecutar flujo de bienvenida'
+                : 'Trigger welcome flow'}
+          </button>
         </div>
       </section>
 

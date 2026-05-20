@@ -206,3 +206,21 @@ export async function runAdminSendCampaignAction(
     campaign: SendCampaign
   }
 }
+
+export async function triggerAdminWelcomeFlowTest(fallbackMessage: string) {
+  const response = await apiFetch('/admin/subscriptions/trigger-welcome-flow', {
+    method: 'POST',
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    subscriptionId: string
+    greetingsTemplateSent: boolean
+    whatsappProjectionSent: boolean
+    emailProjectionSent: boolean
+  }
+}

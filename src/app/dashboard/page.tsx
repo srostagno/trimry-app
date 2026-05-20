@@ -1419,9 +1419,16 @@ export default function DashboardPage() {
       <section className="cosmic-shell rounded-[2rem] p-8">
         <h1 className="cosmic-shell-title text-3xl">{messages.dashboard.title}</h1>
         <p className="cosmic-shell-copy mt-2">{messages.dashboard.intro}</p>
-        <p className="cosmic-shell-meta mt-3 text-sm">
-          {data.user.fullName} · {data.user.email}
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <p className="cosmic-shell-meta text-sm">
+            {data.user.fullName} · {data.user.email}
+          </p>
+          {data.user.admin ? (
+            <span className="inline-flex items-center rounded-full border border-cyan-200/38 bg-cyan-500/12 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-cyan-100">
+              {messages.dashboard.adminBadge}
+            </span>
+          ) : null}
+        </div>
 
         {billingSuccess ? (
           <p className="cosmic-success-box mt-5 rounded-2xl px-4 py-3 text-sm">

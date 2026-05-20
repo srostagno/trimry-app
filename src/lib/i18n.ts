@@ -209,6 +209,7 @@ export type MessageSection = {
   dashboard: {
     title: string
     intro: string
+    adminBadge: string
     loading: string
     noData: string
     tabs: {
@@ -791,6 +792,7 @@ const englishMessages: MessageSection = {
   dashboard: {
     title: 'Your subscription dashboard',
     intro: 'Manage your delivery channels and weekly Trimry plan.',
+    adminBadge: 'Admin account',
     loading: 'Loading your account...',
     noData: 'Sign in to access your dashboard.',
     tabs: {
@@ -1560,6 +1562,7 @@ const spanishMessages: MessageSection = {
   dashboard: {
     title: 'Tu panel de suscripción',
     intro: 'Administra tus canales de entrega y tu plan semanal de Trimry.',
+    adminBadge: 'Cuenta admin',
     loading: 'Cargando tu cuenta...',
     noData: 'Ingresa para acceder a tu panel.',
     tabs: {

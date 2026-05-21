@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 import { LuckBeliefCarousel } from '@/components/luck-belief-carousel'
 import { useLanguage } from '@/components/language-provider'
-import { trackEvent } from '@/lib/analytics'
+import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { interpolate } from '@/lib/i18n'
 import { formatDeliveryHourLabel } from '@/lib/schedule'
 import {
@@ -54,6 +54,12 @@ export default function ActivationGatewayPage() {
 
         if (!cancelled) {
           trackEvent('activate_subscription_view', {
+            user_id: currentAccount.user.id,
+            subscription_status: currentAccount.subscription?.status ?? 'none',
+            delivery_preference:
+              currentAccount.subscription?.deliveryPreference ?? 'none',
+          })
+          trackMetaCustomEvent('SubscriptionActivationView', {
             subscription_status: currentAccount.subscription?.status ?? 'none',
             delivery_preference:
               currentAccount.subscription?.deliveryPreference ?? 'none',
@@ -128,11 +134,15 @@ export default function ActivationGatewayPage() {
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
                 href="/checkout/start"
-                onClick={() =>
+                onClick={() => {
                   trackEvent('activation_continue_click', {
+                    user_id: account.user.id,
                     destination: '/checkout/start',
                   })
-                }
+                  trackMetaCustomEvent('SubscriptionActivationContinue', {
+                    destination: '/checkout/start',
+                  })
+                }}
                 className="cosmic-button-primary inline-flex rounded-full px-7 py-3 text-sm font-black uppercase tracking-[0.17em]"
               >
                 {messages.activate.primaryButton}
@@ -141,6 +151,7 @@ export default function ActivationGatewayPage() {
                 href="/account/delivery?edit=1"
                 onClick={() =>
                   trackEvent('activation_edit_delivery_click', {
+                    user_id: account.user.id,
                     destination: '/account/delivery?edit=1',
                   })
                 }

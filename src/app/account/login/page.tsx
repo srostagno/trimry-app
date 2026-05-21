@@ -6,7 +6,7 @@ import { FormEvent, useState } from 'react'
 
 import { useLanguage } from '@/components/language-provider'
 import { apiFetch, readApiError } from '@/lib/api-client'
-import { trackEvent } from '@/lib/analytics'
+import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { isLanguageCode } from '@/lib/i18n'
 import {
   fetchAccountSnapshot,
@@ -39,6 +39,7 @@ export default function LoginPage() {
 
       const payload = (await response.json()) as {
         user?: {
+          id?: string
           locale?: string
         }
       }
@@ -49,6 +50,11 @@ export default function LoginPage() {
       }
 
       trackEvent('login', {
+        method: 'email',
+        language: nextLocale ?? language,
+        user_id: payload.user?.id,
+      })
+      trackMetaCustomEvent('Login', {
         method: 'email',
         language: nextLocale ?? language,
       })

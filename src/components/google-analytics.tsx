@@ -13,6 +13,7 @@ import {
 import {
   GA_MEASUREMENT_ID,
   META_PIXEL_ID,
+  markGoogleAnalyticsReady,
   trackMetaPageView,
   trackPageView,
 } from '@/lib/analytics'
@@ -29,6 +30,7 @@ export function GoogleAnalytics() {
   const queryString = searchParams.toString()
   const { messages } = useLanguage()
   const [consent, setConsent] = useState<AnalyticsConsentState>('unknown')
+  const [gaReady, setGaReady] = useState(false)
   const hasTrackedMetaInitialPageView = useRef(false)
 
   useEffect(() => {
@@ -36,16 +38,16 @@ export function GoogleAnalytics() {
   }, [])
 
   useEffect(() => {
-    if (consent !== 'granted') {
+    if (consent !== 'granted' || !gaReady) {
       return
     }
 
     const pagePath = queryString ? `${pathname}?${queryString}` : pathname
     trackPageView(pagePath)
-  }, [consent, pathname, queryString])
+  }, [consent, gaReady, pathname, queryString])
 
   useEffect(() => {
-    if (!META_PIXEL_ID) {
+    if (consent !== 'granted' || !META_PIXEL_ID) {
       return
     }
 
@@ -55,9 +57,9 @@ export function GoogleAnalytics() {
     }
 
     hasTrackedMetaInitialPageView.current = true
-  }, [pathname, queryString])
+  }, [consent, pathname, queryString])
 
-  const metaPixelScripts = META_PIXEL_ID ? (
+  const metaPixelScripts = consent === 'granted' && META_PIXEL_ID ? (
     <>
       <Script id="meta-pixel" strategy="afterInteractive">
         {`
@@ -84,7 +86,6 @@ export function GoogleAnalytics() {
   if (consent === 'unknown') {
     return (
       <>
-        {metaPixelScripts}
         <div className="fixed inset-x-3 bottom-3 z-[100] sm:inset-x-6">
           <div className="cosmic-shell mx-auto max-w-4xl rounded-2xl p-4 sm:p-5">
             <p className="text-sm font-bold text-slate-50">{messages.cookieConsent.title}</p>
@@ -121,7 +122,7 @@ export function GoogleAnalytics() {
   }
 
   if (consent !== 'granted') {
-    return <>{metaPixelScripts}</>
+    return null
   }
 
   if (!GA_MEASUREMENT_ID && !META_PIXEL_ID) {
@@ -136,7 +137,14 @@ export function GoogleAnalytics() {
             src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
             strategy="afterInteractive"
           />
-          <Script id="google-analytics" strategy="afterInteractive">
+          <Script
+            id="google-analytics"
+            strategy="afterInteractive"
+            onReady={() => {
+              markGoogleAnalyticsReady()
+              setGaReady(true)
+            }}
+          >
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}

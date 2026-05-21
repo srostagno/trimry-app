@@ -1,4 +1,4 @@
-import { readApiError } from '@/lib/api-client'
+import { apiFetch, readApiError } from '@/lib/api-client'
 
 type BillingSessionPayload = {
   url?: string
@@ -19,16 +19,10 @@ export async function createBillingSession(
   path: '/billing/checkout-session' | '/billing/portal-session',
   fallbackMessage: string,
 ) {
-  const proxyPath =
-    path === '/billing/checkout-session'
-      ? '/api/billing/checkout-session'
-      : '/api/billing/portal-session'
-
-  const response = await fetch(proxyPath, {
+  const response = await apiFetch(path, {
     method: 'POST',
-    credentials: 'include',
     cache: 'no-store',
-  })
+  }, { retryUnauthorized: false })
 
   if (!response.ok) {
     throw new BillingSessionError(

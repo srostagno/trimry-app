@@ -8,7 +8,7 @@ import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
 import { useLanguage } from '@/components/language-provider'
 import { apiFetch, readApiError } from '@/lib/api-client'
-import { trackEvent } from '@/lib/analytics'
+import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { interpolate } from '@/lib/i18n'
 import {
   DEFAULT_WEEKLY_DELIVERY_HOUR,
@@ -161,6 +161,18 @@ export default function DeliveryOnboardingPage() {
       }
 
       trackEvent('delivery_preferences_saved', {
+        entry_point: hasExistingSubscription
+          ? isEditMode
+            ? 'delivery_edit'
+            : 'dashboard'
+          : 'onboarding',
+        user_id: account?.user.id,
+        delivery_preference: deliveryPreference,
+        delivery_hour_local: deliveryHourLocal,
+        requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),
+        destination: shouldProceedToActivation ? 'activate' : 'dashboard',
+      })
+      trackMetaCustomEvent('SubscriptionSetup', {
         entry_point: hasExistingSubscription
           ? isEditMode
             ? 'delivery_edit'

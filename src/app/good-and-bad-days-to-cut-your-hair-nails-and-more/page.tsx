@@ -79,6 +79,7 @@ const seoGuideJsonLd = [
     keywords: [
       'good & bad days to cut your hair',
       'good and bad days to cut your hair',
+      'good and bad days to have a haircut',
       'best day to cut hair',
       'best day to trim nails',
       'weekly timing guide',
@@ -126,6 +127,7 @@ export const metadata = createPageMetadata({
     'good & bad days to cut your hair',
     'good and bad days to cut your hair nails and more',
     'good and bad days to cut your hair',
+    'good and bad days to have a haircut',
     'best day to cut hair',
     'best day to trim nails',
     'bad day to cut hair',

@@ -11,7 +11,11 @@ import { DeliveryPreferenceSelector } from '@/components/delivery-preference-sel
 import { TimeZoneSelect } from '@/components/time-zone-select'
 import { useLanguage } from '@/components/language-provider'
 import { apiFetch, readApiError } from '@/lib/api-client'
-import { trackEvent, trackEventOnce } from '@/lib/analytics'
+import {
+  trackEvent,
+  trackEventOnce,
+  trackMetaStandardEventOnce,
+} from '@/lib/analytics'
 import { createBillingSession } from '@/lib/billing'
 import { interpolate } from '@/lib/i18n'
 import {
@@ -214,13 +218,50 @@ export default function DashboardPage() {
       `subscription-started-${data.subscription.id}-${data.subscription.updatedAt}`,
       'subscription_started',
       {
+        user_id: data.user.id,
         plan_id: data.subscription.planId,
         currency: data.subscription.currency,
         value: data.subscription.monthlyPriceUsd,
         delivery_preference: data.subscription.deliveryPreference,
       },
     )
-  }, [billingSuccess, data?.subscription])
+    trackEventOnce(
+      `subscription-purchase-${data.subscription.id}-${data.subscription.updatedAt}`,
+      'purchase',
+      {
+        transaction_id: data.subscription.id,
+        affiliation: 'Trimry',
+        currency: data.subscription.currency,
+        value: data.subscription.monthlyPriceUsd,
+        user_id: data.user.id,
+        plan_id: data.subscription.planId,
+        delivery_preference: data.subscription.deliveryPreference,
+        items: [
+          {
+            item_id: data.subscription.planId,
+            item_name: 'Trimry subscription',
+            item_category: 'subscription',
+            price: data.subscription.monthlyPriceUsd,
+            quantity: 1,
+          },
+        ],
+      },
+    )
+    trackMetaStandardEventOnce(
+      `subscription-started-${data.subscription.id}-${data.subscription.updatedAt}`,
+      'Subscribe',
+      {
+        content_name: 'Trimry subscription',
+        content_category: 'subscription',
+        currency: data.subscription.currency,
+        value: data.subscription.monthlyPriceUsd,
+        predicted_ltv: data.subscription.monthlyPriceUsd * 12,
+        subscription_id: data.subscription.id,
+        plan_id: data.subscription.planId,
+        delivery_preference: data.subscription.deliveryPreference,
+      },
+    )
+  }, [billingSuccess, data?.subscription, data?.user.id])
 
   useEffect(() => {
     if (!data?.user.admin) {
@@ -462,6 +503,7 @@ export default function DashboardPage() {
 
       trackEvent('delivery_preferences_saved', {
         entry_point: action === 'subscribe' ? 'dashboard_subscribe' : 'dashboard_manage',
+        user_id: data?.user.id,
         delivery_preference: deliveryPreference,
         delivery_hour_local: deliveryHourLocal,
         requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),

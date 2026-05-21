@@ -260,7 +260,7 @@ export function HomePageClient() {
         <p className="mt-3 text-slate-100/84">{messages.pricing.subtitle}</p>
         <div className="cosmic-card mt-6 max-w-xl rounded-3xl p-6">
           <h3 className="text-2xl text-slate-50">{messages.pricing.planTitle}</h3>
-          <p className="mt-2 text-4xl font-black text-cyan-100">{messages.pricing.billing}</p>
+          <p className="mt-2 text-lg font-bold text-cyan-100">{messages.pricing.billing}</p>
           <ul className="mt-5 space-y-2 text-slate-100/88">
             <li>{messages.pricing.include1}</li>
             <li>{messages.pricing.include2}</li>

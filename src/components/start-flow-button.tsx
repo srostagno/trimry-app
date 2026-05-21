@@ -4,7 +4,11 @@ import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { trackEvent } from '@/lib/analytics'
+import {
+  trackEvent,
+  trackMetaCustomEvent,
+  trackMetaStandardEvent,
+} from '@/lib/analytics'
 import {
   fetchAccountSnapshot,
   getStartFlowDestination,
@@ -41,6 +45,27 @@ export function StartFlowButton({
         destination,
         auth_state: account ? 'authenticated' : 'guest',
       })
+      trackMetaCustomEvent('StartFlowClick', {
+        cta_location: analyticsLocation,
+        destination,
+        auth_state: account ? 'authenticated' : 'guest',
+      })
+
+      if (!account) {
+        trackEvent('generate_lead', {
+          lead_type: 'account_start',
+          content_name: 'Start account flow',
+          content_category: 'account_intent',
+          cta_location: analyticsLocation,
+          destination,
+        })
+        trackMetaStandardEvent('Lead', {
+          content_name: 'Start account flow',
+          content_category: 'account_intent',
+          cta_location: analyticsLocation,
+        })
+      }
+
       router.push(destination)
       router.refresh()
     } catch {
@@ -48,6 +73,25 @@ export function StartFlowButton({
         cta_location: analyticsLocation,
         destination: '/account/register',
         auth_state: 'guest',
+        resolution: 'fallback',
+      })
+      trackMetaCustomEvent('StartFlowClick', {
+        cta_location: analyticsLocation,
+        destination: '/account/register',
+        auth_state: 'guest',
+        resolution: 'fallback',
+      })
+      trackMetaStandardEvent('Lead', {
+        content_name: 'Start account flow',
+        content_category: 'account_intent',
+        cta_location: analyticsLocation,
+      })
+      trackEvent('generate_lead', {
+        lead_type: 'account_start',
+        content_name: 'Start account flow',
+        content_category: 'account_intent',
+        cta_location: analyticsLocation,
+        destination: '/account/register',
         resolution: 'fallback',
       })
       router.push('/account/register')

@@ -5,7 +5,11 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import { useLanguage } from '@/components/language-provider'
-import { trackEvent, trackEventOnce } from '@/lib/analytics'
+import {
+  trackEvent,
+  trackEventOnce,
+  trackMetaStandardEvent,
+} from '@/lib/analytics'
 import { apiFetch, readApiError } from '@/lib/api-client'
 import { BillingSessionError, createBillingSession } from '@/lib/billing'
 import {
@@ -128,6 +132,24 @@ export default function CheckoutStartPage() {
         }
 
         trackEvent('begin_checkout', {
+          currency: subscription.currency,
+          value: subscription.monthlyPriceUsd,
+          user_id: account.user.id,
+          plan_id: subscription.planId,
+          delivery_preference: subscription.deliveryPreference,
+          items: [
+            {
+              item_id: subscription.planId,
+              item_name: 'Trimry subscription',
+              item_category: 'subscription',
+              price: subscription.monthlyPriceUsd,
+              quantity: 1,
+            },
+          ],
+        })
+        trackMetaStandardEvent('InitiateCheckout', {
+          content_name: 'Trimry subscription',
+          content_category: 'subscription',
           currency: subscription.currency,
           value: subscription.monthlyPriceUsd,
           plan_id: subscription.planId,

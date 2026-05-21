@@ -7,7 +7,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { TimeZoneSelect } from '@/components/time-zone-select'
 import { useLanguage } from '@/components/language-provider'
 import { apiFetch, readApiError } from '@/lib/api-client'
-import { trackEvent } from '@/lib/analytics'
+import { trackEvent, trackMetaStandardEvent } from '@/lib/analytics'
 import { isLanguageCode } from '@/lib/i18n'
 import { detectBrowserTimeZone } from '@/lib/schedule'
 
@@ -53,6 +53,7 @@ export default function RegisterPage() {
 
       const payload = (await response.json()) as {
         user?: {
+          id?: string
           locale?: string
         }
       }
@@ -64,6 +65,13 @@ export default function RegisterPage() {
 
       trackEvent('sign_up', {
         method: 'email',
+        language: nextLocale ?? language,
+        user_id: payload.user?.id,
+      })
+      trackMetaStandardEvent('CompleteRegistration', {
+        content_name: 'Trimry account',
+        method: 'email',
+        status: 'created',
         language: nextLocale ?? language,
       })
 

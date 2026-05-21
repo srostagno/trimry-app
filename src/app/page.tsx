@@ -3,6 +3,7 @@ import { HomePageClient } from '@/components/home-page-client'
 import { createPageMetadata, homePageJsonLd } from '@/lib/seo'
 
 export const metadata = createPageMetadata({
+  title: 'Good & Bad Days to Cut Your Hair',
   description:
     'Good and bad days to cut your hair, nails, and more in one weekly Trimry forecast. Get Monday timing guidance for haircuts, shaving, nail trimming, and ritual release.',
   keywords: [

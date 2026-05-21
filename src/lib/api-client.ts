@@ -1,9 +1,13 @@
 const configuredBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim()
+const DEFAULT_API_BASE_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://api.trimry.com/api/v1'
+    : 'http://localhost:4000/api/v1'
 
 export const API_BASE_URL = (
   configuredBaseUrl && configuredBaseUrl.length > 0
     ? configuredBaseUrl
-    : 'http://localhost:4000/api/v1'
+    : DEFAULT_API_BASE_URL
 ).replace(/\/+$/, '')
 
 type ApiErrorPayload = {

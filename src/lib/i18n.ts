@@ -532,7 +532,7 @@ const englishMessages: MessageSection = {
     home: 'Home',
     guide: 'Guide',
     howItWorks: 'How it works',
-    pricing: 'Pricing',
+    pricing: 'Plan',
     faq: 'FAQ',
     legal: 'Legal',
     login: 'Log in',
@@ -554,7 +554,7 @@ const englishMessages: MessageSection = {
     title: 'Good and Bad Days to Cut Your Hair, Nails and More.',
     subtitle:
       'Trimry sends one weekly ritual forecast every Monday by email, WhatsApp, or both, with good, bad, and rare day signals for haircuts, nail trimming, shaving, and symbolic release timing.',
-    primary: 'Start for {billingCompact}',
+    primary: 'Start now',
     secondary: 'See today’s teaser',
   },
   home: {
@@ -633,9 +633,10 @@ const englishMessages: MessageSection = {
   },
   pricing: {
     title: 'Simple monthly plan',
-    subtitle: 'A single plan. No hidden fees. Cancel anytime from your dashboard.',
+    subtitle:
+      'Create your account first, choose your delivery channel, and review checkout before subscribing.',
     planTitle: 'Weekly fortune delivery',
-    billing: '{billingInline}',
+    billing: 'Account first. Secure checkout after setup.',
     include1: '1 ritual forecast every Monday by email, WhatsApp, or both',
     include2: 'Good/bad/rare signals with practical luck, money, and love hints',
     include3:
@@ -1303,7 +1304,7 @@ const spanishMessages: MessageSection = {
     home: 'Inicio',
     guide: 'Guía',
     howItWorks: 'Cómo funciona',
-    pricing: 'Precios',
+    pricing: 'Plan',
     faq: 'FAQ',
     legal: 'Legal',
     login: 'Ingresar',
@@ -1325,7 +1326,7 @@ const spanishMessages: MessageSection = {
     title: 'Días buenos y malos para cortar tu pelo, uñas y más.',
     subtitle:
       'Trimry envía un pronóstico ritual semanal cada lunes por email, WhatsApp o ambos, con señales de días buenos, malos y raros para corte de pelo, uñas, afeitado y liberación simbólica.',
-    primary: 'Empieza por {billingCompact}',
+    primary: 'Empieza ahora',
     secondary: 'Ver el avance de hoy',
   },
   home: {
@@ -1404,9 +1405,10 @@ const spanishMessages: MessageSection = {
   },
   pricing: {
     title: 'Plan mensual simple',
-    subtitle: 'Un solo plan. Sin cargos ocultos. Cancela cuando quieras desde tu panel.',
+    subtitle:
+      'Crea tu cuenta primero, elige tu canal de entrega y revisa el checkout antes de suscribirte.',
     planTitle: 'Entrega semanal de fortuna',
-    billing: '{billingInline}',
+    billing: 'Primero la cuenta. Checkout seguro después de configurar.',
     include1: '1 pronóstico ritual cada lunes por email, WhatsApp o ambos',
     include2: 'Señales de días buenos, malos y raros con pistas prácticas sobre suerte, dinero y amor',
     include3: 'Elige tu canal de entrega, actualízalo cuando quieras y cancela cuando te acomode',

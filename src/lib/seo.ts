@@ -47,6 +47,7 @@ export const SITE_DESCRIPTION =
 export const SITE_KEYWORDS = [
   'good & bad days to cut your hair',
   'good and bad days to cut your hair',
+  'good and bad days to have a haircut',
   'good and bad days to cut your hair nails and more',
   'best day to cut hair and nails',
   'bad day to cut hair',
@@ -153,9 +154,12 @@ export function createPageMetadata({
 }: PageMetadataOptions): Metadata {
   const shouldNoIndex = noIndex || !IS_INDEXING_ALLOWED
   const canonical = absoluteUrl(path)
+  const resolvedTitle = buildTitle(title)
 
   return {
-    title,
+    title: {
+      absolute: resolvedTitle,
+    },
     description,
     keywords: [...SITE_KEYWORDS, ...keywords],
     alternates: shouldNoIndex ? undefined : { canonical },
@@ -164,7 +168,7 @@ export function createPageMetadata({
       locale: SITE_LOCALE,
       url: canonical,
       siteName: SITE_NAME,
-      title: buildTitle(title),
+      title: resolvedTitle,
       description,
       images: [
         {
@@ -177,7 +181,7 @@ export function createPageMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: buildTitle(title),
+      title: resolvedTitle,
       description,
       images: [absoluteUrl(TWITTER_IMAGE_PATH)],
     },
@@ -329,14 +333,6 @@ export const homePageJsonLd = [
     areaServed: 'Worldwide',
     provider: {
       '@id': absoluteUrl('/#organization'),
-    },
-    offers: {
-      '@type': 'Offer',
-      url: absoluteUrl('/#pricing'),
-      price: SUBSCRIPTION_PLAN.monthlyPriceUsd.toFixed(2),
-      priceCurrency: SUBSCRIPTION_PLAN.currency,
-      availability: 'https://schema.org/InStock',
-      category: 'Subscription',
     },
   },
   {

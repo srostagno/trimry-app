@@ -1140,27 +1140,6 @@ export default function DashboardPage() {
         ) : null}
       </section>
 
-      <section className="cosmic-danger-shell rounded-[2rem] p-8">
-        <h2 className="text-2xl text-rose-100">{messages.dashboard.dangerTitle}</h2>
-        <p className="mt-2 max-w-2xl text-rose-100/82">{messages.dashboard.dangerSubtitle}</p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={deleteAccount}
-            disabled={deleteBusy}
-            className="cosmic-danger-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
-          >
-            {deleteBusy ? messages.dashboard.deleteLoading : messages.dashboard.deleteButton}
-          </button>
-        </div>
-
-        {deleteError ? (
-          <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
-            {deleteError}
-          </p>
-        ) : null}
-      </section>
-
       <section className="cosmic-shell rounded-[2rem] p-8">
         {!data.subscription ? (
           <>
@@ -1456,6 +1435,8 @@ export default function DashboardPage() {
     </>
   )
 
+  const showDangerZone = !data.user.admin || activeTab === 'account'
+
   return (
     <div className="space-y-8">
       <section className="cosmic-shell rounded-[2rem] p-8">
@@ -1540,6 +1521,31 @@ export default function DashboardPage() {
           </button>
         </div>
       </section>
+
+      {showDangerZone ? (
+        <section className="cosmic-danger-shell rounded-[2rem] p-8">
+          <h2 className="text-2xl text-rose-100">{messages.dashboard.dangerTitle}</h2>
+          <p className="mt-2 max-w-2xl text-rose-100/82">
+            {messages.dashboard.dangerSubtitle}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={deleteAccount}
+              disabled={deleteBusy}
+              className="cosmic-danger-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+            >
+              {deleteBusy ? messages.dashboard.deleteLoading : messages.dashboard.deleteButton}
+            </button>
+          </div>
+
+          {deleteError ? (
+            <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
+              {deleteError}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
     </div>
   )
 }

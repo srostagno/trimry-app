@@ -220,6 +220,7 @@ export async function triggerAdminWelcomeFlowTest(fallbackMessage: string) {
     ok: true
     subscriptionId: string
     greetingsTemplateSent: boolean
+    greetingsTemplateError: string | null
     whatsappProjectionSent: boolean
     emailProjectionSent: boolean
   }

@@ -853,12 +853,24 @@ export function AdminSendCampaigns() {
       )
       const successMessage =
         language === 'es'
-          ? `Flujo de bienvenida ejecutado para la suscripción ${response.subscriptionId}. WhatsApp semanal: ${
+          ? `Flujo de bienvenida ejecutado para la suscripción ${response.subscriptionId}. Greetings: ${
+              response.greetingsTemplateSent ? 'enviado' : 'falló'
+            }. WhatsApp semanal: ${
               response.whatsappProjectionSent ? 'enviado' : 'omitido'
-            }. Email: ${response.emailProjectionSent ? 'enviado' : 'omitido'}.`
-          : `Welcome flow triggered for subscription ${response.subscriptionId}. Weekly WhatsApp: ${
+            }. Email: ${response.emailProjectionSent ? 'enviado' : 'omitido'}.${
+              response.greetingsTemplateError
+                ? ` Error greetings: ${response.greetingsTemplateError}`
+                : ''
+            }`
+          : `Welcome flow triggered for subscription ${response.subscriptionId}. Greetings: ${
+              response.greetingsTemplateSent ? 'sent' : 'failed'
+            }. Weekly WhatsApp: ${
               response.whatsappProjectionSent ? 'sent' : 'skipped'
-            }. Email: ${response.emailProjectionSent ? 'sent' : 'skipped'}.`
+            }. Email: ${response.emailProjectionSent ? 'sent' : 'skipped'}.${
+              response.greetingsTemplateError
+                ? ` Greetings error: ${response.greetingsTemplateError}`
+                : ''
+            }`
 
       setSuccess(successMessage)
       await loadWorkspace()

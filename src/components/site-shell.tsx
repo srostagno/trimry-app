@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 
 import { BrandLogo } from '@/components/brand-logo'
+import { FloatingWhatsappButton } from '@/components/floating-whatsapp-button'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { useLanguage } from '@/components/language-provider'
 import type { AuthViewer } from '@/lib/auth-viewer'
@@ -223,6 +224,7 @@ export function SiteShell({
       </Disclosure>
 
       <main className="relative z-10 mx-auto max-w-7xl px-6 py-10 lg:px-8">{children}</main>
+      <FloatingWhatsappButton />
 
       <footer className="relative z-10 border-t border-[rgba(134,190,255,0.18)] bg-[linear-gradient(180deg,rgba(4,10,27,0.78),rgba(8,15,38,0.9))] backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 text-sm text-[color:var(--cosmic-copy)] lg:px-8">

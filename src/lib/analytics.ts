@@ -21,6 +21,7 @@ type MetaEventParams = Record<string, MetaEventParam>
 type MetaStandardEventName =
   | 'PageView'
   | 'Lead'
+  | 'Contact'
   | 'CompleteRegistration'
   | 'InitiateCheckout'
   | 'Subscribe'

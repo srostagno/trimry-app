@@ -11,6 +11,33 @@ import { trackEvent, trackMetaStandardEvent } from '@/lib/analytics'
 import { isLanguageCode } from '@/lib/i18n'
 import { detectBrowserTimeZone } from '@/lib/schedule'
 
+function collectRegistrationClientMetadata(timeZone: string) {
+  if (typeof window === 'undefined') {
+    return {
+      timeZone,
+    }
+  }
+
+  return {
+    browserLocale: navigator.language || null,
+    browserLanguages: Array.from(navigator.languages ?? []).slice(0, 12),
+    timeZone,
+    timeZoneOffsetMinutes: new Date().getTimezoneOffset(),
+    platform: navigator.platform || null,
+    referrer: document.referrer || null,
+    landingUrl: window.location.href,
+    screen: {
+      width: window.screen?.width ?? null,
+      height: window.screen?.height ?? null,
+      pixelRatio: window.devicePixelRatio ?? null,
+    },
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    },
+  }
+}
+
 export default function RegisterPage() {
   const router = useRouter()
   const { language, setLanguage, messages } = useLanguage()
@@ -43,6 +70,7 @@ export default function RegisterPage() {
           password,
           locale: language,
           timeZone,
+          clientMetadata: collectRegistrationClientMetadata(timeZone),
         }),
       }, { retryUnauthorized: false })
 

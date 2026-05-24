@@ -11,6 +11,7 @@ import { trackEvent } from '@/lib/analytics'
 import { GOOD_BAD_GUIDE_PATH } from '@/lib/seo'
 
 type OracleTone = 'good' | 'bad' | 'rare'
+const OPEN_LUCK_GURU_CHAT_EVENT = 'trimry:open-luck-guru-chat'
 
 function toneClasses(tone: OracleTone) {
   return tone === 'good'
@@ -21,7 +22,7 @@ function toneClasses(tone: OracleTone) {
 }
 
 export function HomePageClient() {
-  const { messages } = useLanguage()
+  const { language, messages } = useLanguage()
 
   const rotatingPredictions = useMemo(() => messages.home.predictions, [messages.home.predictions])
 
@@ -72,6 +73,32 @@ export function HomePageClient() {
       objectPosition: 'object-[50%_76%]',
     },
   ]
+  const luckGuruCardCopy =
+    language === 'es'
+      ? {
+          eyebrow: 'Luck Guru está despierto',
+          title: 'Habla con tu guía de suerte.',
+          text:
+            'Cuéntale qué quieres atraer esta semana. Puede ayudarte a convertir intención, cortes simbólicos y positivismo en una rutina que se sienta personal.',
+          button: 'Abrir conversación',
+          note: 'Crea cuenta para que recuerde tu historia.',
+        }
+      : {
+          eyebrow: 'Luck Guru is awake',
+          title: 'Talk with your luck guide.',
+          text:
+            'Tell him what you want to attract this week. He can help turn intention, symbolic release, and optimism into a ritual that feels personal.',
+          button: 'Open conversation',
+          note: 'Create an account so he remembers your story.',
+        }
+
+  const openLuckGuruChat = () => {
+    trackEvent('home_luck_guru_card_click', {
+      language,
+      destination: 'luck_guru_web_chat',
+    })
+    window.dispatchEvent(new CustomEvent(OPEN_LUCK_GURU_CHAT_EVENT))
+  }
 
   return (
     <div className="space-y-20 pb-12">
@@ -153,6 +180,45 @@ export function HomePageClient() {
               </p>
             </div>
           </aside>
+        </div>
+      </section>
+
+      <section className="cosmic-card relative overflow-hidden rounded-[2rem] p-5 sm:p-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_30%,rgba(247,223,161,0.17),transparent_28%),radial-gradient(circle_at_90%_10%,rgba(121,242,255,0.12),transparent_28%),linear-gradient(135deg,rgba(17,23,61,0.22),transparent)]" />
+        <div className="relative z-10 grid items-center gap-6 md:grid-cols-[auto_1fr_auto]">
+          <div className="relative aspect-[1000/772] w-full overflow-hidden rounded-[2rem] border border-amber-200/32 bg-slate-950 shadow-[0_22px_60px_rgba(0,0,0,0.34),0_0_42px_rgba(247,223,161,0.16)] md:aspect-auto md:h-44 md:w-56 lg:h-48 lg:w-64">
+            <Image
+              src="/luck-guru-card.webp"
+              alt="Luck Guru"
+              fill
+              sizes="(min-width: 1024px) 256px, (min-width: 768px) 224px, 92vw"
+              className="object-cover object-center"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_52%_28%,transparent_38%,rgba(3,7,19,0.34)_100%)]" />
+          </div>
+
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-amber-100/82">
+              {luckGuruCardCopy.eyebrow}
+            </p>
+            <h2 className="mt-2 text-3xl leading-tight text-slate-50 sm:text-4xl">
+              {luckGuruCardCopy.title}
+            </h2>
+            <p className="mt-3 max-w-3xl text-slate-100/84">
+              {luckGuruCardCopy.text}
+            </p>
+            <p className="mt-3 text-sm font-semibold text-cyan-100/78">
+              {luckGuruCardCopy.note}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={openLuckGuruChat}
+            className="cosmic-button-primary inline-flex justify-center rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] transition hover:-translate-y-0.5"
+          >
+            {luckGuruCardCopy.button}
+          </button>
         </div>
       </section>
 

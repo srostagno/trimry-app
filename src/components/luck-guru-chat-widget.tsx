@@ -282,9 +282,13 @@ export function LuckGuruChatWidget() {
 
     const loadSnapshot = async () => {
       try {
-        const response = await apiFetch('/luck-guru/chat', {
-          cache: 'no-store',
-        })
+        const visitorId = getVisitorId()
+        const response = await apiFetch(
+          `/luck-guru/chat?visitorId=${encodeURIComponent(visitorId)}`,
+          {
+            cache: 'no-store',
+          },
+        )
 
         if (!response.ok) {
           return
@@ -303,7 +307,7 @@ export function LuckGuruChatWidget() {
           memoryMode: payload.memoryMode,
         })
 
-        if (payload.authenticated && payload.history.length > 0) {
+        if (payload.history.length > 0) {
           setMessages((current) => {
             const hasUserMessages = current.some((message) => message.role === 'user')
 

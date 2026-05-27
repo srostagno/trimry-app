@@ -1187,7 +1187,7 @@ const englishMessages: MessageSection = {
       {
         title: '5. Cookies and analytics',
         body:
-          'We use essential cookies for authentication and session continuity. We may also use optional analytics cookies/tools to measure product usage. You can accept or decline optional analytics cookies from the website prompt.',
+          'We use essential cookies for authentication and session continuity. We also use Meta ad measurement and analytics tools to attribute campaign traffic and improve performance. The website prompt is informational/visual and does not disable measurement.',
       },
       {
         title: '6. International transfers',
@@ -1258,7 +1258,7 @@ const englishMessages: MessageSection = {
   cookieConsent: {
     title: 'Cookies and analytics',
     description:
-      'We use essential cookies for login/session and optional analytics cookies to improve Trimry. You can accept or decline optional analytics.',
+      'We use essential cookies plus ad/analytics measurement. This prompt is visual and your choice only controls this message display.',
     accept: 'Accept analytics',
     decline: 'Decline analytics',
     learnMore: 'Read privacy policy',
@@ -1960,7 +1960,7 @@ const spanishMessages: MessageSection = {
       {
         title: '5. Cookies y analítica',
         body:
-          'Usamos cookies esenciales para autenticación y continuidad de sesión. También podemos usar cookies/herramientas de analítica opcionales para medir uso del producto. Puedes aceptar o rechazar la analítica opcional desde el aviso del sitio.',
+          'Usamos cookies esenciales para autenticación y continuidad de sesión. También usamos herramientas de medición publicitaria y analítica para atribuir tráfico de campañas y mejorar rendimiento. El aviso del sitio es informativo/visual y no desactiva la medición.',
       },
       {
         title: '6. Transferencias internacionales',
@@ -2031,7 +2031,7 @@ const spanishMessages: MessageSection = {
   cookieConsent: {
     title: 'Cookies y analítica',
     description:
-      'Usamos cookies esenciales para inicio de sesión/sesión y cookies opcionales de analítica para mejorar Trimry. Puedes aceptar o rechazar la analítica opcional.',
+      'Usamos cookies esenciales más medición publicitaria/analítica. Este aviso es visual y tu elección solo controla su visualización.',
     accept: 'Aceptar analítica',
     decline: 'Rechazar analítica',
     learnMore: 'Ver política de privacidad',

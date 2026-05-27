@@ -32,22 +32,24 @@ export function GoogleAnalytics() {
   const [consent, setConsent] = useState<AnalyticsConsentState>('unknown')
   const [gaReady, setGaReady] = useState(false)
   const hasTrackedMetaInitialPageView = useRef(false)
+  const shouldLoadGoogleAnalytics = Boolean(GA_MEASUREMENT_ID)
+  const shouldLoadMetaPixel = Boolean(META_PIXEL_ID)
 
   useEffect(() => {
     setConsent(readAnalyticsConsentFromDocument())
   }, [])
 
   useEffect(() => {
-    if (consent !== 'granted' || !gaReady) {
+    if (!shouldLoadGoogleAnalytics || !gaReady) {
       return
     }
 
     const pagePath = queryString ? `${pathname}?${queryString}` : pathname
     trackPageView(pagePath)
-  }, [consent, gaReady, pathname, queryString])
+  }, [gaReady, pathname, queryString, shouldLoadGoogleAnalytics])
 
   useEffect(() => {
-    if (consent !== 'granted' || !META_PIXEL_ID) {
+    if (!shouldLoadMetaPixel) {
       return
     }
 
@@ -57,9 +59,9 @@ export function GoogleAnalytics() {
     }
 
     hasTrackedMetaInitialPageView.current = true
-  }, [consent, pathname, queryString])
+  }, [pathname, queryString, shouldLoadMetaPixel])
 
-  const metaPixelScripts = consent === 'granted' && META_PIXEL_ID ? (
+  const metaPixelScripts = shouldLoadMetaPixel ? (
     <>
       <Script id="meta-pixel" strategy="afterInteractive">
         {`
@@ -83,55 +85,49 @@ export function GoogleAnalytics() {
     </>
   ) : null
 
-  if (consent === 'unknown') {
-    return (
-      <>
-        <div className="fixed inset-x-3 bottom-3 z-[100] sm:inset-x-6">
-          <div className="cosmic-shell mx-auto max-w-4xl rounded-2xl p-4 sm:p-5">
-            <p className="text-sm font-bold text-slate-50">{messages.cookieConsent.title}</p>
-            <p className="mt-2 text-sm text-slate-100/84">{messages.cookieConsent.description}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
-                onClick={() => {
-                  setAnalyticsConsentInDocument('granted')
-                  setConsent('granted')
-                }}
-              >
-                {messages.cookieConsent.accept}
-              </button>
-              <button
-                type="button"
-                className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
-                onClick={() => {
-                  setAnalyticsConsentInDocument('denied')
-                  setConsent('denied')
-                }}
-              >
-                {messages.cookieConsent.decline}
-              </button>
-              <Link href="/legal/privacy" className="cosmic-link text-xs">
-                {messages.cookieConsent.learnMore}
-              </Link>
-            </div>
+  const consentBanner =
+    consent === 'unknown' ? (
+      <div className="fixed inset-x-3 bottom-3 z-[100] sm:inset-x-6">
+        <div className="cosmic-shell mx-auto max-w-4xl rounded-2xl p-4 sm:p-5">
+          <p className="text-sm font-bold text-slate-50">{messages.cookieConsent.title}</p>
+          <p className="mt-2 text-sm text-slate-100/84">{messages.cookieConsent.description}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
+              onClick={() => {
+                setAnalyticsConsentInDocument('granted')
+                setConsent('granted')
+              }}
+            >
+              {messages.cookieConsent.accept}
+            </button>
+            <button
+              type="button"
+              className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
+              onClick={() => {
+                setAnalyticsConsentInDocument('denied')
+                setConsent('denied')
+              }}
+            >
+              {messages.cookieConsent.decline}
+            </button>
+            <Link href="/legal/privacy" className="cosmic-link text-xs">
+              {messages.cookieConsent.learnMore}
+            </Link>
           </div>
         </div>
-      </>
-    )
-  }
+      </div>
+    ) : null
 
-  if (consent !== 'granted') {
-    return null
-  }
-
-  if (!GA_MEASUREMENT_ID && !META_PIXEL_ID) {
-    return null
+  if (!shouldLoadGoogleAnalytics && !shouldLoadMetaPixel) {
+    return consentBanner
   }
 
   return (
     <>
-      {GA_MEASUREMENT_ID ? (
+      {consentBanner}
+      {shouldLoadGoogleAnalytics ? (
         <>
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

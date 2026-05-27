@@ -1,5 +1,3 @@
-import { hasGrantedAnalyticsConsent } from '@/lib/analytics-consent'
-
 export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || 'G-2JFX4TVBCP'
 export const META_PIXEL_ID =
@@ -127,10 +125,6 @@ function dispatchAnalytics(...args: unknown[]) {
     return false
   }
 
-  if (!hasGrantedAnalyticsConsent()) {
-    return false
-  }
-
   if (typeof window.gtag === 'function' && window.__trimryGaReady) {
     window.gtag(...args)
     return true
@@ -151,10 +145,6 @@ function dispatchMetaPixel(
   params: MetaEventParams = {},
 ) {
   if (typeof window === 'undefined' || !META_PIXEL_ID) {
-    return false
-  }
-
-  if (!hasGrantedAnalyticsConsent()) {
     return false
   }
 
@@ -195,10 +185,6 @@ export function trackPageView(pagePath: string) {
 
 export function trackMetaPageView() {
   if (typeof window === 'undefined' || !META_PIXEL_ID) {
-    return false
-  }
-
-  if (!hasGrantedAnalyticsConsent()) {
     return false
   }
 

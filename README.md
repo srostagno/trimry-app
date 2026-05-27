@@ -29,6 +29,9 @@ Trimry is a subscription web app that delivers one WhatsApp message every Monday
 Copy `.env.example` and set real values:
 
 - `NEXT_PUBLIC_API_BASE_URL` (for example `http://localhost:4000/api/v1`)
+- `NEXT_PUBLIC_SITE_URL` (for example `https://trimry.com`)
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID` (Google Analytics measurement ID)
+- `NEXT_PUBLIC_META_PIXEL_ID` (Meta pixel ID used for Ads attribution)
 
 ## Run locally
 

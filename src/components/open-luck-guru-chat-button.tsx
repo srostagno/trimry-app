@@ -25,6 +25,10 @@ export function OpenLuckGuruChatButton({
     <button
       type="button"
       onClick={() => {
+        trackEvent('ask_luck_guru_click', {
+          location: analyticsLocation,
+          language,
+        })
         trackEvent('open_luck_guru_chat_click', {
           location: analyticsLocation,
           language,

@@ -34,6 +34,10 @@ export function FloatingWhatsappButton() {
       rel="noreferrer"
       aria-label={label}
       onClick={() => {
+        trackEvent('whatsapp_open', {
+          placement: 'floating_button',
+          language,
+        })
         trackEvent('whatsapp_luck_guru_click', {
           placement: 'floating_button',
           language,

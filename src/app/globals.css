@@ -606,6 +606,22 @@ a {
   animation: pulseSoft 3.6s ease-in-out infinite;
 }
 
+.guru-aura {
+  box-shadow:
+    0 0 0 1px rgba(247, 223, 161, 0.24),
+    0 0 42px rgba(247, 223, 161, 0.18),
+    0 20px 48px rgba(6, 18, 40, 0.42);
+  animation: guruAuraFloat 8s ease-in-out infinite;
+}
+
+.guru-eye-glow {
+  animation: guruEyeGlow 5.6s ease-in-out infinite;
+}
+
+.guru-crystal-pulse {
+  animation: guruCrystalPulse 6.4s ease-in-out infinite;
+}
+
 @keyframes starDrift {
   from {
     transform: translate3d(0, 0, 0) scale(1);
@@ -715,5 +731,46 @@ a {
 
   50% {
     transform: translateY(-1px) scale(1.04);
+  }
+}
+
+@keyframes guruAuraFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow:
+      0 0 0 1px rgba(247, 223, 161, 0.24),
+      0 0 42px rgba(247, 223, 161, 0.16),
+      0 20px 48px rgba(6, 18, 40, 0.38);
+  }
+
+  50% {
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1px rgba(247, 223, 161, 0.36),
+      0 0 56px rgba(247, 223, 161, 0.24),
+      0 28px 58px rgba(8, 30, 64, 0.5);
+  }
+}
+
+@keyframes guruEyeGlow {
+  0%,
+  100% {
+    opacity: 0.88;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes guruCrystalPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.018);
   }
 }

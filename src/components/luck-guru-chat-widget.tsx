@@ -119,7 +119,7 @@ function initialAssistantMessage() {
     id: createId('assistant'),
     role: 'assistant' as const,
     text:
-      'Hi, I am Luck Guru ✨ Tell me what you want to invite more luck into: confidence, money, love, business, or a fresh start. Create an account when you want me to remember you, then subscribe to unlock the full Trimry fortune calendar.',
+      '🍀 The Luck Guru is here. Today carries unusual energy. What would you like guidance for? Hair, money, relationships, or energy.',
     createdAt: new Date().toISOString(),
   }
 }
@@ -165,7 +165,7 @@ function GuruGlyph({ size = 'header' }: { size?: 'header' | 'launcher' }) {
       className={clsx(
         'relative flex shrink-0 overflow-hidden border border-amber-200/50 bg-slate-950 shadow-[0_18px_44px_rgba(0,0,0,0.38),0_0_40px_rgba(247,223,161,0.26)]',
         size === 'launcher'
-          ? 'h-[5.5rem] w-[5.5rem] rounded-[2rem] sm:h-[5.75rem] sm:w-[5.75rem] sm:rounded-[2.1rem]'
+          ? 'h-[4.5rem] w-[4.5rem] rounded-[1.7rem] sm:h-[5.25rem] sm:w-[5.25rem] sm:rounded-[2rem]'
           : 'h-[4.5rem] w-[4.5rem] rounded-[1.55rem] sm:h-20 sm:w-20 sm:rounded-[1.8rem]',
       )}
     >
@@ -222,12 +222,19 @@ export function LuckGuruChatWidget() {
       : 'Hi Luck Guru, I want to continue this conversation about my luck.',
   )
   const suggestedPrompts = useMemo(
-    () => [
-      'How can Trimry make me feel luckier?',
-      'What ritual should I start this week?',
-      'I want more success in my business.',
-    ],
-    [],
+    () =>
+      isSpanish
+        ? [
+            'Quiero una guía para cabello.',
+            'Necesito más suerte con dinero.',
+            '¿Cómo viene mi energía hoy?',
+          ]
+        : [
+            'I want guidance for hair.',
+            'I need more luck with money.',
+            'How is my energy today?',
+          ],
+    [isSpanish],
   )
   const ctaCopy = state.authenticated
     ? {
@@ -438,7 +445,13 @@ export function LuckGuruChatWidget() {
       <button
         type="button"
         aria-label={isSpanish ? 'Chat con Luck Guru' : 'Chat with Luck Guru'}
-        onClick={openWidget}
+        onClick={() => {
+          trackEvent('ask_luck_guru_click', {
+            language,
+            location: 'floating_chat_widget',
+          })
+          openWidget()
+        }}
         className="group fixed bottom-5 right-5 z-[9999] flex items-center gap-3 rounded-[2.2rem] border border-[rgba(247,223,161,0.52)] bg-[linear-gradient(135deg,rgba(8,18,45,0.96),rgba(16,44,74,0.95)_42%,rgba(95,63,217,0.92))] p-2 text-white shadow-[0_24px_70px_rgba(0,0,0,0.48),0_0_42px_rgba(121,242,255,0.2)] transition hover:-translate-y-0.5 hover:border-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-200 focus:ring-offset-2 focus:ring-offset-[#061022] sm:bottom-6 sm:right-6 sm:rounded-full sm:px-4 sm:py-3"
       >
         <GuruGlyph size="launcher" />
@@ -455,8 +468,8 @@ export function LuckGuruChatWidget() {
   }
 
   return (
-    <section className="fixed inset-x-3 bottom-3 z-[9999] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-[430px]">
-      <div className="overflow-hidden rounded-[2rem] border border-cyan-200/24 bg-[linear-gradient(150deg,rgba(3,8,22,0.96),rgba(9,25,52,0.96)_48%,rgba(31,25,83,0.96))] shadow-[0_30px_110px_rgba(0,0,0,0.62),0_0_70px_rgba(121,242,255,0.16)] backdrop-blur-2xl">
+    <section className="fixed inset-x-3 bottom-3 top-3 z-[9999] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:top-auto sm:w-[430px]">
+      <div className="flex h-full max-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden rounded-[2rem] border border-cyan-200/24 bg-[linear-gradient(150deg,rgba(3,8,22,0.96),rgba(9,25,52,0.96)_48%,rgba(31,25,83,0.96))] shadow-[0_30px_110px_rgba(0,0,0,0.62),0_0_70px_rgba(121,242,255,0.16)] backdrop-blur-2xl sm:max-h-[760px]">
         <div className="relative border-b border-cyan-100/12 p-4">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_12%,rgba(247,223,161,0.17),transparent_28%),radial-gradient(circle_at_82%_0%,rgba(121,242,255,0.15),transparent_26%)]" />
           <div className="relative flex items-start justify-between gap-3">
@@ -476,7 +489,7 @@ export function LuckGuruChatWidget() {
               onClick={() => setOpen(false)}
               className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5 text-xs font-black text-slate-100 transition hover:bg-white/12"
             >
-              Close
+              {isSpanish ? 'Cerrar' : 'Close'}
             </button>
           </div>
 
@@ -506,7 +519,7 @@ export function LuckGuruChatWidget() {
 
         <div
           ref={scrollRef}
-          className="max-h-[48vh] space-y-3 overflow-y-auto px-4 py-4 sm:max-h-[430px]"
+          className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4"
         >
           {messages.map((message) => (
             <div
@@ -571,7 +584,7 @@ export function LuckGuruChatWidget() {
           ) : null}
         </div>
 
-        <div className="border-t border-cyan-100/12 p-4">
+        <div className="shrink-0 border-t border-cyan-100/12 p-4">
           <div className="mb-3 flex flex-wrap gap-2">
             {suggestedPrompts.map((prompt) => (
               <button
@@ -620,6 +633,10 @@ export function LuckGuruChatWidget() {
               target="_blank"
               rel="noreferrer"
               onClick={() => {
+                trackEvent('whatsapp_open', {
+                  language,
+                  location: 'luck_guru_widget',
+                })
                 trackEvent('luck_guru_web_chat_whatsapp_click', {
                   language,
                   authenticated: state.authenticated,

@@ -3,15 +3,15 @@ import { HomePageClient } from '@/components/home-page-client'
 import { createPageMetadata, homePageJsonLd } from '@/lib/seo'
 
 export const metadata = createPageMetadata({
-  title: 'Good & Bad Days to Cut Your Hair',
+  title: 'Want To Be Luckier?',
   description:
-    'Good and bad days to cut your hair, nails, and more in one weekly Trimry forecast. Get Monday timing guidance for haircuts, shaving, nail trimming, and ritual release.',
+    'Discover your lucky timing for money, haircuts, relationships, and energy. Ask the Luck Guru and unlock your daily ritual.',
   keywords: [
-    'good and bad days to cut your hair nails and more',
-    'good and bad days to cut hair',
-    'good and bad days to cut nails',
-    'best day to cut hair and nails',
-    'weekly ritual forecast',
+    'lucky days',
+    'luck timing',
+    'daily luck ritual',
+    'luck guru',
+    'fortune timing guidance',
   ],
   path: '/',
 })

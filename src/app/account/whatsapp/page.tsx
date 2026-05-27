@@ -22,6 +22,8 @@ import {
   requiresWhatsappDelivery,
 } from '@/lib/start-flow'
 
+const SIGNUP_WHATSAPP_STORAGE_KEY = 'trimry:signup-whatsapp-number'
+
 export default function DeliveryOnboardingPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -75,9 +77,21 @@ export default function DeliveryOnboardingPage() {
           setDeliveryHourLocal(existingDeliveryHour)
         }
 
+        const storedSignupWhatsapp =
+          typeof window !== 'undefined'
+            ? window.sessionStorage.getItem(SIGNUP_WHATSAPP_STORAGE_KEY)?.trim() ?? ''
+            : ''
+
         if (!cancelled && existingWhatsappNumber) {
           setWhatsappNumber(existingWhatsappNumber)
           setWhatsappConsentAccepted(true)
+        } else if (!cancelled && storedSignupWhatsapp) {
+          setWhatsappNumber(storedSignupWhatsapp)
+          setWhatsappConsentAccepted(true)
+
+          if (!account.subscription) {
+            setDeliveryPreference('whatsapp')
+          }
         }
 
         const deliverySetupComplete = account.subscription
@@ -183,6 +197,10 @@ export default function DeliveryOnboardingPage() {
         requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),
         destination: shouldProceedToActivation ? 'activate' : 'dashboard',
       })
+
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem(SIGNUP_WHATSAPP_STORAGE_KEY)
+      }
 
       if (shouldProceedToActivation) {
         setPhase('preparing')

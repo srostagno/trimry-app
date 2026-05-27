@@ -552,12 +552,11 @@ const englishMessages: MessageSection = {
     contact: 'Contact',
   },
   hero: {
-    badge: 'Tibetan Calendar Fortune Service',
-    title: 'Good and Bad Days to Cut Your Hair, Nails and More.',
-    subtitle:
-      'Trimry sends one weekly ritual forecast every Monday by email, WhatsApp, or both, with good, bad, and rare day signals for haircuts, nail trimming, shaving, and symbolic release timing.',
-    primary: 'Start now',
-    secondary: 'See today’s teaser',
+    badge: 'Daily luck ritual',
+    title: 'Want To Be Luckier? 🍀',
+    subtitle: 'Discover your lucky days for money, haircuts, relationships, and energy.',
+    primary: 'Check Today’s Luck',
+    secondary: 'Ask The Luck Guru',
   },
   home: {
     releaseBadge: 'Release has timing',
@@ -671,9 +670,9 @@ const englishMessages: MessageSection = {
     button: 'Open my account',
   },
   auth: {
-    registerTitle: 'Create your Trimry account',
+    registerTitle: 'Start in 10 seconds',
     registerSubtitle:
-      'Secure sign-up with encrypted session cookies and local Monday timing.',
+      'Enter your name and contact. You will get instant guidance before deeper personalization.',
     loginTitle: 'Welcome back',
     loginSubtitle: 'Sign in to manage your weekly ritual delivery.',
     firstNameLabel: 'First name',
@@ -687,7 +686,7 @@ const englishMessages: MessageSection = {
     whatsappLabel: 'WhatsApp number',
     passwordHint:
       'Minimum 10 characters, including uppercase, lowercase, and number.',
-    registerButton: 'Create account',
+    registerButton: 'Continue',
     loginButton: 'Log in',
     needAccount: 'Need an account?',
     alreadyHaveAccount: 'Already have an account?',
@@ -1325,12 +1324,11 @@ const spanishMessages: MessageSection = {
     contact: 'Contacto',
   },
   hero: {
-    badge: 'Servicio de fortuna del calendario tibetano',
-    title: 'Días buenos y malos para cortar tu pelo, uñas y más.',
-    subtitle:
-      'Trimry envía un pronóstico ritual semanal cada lunes por email, WhatsApp o ambos, con señales de días buenos, malos y raros para corte de pelo, uñas, afeitado y liberación simbólica.',
-    primary: 'Empieza ahora',
-    secondary: 'Ver el avance de hoy',
+    badge: 'Ritual diario de suerte',
+    title: '¿Quieres tener más suerte? 🍀',
+    subtitle: 'Descubre tus días con suerte para dinero, pelo, relaciones y energía.',
+    primary: 'Revisar mi suerte de hoy',
+    secondary: 'Preguntar al Luck Guru',
   },
   home: {
     releaseBadge: 'Soltar también tiene su momento',
@@ -1443,9 +1441,9 @@ const spanishMessages: MessageSection = {
     button: 'Abrir mi cuenta',
   },
   auth: {
-    registerTitle: 'Crea tu cuenta Trimry',
+    registerTitle: 'Empieza en 10 segundos',
     registerSubtitle:
-      'Registro seguro con cookies de sesión cifradas y horario local para el lunes.',
+      'Ingresa tu nombre y contacto. Primero recibes valor, luego personalizamos más.',
     loginTitle: 'Bienvenido de vuelta',
     loginSubtitle: 'Ingresa para administrar tu entrega ritual semanal.',
     firstNameLabel: 'Nombre',
@@ -1459,7 +1457,7 @@ const spanishMessages: MessageSection = {
     whatsappLabel: 'Número de WhatsApp',
     passwordHint:
       'Mínimo 10 caracteres, incluyendo mayúscula, minúscula y número.',
-    registerButton: 'Crear cuenta',
+    registerButton: 'Continuar',
     loginButton: 'Ingresar',
     needAccount: '¿Necesitas una cuenta?',
     alreadyHaveAccount: '¿Ya tienes una cuenta?',

@@ -69,7 +69,13 @@ export const SITE_LOCALE = 'en_US'
 export const METADATA_BASE = new URL(SITE_URL)
 export const SOCIAL_IMAGE_PATH = '/opengraph-image'
 export const TWITTER_IMAGE_PATH = '/twitter-image'
+export const BLOG_PATH = '/blog'
 export const GOOD_BAD_GUIDE_PATH = '/good-and-bad-days-to-cut-your-hair-nails-and-more'
+export const MANIFEST_LUCK_GUIDE_PATH = '/how-to-manifest-luck'
+export const POSITIVE_AFFIRMATIONS_GUIDE_PATH = '/positive-affirmations-for-success-and-luck'
+export const LAW_OF_ATTRACTION_GUIDE_PATH = '/law-of-attraction-for-beginners'
+export const LUCKY_NUMBERS_GUIDE_PATH = '/lucky-numbers-by-birthday'
+export const GOOD_LUCK_RITUALS_GUIDE_PATH = '/good-luck-rituals-for-positive-energy'
 
 const englishMessages = getMessages(DEFAULT_LANGUAGE)
 const rootCanonicalUrl = absoluteUrl('/')

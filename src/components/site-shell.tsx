@@ -12,7 +12,7 @@ import { LuckGuruChatWidget } from '@/components/luck-guru-chat-widget'
 import { useLanguage } from '@/components/language-provider'
 import type { AuthViewer } from '@/lib/auth-viewer'
 import { COMPANY } from '@/lib/company'
-import { GOOD_BAD_GUIDE_PATH } from '@/lib/seo'
+import { BLOG_PATH, GOOD_BAD_GUIDE_PATH } from '@/lib/seo'
 
 function MenuIcon({ open }: { open: boolean }) {
   return (
@@ -59,6 +59,11 @@ export function SiteShell({
 
   const baseLinks = [
     { href: '/', label: messages.nav.home, active: pathname === '/' },
+    {
+      href: BLOG_PATH,
+      label: messages.nav.blog,
+      active: pathname === BLOG_PATH,
+    },
     {
       href: GOOD_BAD_GUIDE_PATH,
       label: messages.nav.guide,

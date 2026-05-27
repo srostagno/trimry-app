@@ -28,6 +28,7 @@ export type MessageSection = {
   }
   nav: {
     home: string
+    blog: string
     guide: string
     howItWorks: string
     pricing: string
@@ -530,6 +531,7 @@ const englishMessages: MessageSection = {
   },
   nav: {
     home: 'Home',
+    blog: 'Blog',
     guide: 'Guide',
     howItWorks: 'How it works',
     pricing: 'Plan',
@@ -1302,6 +1304,7 @@ const spanishMessages: MessageSection = {
   },
   nav: {
     home: 'Inicio',
+    blog: 'Blog',
     guide: 'Guía',
     howItWorks: 'Cómo funciona',
     pricing: 'Plan',

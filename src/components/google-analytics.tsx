@@ -13,7 +13,6 @@ import {
 import {
   GA_MEASUREMENT_ID,
   META_PIXEL_ID,
-  markGoogleAnalyticsReady,
   trackMetaPageView,
   trackPageView,
 } from '@/lib/analytics'
@@ -30,7 +29,6 @@ export function GoogleAnalytics() {
   const queryString = searchParams.toString()
   const { messages } = useLanguage()
   const [consent, setConsent] = useState<AnalyticsConsentState>('unknown')
-  const [gaReady, setGaReady] = useState(false)
   const hasTrackedMetaInitialPageView = useRef(false)
   const shouldLoadGoogleAnalytics = Boolean(GA_MEASUREMENT_ID)
   const shouldLoadMetaPixel = Boolean(META_PIXEL_ID)
@@ -40,13 +38,13 @@ export function GoogleAnalytics() {
   }, [])
 
   useEffect(() => {
-    if (!shouldLoadGoogleAnalytics || !gaReady) {
+    if (!shouldLoadGoogleAnalytics) {
       return
     }
 
     const pagePath = queryString ? `${pathname}?${queryString}` : pathname
     trackPageView(pagePath)
-  }, [gaReady, pathname, queryString, shouldLoadGoogleAnalytics])
+  }, [pathname, queryString, shouldLoadGoogleAnalytics])
 
   useEffect(() => {
     if (!shouldLoadMetaPixel) {
@@ -136,10 +134,6 @@ export function GoogleAnalytics() {
           <Script
             id="google-analytics"
             strategy="afterInteractive"
-            onReady={() => {
-              markGoogleAnalyticsReady()
-              setGaReady(true)
-            }}
           >
             {`
               window.dataLayer = window.dataLayer || [];

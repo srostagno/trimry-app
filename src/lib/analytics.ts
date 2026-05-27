@@ -125,14 +125,12 @@ function dispatchAnalytics(...args: unknown[]) {
     return false
   }
 
-  if (typeof window.gtag === 'function' && window.__trimryGaReady) {
+  if (typeof window.gtag === 'function') {
     window.gtag(...args)
     return true
   }
 
-  window.__trimryGaQueue = window.__trimryGaQueue || []
-  window.__trimryGaQueue.push(args)
-  return true
+  return false
 }
 
 export function trackEvent(eventName: string, params: AnalyticsParams = {}) {

@@ -1,37 +1,43 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { LuckBeliefCarousel } from '@/components/luck-belief-carousel'
+import { OpenLuckGuruChatButton } from '@/components/open-luck-guru-chat-button'
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
-import { interpolate } from '@/lib/i18n'
-import { formatDeliveryHourLabel } from '@/lib/schedule'
+import { buildWeeklyFortune, type ActivityTone } from '@/lib/fortune'
 import {
   type AccountSnapshot,
-  type DeliveryPreference,
   fetchAccountSnapshot,
-  getStartFlowDestination,
-  requiresWhatsappDelivery,
 } from '@/lib/start-flow'
+
+function toneLabel(language: string, tone: ActivityTone) {
+  const isSpanish = language.startsWith('es')
+
+  if (tone === 'good') {
+    return isSpanish ? 'BUENO' : 'GOOD'
+  }
+
+  if (tone === 'bad') {
+    return isSpanish ? 'MALO' : 'BAD'
+  }
+
+  return isSpanish ? 'RARO' : 'RARE'
+}
 
 export default function ActivationGatewayPage() {
   const router = useRouter()
-  const { language, messages } = useLanguage()
+  const { language } = useLanguage()
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
-  const deliveryLabel = (preference: DeliveryPreference) => {
-    if (preference === 'both') {
-      return messages.deliveryChannels.bothTitle
-    }
 
-    return preference === 'email'
-      ? messages.deliveryChannels.emailTitle
-      : messages.deliveryChannels.whatsappTitle
-  }
+  const isSpanish = language.startsWith('es')
+  const sampleFortune = useMemo(
+    () => buildWeeklyFortune(new Date(), isSpanish ? 'es-CL' : 'en-US').slice(0, 3),
+    [isSpanish],
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -41,34 +47,36 @@ export default function ActivationGatewayPage() {
         const currentAccount = await fetchAccountSnapshot()
 
         if (!currentAccount) {
-          router.replace('/account/login')
+          router.replace('/account/register')
           return
         }
 
-        const destination = getStartFlowDestination(currentAccount)
+        const status = currentAccount.subscription?.status ?? null
 
-        if (destination !== '/activate') {
-          router.replace(destination)
+        if (
+          status === 'active' ||
+          status === 'past_due' ||
+          status === 'paused' ||
+          status === 'canceled'
+        ) {
+          router.replace('/dashboard')
           return
         }
 
         if (!cancelled) {
+          setAccount(currentAccount)
           trackEvent('activate_subscription_view', {
             user_id: currentAccount.user.id,
-            subscription_status: currentAccount.subscription?.status ?? 'none',
-            delivery_preference:
-              currentAccount.subscription?.deliveryPreference ?? 'none',
+            subscription_status: status ?? 'none',
           })
           trackMetaCustomEvent('SubscriptionActivationView', {
-            subscription_status: currentAccount.subscription?.status ?? 'none',
-            delivery_preference:
-              currentAccount.subscription?.deliveryPreference ?? 'none',
+            user_id: currentAccount.user.id,
+            subscription_status: status ?? 'none',
           })
-          setAccount(currentAccount)
         }
       } catch {
         if (!cancelled) {
-          setError(messages.activate.loadError)
+          router.replace('/account/register')
         }
       } finally {
         if (!cancelled) {
@@ -82,157 +90,143 @@ export default function ActivationGatewayPage() {
     return () => {
       cancelled = true
     }
-  }, [messages.activate.loadError, router])
+  }, [router])
+
+  const actionState = useMemo(() => {
+    if (!account?.subscription) {
+      return {
+        href: '/checkout/start',
+        label: isSpanish ? 'Desbloquear Trimry' : 'Unlock Trimry',
+      }
+    }
+
+    if (account.subscription.status === 'pending_checkout') {
+      return {
+        href: '/checkout/start',
+        label: isSpanish ? 'Reanudar checkout' : 'Resume checkout',
+      }
+    }
+
+    return {
+      href: '/dashboard',
+      label: isSpanish ? 'Ir al dashboard' : 'Go to dashboard',
+    }
+  }, [account?.subscription, isSpanish])
 
   if (loading) {
     return (
-      <section className="cosmic-shell cosmic-shell-copy mx-auto max-w-3xl rounded-[2rem] p-8">
-        {messages.activate.loading}
-      </section>
-    )
-  }
-
-  if (!account) {
-    return (
-      <section className="cosmic-danger-shell mx-auto max-w-3xl rounded-[2rem] p-8 text-rose-100">
-        <p>{error || messages.activate.unavailable}</p>
-        <Link
-          href="/account/login"
-          className="cosmic-danger-button mt-5 inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
-        >
-          {messages.common.backToLogin}
-        </Link>
+      <section className="cosmic-shell mx-auto max-w-5xl rounded-[2rem] p-6 text-slate-100 sm:p-8">
+        <p>{isSpanish ? 'Preparando el ritual...' : 'Preparing the ritual...'}</p>
       </section>
     )
   }
 
   return (
-    <div className="space-y-8">
-      <section className="luck-glow cosmic-panel relative overflow-hidden rounded-[2.2rem] p-8 sm:p-10">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_12%,rgba(98,247,220,0.18),transparent_28%),radial-gradient(circle_at_90%_0%,rgba(120,167,255,0.18),transparent_32%),radial-gradient(circle_at_76%_100%,rgba(247,217,138,0.1),transparent_34%)]" />
-        <div className="relative z-10 grid gap-8 lg:grid-cols-[1.06fr_0.94fr]">
-          <div>
+    <section className="cosmic-shell mx-auto max-w-5xl p-4 sm:p-6">
+      <div className="luck-glow cosmic-panel relative overflow-hidden rounded-[2.3rem] p-5 sm:p-7 lg:p-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(90,243,220,0.22),transparent_30%),radial-gradient(circle_at_86%_0%,rgba(117,173,255,0.18),transparent_32%),radial-gradient(circle_at_70%_82%,rgba(247,221,145,0.12),transparent_30%)]" />
+        <div className="relative z-10 grid gap-6 lg:grid-cols-[1.04fr_0.96fr] lg:gap-8">
+          <div className="space-y-5">
             <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
-              {messages.activate.badge}
+              {isSpanish ? 'Desbloqueo' : 'Unlock'}
             </p>
-            <h1 className="mt-6 max-w-3xl text-4xl leading-[1.05] text-slate-50 sm:text-6xl">
-              {messages.activate.title}
+            <h1 className="max-w-2xl text-4xl leading-[1.04] text-slate-50 sm:text-5xl lg:text-6xl">
+              {isSpanish
+                ? 'El Luck Guru ya dejó lista tu aventura de fortuna.'
+                : 'Luck Guru has already prepared your fortune adventure.'}
             </h1>
-            <p className="mt-5 max-w-2xl text-lg text-slate-100/84">{messages.activate.subtitle}</p>
+            <p className="max-w-xl text-base text-slate-100/86 sm:text-lg">
+              {isSpanish
+                ? 'Después de pagar, eliges cómo quieres recibir Trimry: email, WhatsApp o ambos. También desbloqueas los poderes mágicos completos del Luck Guru en el chat.'
+                : 'After payment, you choose how Trimry reaches you: email, WhatsApp, or both. You also unlock Luck Guru’s full magical powers in chat.'}
+            </p>
 
-            <div className="mt-7 grid gap-3 text-sm text-slate-100/82 sm:grid-cols-3">
-              {messages.activate.cards.map((card) => (
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                isSpanish ? 'Email primero' : 'Email first',
+                isSpanish ? 'WhatsApp opcional' : 'WhatsApp optional',
+                isSpanish ? 'Ambos cuando quieras' : 'Both when you want',
+              ].map((item) => (
                 <div
-                  key={card}
-                  className="rounded-2xl border border-cyan-200/20 bg-slate-950/35 p-4"
+                  key={item}
+                  className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-cyan-50"
                 >
-                  {card}
+                  {item}
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="rounded-[1.7rem] border border-cyan-200/18 bg-slate-950/42 p-4 sm:p-5">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/78">
+                {isSpanish ? 'Tu ritual semanal incluye' : 'Your weekly ritual includes'}
+              </p>
+              <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-100/84">
+                <li>
+                  {isSpanish
+                    ? 'Días buenos, raros y difíciles para cada semana.'
+                    : 'Good, rare, and challenging days for every week.'}
+                </li>
+                <li>
+                  {isSpanish
+                    ? 'Consejo del Luck Guru con sus poderes completos ya desbloqueados.'
+                    : 'Luck Guru guidance with its full powers unlocked.'}
+                </li>
+                <li>
+                  {isSpanish
+                    ? 'Informe por correo y canales opcionales después de desbloquear.'
+                    : 'Reports by email with optional channels after unlock.'}
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
               <Link
-                href="/checkout/start"
+                href={actionState.href}
                 onClick={() => {
-                  trackEvent('activation_continue_click', {
-                    user_id: account.user.id,
-                    destination: '/checkout/start',
+                  trackEvent('activate_subscription_click', {
+                    language,
+                    destination: actionState.href,
                   })
-                  trackMetaCustomEvent('SubscriptionActivationContinue', {
-                    destination: '/checkout/start',
+                  trackMetaCustomEvent('ActivateSubscriptionClick', {
+                    language,
+                    destination: actionState.href,
                   })
                 }}
-                className="cosmic-button-primary inline-flex rounded-full px-7 py-3 text-sm font-black uppercase tracking-[0.17em]"
+                className="cosmic-button-primary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em]"
               >
-                {messages.activate.primaryButton}
+                {actionState.label}
               </Link>
-              <Link
-                href="/account/delivery?edit=1"
-                onClick={() =>
-                  trackEvent('activation_edit_delivery_click', {
-                    user_id: account.user.id,
-                    destination: '/account/delivery?edit=1',
-                  })
-                }
-                className="cosmic-outline-button inline-flex rounded-full px-7 py-3 text-sm font-black uppercase tracking-[0.17em]"
-              >
-                {messages.activate.secondaryButton}
-              </Link>
+              <OpenLuckGuruChatButton
+                analyticsLocation="activation_gate"
+                label={isSpanish ? 'Hablar con Luck Guru' : 'Talk to Luck Guru'}
+                className="cosmic-button-secondary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-cyan-50"
+              />
             </div>
           </div>
 
-          <aside className="cosmic-card rounded-[1.8rem] p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-100/78">
-              {messages.activate.snapshotTitle}
+          <div className="rounded-[2rem] border border-cyan-200/18 bg-slate-950/46 p-4 sm:p-5">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-100/84">
+              {isSpanish ? 'Vista previa semanal' : 'Weekly preview'}
             </p>
-            <div className="mt-5 space-y-4 text-sm text-slate-100/84">
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-100/70">
-                  {messages.activate.deliveryPreferenceLabel}
-                </p>
-                <p className="mt-2 text-lg text-slate-50">
-                  {account.subscription
-                    ? deliveryLabel(account.subscription.deliveryPreference)
-                    : null}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-100/70">
-                  {messages.activate.emailDeliveryLabel}
-                </p>
-                <p className="mt-2 text-lg text-slate-50">{account.user.email}</p>
-              </div>
-              {account.subscription ? (
-                <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-100/70">
-                    {messages.activate.projectionTimingLabel}
-                  </p>
-                  <p className="mt-2 text-lg text-slate-50">
-                    {interpolate('{time} ({zone})', {
-                      time: formatDeliveryHourLabel(
-                        account.subscription.deliveryHourLocal,
-                        language,
-                      ),
-                      zone: account.user.timeZone,
-                    })}
-                  </p>
-                </div>
-              ) : null}
-              {account.subscription &&
-              requiresWhatsappDelivery(account.subscription.deliveryPreference) ? (
-                <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-100/70">
-                    {messages.activate.whatsappDeliveryLabel}
-                  </p>
-                  <p className="mt-2 text-lg text-slate-50">
-                    {account.subscription.whatsappNumber}
-                  </p>
-                </div>
-              ) : null}
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-100/70">
-                  {messages.activate.billingLabel}
-                </p>
-                <p className="mt-2 text-lg text-slate-50">{messages.activate.billingValue}</p>
-              </div>
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/35 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-100/70">
-                  {messages.activate.whyItWorksLabel}
-                </p>
-                <p className="mt-2">{messages.activate.whyItWorksText}</p>
-              </div>
+            <div className="mt-4 grid gap-3">
+              {sampleFortune.map((day) => (
+                <article
+                  key={day.date}
+                  className="rounded-2xl border border-cyan-100/16 bg-slate-950/38 p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-50">{day.weekday}</p>
+                    <span className="rounded-full border border-cyan-100/18 bg-cyan-100/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100">
+                      {toneLabel(language, day.summary)}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-100/82">{day.notes}</p>
+                </article>
+              ))}
             </div>
-          </aside>
+          </div>
         </div>
-      </section>
-
-      <LuckBeliefCarousel
-        badge={messages.activate.carouselBadge}
-        title={messages.activate.carouselTitle}
-        subtitle={messages.activate.carouselSubtitle}
-        compact
-      />
-    </div>
+      </div>
+    </section>
   )
 }

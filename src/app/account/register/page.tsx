@@ -162,7 +162,7 @@ export default function RegisterPage() {
         window.sessionStorage.setItem(SIGNUP_WHATSAPP_STORAGE_KEY, whatsappNumber)
       }
 
-      router.push('/account/delivery')
+      router.push('/activate')
       router.refresh()
     } catch {
       setError(messages.notifications.error)

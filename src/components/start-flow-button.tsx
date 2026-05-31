@@ -4,15 +4,7 @@ import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import {
-  trackEvent,
-  trackMetaCustomEvent,
-  trackMetaStandardEvent,
-} from '@/lib/analytics'
-import {
-  fetchAccountSnapshot,
-  getStartFlowDestination,
-} from '@/lib/start-flow'
+import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 
 type StartFlowButtonProps = {
   children: ReactNode
@@ -38,63 +30,29 @@ export function StartFlowButton({
     setLoading(true)
 
     try {
-      const account = await fetchAccountSnapshot()
-      const destination = getStartFlowDestination(account)
       trackEvent('start_flow_click', {
         cta_location: analyticsLocation,
-        destination,
-        auth_state: account ? 'authenticated' : 'guest',
+        destination: '/today',
       })
       trackMetaCustomEvent('StartFlowClick', {
         cta_location: analyticsLocation,
-        destination,
-        auth_state: account ? 'authenticated' : 'guest',
+        destination: '/today',
       })
 
-      if (!account) {
-        trackEvent('generate_lead', {
-          lead_type: 'account_start',
-          content_name: 'Start account flow',
-          content_category: 'account_intent',
-          cta_location: analyticsLocation,
-          destination,
-        })
-        trackMetaStandardEvent('Lead', {
-          content_name: 'Start account flow',
-          content_category: 'account_intent',
-          cta_location: analyticsLocation,
-        })
-      }
-
-      router.push(destination)
+      router.push('/today')
       router.refresh()
     } catch {
       trackEvent('start_flow_click', {
         cta_location: analyticsLocation,
-        destination: '/account/register',
-        auth_state: 'guest',
+        destination: '/today',
         resolution: 'fallback',
       })
       trackMetaCustomEvent('StartFlowClick', {
         cta_location: analyticsLocation,
-        destination: '/account/register',
-        auth_state: 'guest',
+        destination: '/today',
         resolution: 'fallback',
       })
-      trackMetaStandardEvent('Lead', {
-        content_name: 'Start account flow',
-        content_category: 'account_intent',
-        cta_location: analyticsLocation,
-      })
-      trackEvent('generate_lead', {
-        lead_type: 'account_start',
-        content_name: 'Start account flow',
-        content_category: 'account_intent',
-        cta_location: analyticsLocation,
-        destination: '/account/register',
-        resolution: 'fallback',
-      })
-      router.push('/account/register')
+      router.push('/today')
     } finally {
       setLoading(false)
     }

@@ -1,15 +1,14 @@
 'use client'
 
-import { FormEvent, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
 import { useLanguage } from '@/components/language-provider'
-import { apiFetch, readApiError } from '@/lib/api-client'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
-import { interpolate } from '@/lib/i18n'
+import { apiFetch, readApiError } from '@/lib/api-client'
 import {
   DEFAULT_WEEKLY_DELIVERY_HOUR,
   formatDeliveryHourLabel,
@@ -18,93 +17,110 @@ import {
   type AccountSnapshot,
   type DeliveryPreference,
   fetchAccountSnapshot,
-  getStartFlowDestination,
   requiresWhatsappDelivery,
 } from '@/lib/start-flow'
 
 const SIGNUP_WHATSAPP_STORAGE_KEY = 'trimry:signup-whatsapp-number'
 
-export default function DeliveryOnboardingPage() {
+function settingCopy(language: string) {
+  const isSpanish = language.startsWith('es')
+
+  return isSpanish
+    ? {
+        badge: 'Ajustes de entrega',
+        title: '¿Cómo debería Trimry entregar tu ritual semanal?',
+        subtitle:
+          'Email sigue siendo el valor por defecto. WhatsApp es opcional y ambos canales se pueden activar cuando quieras.',
+        emailLabel: 'Correo de entrega',
+        channelLabel: 'Canal de entrega',
+        scheduleLabel: 'Hora de proyección del lunes',
+        consentLabel: 'Acepto recibir mensajes de Trimry por WhatsApp.',
+        consentHint:
+          'Necesario solo si eliges WhatsApp como canal de entrega.',
+        saveButton: 'Guardar ajustes',
+        savingButton: 'Guardando...',
+        backButton: 'Volver al dashboard',
+        success: 'Ajustes de entrega actualizados.',
+        help: 'Los cambios se aplican solo a futuras entregas.',
+      }
+    : {
+        badge: 'Delivery settings',
+        title: 'How should Trimry deliver your weekly ritual?',
+        subtitle:
+          'Email remains the default. WhatsApp stays optional, and both channels can be enabled whenever you want.',
+        emailLabel: 'Delivery email',
+        channelLabel: 'Delivery channel',
+        scheduleLabel: 'Monday projection time',
+        consentLabel: 'I agree to receive Trimry messages on WhatsApp.',
+        consentHint: 'Required only if you choose WhatsApp delivery.',
+        saveButton: 'Save settings',
+        savingButton: 'Saving...',
+        backButton: 'Back to dashboard',
+        success: 'Delivery settings updated.',
+        help: 'Changes apply to future deliveries only.',
+      }
+}
+
+export default function DeliverySettingsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { language, messages } = useLanguage()
+  const { language } = useLanguage()
+  const copy = useMemo(() => settingCopy(language), [language])
   const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [account, setAccount] = useState<AccountSnapshot | null>(null)
   const [deliveryPreference, setDeliveryPreference] =
-    useState<DeliveryPreference>('both')
+    useState<DeliveryPreference>('email')
   const [deliveryHourLocal, setDeliveryHourLocal] = useState(
     DEFAULT_WEEKLY_DELIVERY_HOUR,
   )
   const [whatsappNumber, setWhatsappNumber] = useState('')
   const [whatsappConsentAccepted, setWhatsappConsentAccepted] = useState(false)
-  const [phase, setPhase] = useState<'form' | 'preparing'>('form')
-  const [activeStep, setActiveStep] = useState(0)
-  const [account, setAccount] = useState<AccountSnapshot | null>(null)
-
   const isEditMode = searchParams.get('edit') === '1'
-  const hasExistingSubscription = Boolean(account?.subscription)
-  const shouldReturnToCheckout = account?.subscription?.status === 'pending_checkout'
-  const shouldProceedToActivation = !hasExistingSubscription || shouldReturnToCheckout
-  const submitAction = hasExistingSubscription ? 'update-delivery' : 'subscribe'
-  const preparationSteps = messages.deliveryOnboarding.preparationSteps
-
-  const progressWidth = useMemo(
-    () => `${((activeStep + 1) / preparationSteps.length) * 100}%`,
-    [activeStep, preparationSteps.length],
-  )
 
   useEffect(() => {
     let cancelled = false
 
     const loadState = async () => {
       try {
-        const account = await fetchAccountSnapshot()
+        const currentAccount = await fetchAccountSnapshot()
 
-        if (!account) {
-          router.replace('/account/register')
+        if (!currentAccount) {
+          router.replace('/account/login')
           return
         }
 
-        setAccount(account)
-        const existingPreference = account.subscription?.deliveryPreference ?? 'both'
-        const existingDeliveryHour =
-          account.subscription?.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR
-        const existingWhatsappNumber = account.subscription?.whatsappNumber?.trim() ?? ''
+        const subscription = currentAccount.subscription
+
+        if (!subscription) {
+          router.replace('/activate')
+          return
+        }
+
+        if (subscription.status === 'pending_checkout') {
+          router.replace('/checkout/start')
+          return
+        }
+
+        if (subscription.status === 'canceled') {
+          router.replace('/dashboard')
+          return
+        }
 
         if (!cancelled) {
-          setDeliveryPreference(existingPreference)
-          setDeliveryHourLocal(existingDeliveryHour)
-        }
-
-        const storedSignupWhatsapp =
-          typeof window !== 'undefined'
-            ? window.sessionStorage.getItem(SIGNUP_WHATSAPP_STORAGE_KEY)?.trim() ?? ''
-            : ''
-
-        if (!cancelled && existingWhatsappNumber) {
-          setWhatsappNumber(existingWhatsappNumber)
-          setWhatsappConsentAccepted(true)
-        } else if (!cancelled && storedSignupWhatsapp) {
-          setWhatsappNumber(storedSignupWhatsapp)
-          setWhatsappConsentAccepted(true)
-
-          if (!account.subscription) {
-            setDeliveryPreference('whatsapp')
-          }
-        }
-
-        const deliverySetupComplete = account.subscription
-          ? !requiresWhatsappDelivery(existingPreference) || Boolean(existingWhatsappNumber)
-          : false
-
-        if (deliverySetupComplete && !isEditMode) {
-          router.replace(getStartFlowDestination(account))
-          return
+          setAccount(currentAccount)
+          setDeliveryPreference(subscription.deliveryPreference ?? 'email')
+          setDeliveryHourLocal(
+            subscription.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR,
+          )
+          setWhatsappNumber(subscription.whatsappNumber?.trim() ?? '')
+          setWhatsappConsentAccepted(Boolean(subscription.whatsappNumber?.trim()))
         }
       } catch {
         if (!cancelled) {
-          setError(messages.deliveryOnboarding.loadError)
+          setError('Unable to load delivery settings.')
         }
       } finally {
         if (!cancelled) {
@@ -118,40 +134,17 @@ export default function DeliveryOnboardingPage() {
     return () => {
       cancelled = true
     }
-  }, [isEditMode, messages.deliveryOnboarding.loadError, router])
-
-  useEffect(() => {
-    if (phase !== 'preparing') {
-      return
-    }
-
-    setActiveStep(0)
-
-    const intervalId = window.setInterval(() => {
-      setActiveStep((current) =>
-        current < preparationSteps.length - 1 ? current + 1 : current,
-      )
-    }, 1100)
-
-    const timeoutId = window.setTimeout(() => {
-      router.push(shouldProceedToActivation ? '/activate' : '/dashboard')
-      router.refresh()
-    }, 4800)
-
-    return () => {
-      window.clearInterval(intervalId)
-      window.clearTimeout(timeoutId)
-    }
-  }, [phase, preparationSteps.length, router, shouldProceedToActivation])
+  }, [router])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setSubmitting(true)
+    setSaving(true)
     setError('')
+    setSuccess('')
 
     if (requiresWhatsappDelivery(deliveryPreference) && !whatsappConsentAccepted) {
-      setError(messages.deliveryOnboarding.whatsappConsentError)
-      setSubmitting(false)
+      setError('Please confirm WhatsApp consent before enabling WhatsApp delivery.')
+      setSaving(false)
       return
     }
 
@@ -159,7 +152,7 @@ export default function DeliveryOnboardingPage() {
       const response = await apiFetch('/subscription', {
         method: 'POST',
         body: JSON.stringify({
-          action: submitAction,
+          action: 'update-delivery',
           deliveryPreference,
           deliveryHourLocal,
           whatsappNumber,
@@ -170,247 +163,196 @@ export default function DeliveryOnboardingPage() {
       })
 
       if (!response.ok) {
-        setError(await readApiError(response, messages.deliveryOnboarding.saveError))
+        setError(await readApiError(response, 'Unable to save delivery settings.'))
         return
       }
 
-      trackEvent('delivery_preferences_saved', {
-        entry_point: hasExistingSubscription
-          ? isEditMode
-            ? 'delivery_edit'
-            : 'dashboard'
-          : 'onboarding',
+      trackEvent('delivery_settings_saved', {
+        entry_point: isEditMode ? 'dashboard_settings' : 'settings_page',
         user_id: account?.user.id,
         delivery_preference: deliveryPreference,
         delivery_hour_local: deliveryHourLocal,
         requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),
-        destination: shouldProceedToActivation ? 'activate' : 'dashboard',
       })
       trackMetaCustomEvent('SubscriptionSetup', {
-        entry_point: hasExistingSubscription
-          ? isEditMode
-            ? 'delivery_edit'
-            : 'dashboard'
-          : 'onboarding',
+        entry_point: isEditMode ? 'dashboard_settings' : 'settings_page',
         delivery_preference: deliveryPreference,
         delivery_hour_local: deliveryHourLocal,
         requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),
-        destination: shouldProceedToActivation ? 'activate' : 'dashboard',
       })
 
       if (typeof window !== 'undefined') {
         window.sessionStorage.removeItem(SIGNUP_WHATSAPP_STORAGE_KEY)
       }
 
-      if (shouldProceedToActivation) {
-        setPhase('preparing')
-        return
-      }
-
-      router.push('/dashboard')
+      setSuccess(copy.success)
       router.refresh()
     } catch {
-      setError(messages.deliveryOnboarding.saveError)
+      setError('Unable to save delivery settings.')
     } finally {
-      setSubmitting(false)
+      setSaving(false)
     }
   }
 
   if (loading) {
     return (
-      <section className="mx-auto max-w-2xl rounded-[2rem] border border-cyan-200/20 bg-slate-950/45 p-8 text-cyan-100">
-        {messages.deliveryOnboarding.loading}
+      <section className="cosmic-shell mx-auto max-w-5xl p-4 sm:p-6">
+        <div className="luck-glow cosmic-panel rounded-[2.3rem] p-6 text-slate-100 sm:p-8">
+          Loading delivery settings...
+        </div>
       </section>
     )
   }
 
-  if (phase === 'preparing') {
+  if (!account) {
     return (
-      <section className="luck-glow cosmic-panel mx-auto max-w-3xl overflow-hidden rounded-[2.2rem] p-8 sm:p-10">
-        <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
-          {messages.deliveryOnboarding.prepBadge}
-        </p>
-        <h1 className="mt-6 text-4xl text-slate-50 sm:text-5xl">
-          {messages.deliveryOnboarding.prepTitle}
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg text-slate-100/84">{messages.deliveryOnboarding.prepSubtitle}</p>
-
-        <div className="mt-8 rounded-3xl border border-cyan-200/18 bg-slate-950/45 p-5">
-          <div className="h-3 overflow-hidden rounded-full bg-slate-900/80">
-            <div
-              className="h-full rounded-full bg-[linear-gradient(90deg,#d8fff6,#8ef4e0_45%,#7be0ff)] transition-all duration-700"
-              style={{ width: progressWidth }}
-            />
-          </div>
-          <div className="mt-6 grid gap-3">
-            {preparationSteps.map((step, index) => (
-              <div
-                key={step}
-                className={`rounded-2xl border px-4 py-3 text-sm uppercase tracking-[0.18em] transition ${
-                  index <= activeStep
-                    ? 'border-cyan-200/40 bg-cyan-300/14 text-cyan-50'
-                    : 'border-slate-700/70 bg-slate-900/50 text-slate-400'
-                }`}
-              >
-                {step}
-              </div>
-            ))}
-          </div>
+      <section className="cosmic-shell mx-auto max-w-5xl p-4 sm:p-6">
+        <div className="luck-glow cosmic-panel rounded-[2.3rem] p-6 text-slate-100 sm:p-8">
+          <p>Redirecting...</p>
         </div>
       </section>
     )
   }
 
   return (
-    <section className="luck-glow cosmic-panel mx-auto max-w-3xl overflow-hidden rounded-[2.2rem] p-8 sm:p-10">
-      <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <div>
-          <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
-            {isEditMode
-              ? messages.deliveryOnboarding.editBadge
-              : messages.deliveryOnboarding.createBadge}
-          </p>
-          <h1 className="mt-6 text-4xl text-slate-50 sm:text-5xl">
-            {isEditMode
-              ? messages.deliveryOnboarding.editTitle
-              : messages.deliveryOnboarding.createTitle}
-          </h1>
-          <p className="mt-4 text-lg text-slate-100/84">
-            {isEditMode
-              ? messages.deliveryOnboarding.editSubtitle
-              : messages.deliveryOnboarding.createSubtitle}
-          </p>
-          <div className="mt-8 rounded-3xl border border-cyan-200/18 bg-slate-950/40 p-5 text-sm text-slate-100/82">
-            {shouldProceedToActivation ? (
-              <>
-                {messages.deliveryOnboarding.activationChecklist.map((step, index) => (
-                  <p key={step} className={index === 0 ? '' : 'mt-2'}>
-                    {index + 1}. {step}
-                  </p>
-                ))}
-              </>
-            ) : (
-              <>
-                {messages.deliveryOnboarding.dashboardChecklist.map((step, index) => (
-                  <p key={step} className={index === 0 ? '' : 'mt-2'}>
-                    {index + 1}. {step}
-                  </p>
-                ))}
-              </>
-            )}
+    <section className="cosmic-shell mx-auto max-w-5xl p-4 sm:p-6">
+      <div className="luck-glow cosmic-panel relative overflow-hidden rounded-[2.3rem] p-5 sm:p-7 lg:p-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(90,243,220,0.22),transparent_30%),radial-gradient(circle_at_86%_0%,rgba(117,173,255,0.18),transparent_32%),radial-gradient(circle_at_70%_82%,rgba(247,221,145,0.12),transparent_30%)]" />
+        <div className="relative z-10 grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:gap-8">
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
+                {copy.badge}
+              </p>
+              {isEditMode ? (
+                <span className="rounded-full border border-cyan-200/22 bg-cyan-100/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/86">
+                  Edit mode
+                </span>
+              ) : null}
+            </div>
+
+            <h1 className="max-w-2xl text-3xl leading-[1.04] text-slate-50 sm:text-4xl lg:text-5xl">
+              {copy.title}
+            </h1>
+            <p className="max-w-xl text-base text-slate-100/86 sm:text-lg">
+              {copy.subtitle}
+            </p>
+
+            <div className="rounded-[1.7rem] border border-cyan-200/18 bg-slate-950/42 p-4 sm:p-5">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/78">
+                {copy.emailLabel}
+              </p>
+              <p className="mt-2 text-base text-slate-50">{account.user.email}</p>
+              <p className="mt-3 text-sm text-slate-100/72">{copy.help}</p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {['Email first', 'WhatsApp optional', 'Both whenever you want'].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-cyan-50"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div className="cosmic-card rounded-3xl p-6">
-          <h2 className="text-2xl text-slate-50">{messages.deliveryOnboarding.setupTitle}</h2>
-          <p className="mt-3 text-slate-100/80">{messages.deliveryOnboarding.setupSubtitle}</p>
-
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <p className="mb-3 text-sm font-semibold text-cyan-100/90">
-                {messages.deliveryOnboarding.channelLabel}
-              </p>
-              <DeliveryPreferenceSelector
-                value={deliveryPreference}
-                onChange={setDeliveryPreference}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="delivery-hour"
-                className="mb-3 block text-sm font-semibold text-cyan-100/90"
-              >
-                {messages.deliveryOnboarding.mondayTimeLabel}
-              </label>
-              <DeliveryHourSelect
-                id="delivery-hour"
-                value={deliveryHourLocal}
-                onChange={setDeliveryHourLocal}
-                locale={language}
-                className="cosmic-input block w-full rounded-xl px-4 py-3"
-              />
-              <p className="mt-2 text-xs text-slate-100/70">
-                {interpolate(messages.deliveryOnboarding.mondayTimeHint, {
-                  time: formatDeliveryHourLabel(deliveryHourLocal, language),
-                  zone: account?.user.timeZone ?? 'UTC',
-                })}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/82">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
-                {messages.deliveryOnboarding.emailDeliveryLabel}
-              </p>
-              <p className="mt-2 text-base text-slate-50">{account?.user.email}</p>
-            </div>
-
-            {requiresWhatsappDelivery(deliveryPreference) ? (
-              <>
-                <label className="block text-sm font-semibold text-cyan-100/90">
-                  {messages.auth.whatsappLabel}
-                  <input
-                    type="tel"
-                    value={whatsappNumber}
-                    onChange={(event) => setWhatsappNumber(event.target.value)}
-                    placeholder="+14155550123"
-                    required
-                    className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-                  />
-                </label>
-                <label className="cosmic-info-box flex items-start gap-3 rounded-2xl p-4 text-sm text-slate-100/88">
-                  <input
-                    type="checkbox"
-                    checked={whatsappConsentAccepted}
-                    onChange={(event) =>
-                      setWhatsappConsentAccepted(event.target.checked)
-                    }
-                    required
-                    className="mt-0.5 h-4 w-4 accent-cyan-300"
-                  />
-                  <span>
-                    <span className="block text-slate-50">
-                      {messages.deliveryOnboarding.whatsappConsentLabel}
-                    </span>
-                    <span className="cosmic-shell-meta mt-1 block text-xs">
-                      {messages.deliveryOnboarding.whatsappConsentHint}
-                    </span>
-                  </span>
-                </label>
-              </>
-            ) : (
-              <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/76">
-                {messages.deliveryOnboarding.whatsappOffHint}
+          <div className="rounded-[1.8rem] border border-cyan-200/18 bg-slate-950/42 p-4 sm:p-5">
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div>
+                <p className="mb-3 text-sm font-semibold text-cyan-100/90">
+                  {copy.channelLabel}
+                </p>
+                <DeliveryPreferenceSelector
+                  value={deliveryPreference}
+                  onChange={setDeliveryPreference}
+                />
               </div>
-            )}
 
-            {error ? (
-              <p className="rounded-xl border border-rose-300/60 bg-rose-900/40 px-4 py-3 text-sm text-rose-100">
-                {error}
-              </p>
-            ) : null}
+              <div>
+                <label
+                  htmlFor="delivery-hour"
+                  className="mb-3 block text-sm font-semibold text-cyan-100/90"
+                >
+                  {copy.scheduleLabel}
+                </label>
+                <DeliveryHourSelect
+                  id="delivery-hour"
+                  value={deliveryHourLocal}
+                  onChange={setDeliveryHourLocal}
+                  locale={language}
+                  className="cosmic-input block w-full rounded-xl px-4 py-3"
+                />
+                <p className="mt-2 text-xs text-slate-100/70">
+                  {formatDeliveryHourLabel(deliveryHourLocal, language)} · {account.user.timeZone}
+                </p>
+              </div>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="cosmic-button-primary w-full rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] disabled:opacity-70"
-            >
-              {submitting
-                ? messages.common.saving
-                : shouldProceedToActivation
-                  ? messages.deliveryOnboarding.submitContinue
-                  : messages.deliveryOnboarding.submitSave}
-            </button>
+              {requiresWhatsappDelivery(deliveryPreference) ? (
+                <>
+                  <label className="block text-sm font-semibold text-cyan-100/90">
+                    WhatsApp number
+                    <input
+                      type="tel"
+                      value={whatsappNumber}
+                      onChange={(event) => setWhatsappNumber(event.target.value)}
+                      placeholder="+14155550123"
+                      required
+                      className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+                    />
+                  </label>
+                  <label className="cosmic-info-box flex items-start gap-3 rounded-2xl p-4 text-sm text-slate-100/88">
+                    <input
+                      type="checkbox"
+                      checked={whatsappConsentAccepted}
+                      onChange={(event) => setWhatsappConsentAccepted(event.target.checked)}
+                      required
+                      className="mt-0.5 h-4 w-4 accent-cyan-300"
+                    />
+                    <span>
+                      <span className="block text-slate-50">{copy.consentLabel}</span>
+                      <span className="cosmic-shell-meta mt-1 block text-xs">
+                        {copy.consentHint}
+                      </span>
+                    </span>
+                  </label>
+                </>
+              ) : (
+                <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/76">
+                  WhatsApp remains optional unless you turn it on.
+                </div>
+              )}
 
-            {isEditMode ? (
-              <Link
-                href={shouldReturnToCheckout ? '/dashboard' : '/dashboard'}
-                className="inline-flex w-full items-center justify-center rounded-full border border-cyan-200/24 px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-cyan-100"
-              >
-                {messages.common.cancel}
-              </Link>
-            ) : null}
-          </form>
+              {error ? (
+                <p className="rounded-xl border border-rose-300/60 bg-rose-900/40 px-4 py-3 text-sm text-rose-100">
+                  {error}
+                </p>
+              ) : null}
+
+              {success ? (
+                <p className="rounded-xl border border-emerald-300/50 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-100">
+                  {success}
+                </p>
+              ) : null}
+
+              <div className="flex flex-wrap gap-3 pt-1">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="cosmic-button-primary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] disabled:opacity-70"
+                >
+                  {saving ? copy.savingButton : copy.saveButton}
+                </button>
+                <Link
+                  href="/dashboard"
+                  className="cosmic-outline-button inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em]"
+                >
+                  {copy.backButton}
+                </Link>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </section>

@@ -187,7 +187,7 @@ export default function DashboardPage() {
 
       const typedPayload = payload as MeResponse
       setData(typedPayload)
-      setDeliveryPreference(typedPayload.subscription?.deliveryPreference ?? 'both')
+      setDeliveryPreference(typedPayload.subscription?.deliveryPreference ?? 'email')
       setDeliveryHourLocal(
         typedPayload.subscription?.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR,
       )
@@ -245,6 +245,19 @@ export default function DashboardPage() {
             quantity: 1,
           },
         ],
+      },
+    )
+    trackEventOnce(
+      `subscription-completed-${data.subscription.id}-${data.subscription.updatedAt}`,
+      'subscription_completed',
+      {
+        transaction_id: data.subscription.id,
+        affiliation: 'Trimry',
+        currency: data.subscription.currency,
+        value: data.subscription.monthlyPriceUsd,
+        user_id: data.user.id,
+        plan_id: data.subscription.planId,
+        delivery_preference: data.subscription.deliveryPreference,
       },
     )
     trackMetaStandardEventOnce(
@@ -311,12 +324,12 @@ export default function DashboardPage() {
 
   const openProjectionUnlockFlow = async () => {
     if (!data?.subscription) {
-      router.push('/account/delivery')
+      router.push('/activate')
       return
     }
 
     if (data.subscription.status === 'pending_checkout') {
-      router.push('/activate')
+      router.push('/checkout/start')
       return
     }
 
@@ -424,7 +437,7 @@ export default function DashboardPage() {
     (projectionStatus === 'active' || projectionStatus === 'past_due')
   const projectionUnlockButtonLabel =
     projectionStatus === 'pending_checkout'
-      ? messages.dashboard.continueActivation
+      ? messages.checkout.resumeButton
       : projectionStatus === 'canceled'
         ? messages.dashboard.reactivateButton
         : projectionStatus === 'paused'
@@ -1246,16 +1259,10 @@ export default function DashboardPage() {
             </div>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
-                href="/activate"
+                href="/checkout/start"
                 className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
               >
-                {messages.dashboard.continueActivation}
-              </Link>
-              <Link
-                href="/account/delivery?edit=1"
-                className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
-              >
-                {messages.dashboard.changeDeliverySettings}
+                {messages.checkout.resumeButton}
               </Link>
             </div>
           </>

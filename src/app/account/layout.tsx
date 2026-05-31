@@ -4,7 +4,7 @@ import { createNoIndexMetadata } from '@/lib/seo'
 
 export const metadata = createNoIndexMetadata({
   title: 'Account',
-  description: 'Account access, onboarding, and delivery setup pages are not indexed by search engines.',
+  description: 'Account access and post-subscription settings pages are not indexed by search engines.',
   path: '/account',
 })
 

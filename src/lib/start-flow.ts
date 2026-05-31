@@ -1,4 +1,5 @@
 import { apiFetch } from '@/lib/api-client'
+import type { ActivityTone } from '@/lib/fortune'
 
 export type SubscriptionStatus =
   | 'pending_checkout'
@@ -8,6 +9,23 @@ export type SubscriptionStatus =
   | 'canceled'
 
 export type DeliveryPreference = 'email' | 'whatsapp' | 'both'
+
+export type WeeklyFortuneDay = {
+  date: string
+  weekday: string
+  summary: ActivityTone
+  notes: string
+  notesByLanguage: {
+    en: string
+    es: string
+  }
+  activities: {
+    haircut: ActivityTone
+    shave: ActivityTone
+    nails: ActivityTone
+    release: ActivityTone
+  }
+}
 
 export function requiresWhatsappDelivery(preference: DeliveryPreference) {
   return preference === 'whatsapp' || preference === 'both'
@@ -39,6 +57,7 @@ export type AccountSnapshot = {
     createdAt: string
     updatedAt: string
   } | null
+  weeklyFortune?: WeeklyFortuneDay[]
 }
 
 export async function fetchAccountSnapshot() {
@@ -65,7 +84,11 @@ export function getStartFlowDestination(account: AccountSnapshot | null) {
   }
 
   if (!account.subscription) {
-    return '/account/delivery'
+    return '/activate'
+  }
+
+  if (account.subscription?.status === 'pending_checkout') {
+    return '/checkout/start'
   }
 
   const whatsappNumber = account.subscription.whatsappNumber?.trim()
@@ -74,11 +97,7 @@ export function getStartFlowDestination(account: AccountSnapshot | null) {
     requiresWhatsappDelivery(account.subscription.deliveryPreference) &&
     !whatsappNumber
   ) {
-    return '/account/delivery'
-  }
-
-  if (account.subscription?.status === 'pending_checkout') {
-    return '/activate'
+    return '/account/delivery?edit=1'
   }
 
   return '/dashboard'

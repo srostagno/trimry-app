@@ -192,6 +192,11 @@ export type MessageSection = {
     whatsappDeliveryLabel: string
     billingLabel: string
     billingValue: string
+    previewBadge: string
+    previewTitle: string
+    previewLabel: string
+    previewDayLabel: string
+    emailFirstTitle: string
     whyItWorksLabel: string
     whyItWorksText: string
     carouselBadge: string
@@ -200,11 +205,18 @@ export type MessageSection = {
   }
   checkout: {
     badge: string
+    badgeCancelled: string
     title: string
     titleCancelled: string
     subtitle: string
     subtitleCancelled: string
     openError: string
+    resumeTitle: string
+    resumeSubtitle: string
+    resumeButton: string
+    resumeHint: string
+    deliveryLabel: string
+    timingLabel: string
     helper: string
   }
   dashboard: {
@@ -693,11 +705,11 @@ const englishMessages: MessageSection = {
   },
   deliveryChannels: {
     bothTitle: 'Email + WhatsApp',
-    bothDescription: 'Best mix of ritual presence and instant delivery.',
+    bothDescription: 'Email first, with WhatsApp as an optional second channel.',
     emailTitle: 'Email only',
-    emailDescription: 'Get the weekly guidance directly in your inbox.',
+    emailDescription: 'The simplest default for most users.',
     whatsappTitle: 'WhatsApp only',
-    whatsappDescription: 'Keep it fast, direct, and phone-first.',
+    whatsappDescription: 'Phone-first delivery when you prefer it.',
   },
   deliveryOnboarding: {
     loading: 'Loading your onboarding flow...',
@@ -719,11 +731,11 @@ const englishMessages: MessageSection = {
     editSubtitle:
       'Change your delivery preference anytime. Use email, WhatsApp, or keep both channels active.',
     createSubtitle:
-      'Choose email, WhatsApp, or both. Once it is saved, we will move you into a short activation step before secure Stripe checkout.',
+      'Email is the default. Add WhatsApp only if you want phone delivery too.',
     activationChecklist: [
-      'Choose your delivery preference.',
-      'Add WhatsApp only if that channel is active.',
+      'Choose email first, then add WhatsApp only if you want it.',
       'Your activation page opens before Stripe.',
+      'You can change delivery later from the dashboard.',
     ],
     dashboardChecklist: [
       'Choose your delivery preference.',
@@ -732,13 +744,13 @@ const englishMessages: MessageSection = {
     ],
     setupTitle: 'Delivery setup',
     setupSubtitle:
-      'Email uses your account inbox. If you activate WhatsApp, use international format so delivery works immediately.',
+      'Email goes to your inbox. WhatsApp stays optional unless you turn it on.',
     channelLabel: 'Delivery channel',
     mondayTimeLabel: 'Monday projection time',
     mondayTimeHint: 'Scheduled for Mondays at {time} in {zone}.',
     emailDeliveryLabel: 'Email delivery',
     whatsappOffHint:
-      'WhatsApp is off for this subscription. Turn it on above if you want instant phone delivery too.',
+      'WhatsApp is off by default. Turn it on only if you want phone delivery too.',
     whatsappConsentLabel:
       'I consent to receive Trimry subscription messages on WhatsApp at this number.',
     whatsappConsentHint:
@@ -754,15 +766,15 @@ const englishMessages: MessageSection = {
     loadError: 'Unable to load your activation step right now.',
     unavailable: 'Unable to continue right now.',
     badge: 'Activation gate',
-    title: 'Turn your weekly Trimry message into a real luck ritual.',
+    title: 'Your weekly luck ritual is ready.',
     subtitle:
-      'People move differently when they feel favored by timing. They spot openings faster, carry stronger energy, and stay optimistic longer. Trimry is built to trigger exactly that momentum every Monday.',
+      'See your lucky days before you pay. Email is the default channel; WhatsApp stays optional.',
     cards: [
-      'Your delivery preference is already saved.',
-      'Stripe opens on the next step with hosted checkout.',
-      'Your weekly ritual starts as soon as billing is confirmed.',
+      'Free sample preview uses the same Monday cadence.',
+      'Email is the default. WhatsApp stays optional.',
+      'Stripe opens next with secure hosted checkout.',
     ],
-    primaryButton: 'Activate in secure Stripe checkout',
+    primaryButton: 'Unlock weekly forecast',
     secondaryButton: 'Change delivery settings',
     snapshotTitle: 'Your activation snapshot',
     deliveryPreferenceLabel: 'Delivery preference',
@@ -771,9 +783,14 @@ const englishMessages: MessageSection = {
     whatsappDeliveryLabel: 'WhatsApp delivery',
     billingLabel: 'Billing',
     billingValue: '{billingInline}',
+    previewBadge: 'Free sample',
+    previewTitle: 'What your weekly ritual looks like',
+    previewLabel: 'Preview',
+    previewDayLabel: 'Weekly signal',
+    emailFirstTitle: 'Email-first delivery',
     whyItWorksLabel: 'Why it works',
     whyItWorksText:
-      'The ritual is not magic. The leverage comes from attention, confidence, and better action when you feel aligned.',
+      'The ritual stays effective because the weekly signal is simple, consistent, and easy to remember.',
     carouselBadge: 'Momentum psychology',
     carouselTitle: 'Luck gets stronger when your mind starts moving with it.',
     carouselSubtitle:
@@ -781,13 +798,21 @@ const englishMessages: MessageSection = {
   },
   checkout: {
     badge: 'Checkout handoff',
-    title: 'Opening Stripe checkout...',
-    titleCancelled: 'Return to Stripe checkout',
+    badgeCancelled: 'Checkout paused',
+    title: 'Opening secure Stripe checkout...',
+    titleCancelled: 'Your forecast is waiting',
     subtitle:
       'Your delivery settings are already saved. We are sending you to Stripe to finish the subscription.',
     subtitleCancelled:
-      'Your last checkout attempt was canceled. Your delivery settings are still saved and we can send you straight back to Stripe.',
+      'Nothing was lost. Your settings are still saved and you can resume checkout whenever you are ready.',
     openError: 'Unable to open Stripe checkout right now.',
+    resumeTitle: 'Resume your subscription',
+    resumeSubtitle:
+      'The weekly ritual is still waiting. Continue to Stripe to finish payment and unlock delivery.',
+    resumeButton: 'Resume subscription',
+    resumeHint: 'Secure Stripe checkout. Cancel anytime.',
+    deliveryLabel: 'Delivery channel',
+    timingLabel: 'Monday timing',
     helper:
       'If nothing happens, wait a second or reload this page. Stripe checkout is being created securely from the API.',
   },
@@ -1464,11 +1489,11 @@ const spanishMessages: MessageSection = {
   },
   deliveryChannels: {
     bothTitle: 'Email + WhatsApp',
-    bothDescription: 'La mejor mezcla entre presencia ritual y entrega inmediata.',
+    bothDescription: 'Email primero, con WhatsApp como canal secundario opcional.',
     emailTitle: 'Solo email',
-    emailDescription: 'Recibe la guía semanal directo en tu correo.',
+    emailDescription: 'La opción mas simple para la mayoria.',
     whatsappTitle: 'Solo WhatsApp',
-    whatsappDescription: 'Rápido, directo y pensado para el teléfono.',
+    whatsappDescription: 'Entrega al telefono si prefieres usar WhatsApp.',
   },
   deliveryOnboarding: {
     loading: 'Cargando tu onboarding...',
@@ -1490,11 +1515,11 @@ const spanishMessages: MessageSection = {
     editSubtitle:
       'Cambia tu preferencia de entrega cuando quieras. Usa email, WhatsApp o mantén ambos canales activos.',
     createSubtitle:
-      'Elige email, WhatsApp o ambos. Una vez guardado, te llevaremos a un paso breve de activación antes del checkout seguro de Stripe.',
+      'Email es el canal por defecto. Agrega WhatsApp solo si quieres entrega al telefono tambien.',
     activationChecklist: [
-      'Elige tu preferencia de entrega.',
-      'Agrega WhatsApp solo si ese canal está activo.',
+      'Elige email primero y agrega WhatsApp solo si lo quieres.',
       'Tu página de activación se abre antes de Stripe.',
+      'Puedes cambiar la entrega despues desde el dashboard.',
     ],
     dashboardChecklist: [
       'Elige tu preferencia de entrega.',
@@ -1503,13 +1528,13 @@ const spanishMessages: MessageSection = {
     ],
     setupTitle: 'Configuración de entrega',
     setupSubtitle:
-      'El email usa la bandeja de tu cuenta. Si activas WhatsApp, usa formato internacional para que la entrega funcione al instante.',
+      'El email llega a tu inbox. WhatsApp sigue siendo opcional salvo que lo actives.',
     channelLabel: 'Canal de entrega',
     mondayTimeLabel: 'Hora de la proyección del lunes',
     mondayTimeHint: 'Programado para los lunes a las {time} en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffHint:
-      'WhatsApp está desactivado para esta suscripción. Actívalo arriba si también quieres entrega inmediata al teléfono.',
+      'WhatsApp está desactivado por defecto. Actívalo solo si también quieres entrega al teléfono.',
     whatsappConsentLabel:
       'Consiento recibir mensajes de suscripción de Trimry por WhatsApp en este número.',
     whatsappConsentHint:
@@ -1525,15 +1550,15 @@ const spanishMessages: MessageSection = {
     loadError: 'No pudimos cargar tu activación en este momento.',
     unavailable: 'No es posible continuar ahora.',
     badge: 'Puerta de activación',
-    title: 'Convierte tu mensaje semanal de Trimry en un ritual real de suerte.',
+    title: 'Tu ritual semanal de suerte está listo.',
     subtitle:
-      'La gente se mueve distinto cuando siente que el momento la favorece. Detecta aperturas más rápido, sostiene mejor la energía y se mantiene optimista por más tiempo. Trimry está construido para activar ese impulso cada lunes.',
+      'Mira tus dias afortunados antes de pagar. Email es el canal por defecto; WhatsApp queda opcional.',
     cards: [
-      'Tu preferencia de entrega ya está guardada.',
-      'Stripe se abre en el siguiente paso con checkout alojado.',
-      'Tu ritual semanal empieza apenas se confirma el cobro.',
+      'Vista previa gratuita con el mismo ritmo del lunes.',
+      'Email es el canal por defecto. WhatsApp queda opcional.',
+      'Stripe abre despues con checkout seguro alojado.',
     ],
-    primaryButton: 'Activar en checkout seguro de Stripe',
+    primaryButton: 'Desbloquear pronóstico semanal',
     secondaryButton: 'Cambiar ajustes de entrega',
     snapshotTitle: 'Tu resumen de activación',
     deliveryPreferenceLabel: 'Preferencia de entrega',
@@ -1542,9 +1567,14 @@ const spanishMessages: MessageSection = {
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Cobro',
     billingValue: '{billingInline}',
+    previewBadge: 'Muestra gratuita',
+    previewTitle: 'Como se ve tu ritual semanal',
+    previewLabel: 'Vista previa',
+    previewDayLabel: 'Señal semanal',
+    emailFirstTitle: 'Entrega primero por email',
     whyItWorksLabel: 'Por qué funciona',
     whyItWorksText:
-      'El ritual no es magia. El apalancamiento viene de la atención, la confianza y una mejor acción cuando te sientes alineado.',
+      'El ritual funciona porque la señal semanal es simple, constante y fácil de recordar.',
     carouselBadge: 'Psicología del impulso',
     carouselTitle: 'La suerte se vuelve más fuerte cuando tu mente empieza a moverse con ella.',
     carouselSubtitle:
@@ -1552,13 +1582,21 @@ const spanishMessages: MessageSection = {
   },
   checkout: {
     badge: 'Paso hacia el checkout',
-    title: 'Abriendo checkout de Stripe...',
-    titleCancelled: 'Volver al checkout de Stripe',
+    badgeCancelled: 'Checkout en pausa',
+    title: 'Abriendo checkout seguro de Stripe...',
+    titleCancelled: 'Tu pronóstico te espera',
     subtitle:
       'Tus ajustes de entrega ya están guardados. Te estamos enviando a Stripe para terminar la suscripción.',
     subtitleCancelled:
-      'Tu último intento de checkout fue cancelado. Tus ajustes de entrega siguen guardados y podemos llevarte directo de vuelta a Stripe.',
+      'No se perdió nada. Tus ajustes siguen guardados y puedes reanudar el checkout cuando quieras.',
     openError: 'No pudimos abrir el checkout de Stripe en este momento.',
+    resumeTitle: 'Reanudar suscripción',
+    resumeSubtitle:
+      'El ritual semanal sigue esperando. Continúa a Stripe para completar el pago y desbloquear la entrega.',
+    resumeButton: 'Reanudar suscripción',
+    resumeHint: 'Checkout seguro de Stripe. Cancela cuando quieras.',
+    deliveryLabel: 'Canal de entrega',
+    timingLabel: 'Horario del lunes',
     helper:
       'Si no pasa nada, espera un segundo o recarga esta página. El checkout de Stripe se está creando de forma segura desde la API.',
   },

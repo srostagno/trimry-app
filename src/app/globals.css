@@ -622,6 +622,209 @@ a {
   animation: guruCrystalPulse 6.4s ease-in-out infinite;
 }
 
+.luck-unlock-seal {
+  animation: luckUnlockSeal 3.4s ease-in-out infinite;
+}
+
+.luck-unlock-ring {
+  animation: orbit 12s linear infinite;
+}
+
+.luck-unlock-ring-secondary {
+  animation: orbit 18s linear infinite reverse;
+}
+
+.luck-unlock-flash {
+  animation: luckUnlockFlash 2.9s ease-in-out infinite;
+}
+
+.luck-reveal-cloud {
+  animation: luckRevealCloud 12s ease-in-out infinite;
+}
+
+.luck-reveal-cloud-left {
+  animation-delay: -1.4s;
+}
+
+.luck-reveal-cloud-mid {
+  animation-duration: 14s;
+  animation-delay: -4.2s;
+}
+
+.luck-reveal-cloud-right {
+  animation-direction: reverse;
+  animation-delay: -2.2s;
+}
+
+.luck-reveal-cloud-bottom {
+  animation-duration: 16s;
+  animation-delay: -5s;
+}
+
+.luck-reveal-badge {
+  animation: luckRevealBadge 3.4s ease-in-out infinite;
+}
+
+.luck-reveal-radar {
+  transform-origin: center;
+}
+
+.luck-reveal-radar-line {
+  animation:
+    luckRevealDraw 1.85s ease-out both,
+    luckRevealPulse 5.6s ease-in-out infinite;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+}
+
+.luck-reveal-radar-line-muted {
+  opacity: 0.42;
+  filter: blur(0.8px);
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+}
+
+.luck-reveal-node-soft {
+  animation: luckRevealNode 4.6s ease-in-out infinite;
+}
+
+.luck-reveal-core {
+  animation: luckRevealCore 6.2s ease-in-out infinite;
+}
+
+.luck-reveal-core-ring {
+  animation: orbit 24s linear infinite;
+}
+
+.luck-reveal-scan {
+  animation: luckRevealScan 4.8s linear infinite;
+}
+
+.today-video-reveal {
+  background: #030713;
+}
+
+.today-guru-video {
+  filter: saturate(1.08) contrast(1.04);
+  object-position: center 34%;
+  transform-origin: center;
+}
+
+.today-reveal-flash {
+  background:
+    radial-gradient(circle at 50% 62%, rgba(247, 223, 161, 0.48), transparent 18%),
+    radial-gradient(circle at 50% 48%, rgba(121, 242, 255, 0.28), transparent 32%),
+    linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.08) 55%, transparent 100%);
+  mix-blend-mode: screen;
+  animation: todayRevealFlash 1.25s ease-out both;
+}
+
+.today-fortune-panel {
+  animation: todayPanelFloat 8s ease-in-out infinite;
+}
+
+.today-mist-layer {
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 42% 26%, rgba(248, 231, 174, 0.18), transparent 18%),
+    radial-gradient(circle at 67% 72%, rgba(121, 242, 255, 0.2), transparent 22%),
+    linear-gradient(105deg, transparent 0%, rgba(255, 255, 255, 0.08) 40%, transparent 72%);
+  mix-blend-mode: screen;
+}
+
+.today-mist-layer::before,
+.today-mist-layer::after {
+  content: '';
+  position: absolute;
+  inset: -38% -32%;
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse at 35% 45%, rgba(255, 255, 255, 0.16), transparent 34%),
+    radial-gradient(ellipse at 70% 58%, rgba(121, 242, 255, 0.12), transparent 38%);
+  filter: blur(18px);
+  opacity: 0.78;
+  transform: translate3d(-16%, 4%, 0) rotate(-8deg);
+  animation: todayMistDrift 5.8s ease-in-out infinite;
+}
+
+.today-mist-layer::after {
+  opacity: 0.58;
+  transform: translate3d(18%, -2%, 0) rotate(12deg);
+  animation-duration: 7.2s;
+  animation-direction: reverse;
+}
+
+.today-tone-badge {
+  animation: todayToneBadge 2.8s ease-in-out infinite;
+}
+
+.today-sealed-orb {
+  position: relative;
+  display: inline-flex;
+  height: 3.65rem;
+  width: 3.65rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(207, 250, 254, 0.46);
+  background:
+    radial-gradient(circle at 50% 48%, rgba(248, 231, 174, 0.8), rgba(121, 242, 255, 0.28) 34%, rgba(15, 23, 42, 0.2) 62%),
+    rgba(15, 23, 42, 0.48);
+  box-shadow:
+    0 0 28px rgba(121, 242, 255, 0.22),
+    inset 0 0 26px rgba(255, 255, 255, 0.18);
+  animation: todaySealedOrb 2.8s ease-in-out infinite;
+}
+
+.today-sealed-orb::before {
+  content: '';
+  position: absolute;
+  inset: -0.55rem;
+  border-radius: inherit;
+  border: 1px solid rgba(248, 231, 174, 0.18);
+  border-top-color: rgba(248, 231, 174, 0.66);
+  animation: orbit 7s linear infinite;
+}
+
+.today-sealed-orb-core {
+  height: 0.72rem;
+  width: 0.72rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 0 18px rgba(255, 255, 255, 0.7),
+    0 0 42px rgba(121, 242, 255, 0.5);
+}
+
+.today-reveal-progress {
+  background: linear-gradient(90deg, rgba(121, 242, 255, 0.96), rgba(247, 223, 161, 0.98), rgba(125, 255, 212, 0.9));
+  box-shadow: 0 0 24px rgba(121, 242, 255, 0.24);
+  transition: width 700ms ease;
+}
+
+.today-sealed-result {
+  position: relative;
+  border-radius: 1rem;
+}
+
+.today-hidden-score {
+  display: inline-flex;
+  min-width: 4.4rem;
+  font-size: 3.2rem;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.86);
+  text-shadow:
+    0 0 18px rgba(121, 242, 255, 0.32),
+    0 0 34px rgba(248, 231, 174, 0.2);
+  animation: todayHiddenScore 1.8s ease-in-out infinite;
+}
+
+.today-mobile-cta {
+  animation: todayMobileCta 3.6s ease-in-out infinite;
+}
+
 @keyframes starDrift {
   from {
     transform: translate3d(0, 0, 0) scale(1);
@@ -772,5 +975,236 @@ a {
 
   50% {
     transform: scale(1.018);
+  }
+}
+
+@keyframes luckUnlockSeal {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes luckUnlockFlash {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes luckRevealCloud {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.72;
+  }
+
+  40% {
+    transform: translate3d(10px, -8px, 0) scale(1.05);
+    opacity: 0.9;
+  }
+
+  70% {
+    transform: translate3d(-8px, 6px, 0) scale(1.03);
+    opacity: 0.82;
+  }
+}
+
+@keyframes luckRevealBadge {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.03);
+    filter: brightness(1);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.12),
+      0 0 28px rgba(121, 242, 255, 0.14);
+  }
+
+  50% {
+    transform: translateY(-2px) scale(1.07);
+    filter: brightness(1.18);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.18),
+      0 0 38px rgba(247, 223, 161, 0.2),
+      0 0 30px rgba(121, 242, 255, 0.2);
+  }
+}
+
+@keyframes luckRevealDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes luckRevealPulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(121, 242, 255, 0));
+    opacity: 0.9;
+  }
+
+  50% {
+    filter: drop-shadow(0 0 16px rgba(121, 242, 255, 0.24));
+    opacity: 1;
+  }
+}
+
+@keyframes luckRevealNode {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.82;
+  }
+
+  50% {
+    transform: scale(1.16);
+    opacity: 1;
+  }
+}
+
+@keyframes luckRevealCore {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.94;
+  }
+
+  50% {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+
+@keyframes luckRevealScan {
+  0% {
+    transform: translateX(-115%);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateX(115%);
+    opacity: 0;
+  }
+}
+
+@keyframes todayRevealFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  28% {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+
+  100% {
+    opacity: 0.36;
+    transform: scale(1);
+  }
+}
+
+@keyframes todayPanelFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow:
+      0 24px 80px rgba(0, 0, 0, 0.38),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  50% {
+    transform: translateY(-3px);
+    box-shadow:
+      0 30px 96px rgba(0, 0, 0, 0.44),
+      0 0 42px rgba(121, 242, 255, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+}
+
+@keyframes todayToneBadge {
+  0%,
+  100% {
+    transform: translateY(0) scale(0.96);
+    filter: brightness(1);
+  }
+
+  50% {
+    transform: translateY(-1px) scale(1);
+    filter: brightness(1.18);
+  }
+}
+
+@keyframes todayMistDrift {
+  0%,
+  100% {
+    transform: translate3d(-16%, 4%, 0) rotate(-8deg) scale(1);
+  }
+
+  50% {
+    transform: translate3d(10%, -4%, 0) rotate(4deg) scale(1.08);
+  }
+}
+
+@keyframes todaySealedOrb {
+  0%,
+  100% {
+    transform: translateY(0) scale(0.96);
+    filter: brightness(1);
+  }
+
+  50% {
+    transform: translateY(-2px) scale(1.04);
+    filter: brightness(1.18);
+  }
+}
+
+@keyframes todayHiddenScore {
+  0%,
+  100% {
+    opacity: 0.68;
+    filter: blur(0.5px);
+  }
+
+  50% {
+    opacity: 1;
+    filter: blur(1.8px);
+  }
+}
+
+@keyframes todayMobileCta {
+  0%,
+  100% {
+    filter: brightness(1);
+    box-shadow:
+      0 16px 42px rgba(3, 8, 20, 0.42),
+      0 0 0 rgba(121, 242, 255, 0);
+  }
+
+  50% {
+    filter: brightness(1.12);
+    box-shadow:
+      0 18px 48px rgba(3, 8, 20, 0.46),
+      0 0 28px rgba(121, 242, 255, 0.18);
   }
 }

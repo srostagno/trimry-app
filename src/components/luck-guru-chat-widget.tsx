@@ -108,6 +108,21 @@ function sanitizeChatText(text: string) {
     .trim()
 }
 
+function buildConversationIntroMessage(input: {
+  authenticated: boolean
+  hasActiveSubscription: boolean
+}) {
+  if (input.hasActiveSubscription) {
+    return '🍀 Luck Guru is here. Your full powers are unlocked. Tell me what you want to align this week: luck, fortune, riches, timing, or a fresh start.'
+  }
+
+  if (input.authenticated) {
+    return '🍀 Luck Guru is here. I can remember you, but my full powers are still locked until you subscribe. Once unlocked, I can help generate luck, fortune, and riches timing.'
+  }
+
+  return '🍀 Luck Guru is here. My full powers are locked until you create an account and subscribe. Unlock Trimry to generate luck, fortune, and riches timing with me.'
+}
+
 function buildWhatsappUrl(message: string) {
   return `https://wa.me/${LUCK_GURU_WHATSAPP_NUMBER}?text=${encodeURIComponent(
     message,
@@ -236,19 +251,23 @@ export function LuckGuruChatWidget() {
           ],
     [isSpanish],
   )
-  const ctaCopy = state.authenticated
+  const ctaCopy = state.hasActiveSubscription
     ? {
-        href: '/checkout/start',
-        label: isSpanish
-          ? 'Empezar checkout'
-          : 'Start checkout',
-        detail: isSpanish ? 'Desbloquear poderes' : 'Unlock powers',
+        href: '/dashboard',
+        label: isSpanish ? 'Ir al dashboard' : 'Open dashboard',
+        detail: isSpanish ? 'Poderes desbloqueados' : 'Full powers unlocked',
       }
-    : {
-        href: '/account/register',
-        label: isSpanish ? 'Crear cuenta' : 'Create account',
-        detail: isSpanish ? 'Guardar memoria' : 'Save memory',
-      }
+    : state.authenticated
+      ? {
+          href: '/checkout/start',
+          label: isSpanish ? 'Desbloquear poderes' : 'Unlock powers',
+          detail: isSpanish ? 'Activa la suscripción' : 'Start the subscription',
+        }
+      : {
+          href: '/account/register',
+          label: isSpanish ? 'Crear cuenta' : 'Create account',
+          detail: isSpanish ? 'Desbloquear poderes' : 'Unlock powers',
+        }
   const latestAssistantMessageId = [...messages]
     .reverse()
     .find((message) => message.role === 'assistant')?.id
@@ -340,6 +359,38 @@ export function LuckGuruChatWidget() {
       cancelled = true
     }
   }, [open, snapshotLoaded])
+
+  useEffect(() => {
+    if (!snapshotLoaded) {
+      return
+    }
+
+    setMessages((current) => {
+      if (current.some((message) => message.role === 'user')) {
+        return current
+      }
+
+      if (current.length !== 1 || current[0]?.role !== 'assistant') {
+        return current
+      }
+
+      const introText = buildConversationIntroMessage({
+        authenticated: state.authenticated,
+        hasActiveSubscription: state.hasActiveSubscription,
+      })
+
+      if (current[0].text === introText) {
+        return current
+      }
+
+      return [
+        {
+          ...current[0],
+          text: introText,
+        },
+      ]
+    })
+  }, [snapshotLoaded, state.authenticated, state.hasActiveSubscription])
 
   const openWidget = useCallback(() => {
     setOpen(true)
@@ -502,7 +553,7 @@ export function LuckGuruChatWidget() {
                 {state.memoryMode === 'account'
                   ? 'Account-based guidance'
                   : 'Create an account to save it'}
-              </p>
+            </p>
             </div>
             <div className="rounded-2xl border border-amber-100/14 bg-amber-100/8 p-3">
               <p className="font-black text-amber-100">
@@ -510,8 +561,10 @@ export function LuckGuruChatWidget() {
               </p>
               <p className="mt-1 text-slate-100/68">
                 {state.hasActiveSubscription
-                  ? 'Full fortune ritual'
-                  : 'Subscribe for projections'}
+                  ? 'Luck, fortune, and riches timing'
+                  : state.authenticated
+                    ? 'Subscribe to unlock luck, fortune, and riches'
+                    : 'Create an account, then subscribe to unlock powers'}
               </p>
             </div>
           </div>

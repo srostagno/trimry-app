@@ -34,10 +34,10 @@ type TodayPreview = {
   isOverridden: boolean
 }
 
-function toLocalDayKey(date: Date) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
+function toUtcDayKey(date: Date) {
+  const year = date.getUTCFullYear()
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(date.getUTCDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
 
@@ -147,7 +147,7 @@ function createPreviewFromFortune(language: string, date: Date) {
   const fortune = buildFortuneDay(date, language.startsWith('es') ? 'es-CL' : 'en-US')
 
   return {
-    dayKey: toLocalDayKey(date),
+    dayKey: toUtcDayKey(date),
     date: fortune.date,
     weekday: fortune.weekday,
     summary: fortune.summary,
@@ -260,7 +260,7 @@ export default function TodayLuckPage() {
 
   const isSpanish = language.startsWith('es')
   const locale = isSpanish ? 'es-CL' : 'en-US'
-  const dayKey = toLocalDayKey(new Date())
+  const dayKey = toUtcDayKey(new Date())
   const labels = useMemo(
     () => buildStrongAndCautionLabels(language, preview.activities),
     [language, preview.activities],

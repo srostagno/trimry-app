@@ -1,7 +1,15 @@
 'use client'
 
 import clsx from 'clsx'
-import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import { useLanguage } from '@/components/language-provider'
 import {
@@ -265,23 +273,96 @@ export function AdminPredictionCalendar() {
   const [saveError, setSaveError] = useState('')
   const selectedDateKeyRef = useRef(selectedDateKey)
   const imageInputRef = useRef<HTMLInputElement | null>(null)
+  const monthCacheRef = useRef(new Map<string, AdminPredictionMonth>())
+  const pendingMonthRequestsRef = useRef(
+    new Map<string, Promise<AdminPredictionMonth>>(),
+  )
+  const monthRequestVersionRef = useRef(new Map<string, number>())
 
   useEffect(() => {
     selectedDateKeyRef.current = selectedDateKey
   }, [selectedDateKey])
 
+  const getMonthCacheKey = useCallback(
+    (monthDate: Date) => `${toMonthKey(monthDate)}|${locale}`,
+    [locale],
+  )
+
+  const fetchMonthCalendar = useCallback(
+    async (monthDate: Date, options?: { force?: boolean }) => {
+      const key = getMonthCacheKey(monthDate)
+
+      if (!options?.force) {
+        const cached = monthCacheRef.current.get(key)
+
+        if (cached) {
+          return cached
+        }
+
+        const pending = pendingMonthRequestsRef.current.get(key)
+
+        if (pending) {
+          return pending
+        }
+      }
+
+      const nextVersion = (monthRequestVersionRef.current.get(key) ?? 0) + 1
+      monthRequestVersionRef.current.set(key, nextVersion)
+
+      const request = fetchAdminPredictionMonth(toMonthKey(monthDate), locale)
+        .then((nextCalendar) => {
+          if (monthRequestVersionRef.current.get(key) === nextVersion) {
+            monthCacheRef.current.set(key, nextCalendar)
+          }
+
+          return nextCalendar
+        })
+        .finally(() => {
+          if (monthRequestVersionRef.current.get(key) === nextVersion) {
+            pendingMonthRequestsRef.current.delete(key)
+          }
+        })
+
+      pendingMonthRequestsRef.current.set(key, request)
+
+      return request
+    },
+    [getMonthCacheKey, locale],
+  )
+
+  const prefetchAdjacentMonths = useCallback(
+    (monthDate: Date) => {
+      void fetchMonthCalendar(addMonths(monthDate, -1)).catch(() => undefined)
+      void fetchMonthCalendar(addMonths(monthDate, 1)).catch(() => undefined)
+    },
+    [fetchMonthCalendar],
+  )
+
   useEffect(() => {
     let canceled = false
 
     const loadMonth = async () => {
-      setLoading(true)
       setError('')
 
       try {
-        const nextCalendar = await fetchAdminPredictionMonth(
-          toMonthKey(visibleMonth),
-          locale,
+        const cachedCalendar = monthCacheRef.current.get(
+          getMonthCacheKey(visibleMonth),
         )
+
+        if (cachedCalendar) {
+          if (canceled) {
+            return
+          }
+
+          setCalendar(cachedCalendar)
+          setLoading(false)
+          prefetchAdjacentMonths(visibleMonth)
+          return
+        }
+
+        setLoading(true)
+
+        const nextCalendar = await fetchMonthCalendar(visibleMonth)
 
         if (canceled) {
           return
@@ -303,6 +384,8 @@ export function AdminPredictionCalendar() {
         if (nextSelectedDay) {
           setSelectedDateKey(toDayKey(nextSelectedDay.date))
         }
+
+        prefetchAdjacentMonths(visibleMonth)
       } catch (loadError) {
         if (canceled) {
           return
@@ -325,7 +408,14 @@ export function AdminPredictionCalendar() {
     return () => {
       canceled = true
     }
-  }, [locale, messages.dashboard.predictionCalendar.loadError, visibleMonth])
+  }, [
+    fetchMonthCalendar,
+    getMonthCacheKey,
+    locale,
+    messages.dashboard.predictionCalendar.loadError,
+    prefetchAdjacentMonths,
+    visibleMonth,
+  ])
 
   const selectedDay = useMemo(() => {
     if (!calendar) {
@@ -461,13 +551,23 @@ export function AdminPredictionCalendar() {
     [locale],
   )
 
+  const visibleMonthLabel = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+      }).format(visibleMonth),
+    [locale, visibleMonth],
+  )
+
   const overriddenDaysCount = useMemo(
     () => calendar?.currentMonthDays.filter((day) => day.isOverridden).length ?? 0,
     [calendar],
   )
 
   const refreshMonth = async (preferredDateKey?: string) => {
-    const nextCalendar = await fetchAdminPredictionMonth(toMonthKey(visibleMonth), locale)
+    const nextCalendar = await fetchMonthCalendar(visibleMonth, { force: true })
     setCalendar(nextCalendar)
 
     const nextSelectedDay =
@@ -483,6 +583,8 @@ export function AdminPredictionCalendar() {
       setSummary(nextSelectedDay.summary)
       setNotesByLanguage(readDayNotesByLanguage(nextSelectedDay))
     }
+
+    prefetchAdjacentMonths(visibleMonth)
   }
 
   const openEditor = (day: AdminPredictionDay) => {
@@ -773,7 +875,7 @@ export function AdminPredictionCalendar() {
                 {messages.dashboard.predictionCalendar.title}
               </p>
               <h2 className="cosmic-shell-title mt-3 text-3xl sm:text-4xl">
-                {calendar.monthLabel}
+                {visibleMonthLabel}
               </h2>
               <p className="cosmic-shell-copy mt-3 max-w-2xl">
                 {messages.dashboard.predictionCalendar.subtitle}

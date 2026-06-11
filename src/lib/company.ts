@@ -11,8 +11,8 @@ export const COMPANY = {
 
 export const SUBSCRIPTION_PLAN = {
   id: 'trimry-weekly-whatsapp',
-  name: 'Trimry Weekly Fortune Delivery',
-  cadence: 'Weekly (every Monday)',
+  name: 'Trimry Daily Fortune Delivery',
+  cadence: 'Daily',
   monthlyPriceUsd: 2.99,
   currency: 'USD',
 } as const

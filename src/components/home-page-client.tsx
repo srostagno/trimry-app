@@ -167,16 +167,18 @@ export function HomePageClient() {
   const heroCopy =
     language === 'es'
       ? {
-          title: '¿Quieres tener más suerte? 🍀',
-          subtitle: 'Descubre tus días con suerte para:',
-          points: ['dinero', 'cortes de pelo', 'relaciones', 'energía'],
+          title: 'Trimry, tu guía de suerte',
+          subtitle:
+            'Todos los días recibes tu proyección por email o WhatsApp, y en la web ves el calendario completo del mes para mantenerte alineado con la suerte.',
+          points: ['recordatorio diario', 'calendario mensual', 'zodíaco personal', 'Luck Guru con IA'],
           primary: 'Revisar mi suerte de hoy',
           secondary: 'Preguntar al Luck Guru',
         }
       : {
-          title: 'Want To Be Luckier? 🍀',
-          subtitle: 'Discover your lucky days for:',
-          points: ['money', 'haircuts', 'relationships', 'energy'],
+          title: 'Trimry, Your Luck Guide',
+          subtitle:
+            'Every day, receive your projection by email or WhatsApp, and use the web calendar to see the full month of fortune signals ahead.',
+          points: ['daily reminder', 'monthly calendar', 'personal zodiac', 'AI Luck Guru'],
           primary: 'Check Today’s Luck',
           secondary: 'Ask The Luck Guru',
         }
@@ -184,24 +186,24 @@ export function HomePageClient() {
     language === 'es'
       ? {
           badge: 'Lectura instantánea',
-          title: 'Mira la señal de hoy antes de crear tu cuenta.',
-          line1: 'Hoy favorece los cambios y rituales de apariencia.',
-          line2: 'Tu energía actual está inusualmente fuerte.',
+          title: 'Abre la señal de hoy y deja que Trimry ordene tu suerte.',
+          line1: 'Tu guía cruza timing ritual, zodíaco, calendario chino y señales de abundancia.',
+          line2: 'Al suscribirte, el recordatorio llega todos los días por el canal que acordemos.',
           cta: 'Quiero mi lectura completa',
         }
       : {
           badge: 'Instant reading',
-          title: 'See your sign for today before creating an account.',
-          line1: 'Today favors change and appearance rituals.',
-          line2: 'Your current energy is unusually strong.',
+          title: 'Open today’s signal and let Trimry organize your luck.',
+          line1: 'Your guide blends ritual timing, zodiac, Chinese calendar, and abundance signals.',
+          line2: 'After you subscribe, the reminder arrives every day through the channel we agree.',
           cta: 'Unlock my full reading',
         }
   const luckGuruCardCopy =
     language === 'es'
       ? {
           eyebrow: '🍀 El Luck Guru está aquí',
-          title: 'Hoy trae una energía inusual.',
-          text: '¿Sobre qué quieres guía ahora mismo?',
+          title: 'Tu suerte tiene señales. Nosotros las seguimos por ti.',
+          text: 'Pregunta por dinero, relaciones, energía o por el mejor momento para soltar algo.',
           button: 'Preguntar al Luck Guru',
           note: 'Cabello · Dinero · Relaciones · Energía',
           topics: ['Cabello', 'Dinero', 'Relaciones', 'Energía'],
@@ -209,8 +211,8 @@ export function HomePageClient() {
         }
       : {
           eyebrow: '🍀 The Luck Guru is here',
-          title: 'Today carries unusual energy.',
-          text: 'What would you like guidance for right now?',
+          title: 'Your luck has signals. We track them for you.',
+          text: 'Ask about money, relationships, energy, or the best moment to release something.',
           button: 'Ask The Luck Guru',
           note: 'Hair · Money · Relationships · Energy',
           topics: ['Hair', 'Money', 'Relationships', 'Energy'],
@@ -243,7 +245,7 @@ export function HomePageClient() {
         <div className="relative z-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             <p className="cosmic-badge slide-up inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.22em] text-cyan-100">
-              {language === 'es' ? 'Ritual diario de suerte' : 'Daily luck ritual'}
+              {language === 'es' ? 'Guía de suerte' : 'Your Luck Guide'}
             </p>
             <h1 className="slide-up-delay mt-5 max-w-4xl text-4xl leading-[1.04] text-slate-50 sm:text-6xl lg:text-7xl">
               {heroCopy.title}
@@ -294,12 +296,12 @@ export function HomePageClient() {
             <div className="relative z-10 flex h-full flex-col justify-end p-5 sm:p-6">
               <div className="rounded-2xl border border-cyan-100/26 bg-slate-950/42 p-4 backdrop-blur-sm">
                 <p className="text-xs font-bold uppercase tracking-[0.17em] text-cyan-100/84">
-                  {language === 'es' ? 'Se siente vivo' : 'Feels alive'}
+                  {language === 'es' ? 'IA para señales de fortuna' : 'AI fortune signals'}
                 </p>
                 <p className="mt-2 text-sm text-slate-100/90">
                   {language === 'es'
-                    ? 'Haz una sola pregunta y deja que la conversación te lleve.'
-                    : 'Ask one question and let the conversation guide you.'}
+                    ? 'Haz una pregunta y deja que Luck Guru conecte tus señales.'
+                    : 'Ask one question and let Luck Guru connect your signals.'}
                 </p>
                 <button
                   type="button"
@@ -383,13 +385,13 @@ export function HomePageClient() {
           </div>
           <div className="grid gap-2 text-xs uppercase tracking-[0.16em] text-cyan-100/78 sm:min-w-[13rem]">
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es' ? 'Respuesta inmediata' : 'Instant payoff'}
+              {language === 'es' ? 'Recordatorio diario' : 'Daily reminder'}
             </span>
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es' ? 'Sin fricción' : 'Low friction'}
+              {language === 'es' ? 'Email o WhatsApp' : 'Email or WhatsApp'}
             </span>
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es' ? 'Ritual diario' : 'Daily ritual'}
+              {language === 'es' ? 'Mes completo' : 'Full month'}
             </span>
           </div>
         </div>

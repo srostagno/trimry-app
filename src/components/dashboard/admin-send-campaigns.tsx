@@ -6,14 +6,20 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLanguage } from '@/components/language-provider'
 import {
   fetchAdminSendWorkspace,
+  fetchAdminWeeklyDispatchJob,
   runAdminSendCampaignAction,
+  sendAdminDailyProjectionTemplateTest,
+  startAdminWeeklyDispatch,
   saveAdminSendSettings,
   triggerAdminWelcomeFlowTest,
+  updateAdminDailyDeliveryAutomation,
   upsertAdminSendTemplate,
+  type DailyDeliveryAutomationSettings,
   type SendCampaign,
   type SendCampaignChannel,
   type SendTemplate,
   type SendTemplateVariable,
+  type WeeklyDispatchJob,
 } from '@/lib/admin-send-campaigns'
 import { interpolate } from '@/lib/i18n'
 
@@ -182,10 +188,11 @@ function ensureFullHtmlDocument(input: {
   })
 }
 
-function createWeeklyEmailPreset(language: keyof typeof localeByLanguage): WeeklyEmailPreset {
+function createWeeklyEmailPreset(
+  language: keyof typeof localeByLanguage,
+): WeeklyEmailPreset {
   if (language === 'en') {
-    const subjectTemplate =
-      'Your Trimry weekly ritual summary: {{week_label}}'
+    const subjectTemplate = 'Your Trimry weekly ritual summary: {{week_label}}'
     const htmlBody = `
 <p style="margin:0 0 16px 0;">Hi {{first_name}},</p>
 <p style="margin:0 0 16px 0;">Here is your weekly ritual outlook with good, challenging, and rare timing for haircut, shave, nails, and release.</p>
@@ -241,8 +248,7 @@ View your full outlook on ${TRIMRY_WEBSITE_URL}`
         language: 'en',
         subject: subjectTemplate,
         htmlBody,
-        preheader:
-          'Weekly timing for haircut, shave, nails, and release.',
+        preheader: 'Weekly timing for haircut, shave, nails, and release.',
       }),
       textTemplate,
       variableDefaults: {
@@ -316,8 +322,7 @@ Revisa tu detalle completo en ${TRIMRY_WEBSITE_URL}`
       language: 'es',
       subject: subjectTemplate,
       htmlBody,
-      preheader:
-        'Resumen semanal de corte, afeitado, uñas y liberación.',
+      preheader: 'Resumen semanal de corte, afeitado, uñas y liberación.',
     }),
     textTemplate,
     variableDefaults: {
@@ -326,11 +331,13 @@ Revisa tu detalle completo en ${TRIMRY_WEBSITE_URL}`
       good_days: 'Lunes y jueves',
       bad_days: 'Martes',
       rare_days: 'Sábado',
-      haircut_summary: 'Miércoles por la tarde y viernes temprano se ven alineados.',
+      haircut_summary:
+        'Miércoles por la tarde y viernes temprano se ven alineados.',
       shave_summary: 'Conviene evitar martes por la noche.',
       nails_summary: 'Jueves en la mañana trae mejor fluidez.',
       release_summary: 'Domingo antes de las 20:00 favorece cerrar ciclos.',
-      weekly_tip: 'Mantén rituales simples y consistentes para sostener el impulso.',
+      weekly_tip:
+        'Mantén rituales simples y consistentes para sostener el impulso.',
     },
   }
 }
@@ -365,22 +372,28 @@ function describeDraftVariables(input: {
 }) {
   if (input.channel === 'whatsapp') {
     return uniqueVariables([
-      ...toPersistedWhatsappVariables(input.whatsappHeaderVariables).map((value) => ({
-        key: value.key,
-        source: 'header' as const,
-        content: value.content,
-      })),
-      ...toPersistedWhatsappVariables(input.whatsappBodyVariables).map((value) => ({
-        key: value.key,
-        source: 'body' as const,
-        content: value.content,
-      })),
-      ...toPersistedWhatsappButtons(input.whatsappButtons).map((button, index) => ({
-        key: button.key,
-        source: 'button' as const,
-        buttonIndex: index,
-        content: button.content,
-      })),
+      ...toPersistedWhatsappVariables(input.whatsappHeaderVariables).map(
+        (value) => ({
+          key: value.key,
+          source: 'header' as const,
+          content: value.content,
+        }),
+      ),
+      ...toPersistedWhatsappVariables(input.whatsappBodyVariables).map(
+        (value) => ({
+          key: value.key,
+          source: 'body' as const,
+          content: value.content,
+        }),
+      ),
+      ...toPersistedWhatsappButtons(input.whatsappButtons).map(
+        (button, index) => ({
+          key: button.key,
+          source: 'button' as const,
+          buttonIndex: index,
+          content: button.content,
+        }),
+      ),
     ])
   }
 
@@ -429,9 +442,12 @@ export function AdminSendCampaigns() {
       source: 'database' | 'environment' | 'missing'
     }
   } | null>(null)
+  const [deliveryAutomation, setDeliveryAutomation] =
+    useState<DailyDeliveryAutomationSettings | null>(null)
 
   const [whatsappPhoneNumberId, setWhatsappPhoneNumberId] = useState('')
-  const [whatsappGraphApiVersion, setWhatsappGraphApiVersion] = useState('v23.0')
+  const [whatsappGraphApiVersion, setWhatsappGraphApiVersion] =
+    useState('v23.0')
   const [whatsappAccessToken, setWhatsappAccessToken] = useState('')
   const [mailersendFromEmail, setMailersendFromEmail] = useState('')
   const [mailersendFromName, setMailersendFromName] = useState('')
@@ -446,8 +462,19 @@ export function AdminSendCampaigns() {
   const [templateDescription, setTemplateDescription] = useState('')
   const [campaignName, setCampaignName] = useState('')
   const [testRecipient, setTestRecipient] = useState('')
+  const [dailyProjectionTestRecipient, setDailyProjectionTestRecipient] =
+    useState('')
+  const [dailyProjectionTemplateName, setDailyProjectionTemplateName] =
+    useState('trimry_daily_projections')
+  const [dailyProjectionTemplateLanguage, setDailyProjectionTemplateLanguage] =
+    useState('en')
+  const [weeklyDispatchJob, setWeeklyDispatchJob] =
+    useState<WeeklyDispatchJob | null>(null)
+  const [weeklyDispatchPollingError, setWeeklyDispatchPollingError] =
+    useState('')
 
-  const [whatsappExternalTemplateName, setWhatsappExternalTemplateName] = useState('')
+  const [whatsappExternalTemplateName, setWhatsappExternalTemplateName] =
+    useState('')
   const [whatsappLanguageCode, setWhatsappLanguageCode] = useState(
     defaultWhatsappLanguage,
   )
@@ -457,12 +484,16 @@ export function AdminSendCampaigns() {
   const [whatsappBodyVariables, setWhatsappBodyVariables] = useState<
     WhatsappVariableDraft[]
   >([createWhatsappVariableDraft()])
-  const [whatsappButtons, setWhatsappButtons] = useState<WhatsappButtonDraft[]>([])
+  const [whatsappButtons, setWhatsappButtons] = useState<WhatsappButtonDraft[]>(
+    [],
+  )
 
   const [emailSubjectTemplate, setEmailSubjectTemplate] = useState('')
   const [emailHtmlTemplate, setEmailHtmlTemplate] = useState('')
   const [emailTextTemplate, setEmailTextTemplate] = useState('')
-  const [variableValues, setVariableValues] = useState<Record<string, string>>({})
+  const [variableValues, setVariableValues] = useState<Record<string, string>>(
+    {},
+  )
   const previousDraftDefaultsRef = useRef<Record<string, string>>({})
 
   const dateFormatter = useMemo(
@@ -499,26 +530,28 @@ export function AdminSendCampaigns() {
   useEffect(() => {
     setVariableValues((current) => {
       const previousDefaults = previousDraftDefaultsRef.current
-      const next = draftVariables.reduce<Record<string, string>>((accumulator, variable) => {
-        const draftDefault = variable.content ?? ''
-        const currentValue = current[variable.key]
-
-        accumulator[variable.key] =
-          currentValue === undefined
-            ? draftDefault
-            : currentValue === (previousDefaults[variable.key] ?? '')
-              ? draftDefault
-              : currentValue
-        return accumulator
-      }, {})
-
-      previousDraftDefaultsRef.current = draftVariables.reduce<Record<string, string>>(
+      const next = draftVariables.reduce<Record<string, string>>(
         (accumulator, variable) => {
-          accumulator[variable.key] = variable.content ?? ''
+          const draftDefault = variable.content ?? ''
+          const currentValue = current[variable.key]
+
+          accumulator[variable.key] =
+            currentValue === undefined
+              ? draftDefault
+              : currentValue === (previousDefaults[variable.key] ?? '')
+                ? draftDefault
+                : currentValue
           return accumulator
         },
         {},
       )
+
+      previousDraftDefaultsRef.current = draftVariables.reduce<
+        Record<string, string>
+      >((accumulator, variable) => {
+        accumulator[variable.key] = variable.content ?? ''
+        return accumulator
+      }, {})
 
       return next
     })
@@ -536,8 +569,11 @@ export function AdminSendCampaigns() {
       setTemplates(response.templates)
       setAudience(response.audience)
       setSettings(response.settings)
+      setDeliveryAutomation(response.deliveryAutomation)
       setWhatsappPhoneNumberId(response.settings.whatsapp.phoneNumberId)
-      setWhatsappGraphApiVersion(response.settings.whatsapp.graphApiVersion || 'v23.0')
+      setWhatsappGraphApiVersion(
+        response.settings.whatsapp.graphApiVersion || 'v23.0',
+      )
       setMailersendFromEmail(response.settings.mailersend.fromEmail)
       setMailersendFromName(response.settings.mailersend.fromName)
       setMailersendReplyToEmail(response.settings.mailersend.replyToEmail)
@@ -557,6 +593,104 @@ export function AdminSendCampaigns() {
     void loadWorkspace()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const weeklyDispatchJobId = weeklyDispatchJob?.id ?? null
+  const weeklyDispatchJobStatus = weeklyDispatchJob?.status ?? null
+
+  useEffect(() => {
+    if (!weeklyDispatchJobId) {
+      return
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [weeklyDispatchJobId])
+
+  useEffect(() => {
+    if (
+      !weeklyDispatchJobId ||
+      (weeklyDispatchJobStatus !== 'queued' &&
+        weeklyDispatchJobStatus !== 'running')
+    ) {
+      return
+    }
+
+    let cancelled = false
+    let timeoutId: number | null = null
+
+    const pollJob = async () => {
+      if (cancelled) {
+        return
+      }
+
+      try {
+        const response = await fetchAdminWeeklyDispatchJob(
+          weeklyDispatchJobId,
+          messages.dashboard.sendCampaigns.loadError,
+        )
+
+        if (cancelled) {
+          return
+        }
+
+        setWeeklyDispatchJob(response.job)
+        setWeeklyDispatchPollingError('')
+
+        if (
+          response.job.status === 'queued' ||
+          response.job.status === 'running'
+        ) {
+          timeoutId = window.setTimeout(() => {
+            void pollJob()
+          }, 1500)
+        } else if (response.job.status === 'completed') {
+          setSuccess(
+            language === 'es'
+              ? `Envío diario completado: ${response.job.processedCount} procesados y ${response.job.failedCount} fallidos.`
+              : `Daily dispatch completed: ${response.job.processedCount} processed and ${response.job.failedCount} failed.`,
+          )
+        } else if (response.job.status === 'failed') {
+          setError(
+            response.job.error ??
+              (language === 'es'
+                ? 'El envío diario falló.'
+                : 'Daily dispatch failed.'),
+          )
+        }
+      } catch (nextError) {
+        if (cancelled) {
+          return
+        }
+
+        setWeeklyDispatchPollingError(
+          nextError instanceof Error
+            ? nextError.message
+            : messages.dashboard.sendCampaigns.loadError,
+        )
+        timeoutId = window.setTimeout(() => {
+          void pollJob()
+        }, 3000)
+      }
+    }
+
+    void pollJob()
+
+    return () => {
+      cancelled = true
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId)
+      }
+    }
+  }, [
+    language,
+    messages.dashboard.sendCampaigns.loadError,
+    weeklyDispatchJobId,
+    weeklyDispatchJobStatus,
+  ])
 
   const resetEditor = () => {
     setTemplateId(null)
@@ -588,8 +722,12 @@ export function AdminSendCampaigns() {
     setTestRecipient('')
 
     if (template.channel === 'whatsapp') {
-      setWhatsappExternalTemplateName(template.whatsapp?.externalTemplateName ?? '')
-      setWhatsappLanguageCode(template.whatsapp?.languageCode ?? defaultWhatsappLanguage)
+      setWhatsappExternalTemplateName(
+        template.whatsapp?.externalTemplateName ?? '',
+      )
+      setWhatsappLanguageCode(
+        template.whatsapp?.languageCode ?? defaultWhatsappLanguage,
+      )
       setWhatsappHeaderVariables(
         template.whatsapp?.header?.length
           ? template.whatsapp.header.map((variable) =>
@@ -624,29 +762,40 @@ export function AdminSendCampaigns() {
     }
 
     setVariableValues(
-      template.variables.reduce<Record<string, string>>((accumulator, variable) => {
-        accumulator[variable.key] = variable.content ?? ''
-        return accumulator
-      }, {}),
+      template.variables.reduce<Record<string, string>>(
+        (accumulator, variable) => {
+          accumulator[variable.key] = variable.content ?? ''
+          return accumulator
+        },
+        {},
+      ),
     )
   }
 
   const syncTemplateIntoList = (template: SendTemplate) => {
     setTemplates((current) => {
-      const next = [template, ...current.filter((item) => item.id !== template.id)]
+      const next = [
+        template,
+        ...current.filter((item) => item.id !== template.id),
+      ]
       return next.sort(
         (left, right) =>
-          new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
+          new Date(right.updatedAt).getTime() -
+          new Date(left.updatedAt).getTime(),
       )
     })
   }
 
   const syncCampaignIntoList = (campaign: SendCampaign) => {
     setCampaigns((current) => {
-      const next = [campaign, ...current.filter((item) => item.id !== campaign.id)]
+      const next = [
+        campaign,
+        ...current.filter((item) => item.id !== campaign.id),
+      ]
       return next.sort(
         (left, right) =>
-          new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
+          new Date(right.updatedAt).getTime() -
+          new Date(left.updatedAt).getTime(),
       )
     })
   }
@@ -743,6 +892,41 @@ export function AdminSendCampaigns() {
     }
   }
 
+  const toggleDailyDeliveryAutomation = async () => {
+    const nextEnabled = !deliveryAutomation?.enabled
+    setBusyAction('delivery-automation')
+    setError('')
+    setSuccess('')
+
+    try {
+      const response = await updateAdminDailyDeliveryAutomation(
+        {
+          enabled: nextEnabled,
+        },
+        messages.dashboard.sendCampaigns.loadError,
+      )
+
+      setDeliveryAutomation(response.deliveryAutomation)
+      setSuccess(
+        nextEnabled
+          ? language === 'es'
+            ? 'Automatización diaria activada.'
+            : 'Daily delivery automation enabled.'
+          : language === 'es'
+            ? 'Automatización diaria desactivada.'
+            : 'Daily delivery automation disabled.',
+      )
+    } catch (nextError) {
+      setError(
+        nextError instanceof Error
+          ? nextError.message
+          : messages.dashboard.sendCampaigns.loadError,
+      )
+    } finally {
+      setBusyAction(null)
+    }
+  }
+
   const runCampaignAction = async (action: 'save' | 'test' | 'send') => {
     setBusyAction(action)
     setError('')
@@ -779,7 +963,8 @@ export function AdminSendCampaigns() {
         }
       } else if (response.campaign.status === 'failed') {
         setError(
-          response.campaign.lastError ?? messages.dashboard.sendCampaigns.sendFailed,
+          response.campaign.lastError ??
+            messages.dashboard.sendCampaigns.sendFailed,
         )
       } else if (response.campaign.status === 'partially_sent') {
         setSuccess(messages.dashboard.sendCampaigns.sendPartial)
@@ -799,7 +984,8 @@ export function AdminSendCampaigns() {
     }
   }
 
-  const selectedAudienceCount = channel === 'email' ? audience.email : audience.whatsapp
+  const selectedAudienceCount =
+    channel === 'email' ? audience.email : audience.whatsapp
 
   const campaignStatusLabel = (status: SendCampaign['status']) => {
     if (status === 'sent') {
@@ -819,6 +1005,25 @@ export function AdminSendCampaigns() {
 
   const formatDate = (value: string | null) =>
     value ? dateFormatter.format(new Date(value)) : null
+  const deliveryAutomationStatusLabel = deliveryAutomation?.enabled
+    ? language === 'es'
+      ? 'Activo'
+      : 'Active'
+    : language === 'es'
+      ? 'Pausado'
+      : 'Paused'
+  const deliveryAutomationLastRunLabel =
+    formatDate(deliveryAutomation?.lastCompletedAt ?? null) ??
+    (language === 'es' ? 'Sin ejecuciones registradas' : 'No recorded runs yet')
+  const deliveryAutomationLastMessage =
+    deliveryAutomation?.lastRunMessage ??
+    (deliveryAutomation?.enabled
+      ? language === 'es'
+        ? 'El próximo cron enviará las proyecciones pendientes.'
+        : 'The next cron run will send due projections.'
+      : language === 'es'
+        ? 'El cron queda bloqueado mientras el proceso esté pausado.'
+        : 'Cron calls are blocked while automation is paused.')
 
   const resolvedTemplateName =
     channel === 'whatsapp'
@@ -855,7 +1060,7 @@ export function AdminSendCampaigns() {
         language === 'es'
           ? `Flujo de bienvenida ejecutado para la suscripción ${response.subscriptionId}. Greetings: ${
               response.greetingsTemplateSent ? 'enviado' : 'falló'
-            }. WhatsApp semanal: ${
+            }. WhatsApp diario: ${
               response.whatsappProjectionSent ? 'enviado' : 'omitido'
             }. Email: ${response.emailProjectionSent ? 'enviado' : 'omitido'}.${
               response.greetingsTemplateError
@@ -864,7 +1069,7 @@ export function AdminSendCampaigns() {
             }`
           : `Welcome flow triggered for subscription ${response.subscriptionId}. Greetings: ${
               response.greetingsTemplateSent ? 'sent' : 'failed'
-            }. Weekly WhatsApp: ${
+            }. Daily WhatsApp: ${
               response.whatsappProjectionSent ? 'sent' : 'skipped'
             }. Email: ${response.emailProjectionSent ? 'sent' : 'skipped'}.${
               response.greetingsTemplateError
@@ -882,6 +1087,120 @@ export function AdminSendCampaigns() {
       )
     } finally {
       setBusyAction(null)
+    }
+  }
+
+  const runDailyProjectionTemplateTest = async () => {
+    setBusyAction('daily-template-test')
+    setError('')
+    setSuccess('')
+
+    try {
+      const response = await sendAdminDailyProjectionTemplateTest(
+        {
+          recipient: dailyProjectionTestRecipient,
+          externalTemplateName: dailyProjectionTemplateName,
+          languageCode: dailyProjectionTemplateLanguage,
+        },
+        messages.dashboard.sendCampaigns.loadError,
+      )
+      const fallbackBirthDateHint = response.usedFallbackBirthDate
+        ? language === 'es'
+          ? ' Se usó fecha de nacimiento de ejemplo porque tu cuenta admin no tiene una guardada.'
+          : ' A sample birth date was used because your admin account has no saved birth date.'
+        : ''
+      const successMessage =
+        language === 'es'
+          ? `Template diario enviado como test para ${response.dayKey}. Meta message id: ${
+              response.providerMessageId ?? 'pendiente'
+            }.${fallbackBirthDateHint}`
+          : `Daily template test sent for ${response.dayKey}. Meta message id: ${
+              response.providerMessageId ?? 'pending'
+            }.${fallbackBirthDateHint}`
+
+      setSuccess(successMessage)
+    } catch (nextError) {
+      setError(
+        nextError instanceof Error
+          ? nextError.message
+          : messages.dashboard.sendCampaigns.loadError,
+      )
+    } finally {
+      setBusyAction(null)
+    }
+  }
+
+  const runWeeklyDispatchNow = async () => {
+    setBusyAction('weekly-dispatch')
+    setError('')
+    setSuccess('')
+    setWeeklyDispatchPollingError('')
+
+    try {
+      const response = await startAdminWeeklyDispatch(
+        messages.dashboard.sendCampaigns.loadError,
+      )
+
+      setWeeklyDispatchJob(response.job)
+    } catch (nextError) {
+      setError(
+        nextError instanceof Error
+          ? nextError.message
+          : messages.dashboard.sendCampaigns.loadError,
+      )
+    } finally {
+      setBusyAction(null)
+    }
+  }
+
+  const weeklyDispatchCompletedCount = weeklyDispatchJob
+    ? weeklyDispatchJob.processedCount + weeklyDispatchJob.failedCount
+    : 0
+  const weeklyDispatchProgressPercent = weeklyDispatchJob
+    ? weeklyDispatchJob.dueCount > 0
+      ? Math.min(
+          100,
+          Math.round(
+            (weeklyDispatchCompletedCount / weeklyDispatchJob.dueCount) * 100,
+          ),
+        )
+      : 100
+    : 0
+  const weeklyDispatchIsActive =
+    weeklyDispatchJobStatus === 'queued' ||
+    weeklyDispatchJobStatus === 'running'
+  const weeklyDispatchStatusLabel = weeklyDispatchJob
+    ? weeklyDispatchJobStatus === 'queued'
+      ? language === 'es'
+        ? 'En cola'
+        : 'Queued'
+      : weeklyDispatchJobStatus === 'running'
+        ? language === 'es'
+          ? 'En curso'
+          : 'Running'
+        : weeklyDispatchJobStatus === 'completed'
+          ? language === 'es'
+            ? 'Completado'
+            : 'Completed'
+          : language === 'es'
+            ? 'Fallido'
+            : 'Failed'
+    : ''
+  const weeklyDispatchChannelLabel = weeklyDispatchJob
+    ? weeklyDispatchJob.currentChannel === 'both'
+      ? language === 'es'
+        ? 'Email y WhatsApp'
+        : 'Email and WhatsApp'
+      : weeklyDispatchJob.currentChannel === 'email'
+        ? 'Email'
+        : weeklyDispatchJob.currentChannel === 'whatsapp'
+          ? 'WhatsApp'
+          : ''
+    : ''
+  const closeWeeklyDispatchModal = () => {
+    if (!weeklyDispatchIsActive) {
+      setWeeklyDispatchJob(null)
+      setWeeklyDispatchPollingError('')
     }
   }
 
@@ -920,7 +1239,9 @@ export function AdminSendCampaigns() {
                 <input
                   type="text"
                   value={whatsappPhoneNumberId}
-                  onChange={(event) => setWhatsappPhoneNumberId(event.target.value)}
+                  onChange={(event) =>
+                    setWhatsappPhoneNumberId(event.target.value)
+                  }
                   className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                 />
               </label>
@@ -929,7 +1250,9 @@ export function AdminSendCampaigns() {
                 <input
                   type="text"
                   value={whatsappGraphApiVersion}
-                  onChange={(event) => setWhatsappGraphApiVersion(event.target.value)}
+                  onChange={(event) =>
+                    setWhatsappGraphApiVersion(event.target.value)
+                  }
                   className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                 />
               </label>
@@ -938,7 +1261,9 @@ export function AdminSendCampaigns() {
                 <input
                   type="password"
                   value={whatsappAccessToken}
-                  onChange={(event) => setWhatsappAccessToken(event.target.value)}
+                  onChange={(event) =>
+                    setWhatsappAccessToken(event.target.value)
+                  }
                   placeholder="Leave blank to keep the current token"
                   className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                 />
@@ -972,7 +1297,9 @@ export function AdminSendCampaigns() {
                 <input
                   type="email"
                   value={mailersendFromEmail}
-                  onChange={(event) => setMailersendFromEmail(event.target.value)}
+                  onChange={(event) =>
+                    setMailersendFromEmail(event.target.value)
+                  }
                   className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                 />
               </label>
@@ -981,7 +1308,9 @@ export function AdminSendCampaigns() {
                 <input
                   type="text"
                   value={mailersendFromName}
-                  onChange={(event) => setMailersendFromName(event.target.value)}
+                  onChange={(event) =>
+                    setMailersendFromName(event.target.value)
+                  }
                   className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                 />
               </label>
@@ -990,7 +1319,9 @@ export function AdminSendCampaigns() {
                 <input
                   type="email"
                   value={mailersendReplyToEmail}
-                  onChange={(event) => setMailersendReplyToEmail(event.target.value)}
+                  onChange={(event) =>
+                    setMailersendReplyToEmail(event.target.value)
+                  }
                   className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                 />
               </label>
@@ -999,7 +1330,9 @@ export function AdminSendCampaigns() {
                 <input
                   type="text"
                   value={mailersendReplyToName}
-                  onChange={(event) => setMailersendReplyToName(event.target.value)}
+                  onChange={(event) =>
+                    setMailersendReplyToName(event.target.value)
+                  }
                   className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                 />
               </label>
@@ -1035,8 +1368,8 @@ export function AdminSendCampaigns() {
           </h3>
           <p className="cosmic-shell-meta mt-2 text-sm">
             {language === 'es'
-              ? 'Dispara desde tu cuenta admin el flujo completo: template greetings de WhatsApp, proyección semanal por WhatsApp y correo de bienvenida con proyección.'
-              : 'Trigger the full welcome flow from your admin account: WhatsApp greetings template, weekly WhatsApp projection, and welcome projection email.'}
+              ? 'Dispara desde tu cuenta admin el flujo completo: template greetings de WhatsApp, proyección diaria por WhatsApp y correo de bienvenida con proyección.'
+              : 'Trigger the full welcome flow from your admin account: WhatsApp greetings template, daily WhatsApp projection, and welcome projection email.'}
           </p>
           <button
             type="button"
@@ -1052,6 +1385,209 @@ export function AdminSendCampaigns() {
                 ? 'Ejecutar flujo de bienvenida'
                 : 'Trigger welcome flow'}
           </button>
+        </div>
+
+        <div className="mt-6 rounded-[1.75rem] border border-violet-300/18 bg-black/18 p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-100/76">
+                {language === 'es' ? 'Template aprobado' : 'Approved template'}
+              </p>
+              <h3 className="mt-2 text-xl font-semibold text-slate-50">
+                Trimry Daily Projections
+              </h3>
+              <p className="cosmic-shell-meta mt-2 text-sm">
+                {language === 'es'
+                  ? 'Envía un test real por WhatsApp Cloud API usando los parámetros aprobados: señal diaria, zodíaco, calendario chino, sutra haircut timing y Luck Guru.'
+                  : 'Send a real WhatsApp Cloud API test with the approved parameters: daily signal, zodiac, Chinese calendar, sutra haircut timing, and Luck Guru.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void runDailyProjectionTemplateTest()}
+              disabled={busyAction !== null}
+              className="cosmic-button-primary rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+            >
+              {busyAction === 'daily-template-test'
+                ? language === 'es'
+                  ? 'Enviando test'
+                  : 'Sending test'
+                : language === 'es'
+                  ? 'Enviar test diario'
+                  : 'Send daily test'}
+            </button>
+          </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr_0.55fr]">
+            <label className="cosmic-field-label text-sm font-semibold">
+              {language === 'es'
+                ? 'Destino WhatsApp de test'
+                : 'WhatsApp test recipient'}
+              <input
+                type="tel"
+                value={dailyProjectionTestRecipient}
+                onChange={(event) =>
+                  setDailyProjectionTestRecipient(event.target.value)
+                }
+                placeholder={
+                  language === 'es'
+                    ? messages.dashboard.sendCampaigns
+                        .testingPlaceholderWhatsapp
+                    : '+14155550123'
+                }
+                className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+              />
+            </label>
+            <label className="cosmic-field-label text-sm font-semibold">
+              {messages.dashboard.sendCampaigns.externalTemplateNameLabel}
+              <input
+                type="text"
+                value={dailyProjectionTemplateName}
+                onChange={(event) =>
+                  setDailyProjectionTemplateName(event.target.value)
+                }
+                className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+              />
+            </label>
+            <label className="cosmic-field-label text-sm font-semibold">
+              {messages.dashboard.sendCampaigns.whatsappLanguageLabel}
+              <input
+                type="text"
+                value={dailyProjectionTemplateLanguage}
+                onChange={(event) =>
+                  setDailyProjectionTemplateLanguage(event.target.value)
+                }
+                className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+              />
+            </label>
+          </div>
+
+          <p className="cosmic-shell-meta mt-3 text-xs">
+            {language === 'es'
+              ? 'El nombre default asume que Meta lo guardó como trimry_daily_projections. Si en WhatsApp Manager aparece otro nombre exacto, cámbialo aquí antes del test.'
+              : 'The default name assumes Meta stored it as trimry_daily_projections. If WhatsApp Manager shows a different exact name, change it here before testing.'}
+          </p>
+        </div>
+
+        <div className="mt-6 rounded-[1.75rem] border border-emerald-300/18 bg-black/18 p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-100/76">
+                {language === 'es'
+                  ? 'Automatización productiva'
+                  : 'Production automation'}
+              </p>
+              <h3 className="mt-2 text-xl font-semibold text-slate-50">
+                {language === 'es'
+                  ? 'Proceso diario de Email y WhatsApp'
+                  : 'Daily Email and WhatsApp process'}
+              </h3>
+              <p className="cosmic-shell-meta mt-2 text-sm">
+                {language === 'es'
+                  ? 'Controla si el cron de producción puede enviar proyecciones a suscripciones activas. Si está pausado, el endpoint responde sin enviar mensajes.'
+                  : 'Controls whether the production cron can send projections to active subscriptions. When paused, the endpoint returns without sending messages.'}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              role="switch"
+              aria-checked={deliveryAutomation?.enabled ?? false}
+              onClick={() => void toggleDailyDeliveryAutomation()}
+              disabled={busyAction !== null}
+              className={clsx(
+                'flex min-w-[158px] items-center justify-between gap-3 rounded-full border px-4 py-3 text-xs font-black uppercase tracking-[0.14em] transition disabled:opacity-60',
+                deliveryAutomation?.enabled
+                  ? 'border-emerald-200/45 bg-emerald-300/16 text-emerald-50'
+                  : 'border-white/14 bg-white/7 text-slate-300',
+              )}
+            >
+              <span>{deliveryAutomationStatusLabel}</span>
+              <span
+                className={clsx(
+                  'relative h-6 w-11 rounded-full border transition',
+                  deliveryAutomation?.enabled
+                    ? 'border-emerald-100/50 bg-emerald-300/35'
+                    : 'border-white/16 bg-black/30',
+                )}
+                aria-hidden="true"
+              >
+                <span
+                  className={clsx(
+                    'absolute top-1 h-4 w-4 rounded-full bg-white shadow-lg transition',
+                    deliveryAutomation?.enabled ? 'left-6' : 'left-1',
+                  )}
+                />
+              </span>
+            </button>
+          </div>
+
+          <dl className="mt-5 grid gap-3 text-sm md:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <dt className="cosmic-shell-meta text-xs uppercase tracking-[0.14em]">
+                {language === 'es' ? 'Última ejecución' : 'Last run'}
+              </dt>
+              <dd className="mt-2 font-semibold text-slate-100">
+                {deliveryAutomationLastRunLabel}
+              </dd>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <dt className="cosmic-shell-meta text-xs uppercase tracking-[0.14em]">
+                {language === 'es' ? 'Último trigger' : 'Last trigger'}
+              </dt>
+              <dd className="mt-2 font-semibold text-slate-100">
+                {formatDate(deliveryAutomation?.lastTriggeredAt ?? null) ??
+                  (language === 'es' ? 'Sin trigger' : 'No trigger yet')}
+              </dd>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <dt className="cosmic-shell-meta text-xs uppercase tracking-[0.14em]">
+                {language === 'es' ? 'Estado' : 'Status'}
+              </dt>
+              <dd className="mt-2 font-semibold text-slate-100">
+                {deliveryAutomation?.lastRunStatus ??
+                  deliveryAutomationStatusLabel}
+              </dd>
+            </div>
+          </dl>
+
+          <p className="cosmic-shell-meta mt-4 text-sm">
+            {deliveryAutomationLastMessage}
+          </p>
+        </div>
+
+        <div className="mt-6 rounded-[1.75rem] border border-cyan-300/18 bg-black/18 p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
+                {language === 'es' ? 'Envío diario' : 'Daily dispatch'}
+              </p>
+              <h3 className="mt-2 text-xl font-semibold text-slate-50">
+                {language === 'es'
+                  ? 'Enviar la proyección diaria a todos los suscriptores activos'
+                  : 'Send the daily projection to all active subscribers'}
+              </h3>
+              <p className="cosmic-shell-meta mt-2 text-sm">
+                {language === 'es'
+                  ? 'Respeta la preferencia de entrega de cada suscripción: email, WhatsApp o ambos. El progreso se mostrará en un modal mientras se envían los mensajes.'
+                  : 'Respects each subscription delivery preference: email, WhatsApp, or both. Progress will appear in a modal while messages are sent.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void runWeeklyDispatchNow()}
+              disabled={busyAction !== null || weeklyDispatchIsActive}
+              className="cosmic-button-primary rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+            >
+              {busyAction === 'weekly-dispatch'
+                ? language === 'es'
+                  ? 'Iniciando'
+                  : 'Starting'
+                : language === 'es'
+                  ? 'Enviar proyección diaria'
+                  : 'Send daily projection'}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -1082,7 +1618,9 @@ export function AdminSendCampaigns() {
                 type="button"
                 onClick={() => loadTemplateIntoEditor(template)}
                 className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
-                  template.id === templateId ? 'cosmic-tab-active' : 'cosmic-tab'
+                  template.id === templateId
+                    ? 'cosmic-tab-active'
+                    : 'cosmic-tab'
                 }`}
               >
                 {template.name}
@@ -1125,7 +1663,9 @@ export function AdminSendCampaigns() {
                   onClick={() => setChannel('whatsapp')}
                   className={clsx(
                     'rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]',
-                    channel === 'whatsapp' ? 'cosmic-tab-active-alt' : 'cosmic-tab',
+                    channel === 'whatsapp'
+                      ? 'cosmic-tab-active-alt'
+                      : 'cosmic-tab',
                   )}
                 >
                   {messages.dashboard.sendCampaigns.channelWhatsapp}
@@ -1165,7 +1705,9 @@ export function AdminSendCampaigns() {
                   <input
                     type="text"
                     value={whatsappLanguageCode}
-                    onChange={(event) => setWhatsappLanguageCode(event.target.value)}
+                    onChange={(event) =>
+                      setWhatsappLanguageCode(event.target.value)
+                    }
                     className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                   />
                 </label>
@@ -1207,7 +1749,10 @@ export function AdminSendCampaigns() {
                         >
                           <div className="grid gap-3 sm:grid-cols-[0.78fr_auto_1.22fr] sm:items-end">
                             <label className="cosmic-field-label text-sm font-semibold">
-                              {messages.dashboard.sendCampaigns.variableKeyLabel}
+                              {
+                                messages.dashboard.sendCampaigns
+                                  .variableKeyLabel
+                              }
                               <input
                                 type="text"
                                 value={variable.key}
@@ -1227,7 +1772,10 @@ export function AdminSendCampaigns() {
                               :
                             </span>
                             <label className="cosmic-field-label text-sm font-semibold">
-                              {messages.dashboard.sendCampaigns.variableContentLabel}
+                              {
+                                messages.dashboard.sendCampaigns
+                                  .variableContentLabel
+                              }
                               <input
                                 type="text"
                                 value={variable.content}
@@ -1235,7 +1783,10 @@ export function AdminSendCampaigns() {
                                   setWhatsappHeaderVariables((current) =>
                                     current.map((item) =>
                                       item.id === variable.id
-                                        ? { ...item, content: event.target.value }
+                                        ? {
+                                            ...item,
+                                            content: event.target.value,
+                                          }
                                         : item,
                                     ),
                                   )
@@ -1248,7 +1799,9 @@ export function AdminSendCampaigns() {
                             type="button"
                             onClick={() =>
                               setWhatsappHeaderVariables((current) =>
-                                current.filter((item) => item.id !== variable.id),
+                                current.filter(
+                                  (item) => item.id !== variable.id,
+                                ),
                               )
                             }
                             className="cosmic-danger-button mt-4 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em]"
@@ -1313,7 +1866,10 @@ export function AdminSendCampaigns() {
                             :
                           </span>
                           <label className="cosmic-field-label text-sm font-semibold">
-                            {messages.dashboard.sendCampaigns.variableContentLabel}
+                            {
+                              messages.dashboard.sendCampaigns
+                                .variableContentLabel
+                            }
                             <input
                               type="text"
                               value={variable.content}
@@ -1359,7 +1915,10 @@ export function AdminSendCampaigns() {
                     <button
                       type="button"
                       onClick={() =>
-                        setWhatsappButtons((current) => [...current, createButtonDraft()])
+                        setWhatsappButtons((current) => [
+                          ...current,
+                          createButtonDraft(),
+                        ])
                       }
                       className="cosmic-outline-button rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em]"
                     >
@@ -1380,7 +1939,10 @@ export function AdminSendCampaigns() {
                         >
                           <div className="grid gap-3 sm:grid-cols-[0.78fr_auto_1.22fr] sm:items-end">
                             <label className="cosmic-field-label text-sm font-semibold">
-                              {messages.dashboard.sendCampaigns.variableKeyLabel}
+                              {
+                                messages.dashboard.sendCampaigns
+                                  .variableKeyLabel
+                              }
                               <input
                                 type="text"
                                 value={button.key}
@@ -1400,7 +1962,10 @@ export function AdminSendCampaigns() {
                               :
                             </span>
                             <label className="cosmic-field-label text-sm font-semibold">
-                              {messages.dashboard.sendCampaigns.variableContentLabel}
+                              {
+                                messages.dashboard.sendCampaigns
+                                  .variableContentLabel
+                              }
                               <input
                                 type="text"
                                 value={button.content}
@@ -1408,7 +1973,10 @@ export function AdminSendCampaigns() {
                                   setWhatsappButtons((current) =>
                                     current.map((item) =>
                                       item.id === button.id
-                                        ? { ...item, content: event.target.value }
+                                        ? {
+                                            ...item,
+                                            content: event.target.value,
+                                          }
                                         : item,
                                     ),
                                   )
@@ -1438,10 +2006,16 @@ export function AdminSendCampaigns() {
               <div className="space-y-4">
                 <div className="rounded-[1.5rem] border border-white/12 bg-black/18 p-4">
                   <p className="text-sm font-semibold text-slate-50">
-                    {messages.dashboard.sendCampaigns.emailTemplateGeneratorTitle}
+                    {
+                      messages.dashboard.sendCampaigns
+                        .emailTemplateGeneratorTitle
+                    }
                   </p>
                   <p className="cosmic-shell-meta mt-2 text-xs">
-                    {messages.dashboard.sendCampaigns.emailTemplateGeneratorHint}
+                    {
+                      messages.dashboard.sendCampaigns
+                        .emailTemplateGeneratorHint
+                    }
                   </p>
                   <button
                     type="button"
@@ -1458,7 +2032,9 @@ export function AdminSendCampaigns() {
                   <input
                     type="text"
                     value={emailSubjectTemplate}
-                    onChange={(event) => setEmailSubjectTemplate(event.target.value)}
+                    onChange={(event) =>
+                      setEmailSubjectTemplate(event.target.value)
+                    }
                     className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                   />
                 </label>
@@ -1467,7 +2043,9 @@ export function AdminSendCampaigns() {
                   {messages.dashboard.sendCampaigns.emailHtmlLabel}
                   <textarea
                     value={emailHtmlTemplate}
-                    onChange={(event) => setEmailHtmlTemplate(event.target.value)}
+                    onChange={(event) =>
+                      setEmailHtmlTemplate(event.target.value)
+                    }
                     rows={8}
                     className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                   />
@@ -1477,7 +2055,9 @@ export function AdminSendCampaigns() {
                   {messages.dashboard.sendCampaigns.emailTextLabel}
                   <textarea
                     value={emailTextTemplate}
-                    onChange={(event) => setEmailTextTemplate(event.target.value)}
+                    onChange={(event) =>
+                      setEmailTextTemplate(event.target.value)
+                    }
                     rows={6}
                     className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
                   />
@@ -1533,9 +2113,12 @@ export function AdminSendCampaigns() {
                 {messages.dashboard.sendCampaigns.audienceTitle}
               </p>
               <p className="mt-3 text-base text-slate-50">
-                {interpolate(messages.dashboard.sendCampaigns.eligibleRecipients, {
-                  count: selectedAudienceCount,
-                })}
+                {interpolate(
+                  messages.dashboard.sendCampaigns.eligibleRecipients,
+                  {
+                    count: selectedAudienceCount,
+                  },
+                )}
               </p>
               <p className="mt-2 text-sm text-slate-100/76">
                 {messages.dashboard.sendCampaigns.audienceHint}
@@ -1563,7 +2146,8 @@ export function AdminSendCampaigns() {
                 placeholder={
                   channel === 'email'
                     ? messages.dashboard.sendCampaigns.testingPlaceholderEmail
-                    : messages.dashboard.sendCampaigns.testingPlaceholderWhatsapp
+                    : messages.dashboard.sendCampaigns
+                        .testingPlaceholderWhatsapp
                 }
                 className="cosmic-input mt-3 block w-full rounded-xl px-4 py-3"
               />
@@ -1579,7 +2163,9 @@ export function AdminSendCampaigns() {
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
                   {messages.dashboard.sendCampaigns.currentDraft}
                 </p>
-                <p className="mt-2 break-all text-sm text-slate-50">{templateId}</p>
+                <p className="mt-2 break-all text-sm text-slate-50">
+                  {templateId}
+                </p>
               </div>
             ) : null}
 
@@ -1642,7 +2228,9 @@ export function AdminSendCampaigns() {
         </div>
 
         {error ? (
-          <p className="cosmic-error-box mt-5 rounded-xl px-4 py-3 text-sm">{error}</p>
+          <p className="cosmic-error-box mt-5 rounded-xl px-4 py-3 text-sm">
+            {error}
+          </p>
         ) : null}
 
         {success ? (
@@ -1708,19 +2296,25 @@ export function AdminSendCampaigns() {
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
                       {messages.dashboard.sendCampaigns.metricsRecipients}
                     </p>
-                    <p className="mt-2 text-2xl text-slate-50">{campaign.metrics.recipients}</p>
+                    <p className="mt-2 text-2xl text-slate-50">
+                      {campaign.metrics.recipients}
+                    </p>
                   </div>
                   <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
                       {messages.dashboard.sendCampaigns.metricsAccepted}
                     </p>
-                    <p className="mt-2 text-2xl text-slate-50">{campaign.metrics.accepted}</p>
+                    <p className="mt-2 text-2xl text-slate-50">
+                      {campaign.metrics.accepted}
+                    </p>
                   </div>
                   <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
                       {messages.dashboard.sendCampaigns.metricsFailed}
                     </p>
-                    <p className="mt-2 text-2xl text-slate-50">{campaign.metrics.failed}</p>
+                    <p className="mt-2 text-2xl text-slate-50">
+                      {campaign.metrics.failed}
+                    </p>
                   </div>
                 </div>
 
@@ -1757,17 +2351,19 @@ export function AdminSendCampaigns() {
 
                 {Object.keys(campaign.variableValues).length > 0 ? (
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    {Object.entries(campaign.variableValues).map(([key, value]) => (
-                      <div
-                        key={key}
-                        className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-100/78"
-                      >
-                        <p className="cosmic-shell-meta text-xs font-semibold uppercase tracking-[0.18em]">
-                          {key}
-                        </p>
-                        <p className="mt-2 text-slate-50">{value}</p>
-                      </div>
-                    ))}
+                    {Object.entries(campaign.variableValues).map(
+                      ([key, value]) => (
+                        <div
+                          key={key}
+                          className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-100/78"
+                        >
+                          <p className="cosmic-shell-meta text-xs font-semibold uppercase tracking-[0.18em]">
+                            {key}
+                          </p>
+                          <p className="mt-2 text-slate-50">{value}</p>
+                        </div>
+                      ),
+                    )}
                   </div>
                 ) : null}
 
@@ -1787,6 +2383,189 @@ export function AdminSendCampaigns() {
           </div>
         )}
       </section>
+
+      {weeklyDispatchJob ? (
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/70 p-3 backdrop-blur-[10px] sm:items-center sm:p-6">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="weekly-dispatch-title"
+            className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/12 bg-[#071325]/96 shadow-[0_30px_100px_rgba(0,0,0,0.55)]"
+          >
+            <div className="border-b border-white/10 bg-white/[0.03] px-5 py-4 sm:px-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/80">
+                    {language === 'es' ? 'Modal de progreso' : 'Progress modal'}
+                  </p>
+                  <h3
+                    id="weekly-dispatch-title"
+                    className="mt-2 text-2xl font-semibold text-slate-50"
+                  >
+                    {language === 'es'
+                      ? 'Enviando proyección diaria'
+                      : 'Sending daily projection'}
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={closeWeeklyDispatchModal}
+                  disabled={weeklyDispatchIsActive}
+                  className="cosmic-outline-button rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {weeklyDispatchIsActive
+                    ? language === 'es'
+                      ? 'En curso'
+                      : 'Running'
+                    : language === 'es'
+                      ? 'Cerrar'
+                      : 'Close'}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-5 px-5 py-5 sm:px-6">
+              <div className="rounded-[1.5rem] border border-white/12 bg-black/18 p-5">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span
+                    className={clsx(
+                      'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]',
+                      weeklyDispatchJob.status === 'completed'
+                        ? 'bg-emerald-400/20 text-emerald-100'
+                        : weeklyDispatchJob.status === 'failed'
+                          ? 'bg-rose-400/18 text-rose-100'
+                          : weeklyDispatchJob.status === 'running'
+                            ? 'bg-cyan-400/18 text-cyan-100'
+                            : 'bg-slate-400/18 text-slate-100',
+                    )}
+                  >
+                    {weeklyDispatchStatusLabel}
+                  </span>
+                  <span className="cosmic-shell-meta text-xs uppercase tracking-[0.18em]">
+                    {weeklyDispatchJob.dryRun
+                      ? language === 'es'
+                        ? 'Prueba'
+                        : 'Dry run'
+                      : language === 'es'
+                        ? 'Envío real'
+                        : 'Live send'}
+                  </span>
+                </div>
+
+                <p className="mt-4 text-sm text-slate-100/80">
+                  {weeklyDispatchJob.message ??
+                    (language === 'es'
+                      ? 'Preparando el envío diario.'
+                      : 'Preparing the daily dispatch.')}
+                </p>
+
+                <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/8">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-cyan-200 via-sky-300 to-violet-300 transition-[width] duration-500 ease-out"
+                    style={{ width: `${weeklyDispatchProgressPercent}%` }}
+                  />
+                </div>
+
+                <div className="mt-3 flex items-center justify-between text-xs uppercase tracking-[0.18em] text-slate-100/72">
+                  <span>{weeklyDispatchCompletedCount}</span>
+                  <span>{weeklyDispatchJob.dueCount}</span>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100/76">
+                    {language === 'es' ? 'Procesados' : 'Processed'}
+                  </p>
+                  <p className="mt-2 text-2xl text-slate-50">
+                    {weeklyDispatchJob.processedCount}
+                  </p>
+                </div>
+                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100/76">
+                    {language === 'es' ? 'Fallidos' : 'Failed'}
+                  </p>
+                  <p className="mt-2 text-2xl text-slate-50">
+                    {weeklyDispatchJob.failedCount}
+                  </p>
+                </div>
+                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100/76">
+                    {language === 'es' ? 'Total' : 'Total'}
+                  </p>
+                  <p className="mt-2 text-2xl text-slate-50">
+                    {weeklyDispatchJob.dueCount}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-[1.5rem] border border-white/12 bg-black/18 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/76">
+                    {language === 'es'
+                      ? 'Suscriptor actual'
+                      : 'Current subscriber'}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-50">
+                    {weeklyDispatchJob.currentRecipientLabel ??
+                      (language === 'es'
+                        ? 'Esperando el siguiente envío.'
+                        : 'Waiting for the next send.')}
+                  </p>
+                </div>
+                <div className="rounded-[1.5rem] border border-white/12 bg-black/18 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/76">
+                    {language === 'es' ? 'Canal' : 'Channel'}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-50">
+                    {weeklyDispatchChannelLabel ||
+                      (language === 'es'
+                        ? 'Se detectará automáticamente según la suscripción.'
+                        : 'Detected automatically from each subscription.')}
+                  </p>
+                </div>
+              </div>
+
+              {weeklyDispatchPollingError ? (
+                <p className="rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-50">
+                  {weeklyDispatchPollingError}
+                </p>
+              ) : null}
+
+              {weeklyDispatchJob.error ? (
+                <p className="rounded-2xl border border-rose-300/20 bg-rose-300/10 px-4 py-3 text-sm text-rose-50">
+                  {weeklyDispatchJob.error}
+                </p>
+              ) : null}
+
+              {weeklyDispatchJob.result ? (
+                <div className="rounded-[1.5rem] border border-emerald-300/18 bg-emerald-300/8 p-4 text-sm text-emerald-50">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-100/80">
+                    {language === 'es' ? 'Resultado final' : 'Final result'}
+                  </p>
+                  <p className="mt-2">
+                    {language === 'es'
+                      ? `Procesados ${weeklyDispatchJob.result.processedCount} de ${weeklyDispatchJob.result.dueCount}. Fallidos: ${weeklyDispatchJob.result.failedCount}.`
+                      : `Processed ${weeklyDispatchJob.result.processedCount} of ${weeklyDispatchJob.result.dueCount}. Failed: ${weeklyDispatchJob.result.failedCount}.`}
+                  </p>
+                </div>
+              ) : null}
+
+              <div className="flex flex-wrap justify-end gap-3">
+                {!weeklyDispatchIsActive ? (
+                  <button
+                    type="button"
+                    onClick={closeWeeklyDispatchModal}
+                    className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
+                  >
+                    {language === 'es' ? 'Cerrar' : 'Close'}
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -40,10 +40,10 @@ function resolveSiteUrl() {
 export const SITE_URL = resolveSiteUrl()
 export const IS_INDEXING_ALLOWED = resolveIndexingAllowed(SITE_URL)
 export const SITE_NAME = COMPANY.brandName
-export const SITE_SLOGAN = 'Good & Bad Days to Cut Your Hair'
+export const SITE_SLOGAN = 'Your Luck Guide'
 export const SITE_TITLE = `${SITE_SLOGAN} | ${SITE_NAME}`
 export const SITE_DESCRIPTION =
-  'Discover good and bad days to cut your hair, trim nails, shave, and reset your week. Trimry sends one Monday forecast with good, bad, and rare timing signals by email, WhatsApp, or both.'
+  'Trimry is Your Luck Guide: daily fortune projections by email or WhatsApp, plus a monthly calendar of good, bad, and rare timing signals on the web.'
 export const SITE_KEYWORDS = [
   'good & bad days to cut your hair',
   'good and bad days to cut your hair',
@@ -56,10 +56,10 @@ export const SITE_KEYWORDS = [
   'hair and nails timing calendar',
   'haircut timing',
   'nail cutting timing',
-  'weekly fortune forecast',
+  'daily fortune forecast',
   'ritual release guidance',
   'Tibetan calendar timing',
-  'weekly luck forecast',
+  'daily luck forecast',
   'WhatsApp fortune messages',
   'email fortune forecast',
   'grooming timing guidance',

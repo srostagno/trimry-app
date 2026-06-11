@@ -99,10 +99,59 @@ export type SendWorkspaceResponse = {
       source: 'database' | 'environment' | 'missing'
     }
   }
+  deliveryAutomation: DailyDeliveryAutomationSettings
+}
+
+export type WeeklyDispatchJobStatus =
+  | 'queued'
+  | 'running'
+  | 'completed'
+  | 'failed'
+
+export type DailyDeliveryAutomationSettings = {
+  enabled: boolean
+  createdAt: string | null
+  updatedAt: string | null
+  updatedByUserId: string | null
+  lastTriggeredAt: string | null
+  lastCompletedAt: string | null
+  lastJobId: string | null
+  lastRunStatus: WeeklyDispatchJobStatus | 'skipped' | null
+  lastRunMessage: string | null
+}
+
+export type WeeklyDispatchJob = {
+  id: string
+  status: WeeklyDispatchJobStatus
+  dryRun: boolean
+  limit: number
+  createdAt: string
+  updatedAt: string
+  startedAt: string | null
+  completedAt: string | null
+  dueCount: number
+  processedCount: number
+  failedCount: number
+  currentSubscriptionId: string | null
+  currentUserId: string | null
+  currentDeliveryPreference: 'email' | 'whatsapp' | 'both' | null
+  currentChannel: 'email' | 'whatsapp' | 'both' | null
+  currentRecipientLabel: string | null
+  message: string | null
+  result: {
+    now: string
+    dryRun: boolean
+    dueCount: number
+    processedCount: number
+    failedCount: number
+  } | null
+  error: string | null
 }
 
 export async function fetchAdminSendWorkspace(fallbackMessage: string) {
-  const response = await apiFetch('/admin/send-workspace', { cache: 'no-store' })
+  const response = await apiFetch('/admin/send-workspace', {
+    cache: 'no-store',
+  })
 
   if (!response.ok) {
     throw new Error(await readApiError(response, fallbackMessage))
@@ -140,6 +189,27 @@ export async function saveAdminSendSettings(
 
   return (await response.json()) as {
     settings: SendWorkspaceResponse['settings']
+  }
+}
+
+export async function updateAdminDailyDeliveryAutomation(
+  payload: {
+    enabled: boolean
+  },
+  fallbackMessage: string,
+) {
+  const response = await apiFetch('/admin/send-daily-delivery-automation', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    deliveryAutomation: DailyDeliveryAutomationSettings
   }
 }
 
@@ -223,5 +293,83 @@ export async function triggerAdminWelcomeFlowTest(fallbackMessage: string) {
     greetingsTemplateError: string | null
     whatsappProjectionSent: boolean
     emailProjectionSent: boolean
+  }
+}
+
+export async function sendAdminDailyProjectionTemplateTest(
+  payload: {
+    recipient: string
+    externalTemplateName: string
+    languageCode: string
+  },
+  fallbackMessage: string,
+) {
+  const response = await apiFetch(
+    '/admin/send-daily-projection-template-test',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    providerMessageId: string | null
+    templateName: string
+    languageCode: string
+    dayKey: string
+    usedFallbackBirthDate: boolean
+    variableValues: Record<string, string>
+  }
+}
+
+export async function startAdminWeeklyDispatch(
+  fallbackMessage: string,
+  payload: {
+    dryRun?: boolean
+    limit?: number
+  } = {},
+) {
+  const response = await apiFetch('/admin/subscriptions/run-weekly-dispatch', {
+    method: 'POST',
+    body: JSON.stringify({
+      dryRun: payload.dryRun,
+      limit: payload.limit,
+    }),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    reused: boolean
+    job: WeeklyDispatchJob
+  }
+}
+
+export async function fetchAdminWeeklyDispatchJob(
+  jobId: string,
+  fallbackMessage: string,
+) {
+  const response = await apiFetch(
+    `/admin/subscriptions/run-weekly-dispatch/${jobId}`,
+    {
+      cache: 'no-store',
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    job: WeeklyDispatchJob
   }
 }

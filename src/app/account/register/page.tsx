@@ -4,10 +4,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 
+import { DateOfBirthPicker } from '@/components/date-of-birth-picker'
 import { useLanguage } from '@/components/language-provider'
 import { apiFetch, readApiError } from '@/lib/api-client'
 import { trackEvent, trackMetaStandardEvent } from '@/lib/analytics'
 import { isLanguageCode } from '@/lib/i18n'
+import { buildPersonalSignProfile } from '@/lib/personal-signs'
 import { detectBrowserTimeZone } from '@/lib/schedule'
 
 const EMAIL_CONTACT_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -69,11 +71,13 @@ export default function RegisterPage() {
   const router = useRouter()
   const { language, setLanguage, messages } = useLanguage()
   const [firstName, setFirstName] = useState('')
+  const [birthDate, setBirthDate] = useState('')
   const [timeZone, setTimeZone] = useState('UTC')
   const [contact, setContact] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const isSpanish = language === 'es'
+  const personalSigns = buildPersonalSignProfile(birthDate, language)
 
   useEffect(() => {
     setTimeZone(detectBrowserTimeZone())
@@ -101,6 +105,16 @@ export default function RegisterPage() {
       return
     }
 
+    if (!birthDate) {
+      setError(
+        isSpanish
+          ? 'Ingresa tu fecha de nacimiento para calcular tu código de fortuna.'
+          : 'Enter your date of birth so we can calculate your fortune code.',
+      )
+      setLoading(false)
+      return
+    }
+
     const resolvedEmail = isEmailContact
       ? normalizedContact.toLowerCase()
       : buildSyntheticEmailFromWhatsapp(whatsappNumber!)
@@ -117,6 +131,7 @@ export default function RegisterPage() {
         method: 'POST',
         body: JSON.stringify({
           firstName: normalizedFirstName,
+          birthDate,
           email: resolvedEmail,
           locale: language,
           timeZone,
@@ -190,6 +205,54 @@ export default function RegisterPage() {
           />
         </label>
 
+        <div>
+          <label className="cosmic-field-label block text-sm font-semibold" htmlFor="register-birth-month">
+            {messages.auth.birthDateLabel}
+          </label>
+          <div className="mt-2">
+            <DateOfBirthPicker
+              idPrefix="register-birth"
+              value={birthDate}
+              onChange={setBirthDate}
+              language={language}
+              required
+            />
+          </div>
+          <span className="cosmic-shell-meta mt-2 block text-xs">
+            {isSpanish
+              ? 'Usamos tu nacimiento para abrir tu zodíaco y tu señal del calendario chino.'
+              : 'We use your birthday to unlock your zodiac and Chinese calendar signal.'}
+          </span>
+        </div>
+
+        {personalSigns ? (
+          <div className="rounded-[1.35rem] border border-amber-200/24 bg-amber-200/10 p-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-100/86">
+              {isSpanish ? 'Código de fortuna' : 'Fortune code'}
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-cyan-100/18 bg-slate-950/34 p-3">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                  {isSpanish ? 'Zodíaco' : 'Zodiac'}
+                </p>
+                <p className="mt-1 text-lg text-slate-50">{personalSigns.zodiac.name}</p>
+                <p className="mt-1 text-xs leading-5 text-slate-100/76">
+                  {personalSigns.zodiac.summary}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-cyan-100/18 bg-slate-950/34 p-3">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                  {isSpanish ? 'Calendario chino' : 'Chinese calendar'}
+                </p>
+                <p className="mt-1 text-lg text-slate-50">{personalSigns.chinese.name}</p>
+                <p className="mt-1 text-xs leading-5 text-slate-100/76">
+                  {personalSigns.chinese.summary}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         <label className="cosmic-field-label block text-sm font-semibold">
           {isSpanish ? 'Email o WhatsApp' : 'Email or WhatsApp'}
           <input
@@ -203,8 +266,8 @@ export default function RegisterPage() {
           />
           <span className="cosmic-shell-meta mt-2 block text-xs">
             {isSpanish
-              ? 'Primero te damos valor. Los datos de personalización se piden después.'
-              : 'Get value first. Personalization details can be added later.'}
+              ? 'Email es el canal base; WhatsApp se puede acordar después de activar.'
+              : 'Email is the base channel; WhatsApp can be arranged after activation.'}
           </span>
         </label>
 

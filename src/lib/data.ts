@@ -5,7 +5,7 @@ import { SUBSCRIPTION_PLAN } from '@/lib/company'
 import {
   DEFAULT_TIME_ZONE,
   DEFAULT_WEEKLY_DELIVERY_HOUR,
-  nextWeeklyDeliveryAt,
+  nextDailyDeliveryAt,
   normalizeTimeZone,
 } from '@/lib/schedule'
 
@@ -126,7 +126,7 @@ export async function upsertSubscription(input: {
 
   const subscriptions = await subscriptionsCollection()
   const now = new Date()
-  const nextMessageAt = nextWeeklyDeliveryAt({
+  const nextMessageAt = nextDailyDeliveryAt({
     referenceDate: now,
     timeZone: normalizeTimeZone(input.timeZone),
     deliveryHourLocal: input.deliveryHourLocal,
@@ -193,7 +193,7 @@ export async function updateSubscription(input: {
 
   if (input.timeZone || input.deliveryHourLocal !== undefined) {
     const currentSubscription = await getUserSubscription(input.userId)
-    patch.nextMessageAt = nextWeeklyDeliveryAt({
+    patch.nextMessageAt = nextDailyDeliveryAt({
       timeZone: normalizeTimeZone(input.timeZone ?? DEFAULT_TIME_ZONE),
       deliveryHourLocal:
         input.deliveryHourLocal ??

@@ -28,12 +28,12 @@ function settingCopy(language: string) {
   return isSpanish
     ? {
         badge: 'Ajustes de entrega',
-        title: '¿Cómo debería Trimry entregar tu ritual semanal?',
+        title: '¿Cómo debería Trimry entregar tu proyección diaria?',
         subtitle:
-          'Email sigue siendo el valor por defecto. WhatsApp es opcional y ambos canales se pueden activar cuando quieras.',
+          'Email sigue siendo el valor por defecto. WhatsApp se puede acordar y ambos canales se pueden activar cuando quieras.',
         emailLabel: 'Correo de entrega',
         channelLabel: 'Canal de entrega',
-        scheduleLabel: 'Hora de proyección del lunes',
+        scheduleLabel: 'Hora de proyección diaria',
         consentLabel: 'Acepto recibir mensajes de Trimry por WhatsApp.',
         consentHint:
           'Necesario solo si eliges WhatsApp como canal de entrega.',
@@ -45,12 +45,12 @@ function settingCopy(language: string) {
       }
     : {
         badge: 'Delivery settings',
-        title: 'How should Trimry deliver your weekly ritual?',
+        title: 'How should Trimry deliver your daily projection?',
         subtitle:
-          'Email remains the default. WhatsApp stays optional, and both channels can be enabled whenever you want.',
+          'Email remains the default. WhatsApp can be agreed, and both channels can be enabled whenever you want.',
         emailLabel: 'Delivery email',
         channelLabel: 'Delivery channel',
-        scheduleLabel: 'Monday projection time',
+        scheduleLabel: 'Daily projection time',
         consentLabel: 'I agree to receive Trimry messages on WhatsApp.',
         consentHint: 'Required only if you choose WhatsApp delivery.',
         saveButton: 'Save settings',
@@ -247,7 +247,11 @@ export default function DeliverySettingsPage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              {['Email first', 'WhatsApp optional', 'Both whenever you want'].map((item) => (
+              {[
+                language.startsWith('es') ? 'Email primero' : 'Email first',
+                language.startsWith('es') ? 'WhatsApp acordado' : 'WhatsApp agreed',
+                language.startsWith('es') ? 'Ambos cuando quieras' : 'Both whenever you want',
+              ].map((item) => (
                 <div
                   key={item}
                   className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-cyan-50"
@@ -320,7 +324,9 @@ export default function DeliverySettingsPage() {
                 </>
               ) : (
                 <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/76">
-                  WhatsApp remains optional unless you turn it on.
+                  {language.startsWith('es')
+                    ? 'WhatsApp sigue siendo opcional salvo que lo actives.'
+                    : 'WhatsApp remains optional unless you turn it on.'}
                 </div>
               )}
 

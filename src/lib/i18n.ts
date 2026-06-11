@@ -564,9 +564,10 @@ const englishMessages: MessageSection = {
     contact: 'Contact',
   },
   hero: {
-    badge: 'Daily luck ritual',
-    title: 'Want To Be Luckier? 🍀',
-    subtitle: 'Discover your lucky days for money, haircuts, relationships, and energy.',
+    badge: 'Your Luck Guide',
+    title: 'Trimry, Your Luck Guide',
+    subtitle:
+      'Daily projections by email or WhatsApp, plus a full monthly calendar of fortune signals on the web.',
     primary: 'Check Today’s Luck',
     secondary: 'Ask The Luck Guru',
   },
@@ -574,7 +575,7 @@ const englishMessages: MessageSection = {
     releaseBadge: 'Release has timing',
     releaseText:
       'A cut can be cosmetic. At the right moment, it feels like a clean break with doubt, heaviness, and stale energy.',
-    releaseChannels: 'Choose delivery by email, WhatsApp, or both.',
+    releaseChannels: 'Choose daily delivery by email, WhatsApp, or both.',
     releaseImageAlt:
       'A person cutting their hair while bright energy spills from the cut like a ritual release.',
     beliefBadge: 'Belief engine',
@@ -584,7 +585,7 @@ const englishMessages: MessageSection = {
     teaserEyebrow: 'Daily cosmic teaser',
     couldBe: 'Could be...',
     teaserNote:
-      'Subscribe to reveal the true day-by-day transmission and receive the real Monday guidance by email, WhatsApp, or both.',
+      'Subscribe to reveal the true day-by-day transmission and receive a daily reminder by email, WhatsApp, or both.',
     teaserButton: 'Reveal my real forecast',
     seoGuideBadge: 'SEO guide',
     seoGuideTitle: 'Need the full guide on good and bad haircut and nail days?',
@@ -631,35 +632,35 @@ const englishMessages: MessageSection = {
     ],
   },
   story: {
-    title: 'Designed to feel like momentum, not superstition.',
+    title: 'Your luck guide for every day, not just an occasional ritual.',
     subtitle:
-      'Trimry blends ritual, schedule, and practical reminders so your week starts with intention and confidence.',
-    card1Title: 'Sutra-inspired rhythm',
+      'Trimry blends ritual timing, zodiac signals, Chinese calendar energy, and practical reminders so you stay aligned with luck.',
+    card1Title: 'Daily fortune signals',
     card1Text:
-      'Our weekly pattern follows a lesser-known interpretation of Tibetan calendar timing traditions.',
-    card2Title: 'One message, zero noise',
+      'Every day receives a clear Good, Bad, or Rare signal for action, release, money, relationships, and energy.',
+    card2Title: 'One daily reminder',
     card2Text:
-      'Every Monday: one concise ritual forecast delivered by email, WhatsApp, or both.',
-    card3Title: 'Release rituals',
+      'Subscribers receive the day’s projection by email or WhatsApp, depending on the agreed channel.',
+    card3Title: 'Monthly calendar',
     card3Text:
-      'Beyond grooming timing, each signal hints at fortune, relationships, and money opportunities.',
+      'The web dashboard opens the complete monthly plan so you can see fortunate and cautious days before they arrive.',
   },
   pricing: {
     title: 'Simple monthly plan',
     subtitle:
       'Create your account first, choose your delivery channel, and review checkout before subscribing.',
-    planTitle: 'Weekly fortune delivery',
+    planTitle: 'Daily fortune delivery',
     billing: 'Account first. Secure checkout after setup.',
-    include1: '1 ritual forecast every Monday by email, WhatsApp, or both',
-    include2: 'Good/bad/rare signals with practical luck, money, and love hints',
+    include1: 'A daily projection reminder by email, WhatsApp, or both',
+    include2: 'Full monthly calendar with Good, Bad, and Rare fortune signals',
     include3:
-      'Choose your delivery channel, update it anytime, and cancel whenever you want',
+      'Personal zodiac and Chinese calendar summaries with premium detail behind subscription',
     cta: 'Create your account',
   },
   weekly: {
     title: 'Today’s cosmic prediction',
     subtitle:
-      'A rotating teaser about fortune, love, money, and luck. Subscribe to unlock the true weekly transmission.',
+      'A rotating teaser about fortune, love, money, and luck. Subscribe to unlock the full monthly transmission.',
     good: 'Good',
     bad: 'Bad',
     rare: 'Rare',
@@ -669,30 +670,30 @@ const englishMessages: MessageSection = {
     q1: 'Is this a medical or scientific recommendation?',
     a1: 'No. Trimry is a cultural and ritual timing service for personal routines.',
     q2: 'When do I receive the message?',
-    a2: 'Every Monday at your chosen local hour, one ritual forecast with your week overview is delivered by the channel you choose.',
+    a2: 'Subscribers receive one daily reminder with that day’s projection by the agreed channel: email, WhatsApp, or both.',
     q3: 'How do I manage billing?',
     a3: 'From your dashboard, where you can cancel anytime, reactivate later, and still open the secure Stripe billing portal for payment methods and invoices.',
     q4: 'Which timezone is used?',
-    a4: 'We use the IANA time zone saved in your account and you can change both time zone and Monday delivery hour from your dashboard.',
+    a4: 'We use the IANA time zone saved in your account and you can change both time zone and daily delivery hour from your dashboard.',
   },
   cta: {
-    title: 'Start your week with intention.',
+    title: 'Stay aligned with luck every day.',
     subtitle:
-      'Create your Trimry account, choose email, WhatsApp, or both, and receive your first lucky-day guidance next Monday.',
+      'Create your Trimry account, choose email, WhatsApp, or both, and keep your daily fortune signals close.',
     button: 'Open my account',
   },
   auth: {
     registerTitle: 'Start in 10 seconds',
     registerSubtitle:
-      'Enter your name and contact. You will get instant guidance before deeper personalization.',
+      'Enter your name, birth date, and contact so Trimry can open your personal luck code.',
     loginTitle: 'Welcome back',
-    loginSubtitle: 'Sign in to manage your weekly ritual delivery.',
+    loginSubtitle: 'Sign in to manage your daily luck delivery.',
     firstNameLabel: 'First name',
     lastNameLabel: 'Last name',
     birthDateLabel: 'Date of birth',
     timeZoneLabel: 'Time zone',
     timeZoneHint:
-      'We use this to schedule your Monday projection at the right local time.',
+      'We use this to schedule your daily projection at the right local time.',
     emailLabel: 'Email address',
     passwordLabel: 'Password',
     whatsappLabel: 'WhatsApp number',
@@ -717,17 +718,17 @@ const englishMessages: MessageSection = {
     prepBadge: 'Fortune ignition',
     prepTitle: 'Getting your fortune ready...',
     prepSubtitle:
-      'We are binding your chosen delivery channel to this week’s ritual cadence and preparing your subscription activation step.',
+      'We are binding your chosen delivery channel to your daily luck cadence and preparing your subscription activation step.',
     preparationSteps: [
       'Choosing your delivery ritual',
       'Binding your release timing',
-      'Charging Monday optimism',
+      'Charging daily abundance',
       'Preparing your activation gate',
     ],
     editBadge: 'Delivery settings',
     createBadge: 'Onboarding step 1',
-    editTitle: 'Update where Trimry should deliver your weekly ritual',
-    createTitle: 'How should Trimry deliver your weekly ritual?',
+    editTitle: 'Update where Trimry should deliver your daily projection',
+    createTitle: 'How should Trimry deliver your daily projection?',
     editSubtitle:
       'Change your delivery preference anytime. Use email, WhatsApp, or keep both channels active.',
     createSubtitle:
@@ -746,8 +747,8 @@ const englishMessages: MessageSection = {
     setupSubtitle:
       'Email goes to your inbox. WhatsApp stays optional unless you turn it on.',
     channelLabel: 'Delivery channel',
-    mondayTimeLabel: 'Monday projection time',
-    mondayTimeHint: 'Scheduled for Mondays at {time} in {zone}.',
+    mondayTimeLabel: 'Daily projection time',
+    mondayTimeHint: 'Scheduled every day at {time} in {zone}.',
     emailDeliveryLabel: 'Email delivery',
     whatsappOffHint:
       'WhatsApp is off by default. Turn it on only if you want phone delivery too.',
@@ -766,15 +767,15 @@ const englishMessages: MessageSection = {
     loadError: 'Unable to load your activation step right now.',
     unavailable: 'Unable to continue right now.',
     badge: 'Activation gate',
-    title: 'Your weekly luck ritual is ready.',
+    title: 'Your daily luck guide is ready.',
     subtitle:
-      'See your lucky days before you pay. Email is the default channel; WhatsApp stays optional.',
+      'See today’s signal before you pay. Daily delivery can run by email, WhatsApp, or both.',
     cards: [
-      'Free sample preview uses the same Monday cadence.',
-      'Email is the default. WhatsApp stays optional.',
+      'Free sample preview uses the same daily signal system.',
+      'Email is the default. WhatsApp can be agreed after activation.',
       'Stripe opens next with secure hosted checkout.',
     ],
-    primaryButton: 'Unlock weekly forecast',
+    primaryButton: 'Unlock daily guidance',
     secondaryButton: 'Change delivery settings',
     snapshotTitle: 'Your activation snapshot',
     deliveryPreferenceLabel: 'Delivery preference',
@@ -784,13 +785,13 @@ const englishMessages: MessageSection = {
     billingLabel: 'Billing',
     billingValue: '{billingInline}',
     previewBadge: 'Free sample',
-    previewTitle: 'What your weekly ritual looks like',
+    previewTitle: 'What your daily guidance looks like',
     previewLabel: 'Preview',
-    previewDayLabel: 'Weekly signal',
+    previewDayLabel: 'Daily signal',
     emailFirstTitle: 'Email-first delivery',
     whyItWorksLabel: 'Why it works',
     whyItWorksText:
-      'The ritual stays effective because the weekly signal is simple, consistent, and easy to remember.',
+      'The guidance stays effective because the daily signal is simple, consistent, and easy to remember.',
     carouselBadge: 'Momentum psychology',
     carouselTitle: 'Luck gets stronger when your mind starts moving with it.',
     carouselSubtitle:
@@ -808,17 +809,17 @@ const englishMessages: MessageSection = {
     openError: 'Unable to open Stripe checkout right now.',
     resumeTitle: 'Resume your subscription',
     resumeSubtitle:
-      'The weekly ritual is still waiting. Continue to Stripe to finish payment and unlock delivery.',
+      'Your daily guidance is still waiting. Continue to Stripe to finish payment and unlock delivery.',
     resumeButton: 'Resume subscription',
     resumeHint: 'Secure Stripe checkout. Cancel anytime.',
     deliveryLabel: 'Delivery channel',
-    timingLabel: 'Monday timing',
+    timingLabel: 'Daily timing',
     helper:
       'If nothing happens, wait a second or reload this page. Stripe checkout is being created securely from the API.',
   },
   dashboard: {
     title: 'Your subscription dashboard',
-    intro: 'Manage your delivery channels and weekly Trimry plan.',
+    intro: 'Manage your delivery channels and daily Trimry plan.',
     adminBadge: 'Admin account',
     loading: 'Loading your account...',
     noData: 'Sign in to access your dashboard.',
@@ -828,7 +829,7 @@ const englishMessages: MessageSection = {
       sends: 'Sends',
     },
     status: 'Status',
-    nextMessage: 'Next Monday message',
+    nextMessage: 'Next daily message',
     subscribeButton: 'Activate subscription',
     noSubscription: 'You do not have an active subscription yet.',
     paymentPending: 'Payment pending',
@@ -837,9 +838,9 @@ const englishMessages: MessageSection = {
       'Stripe reported a successful checkout. We are syncing your subscription now.',
     profileTitle: 'Account profile',
     profileSubtitle:
-      'Update your identity details and the time zone used for your weekly projection.',
+      'Update your identity details and the time zone used for your daily projection.',
     profileSave: 'Save profile',
-    profileTimeZoneHint: 'Monday delivery is calculated from this IANA time zone.',
+    profileTimeZoneHint: 'Daily delivery is calculated from this IANA time zone.',
     projectionCalendar: {
       title: 'Projection calendar',
       subtitle:
@@ -875,9 +876,9 @@ const englishMessages: MessageSection = {
       'Delete your account? This will sign you out immediately and stop your current delivery channels.',
     deleteError: 'Unable to delete your account right now.',
     noSubscriptionSubtitle:
-      '{billingCompact} · weekly ritual forecast by email, WhatsApp, or both',
-    mondayProjectionTime: 'Monday projection time',
-    sentOnMondaysAt: 'Sent on Mondays at {time} in {zone}.',
+      '{billingCompact} · daily projection by email, WhatsApp, or both',
+    mondayProjectionTime: 'Daily projection time',
+    sentOnMondaysAt: 'Sent every day at {time} in {zone}.',
     emailDeliveryLabel: 'Email delivery',
     whatsappOffSetup:
       'WhatsApp is off. You can activate by email only or re-enable it at any time.',
@@ -889,23 +890,23 @@ const englishMessages: MessageSection = {
       'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
     pendingTitle: 'Activate your Trimry subscription',
     pendingSubtitle:
-      'Your delivery preference is already saved. Before payment, we take you through a short activation step that frames the weekly ritual and then opens secure Stripe checkout.',
+      'Your delivery preference is already saved. Before payment, we take you through a short activation step that frames the daily guidance and then opens secure Stripe checkout.',
     pendingDeliveryPreferenceLabel: 'Delivery preference',
     pendingEmailDeliveryLabel: 'Email delivery',
     pendingProjectionTimingLabel: 'Projection timing',
     pendingWhatsappLabel: 'WhatsApp delivery',
     continueActivation: 'Continue activation',
     changeDeliverySettings: 'Change delivery settings',
-    activePlanTitle: 'Trimry Weekly Fortune Delivery',
+    activePlanTitle: 'Trimry Daily Fortune Delivery',
     canceledPlanTitle: 'Your Trimry subscription is canceled',
     canceledNote:
-      'You can reactivate anytime from this account. Your delivery channels and Monday timing are still saved below.',
+      'You can reactivate anytime from this account. Your delivery channels and daily timing are still saved below.',
     activeNote:
       'Cancel anytime from this dashboard. If you return later, you can reactivate from the same account.',
     deliveryPreferenceLabel: 'Delivery preference',
     nextMessageIfReactivated: 'If reactivated today, your next message would be',
-    weeklyProjectionTimeLabel: 'Weekly projection time',
-    futureMessagesHint: 'Future weekly messages follow this hour in {zone}.',
+    weeklyProjectionTimeLabel: 'Daily projection time',
+    futureMessagesHint: 'Future daily messages follow this hour in {zone}.',
     whatsappOffActive:
       'WhatsApp is off for this subscription. Turn it on above if you want phone delivery too.',
     saveDeliverySettings: 'Save delivery settings',
@@ -1151,12 +1152,12 @@ const englishMessages: MessageSection = {
       {
         title: '1. Service description',
         body:
-          'Trimry provides weekly timing guidance for haircuts, shaving, nail cutting, and symbolic release routines inspired by Tibetan calendar traditions. Delivery is available by email, WhatsApp, or both.',
+          'Trimry provides daily timing guidance for fortune, grooming, energy, relationships, money, and symbolic release routines. Delivery is available by email, WhatsApp, or both, and subscribers can view the full monthly calendar on the web.',
       },
       {
         title: '2. Subscription and billing',
         body:
-          'The Trimry plan is billed at {billingLegal}. It includes one ritual forecast delivered each Monday by your selected channel: email, WhatsApp, or both. You can cancel your subscription at any time from your account dashboard. If you decide to come back later, you can reactivate from the same account by starting a new Stripe checkout. Billing details, payment methods, invoices, and historical billing records remain available through the Stripe-hosted billing tools linked from your dashboard.',
+          'The Trimry plan is billed at {billingLegal}. It includes a daily projection reminder delivered by your selected or agreed channel: email, WhatsApp, or both. You can cancel your subscription at any time from your account dashboard. If you decide to come back later, you can reactivate from the same account by starting a new Stripe checkout. Billing details, payment methods, invoices, and historical billing records remain available through the Stripe-hosted billing tools linked from your dashboard.',
       },
       {
         title: '3. WhatsApp consent and contact rules',
@@ -1198,7 +1199,7 @@ const englishMessages: MessageSection = {
       {
         title: '2. How we use data',
         body:
-          'We use data to authenticate accounts, secure sessions, manage subscriptions, send weekly content, process billing and account operations, handle support, and monitor service reliability and fraud/security risks.',
+          'We use data to authenticate accounts, secure sessions, manage subscriptions, send daily content, personalize zodiac and Chinese calendar summaries, process billing and account operations, handle support, and monitor service reliability and fraud/security risks.',
       },
       {
         title: '3. WhatsApp communications and consent',
@@ -1300,7 +1301,7 @@ const englishMessages: MessageSection = {
       'When people feel favored by timing, they carry more confidence, notice more openings, and move with less hesitation.',
     effectTitle: 'Trimry effect',
     effectText:
-      'The weekly message is designed to sharpen attention, reinforce optimism, and turn ritual into momentum you can actually feel.',
+      'The daily message is designed to sharpen attention, reinforce optimism, and turn ritual into momentum you can actually feel.',
     sequenceLabel: 'Quote sequence',
   },
   notFound: {
@@ -1349,9 +1350,10 @@ const spanishMessages: MessageSection = {
     contact: 'Contacto',
   },
   hero: {
-    badge: 'Ritual diario de suerte',
-    title: '¿Quieres tener más suerte? 🍀',
-    subtitle: 'Descubre tus días con suerte para dinero, pelo, relaciones y energía.',
+    badge: 'Your Luck Guide',
+    title: 'Trimry, tu guía de suerte',
+    subtitle:
+      'Proyecciones diarias por email o WhatsApp, más un calendario mensual completo de señales de fortuna en la web.',
     primary: 'Revisar mi suerte de hoy',
     secondary: 'Preguntar al Luck Guru',
   },
@@ -1359,7 +1361,7 @@ const spanishMessages: MessageSection = {
     releaseBadge: 'Soltar también tiene su momento',
     releaseText:
       'Un corte puede ser cosmético. En el momento correcto, se siente como un corte limpio con la duda, el peso y la energía estancada.',
-    releaseChannels: 'Elige recibirlo por email, WhatsApp o ambos.',
+    releaseChannels: 'Elige recibirlo todos los días por email, WhatsApp o ambos.',
     releaseImageAlt:
       'Una persona cortándose el pelo mientras surge una energía luminosa del corte, como una liberación ritual.',
     beliefBadge: 'Motor de la creencia',
@@ -1369,7 +1371,7 @@ const spanishMessages: MessageSection = {
     teaserEyebrow: 'Avance cósmico diario',
     couldBe: 'Podría ser...',
     teaserNote:
-      'Suscríbete para revelar la transmisión real día por día y recibir la guía del lunes por email, WhatsApp o ambos.',
+      'Suscríbete para revelar la transmisión real día por día y recibir un recordatorio diario por email, WhatsApp o ambos.',
     teaserButton: 'Revelar mi pronóstico real',
     seoGuideBadge: 'Guía SEO',
     seoGuideTitle: '¿Quieres la guía completa de días buenos y malos?',
@@ -1416,34 +1418,34 @@ const spanishMessages: MessageSection = {
     ],
   },
   story: {
-    title: 'Diseñado para sentirse como impulso, no como superstición.',
+    title: 'Tu guía de suerte para todos los días, no solo un ritual ocasional.',
     subtitle:
-      'Trimry mezcla ritual, calendario y recordatorios prácticos para que tu semana empiece con intención y confianza.',
-    card1Title: 'Ritmo inspirado en sutras',
+      'Trimry mezcla timing ritual, zodíaco, energía del calendario chino y recordatorios prácticos para mantenerte alineado con la suerte.',
+    card1Title: 'Señales diarias de fortuna',
     card1Text:
-      'Nuestro patrón semanal sigue una interpretación menos conocida de las tradiciones tibetanas del calendario.',
-    card2Title: 'Un mensaje, cero ruido',
+      'Cada día recibe una señal Buena, Mala o Rara para acción, liberación, dinero, relaciones y energía.',
+    card2Title: 'Un recordatorio diario',
     card2Text:
-      'Cada lunes: un pronóstico ritual conciso entregado por email, WhatsApp o ambos.',
-    card3Title: 'Rituales de liberación',
+      'Los suscriptores reciben la proyección del día por email o WhatsApp, según el canal acordado.',
+    card3Title: 'Calendario mensual',
     card3Text:
-      'Más allá del grooming, cada señal sugiere fortuna, relaciones y oportunidades de dinero.',
+      'El dashboard web abre el mes completo para ver días favorables y cautelosos antes de que lleguen.',
   },
   pricing: {
     title: 'Plan mensual simple',
     subtitle:
       'Crea tu cuenta primero, elige tu canal de entrega y revisa el checkout antes de suscribirte.',
-    planTitle: 'Entrega semanal de fortuna',
+    planTitle: 'Entrega diaria de fortuna',
     billing: 'Primero la cuenta. Checkout seguro después de configurar.',
-    include1: '1 pronóstico ritual cada lunes por email, WhatsApp o ambos',
-    include2: 'Señales de días buenos, malos y raros con pistas prácticas sobre suerte, dinero y amor',
-    include3: 'Elige tu canal de entrega, actualízalo cuando quieras y cancela cuando te acomode',
+    include1: 'Un recordatorio diario con tu proyección por email, WhatsApp o ambos',
+    include2: 'Calendario mensual completo con señales Buenas, Malas y Raras',
+    include3: 'Resumen personal de zodíaco y calendario chino con detalle premium al suscribirte',
     cta: 'Crear mi cuenta',
   },
   weekly: {
     title: 'Predicción cósmica de hoy',
     subtitle:
-      'Un avance rotativo sobre fortuna, amor, dinero y suerte. Suscríbete para desbloquear la transmisión semanal real.',
+      'Un avance rotativo sobre fortuna, amor, dinero y suerte. Suscríbete para desbloquear la transmisión mensual completa.',
     good: 'Bueno',
     bad: 'Malo',
     rare: 'Raro',
@@ -1453,30 +1455,30 @@ const spanishMessages: MessageSection = {
     q1: '¿Es una recomendación médica o científica?',
     a1: 'No. Trimry es un servicio cultural y ritual de timing para rutinas personales.',
     q2: '¿Cuándo recibo el mensaje?',
-    a2: 'Cada lunes, a la hora local que elijas, se entrega un pronóstico ritual con el resumen de tu semana por el canal que selecciones.',
+    a2: 'Los suscriptores reciben un recordatorio diario con la proyección del día por el canal acordado: email, WhatsApp o ambos.',
     q3: '¿Cómo administro el cobro?',
     a3: 'Desde tu panel, donde puedes cancelar cuando quieras, reactivar después y también abrir el portal seguro de Stripe para métodos de pago y facturas.',
     q4: '¿Qué zona horaria se usa?',
-    a4: 'Usamos la zona horaria IANA guardada en tu cuenta y puedes cambiar tanto la zona horaria como la hora local del lunes desde tu panel.',
+    a4: 'Usamos la zona horaria IANA guardada en tu cuenta y puedes cambiar tanto la zona horaria como la hora diaria de entrega desde tu panel.',
   },
   cta: {
-    title: 'Empieza tu semana con intención.',
+    title: 'Mantente alineado con la suerte todos los días.',
     subtitle:
-      'Crea tu cuenta Trimry, elige email, WhatsApp o ambos, y recibe tu primera guía de días con suerte el próximo lunes.',
+      'Crea tu cuenta Trimry, elige email, WhatsApp o ambos, y mantén tus señales diarias de fortuna cerca.',
     button: 'Abrir mi cuenta',
   },
   auth: {
     registerTitle: 'Empieza en 10 segundos',
     registerSubtitle:
-      'Ingresa tu nombre y contacto. Primero recibes valor, luego personalizamos más.',
+      'Ingresa tu nombre, fecha de nacimiento y contacto para abrir tu código personal de suerte.',
     loginTitle: 'Bienvenido de vuelta',
-    loginSubtitle: 'Ingresa para administrar tu entrega ritual semanal.',
+    loginSubtitle: 'Ingresa para administrar tu entrega diaria de suerte.',
     firstNameLabel: 'Nombre',
     lastNameLabel: 'Apellido',
     birthDateLabel: 'Fecha de nacimiento',
     timeZoneLabel: 'Zona horaria',
     timeZoneHint:
-      'Usamos esto para programar tu proyección del lunes a la hora local correcta.',
+      'Usamos esto para programar tu proyección diaria a la hora local correcta.',
     emailLabel: 'Correo electrónico',
     passwordLabel: 'Contraseña',
     whatsappLabel: 'Número de WhatsApp',
@@ -1501,17 +1503,17 @@ const spanishMessages: MessageSection = {
     prepBadge: 'Activación de fortuna',
     prepTitle: 'Preparando tu fortuna...',
     prepSubtitle:
-      'Estamos uniendo tu canal elegido con el ritmo ritual de esta semana y preparando el paso de activación de tu suscripción.',
+      'Estamos uniendo tu canal elegido con tu ritmo diario de suerte y preparando el paso de activación de tu suscripción.',
     preparationSteps: [
       'Eligiendo tu ritual de entrega',
       'Ajustando tu momento de liberación',
-      'Cargando el optimismo del lunes',
+      'Cargando abundancia diaria',
       'Preparando tu puerta de activación',
     ],
     editBadge: 'Ajustes de entrega',
     createBadge: 'Paso 1',
-    editTitle: 'Actualiza dónde Trimry debe entregar tu ritual semanal',
-    createTitle: '¿Cómo quieres que Trimry entregue tu ritual semanal?',
+    editTitle: 'Actualiza dónde Trimry debe entregar tu proyección diaria',
+    createTitle: '¿Cómo quieres que Trimry entregue tu proyección diaria?',
     editSubtitle:
       'Cambia tu preferencia de entrega cuando quieras. Usa email, WhatsApp o mantén ambos canales activos.',
     createSubtitle:
@@ -1530,8 +1532,8 @@ const spanishMessages: MessageSection = {
     setupSubtitle:
       'El email llega a tu inbox. WhatsApp sigue siendo opcional salvo que lo actives.',
     channelLabel: 'Canal de entrega',
-    mondayTimeLabel: 'Hora de la proyección del lunes',
-    mondayTimeHint: 'Programado para los lunes a las {time} en {zone}.',
+    mondayTimeLabel: 'Hora de la proyección diaria',
+    mondayTimeHint: 'Programado todos los días a las {time} en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffHint:
       'WhatsApp está desactivado por defecto. Actívalo solo si también quieres entrega al teléfono.',
@@ -1550,15 +1552,15 @@ const spanishMessages: MessageSection = {
     loadError: 'No pudimos cargar tu activación en este momento.',
     unavailable: 'No es posible continuar ahora.',
     badge: 'Puerta de activación',
-    title: 'Tu ritual semanal de suerte está listo.',
+    title: 'Tu guía diaria de suerte está lista.',
     subtitle:
-      'Mira tus dias afortunados antes de pagar. Email es el canal por defecto; WhatsApp queda opcional.',
+      'Mira la señal de hoy antes de pagar. La entrega diaria puede funcionar por email, WhatsApp o ambos.',
     cards: [
-      'Vista previa gratuita con el mismo ritmo del lunes.',
-      'Email es el canal por defecto. WhatsApp queda opcional.',
+      'Vista previa gratuita con el mismo sistema de señal diaria.',
+      'Email es el canal por defecto. WhatsApp se puede acordar después de activar.',
       'Stripe abre despues con checkout seguro alojado.',
     ],
-    primaryButton: 'Desbloquear pronóstico semanal',
+    primaryButton: 'Desbloquear guía diaria',
     secondaryButton: 'Cambiar ajustes de entrega',
     snapshotTitle: 'Tu resumen de activación',
     deliveryPreferenceLabel: 'Preferencia de entrega',
@@ -1568,13 +1570,13 @@ const spanishMessages: MessageSection = {
     billingLabel: 'Cobro',
     billingValue: '{billingInline}',
     previewBadge: 'Muestra gratuita',
-    previewTitle: 'Como se ve tu ritual semanal',
+    previewTitle: 'Como se ve tu guía diaria',
     previewLabel: 'Vista previa',
-    previewDayLabel: 'Señal semanal',
+    previewDayLabel: 'Señal diaria',
     emailFirstTitle: 'Entrega primero por email',
     whyItWorksLabel: 'Por qué funciona',
     whyItWorksText:
-      'El ritual funciona porque la señal semanal es simple, constante y fácil de recordar.',
+      'La guía funciona porque la señal diaria es simple, constante y fácil de recordar.',
     carouselBadge: 'Psicología del impulso',
     carouselTitle: 'La suerte se vuelve más fuerte cuando tu mente empieza a moverse con ella.',
     carouselSubtitle:
@@ -1592,17 +1594,17 @@ const spanishMessages: MessageSection = {
     openError: 'No pudimos abrir el checkout de Stripe en este momento.',
     resumeTitle: 'Reanudar suscripción',
     resumeSubtitle:
-      'El ritual semanal sigue esperando. Continúa a Stripe para completar el pago y desbloquear la entrega.',
+      'Tu guía diaria sigue esperando. Continúa a Stripe para completar el pago y desbloquear la entrega.',
     resumeButton: 'Reanudar suscripción',
     resumeHint: 'Checkout seguro de Stripe. Cancela cuando quieras.',
     deliveryLabel: 'Canal de entrega',
-    timingLabel: 'Horario del lunes',
+    timingLabel: 'Horario diario',
     helper:
       'Si no pasa nada, espera un segundo o recarga esta página. El checkout de Stripe se está creando de forma segura desde la API.',
   },
   dashboard: {
     title: 'Tu panel de suscripción',
-    intro: 'Administra tus canales de entrega y tu plan semanal de Trimry.',
+    intro: 'Administra tus canales de entrega y tu plan diario de Trimry.',
     adminBadge: 'Cuenta admin',
     loading: 'Cargando tu cuenta...',
     noData: 'Ingresa para acceder a tu panel.',
@@ -1612,7 +1614,7 @@ const spanishMessages: MessageSection = {
       sends: 'Envíos',
     },
     status: 'Estado',
-    nextMessage: 'Próximo mensaje del lunes',
+    nextMessage: 'Próximo mensaje diario',
     subscribeButton: 'Activar suscripción',
     noSubscription: 'Todavía no tienes una suscripción activa.',
     paymentPending: 'Pago pendiente',
@@ -1621,9 +1623,9 @@ const spanishMessages: MessageSection = {
       'Stripe reportó un checkout exitoso. Estamos sincronizando tu suscripción ahora.',
     profileTitle: 'Perfil de cuenta',
     profileSubtitle:
-      'Actualiza tus datos de identidad y la zona horaria usada para tu proyección semanal.',
+      'Actualiza tus datos de identidad y la zona horaria usada para tu proyección diaria.',
     profileSave: 'Guardar perfil',
-    profileTimeZoneHint: 'La entrega del lunes se calcula desde esta zona horaria IANA.',
+    profileTimeZoneHint: 'La entrega diaria se calcula desde esta zona horaria IANA.',
     projectionCalendar: {
       title: 'Calendario de proyección',
       subtitle:
@@ -1660,9 +1662,9 @@ const spanishMessages: MessageSection = {
       '¿Eliminar tu cuenta? Esto cerrará tu sesión de inmediato y detendrá tus canales actuales de entrega.',
     deleteError: 'No pudimos eliminar tu cuenta en este momento.',
     noSubscriptionSubtitle:
-      '{billingCompact} · pronóstico ritual semanal por email, WhatsApp o ambos',
-    mondayProjectionTime: 'Hora de la proyección del lunes',
-    sentOnMondaysAt: 'Se envía los lunes a las {time} en {zone}.',
+      '{billingCompact} · proyección diaria por email, WhatsApp o ambos',
+    mondayProjectionTime: 'Hora de proyección diaria',
+    sentOnMondaysAt: 'Se envía todos los días a las {time} en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffSetup:
       'WhatsApp está apagado. Puedes dejar solo email o volver a habilitarlo cuando quieras.',
@@ -1674,23 +1676,23 @@ const spanishMessages: MessageSection = {
       'Confirma el consentimiento de WhatsApp antes de habilitar la entrega por WhatsApp.',
     pendingTitle: 'Activa tu suscripción Trimry',
     pendingSubtitle:
-      'Tu preferencia de entrega ya está guardada. Antes del pago, te llevamos por un paso breve de activación que enmarca el ritual semanal y luego abre el checkout seguro de Stripe.',
+      'Tu preferencia de entrega ya está guardada. Antes del pago, te llevamos por un paso breve de activación que enmarca la guía diaria y luego abre el checkout seguro de Stripe.',
     pendingDeliveryPreferenceLabel: 'Preferencia de entrega',
     pendingEmailDeliveryLabel: 'Entrega por email',
     pendingProjectionTimingLabel: 'Horario de proyección',
     pendingWhatsappLabel: 'Entrega por WhatsApp',
     continueActivation: 'Continuar activación',
     changeDeliverySettings: 'Cambiar ajustes de entrega',
-    activePlanTitle: 'Entrega semanal de fortuna Trimry',
+    activePlanTitle: 'Entrega diaria de fortuna Trimry',
     canceledPlanTitle: 'Tu suscripción Trimry está cancelada',
     canceledNote:
-      'Puedes reactivarla cuando quieras desde esta cuenta. Tus canales de entrega y el horario del lunes siguen guardados abajo.',
+      'Puedes reactivarla cuando quieras desde esta cuenta. Tus canales de entrega y el horario diario siguen guardados abajo.',
     activeNote:
       'Cancela cuando quieras desde este panel. Si vuelves después, puedes reactivarla desde la misma cuenta.',
     deliveryPreferenceLabel: 'Preferencia de entrega',
     nextMessageIfReactivated: 'Si la reactivaras hoy, tu próximo mensaje sería',
-    weeklyProjectionTimeLabel: 'Hora semanal de proyección',
-    futureMessagesHint: 'Los futuros mensajes semanales seguirán este horario en {zone}.',
+    weeklyProjectionTimeLabel: 'Hora diaria de proyección',
+    futureMessagesHint: 'Los futuros mensajes diarios seguirán este horario en {zone}.',
     whatsappOffActive:
       'WhatsApp está desactivado para esta suscripción. Actívalo arriba si también quieres entrega al teléfono.',
     saveDeliverySettings: 'Guardar ajustes de entrega',
@@ -1937,12 +1939,12 @@ const spanishMessages: MessageSection = {
       {
         title: '1. Descripción del servicio',
         body:
-          'Trimry entrega orientación semanal sobre el momento ideal para cortes de pelo, afeitado, corte de uñas y rutinas simbólicas de liberación inspiradas en tradiciones del calendario tibetano. La entrega está disponible por email, WhatsApp o ambos.',
+          'Trimry entrega orientación diaria de timing para fortuna, grooming, energía, relaciones, dinero y rutinas simbólicas de liberación. La entrega está disponible por email, WhatsApp o ambos, y los suscriptores pueden ver el calendario mensual completo en la web.',
       },
       {
         title: '2. Suscripción y cobro',
         body:
-          'El plan Trimry se cobra a {billingLegal}. Incluye un pronóstico ritual entregado cada lunes por el canal que elijas: email, WhatsApp o ambos. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
+          'El plan Trimry se cobra a {billingLegal}. Incluye un recordatorio diario con tu proyección por el canal elegido o acordado: email, WhatsApp o ambos. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
       },
       {
         title: '3. Consentimiento y contacto por WhatsApp',
@@ -1984,7 +1986,7 @@ const spanishMessages: MessageSection = {
       {
         title: '2. Cómo usamos los datos',
         body:
-          'Usamos los datos para autenticar cuentas, asegurar sesiones, administrar suscripciones, enviar contenido semanal, procesar cobros y operaciones de cuenta, atender soporte y monitorear confiabilidad del servicio y riesgos de fraude/seguridad.',
+          'Usamos los datos para autenticar cuentas, asegurar sesiones, administrar suscripciones, enviar contenido diario, personalizar resúmenes de zodíaco y calendario chino, procesar cobros y operaciones de cuenta, atender soporte y monitorear confiabilidad del servicio y riesgos de fraude/seguridad.',
       },
       {
         title: '3. WhatsApp y consentimiento',
@@ -2086,7 +2088,7 @@ const spanishMessages: MessageSection = {
       'Cuando una persona siente que el momento la favorece, carga más confianza, detecta más aperturas y se mueve con menos duda.',
     effectTitle: 'Efecto Trimry',
     effectText:
-      'El mensaje semanal está diseñado para agudizar la atención, reforzar el optimismo y convertir el ritual en un impulso que realmente se siente.',
+      'El mensaje diario está diseñado para agudizar la atención, reforzar el optimismo y convertir el ritual en un impulso que realmente se siente.',
     sequenceLabel: 'Secuencia de citas',
   },
   notFound: {

@@ -10,6 +10,7 @@ import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { apiFetch } from '@/lib/api-client'
 import { buildFortuneDay, type ActivityTone } from '@/lib/fortune'
+import { buildPersonalSignProfile } from '@/lib/personal-signs'
 import {
   fetchAccountSnapshot,
   type AccountSnapshot,
@@ -91,8 +92,8 @@ function buildUnlockLine(language: string) {
   const isSpanish = language.startsWith('es')
 
   return isSpanish
-    ? 'Desbloquea Trimry para recibir tu ritual semanal por email, WhatsApp o ambos, y activar los poderes magicos de Luck Guru en el chat.'
-    : 'Unlock Trimry to receive your weekly ritual by email, WhatsApp, or both, and unlock Luck Guru’s full magical powers in chat.'
+    ? 'Desbloquea Trimry para recibir tu proyección diaria por email, WhatsApp o ambos, abrir el calendario mensual y activar los poderes de Luck Guru.'
+    : 'Unlock Trimry to receive your daily projection by email, WhatsApp, or both, open the monthly calendar, and unlock Luck Guru’s full powers.'
 }
 
 function toneBadgeClass(tone: ActivityTone) {
@@ -200,12 +201,12 @@ function getStageCopy(language: string, stage: number, loadingPreview: boolean) 
     ? {
         eyebrow: 'Fortuna revelada',
         title: 'Esta es la senal de hoy.',
-        body: 'Desbloquea Trimry para ver la semana completa y activar los poderes de Luck Guru.',
+        body: 'Desbloquea Trimry para ver el mes completo y activar los poderes de Luck Guru.',
       }
     : {
         eyebrow: 'Fortune revealed',
         title: 'This is today’s sign.',
-        body: 'Unlock Trimry to see the full week and activate Luck Guru’s powers.',
+        body: 'Unlock Trimry to see the full month and activate Luck Guru’s powers.',
       }
 }
 
@@ -265,8 +266,15 @@ export default function TodayLuckPage() {
     () => buildStrongAndCautionLabels(language, preview.activities),
     [language, preview.activities],
   )
+  const personalSigns = useMemo(
+    () => buildPersonalSignProfile(account?.user.birthDate, language, preview.summary),
+    [account?.user.birthDate, language, preview.summary],
+  )
   const stageCopy = getStageCopy(language, stage, loadingPreview)
   const revealed = stage >= 2
+  const hasActiveSubscription =
+    account?.subscription?.status === 'active' ||
+    account?.subscription?.status === 'past_due'
 
   const actionState = useMemo(() => {
     if (!account) {
@@ -421,13 +429,13 @@ export default function TodayLuckPage() {
           </p>
           <h1 className="mt-4 max-w-2xl text-4xl leading-[1.04] text-slate-50 sm:text-5xl lg:text-6xl">
             {isSpanish
-              ? 'Luck Guru esta abriendo tu suerte.'
+              ? 'Luck Guru está abriendo tu suerte.'
               : 'Luck Guru is opening your luck.'}
           </h1>
           <p className="mt-4 max-w-lg text-base leading-7 text-slate-100/88 sm:text-lg">
             {isSpanish
-              ? 'Primero mira la senal del dia. Luego desbloquea la semana completa y sus poderes magicos en el chat.'
-              : 'First see today’s sign. Then unlock the full week and his magical powers in chat.'}
+              ? 'Primero mira la señal del día. Luego desbloquea el mes completo, tu capa zodiacal y sus poderes en el chat.'
+              : 'First see today’s sign. Then unlock the full month, your zodiac layer, and his powers in chat.'}
           </p>
         </div>
 
@@ -517,6 +525,61 @@ export default function TodayLuckPage() {
                       </span>
                     ))}
                   </div>
+
+                  {personalSigns ? (
+                    <div className="mt-5 rounded-[1.35rem] border border-amber-200/24 bg-amber-200/10 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-100/86">
+                          {isSpanish ? 'Señal personal' : 'Personal signal'}
+                        </p>
+                        <span className="rounded-full border border-cyan-100/20 bg-cyan-100/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
+                          {personalSigns.zodiac.name} · {personalSigns.chinese.name}
+                        </span>
+                      </div>
+                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                        <article className="rounded-2xl border border-cyan-100/16 bg-slate-950/34 p-3">
+                          <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                            {isSpanish ? 'Zodíaco' : 'Zodiac'}
+                          </p>
+                          <p className="mt-2 text-sm leading-6 text-slate-50">
+                            {personalSigns.projection.zodiac}
+                          </p>
+                        </article>
+                        <article className="rounded-2xl border border-cyan-100/16 bg-slate-950/34 p-3">
+                          <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                            {isSpanish ? 'Calendario chino' : 'Chinese calendar'}
+                          </p>
+                          <p className="mt-2 text-sm leading-6 text-slate-50">
+                            {personalSigns.projection.chinese}
+                          </p>
+                        </article>
+                      </div>
+                      {!hasActiveSubscription ? (
+                        <p className="mt-3 text-xs leading-5 text-amber-50/84">
+                          {isSpanish
+                            ? 'Este es solo el resumen. Suscríbete para abrir el detalle completo y ver todo el mes en calendario.'
+                            : 'This is only the summary. Subscribe to open the full detail and see the whole month calendar.'}
+                        </p>
+                      ) : (
+                        <p className="mt-3 text-xs leading-5 text-amber-50/84">
+                          {isSpanish
+                            ? 'Tu suscripción mantiene esta señal activa junto al calendario mensual y Luck Guru.'
+                            : 'Your subscription keeps this signal active with the monthly calendar and Luck Guru.'}
+                        </p>
+                      )}
+                    </div>
+                  ) : account ? (
+                    <div className="mt-5 rounded-[1.35rem] border border-cyan-100/18 bg-cyan-100/8 p-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/80">
+                        {isSpanish ? 'Señal personal pendiente' : 'Personal signal pending'}
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-slate-100/82">
+                        {isSpanish
+                          ? 'Agrega tu fecha de nacimiento en el perfil para ver tu zodíaco y calendario chino aquí.'
+                          : 'Add your date of birth in your profile to see your zodiac and Chinese calendar here.'}
+                      </p>
+                    </div>
+                  ) : null}
                 </>
               ) : (
                 <div className="today-sealed-result">
@@ -544,18 +607,18 @@ export default function TodayLuckPage() {
             <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-100/84">
               <li>
                 {isSpanish
-                  ? 'Recibes informes semanales por email, WhatsApp o ambos.'
-                  : 'You receive weekly reports by email, WhatsApp, or both.'}
+                  ? 'Recibes un recordatorio diario por email, WhatsApp o ambos.'
+                  : 'You receive one daily reminder by email, WhatsApp, or both.'}
               </li>
               <li>
                 {isSpanish
-                  ? 'Ves dias buenos, malos y raros antes de que lleguen.'
+                  ? 'Ves días buenos, malos y raros en el calendario mensual.'
                   : 'You see good, bad, and rare days before they arrive.'}
               </li>
               <li>
                 {isSpanish
-                  ? 'Luck Guru desbloquea sus poderes completos para hablar contigo.'
-                  : 'Luck Guru unlocks his full powers to speak with you.'}
+                  ? 'Tu zodíaco y calendario chino abren una capa personal de lectura.'
+                  : 'Your zodiac and Chinese calendar open a personal reading layer.'}
               </li>
             </ul>
           </div>

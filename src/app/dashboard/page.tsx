@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import { AdminSendCampaigns } from '@/components/dashboard/admin-send-campaigns'
 import { AdminPredictionCalendar } from '@/components/dashboard/admin-prediction-calendar'
+import { DateOfBirthPicker } from '@/components/date-of-birth-picker'
 import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
 import { TimeZoneSelect } from '@/components/time-zone-select'
@@ -24,6 +25,7 @@ import {
   type MemberPredictionMonth,
   type MemberPredictionTone,
 } from '@/lib/member-predictions'
+import { buildPersonalSignProfile } from '@/lib/personal-signs'
 import {
   DEFAULT_WEEKLY_DELIVERY_HOUR,
   formatDeliveryHourLabel,
@@ -476,6 +478,10 @@ export default function DashboardPage() {
       }),
     [projectionLocale],
   )
+  const profileSigns = useMemo(
+    () => buildPersonalSignProfile(profileBirthDate, language),
+    [language, profileBirthDate],
+  )
 
   const runAction = async (
     action: 'subscribe' | 'update-delivery',
@@ -841,13 +847,26 @@ export default function DashboardPage() {
 
           <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
             {messages.auth.birthDateLabel}
-            <input
-              type="date"
-              value={profileBirthDate}
-              onChange={(event) => setProfileBirthDate(event.target.value)}
-              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-            />
+            <div className="mt-2">
+              <DateOfBirthPicker
+                idPrefix="profile-birth"
+                value={profileBirthDate}
+                onChange={setProfileBirthDate}
+                language={language}
+              />
+            </div>
           </label>
+
+          {profileSigns ? (
+            <div className="sm:col-span-2 rounded-[1.35rem] border border-amber-200/24 bg-amber-200/10 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-100/86">
+                {language === 'es' ? 'Tu código de fortuna' : 'Your fortune code'}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-100/84">
+                {profileSigns.zodiac.name} · {profileSigns.chinese.name}
+              </p>
+            </div>
+          ) : null}
 
           <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
             {messages.auth.timeZoneLabel}

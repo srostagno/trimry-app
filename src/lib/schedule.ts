@@ -184,6 +184,40 @@ export function nextWeeklyDeliveryAt(input: {
   )
 }
 
+export function nextDailyDeliveryAt(input: {
+  referenceDate?: Date
+  timeZone: string
+  deliveryHourLocal: number
+}) {
+  const referenceDate = input.referenceDate ?? new Date()
+  const timeZone = normalizeTimeZone(input.timeZone)
+  const deliveryHourLocal =
+    Number.isInteger(input.deliveryHourLocal) &&
+    input.deliveryHourLocal >= 0 &&
+    input.deliveryHourLocal <= 23
+      ? input.deliveryHourLocal
+      : DEFAULT_WEEKLY_DELIVERY_HOUR
+  const zonedNow = getZonedParts(referenceDate, timeZone)
+  const currentMinutes = zonedNow.hour * 60 + zonedNow.minute
+  const targetMinutes = deliveryHourLocal * 60
+  const deltaDays = currentMinutes < targetMinutes ? 0 : 1
+  const localDateCandidate = new Date(
+    Date.UTC(zonedNow.year, zonedNow.month - 1, zonedNow.day + deltaDays),
+  )
+
+  return zonedTimeToUtc(
+    {
+      year: localDateCandidate.getUTCFullYear(),
+      month: localDateCandidate.getUTCMonth() + 1,
+      day: localDateCandidate.getUTCDate(),
+      hour: deliveryHourLocal,
+      minute: 0,
+      second: 0,
+    },
+    timeZone,
+  )
+}
+
 export function deriveDeliveryHourLocal(nextMessageAt: Date, timeZone?: string) {
   return getZonedParts(nextMessageAt, normalizeTimeZone(timeZone)).hour
 }

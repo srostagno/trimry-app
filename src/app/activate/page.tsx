@@ -132,20 +132,20 @@ export default function ActivationGatewayPage() {
             </p>
             <h1 className="max-w-2xl text-4xl leading-[1.04] text-slate-50 sm:text-5xl lg:text-6xl">
               {isSpanish
-                ? 'El Luck Guru ya dejó lista tu aventura de fortuna.'
-                : 'Luck Guru has already prepared your fortune adventure.'}
+                ? 'Trimry ya preparó tu guía diaria de suerte.'
+                : 'Trimry has prepared your daily luck guide.'}
             </h1>
             <p className="max-w-xl text-base text-slate-100/86 sm:text-lg">
               {isSpanish
-                ? 'Después de pagar, eliges cómo quieres recibir Trimry: email, WhatsApp o ambos. También desbloqueas los poderes mágicos completos del Luck Guru en el chat.'
-                : 'After payment, you choose how Trimry reaches you: email, WhatsApp, or both. You also unlock Luck Guru’s full magical powers in chat.'}
+                ? 'Después de pagar, recibes todos los días tu proyección por email o WhatsApp según acordemos. También desbloqueas el calendario mensual completo y los poderes de Luck Guru.'
+                : 'After payment, you receive your daily projection by email or WhatsApp as agreed. You also unlock the full monthly calendar and Luck Guru’s powers.'}
             </p>
 
             <div className="grid gap-4 sm:grid-cols-3">
               {[
-                isSpanish ? 'Email primero' : 'Email first',
-                isSpanish ? 'WhatsApp opcional' : 'WhatsApp optional',
-                isSpanish ? 'Ambos cuando quieras' : 'Both when you want',
+                isSpanish ? 'Recordatorio diario' : 'Daily reminder',
+                isSpanish ? 'Email o WhatsApp' : 'Email or WhatsApp',
+                isSpanish ? 'Calendario mensual' : 'Monthly calendar',
               ].map((item) => (
                 <div
                   key={item}
@@ -158,23 +158,23 @@ export default function ActivationGatewayPage() {
 
             <div className="rounded-[1.7rem] border border-cyan-200/18 bg-slate-950/42 p-4 sm:p-5">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/78">
-                {isSpanish ? 'Tu ritual semanal incluye' : 'Your weekly ritual includes'}
+                {isSpanish ? 'Tu guía diaria incluye' : 'Your daily guide includes'}
               </p>
               <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-100/84">
                 <li>
                   {isSpanish
-                    ? 'Días buenos, raros y difíciles para cada semana.'
-                    : 'Good, rare, and challenging days for every week.'}
+                    ? 'La proyección del día enviada por el canal acordado.'
+                    : 'The day’s projection sent through the agreed channel.'}
                 </li>
                 <li>
                   {isSpanish
-                    ? 'Consejo del Luck Guru con sus poderes completos ya desbloqueados.'
-                    : 'Luck Guru guidance with its full powers unlocked.'}
+                    ? 'Calendario mensual completo con días buenos, malos y raros.'
+                    : 'Full monthly calendar with good, bad, and rare days.'}
                 </li>
                 <li>
                   {isSpanish
-                    ? 'Informe por correo y canales opcionales después de desbloquear.'
-                    : 'Reports by email with optional channels after unlock.'}
+                    ? 'Resumen personal de zodíaco y calendario chino con detalle premium.'
+                    : 'Personal zodiac and Chinese calendar summary with premium detail.'}
                 </li>
               </ul>
             </div>
@@ -206,7 +206,7 @@ export default function ActivationGatewayPage() {
 
           <div className="rounded-[2rem] border border-cyan-200/18 bg-slate-950/46 p-4 sm:p-5">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-100/84">
-              {isSpanish ? 'Vista previa semanal' : 'Weekly preview'}
+              {isSpanish ? 'Vista previa diaria' : 'Daily preview'}
             </p>
             <div className="mt-4 grid gap-3">
               {sampleFortune.map((day) => (

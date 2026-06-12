@@ -12,6 +12,9 @@ export const API_BASE_URL = (
 
 type ApiErrorPayload = {
   message?: string
+  error?: {
+    message?: string
+  }
 }
 
 let refreshPromise: Promise<boolean> | null = null
@@ -96,10 +99,34 @@ export async function readApiError(
   response: Response,
   fallback: string,
 ) {
+  const statusLabel = `HTTP ${response.status}${
+    response.statusText ? ` ${response.statusText}` : ''
+  }`
+
   try {
-    const payload = (await response.json()) as ApiErrorPayload
-    return payload.message ?? fallback
+    const rawBody = await response.text()
+
+    if (!rawBody.trim()) {
+      return `${fallback} (${statusLabel})`
+    }
+
+    try {
+      const payload = JSON.parse(rawBody) as ApiErrorPayload
+      const message = payload.message ?? payload.error?.message
+
+      return message?.trim() || `${fallback} (${statusLabel})`
+    } catch {
+      const preview = rawBody
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 280)
+
+      return preview
+        ? `${fallback} (${statusLabel}): ${preview}`
+        : `${fallback} (${statusLabel})`
+    }
   } catch {
-    return fallback
+    return `${fallback} (${statusLabel})`
   }
 }

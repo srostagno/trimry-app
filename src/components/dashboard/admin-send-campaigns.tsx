@@ -1096,13 +1096,17 @@ export function AdminSendCampaigns() {
     setSuccess('')
 
     try {
+      const dailyProjectionTestFallback =
+        language === 'es'
+          ? 'No se pudo enviar el test de WhatsApp diario.'
+          : 'Unable to send the daily WhatsApp test.'
       const response = await sendAdminDailyProjectionTemplateTest(
         {
           recipient: dailyProjectionTestRecipient,
           externalTemplateName: dailyProjectionTemplateName,
           languageCode: dailyProjectionTemplateLanguage,
         },
-        messages.dashboard.sendCampaigns.loadError,
+        dailyProjectionTestFallback,
       )
       const fallbackBirthDateHint = response.usedFallbackBirthDate
         ? language === 'es'

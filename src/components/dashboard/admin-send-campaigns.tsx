@@ -465,9 +465,9 @@ export function AdminSendCampaigns() {
   const [dailyProjectionTestRecipient, setDailyProjectionTestRecipient] =
     useState('')
   const [dailyProjectionTemplateName, setDailyProjectionTemplateName] =
-    useState('trimry_daily_projections')
+    useState('trimry_daily_projection_1')
   const [dailyProjectionTemplateLanguage, setDailyProjectionTemplateLanguage] =
-    useState('en')
+    useState('en_US')
   const [weeklyDispatchJob, setWeeklyDispatchJob] =
     useState<WeeklyDispatchJob | null>(null)
   const [weeklyDispatchPollingError, setWeeklyDispatchPollingError] =
@@ -1109,14 +1109,20 @@ export function AdminSendCampaigns() {
           ? ' Se usó fecha de nacimiento de ejemplo porque tu cuenta admin no tiene una guardada.'
           : ' A sample birth date was used because your admin account has no saved birth date.'
         : ''
+      const languageHint =
+        response.requestedLanguageCode !== response.languageCode
+          ? language === 'es'
+            ? ` Idioma usado: ${response.languageCode}.`
+            : ` Language used: ${response.languageCode}.`
+          : ''
       const successMessage =
         language === 'es'
           ? `Template diario enviado como test para ${response.dayKey}. Meta message id: ${
               response.providerMessageId ?? 'pendiente'
-            }.${fallbackBirthDateHint}`
+            }.${languageHint}${fallbackBirthDateHint}`
           : `Daily template test sent for ${response.dayKey}. Meta message id: ${
               response.providerMessageId ?? 'pending'
-            }.${fallbackBirthDateHint}`
+            }.${languageHint}${fallbackBirthDateHint}`
 
       setSuccess(successMessage)
     } catch (nextError) {
@@ -1464,8 +1470,8 @@ export function AdminSendCampaigns() {
 
           <p className="cosmic-shell-meta mt-3 text-xs">
             {language === 'es'
-              ? 'El nombre default asume que Meta lo guardó como trimry_daily_projections. Si en WhatsApp Manager aparece otro nombre exacto, cámbialo aquí antes del test.'
-              : 'The default name assumes Meta stored it as trimry_daily_projections. If WhatsApp Manager shows a different exact name, change it here before testing.'}
+              ? 'El nombre default asume que Meta lo guardó como trimry_daily_projection_1 en en_US. Si en WhatsApp Manager aparece otro nombre o idioma exacto, cámbialo aquí antes del test.'
+              : 'The default assumes Meta stored it as trimry_daily_projection_1 in en_US. If WhatsApp Manager shows a different exact name or language, change it here before testing.'}
           </p>
         </div>
 

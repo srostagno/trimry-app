@@ -465,7 +465,7 @@ export function AdminSendCampaigns() {
   const [dailyProjectionTestRecipient, setDailyProjectionTestRecipient] =
     useState('')
   const [dailyProjectionTemplateName, setDailyProjectionTemplateName] =
-    useState('trimry_daily_projection_1')
+    useState('daily_projection_1')
   const [dailyProjectionTemplateLanguage, setDailyProjectionTemplateLanguage] =
     useState('en_US')
   const [weeklyDispatchJob, setWeeklyDispatchJob] =
@@ -1470,8 +1470,8 @@ export function AdminSendCampaigns() {
 
           <p className="cosmic-shell-meta mt-3 text-xs">
             {language === 'es'
-              ? 'El nombre default asume que Meta lo guardó como trimry_daily_projection_1 en en_US. Si en WhatsApp Manager aparece otro nombre o idioma exacto, cámbialo aquí antes del test.'
-              : 'The default assumes Meta stored it as trimry_daily_projection_1 in en_US. If WhatsApp Manager shows a different exact name or language, change it here before testing.'}
+              ? 'El nombre default asume que Meta lo guardó como daily_projection_1 en en_US. Si WhatsApp Manager muestra otro idioma exacto, cámbialo aquí antes del test.'
+              : 'The default assumes Meta stored it as daily_projection_1 in en_US. If WhatsApp Manager shows a different exact language, change it here before testing.'}
           </p>
         </div>
 

@@ -322,6 +322,7 @@ export async function sendAdminDailyProjectionTemplateTest(
     templateName: string
     languageCode: string
     requestedLanguageCode: string
+    preferredLanguageCode: string
     dayKey: string
     usedFallbackBirthDate: boolean
     variableValues: Record<string, string>

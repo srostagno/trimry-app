@@ -447,7 +447,7 @@ export function AdminSendCampaigns() {
 
   const [whatsappPhoneNumberId, setWhatsappPhoneNumberId] = useState('')
   const [whatsappGraphApiVersion, setWhatsappGraphApiVersion] =
-    useState('v23.0')
+    useState('v25.0')
   const [whatsappAccessToken, setWhatsappAccessToken] = useState('')
   const [mailersendFromEmail, setMailersendFromEmail] = useState('')
   const [mailersendFromName, setMailersendFromName] = useState('')
@@ -467,7 +467,7 @@ export function AdminSendCampaigns() {
   const [dailyProjectionTemplateName, setDailyProjectionTemplateName] =
     useState('daily_projection_1')
   const [dailyProjectionTemplateLanguage, setDailyProjectionTemplateLanguage] =
-    useState('en_US')
+    useState('en')
   const [weeklyDispatchJob, setWeeklyDispatchJob] =
     useState<WeeklyDispatchJob | null>(null)
   const [weeklyDispatchPollingError, setWeeklyDispatchPollingError] =
@@ -572,7 +572,7 @@ export function AdminSendCampaigns() {
       setDeliveryAutomation(response.deliveryAutomation)
       setWhatsappPhoneNumberId(response.settings.whatsapp.phoneNumberId)
       setWhatsappGraphApiVersion(
-        response.settings.whatsapp.graphApiVersion || 'v23.0',
+        response.settings.whatsapp.graphApiVersion || 'v25.0',
       )
       setMailersendFromEmail(response.settings.mailersend.fromEmail)
       setMailersendFromName(response.settings.mailersend.fromName)
@@ -1474,8 +1474,8 @@ export function AdminSendCampaigns() {
 
           <p className="cosmic-shell-meta mt-3 text-xs">
             {language === 'es'
-              ? 'El nombre default asume que Meta lo guardó como daily_projection_1 en en_US. Si WhatsApp Manager muestra otro idioma exacto, cámbialo aquí antes del test.'
-              : 'The default assumes Meta stored it as daily_projection_1 in en_US. If WhatsApp Manager shows a different exact language, change it here before testing.'}
+              ? 'El default usa daily_projection_1 en en, igual que el curl validado. Si WhatsApp Manager muestra otro idioma exacto, cámbialo aquí antes del test.'
+              : 'The default uses daily_projection_1 in en, matching the validated curl. If WhatsApp Manager shows a different exact language, change it here before testing.'}
           </p>
         </div>
 

@@ -289,7 +289,10 @@ export default function DeliverySettingsPage() {
                   className="cosmic-input block w-full rounded-xl px-4 py-3"
                 />
                 <p className="mt-2 text-xs text-slate-100/70">
-                  {formatDeliveryHourLabel(deliveryHourLocal, language)} · {account.user.timeZone}
+                  {formatDeliveryHourLabel(deliveryHourLocal, language)} ·{' '}
+                  {account.subscription?.timeZone ||
+                    account.user.timeZone ||
+                    'America/Santiago'}
                 </p>
               </div>
 

@@ -108,6 +108,24 @@ export type WeeklyDispatchJobStatus =
   | 'completed'
   | 'failed'
 
+export type WeeklyDispatchChannelResult = 'sent' | 'skipped' | 'failed'
+
+export type WeeklyDispatchJobResultItem = {
+  subscriptionId: string
+  userId: string
+  recipientLabel: string | null
+  deliveryPreference: 'email' | 'whatsapp' | 'both'
+  dueAt: string
+  nextMessageAt: string | null
+  status: 'processed' | 'failed' | 'dry_run'
+  channelResults: {
+    whatsappTemplate: WeeklyDispatchChannelResult
+    whatsappDetails: WeeklyDispatchChannelResult
+    email: WeeklyDispatchChannelResult
+  }
+  errors: string[]
+}
+
 export type DailyDeliveryAutomationSettings = {
   enabled: boolean
   createdAt: string | null
@@ -144,6 +162,7 @@ export type WeeklyDispatchJob = {
     dueCount: number
     processedCount: number
     failedCount: number
+    items: WeeklyDispatchJobResultItem[]
   } | null
   error: string | null
 }
@@ -352,6 +371,29 @@ export async function startAdminWeeklyDispatch(
     ok: true
     reused: boolean
     job: WeeklyDispatchJob
+  }
+}
+
+export async function fetchAdminWeeklyDispatchJobs(
+  fallbackMessage: string,
+  limit = 20,
+) {
+  const response = await apiFetch(
+    `/admin/subscriptions/run-weekly-dispatch?limit=${encodeURIComponent(
+      String(limit),
+    )}`,
+    {
+      cache: 'no-store',
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    jobs: WeeklyDispatchJob[]
   }
 }
 

@@ -47,6 +47,7 @@ export type AccountSnapshot = {
     status: SubscriptionStatus
     deliveryPreference: DeliveryPreference
     deliveryHourLocal: number
+    timeZone: string
     whatsappNumber: string
     monthlyPriceUsd: number
     currency: string

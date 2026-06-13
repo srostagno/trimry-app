@@ -41,6 +41,7 @@ type Subscription = {
   status: 'pending_checkout' | 'active' | 'past_due' | 'paused' | 'canceled'
   deliveryPreference: DeliveryPreference
   deliveryHourLocal: number
+  timeZone: string
   whatsappNumber: string
   monthlyPriceUsd: number
   currency: string
@@ -816,6 +817,8 @@ export default function DashboardPage() {
     )
   }
 
+  const subscriptionDeliveryTimeZone =
+    data.subscription?.timeZone || data.user.timeZone || 'America/Santiago'
   const accountContent = (
     <>
       <section className="cosmic-shell rounded-[2rem] p-8">
@@ -1199,7 +1202,7 @@ export default function DashboardPage() {
                 <p className="cosmic-shell-meta mt-2 text-xs">
                   {interpolate(messages.dashboard.sentOnMondaysAt, {
                     time: formatDeliveryHourLabel(deliveryHourLocal, language),
-                    zone: data.user.timeZone,
+                    zone: subscriptionDeliveryTimeZone,
                   })}
                 </p>
               </div>
@@ -1268,7 +1271,7 @@ export default function DashboardPage() {
               <div className="cosmic-info-box rounded-2xl p-4">
                 {messages.dashboard.pendingProjectionTimingLabel}:{' '}
                 {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
-                {data.user.timeZone})
+                {subscriptionDeliveryTimeZone})
               </div>
               {requiresWhatsappDelivery(data.subscription.deliveryPreference) ? (
                 <div className="cosmic-info-box rounded-2xl p-4">
@@ -1314,13 +1317,13 @@ export default function DashboardPage() {
                 ? messages.dashboard.nextMessageIfReactivated
                 : messages.dashboard.nextMessage}
               :{' '}
-              {formatNextDelivery(data.subscription.nextMessageAt, language, data.user.timeZone)}
+              {formatNextDelivery(data.subscription.nextMessageAt, language, subscriptionDeliveryTimeZone)}
             </p>
             <p className="cosmic-shell-copy mt-1">
               {messages.dashboard.weeklyProjectionTimeLabel}:{' '}
               <span className="font-bold text-slate-50">
                 {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
-                {data.user.timeZone})
+                {subscriptionDeliveryTimeZone})
               </span>
             </p>
 
@@ -1345,7 +1348,7 @@ export default function DashboardPage() {
                 />
                 <p className="cosmic-shell-meta mt-2 text-xs">
                   {interpolate(messages.dashboard.futureMessagesHint, {
-                    zone: data.user.timeZone,
+                    zone: subscriptionDeliveryTimeZone,
                   })}
                 </p>
               </div>

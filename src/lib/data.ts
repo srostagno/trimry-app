@@ -36,6 +36,7 @@ export type SubscriptionRecord = {
   status: SubscriptionStatus
   deliveryPreference: DeliveryPreference
   deliveryHourLocal: number
+  timeZone?: string | null
   whatsappNumber: string
   monthlyPriceUsd: number
   currency: string
@@ -140,6 +141,7 @@ export async function upsertSubscription(input: {
         status: input.status,
         deliveryPreference: input.deliveryPreference,
         deliveryHourLocal: input.deliveryHourLocal,
+        timeZone: normalizeTimeZone(input.timeZone),
         whatsappNumber: input.whatsappNumber.trim(),
         monthlyPriceUsd: SUBSCRIPTION_PLAN.monthlyPriceUsd,
         currency: SUBSCRIPTION_PLAN.currency,
@@ -193,8 +195,11 @@ export async function updateSubscription(input: {
 
   if (input.timeZone || input.deliveryHourLocal !== undefined) {
     const currentSubscription = await getUserSubscription(input.userId)
+    patch.timeZone = normalizeTimeZone(
+      input.timeZone ?? currentSubscription?.timeZone ?? DEFAULT_TIME_ZONE,
+    )
     patch.nextMessageAt = nextDailyDeliveryAt({
-      timeZone: normalizeTimeZone(input.timeZone ?? DEFAULT_TIME_ZONE),
+      timeZone: patch.timeZone,
       deliveryHourLocal:
         input.deliveryHourLocal ??
         currentSubscription?.deliveryHourLocal ??

@@ -7,6 +7,7 @@ import { useLanguage } from '@/components/language-provider'
 import {
   fetchAdminSendWorkspace,
   fetchAdminWeeklyDispatchJob,
+  fetchAdminWeeklyDispatchJobs,
   runAdminSendCampaignAction,
   sendAdminDailyProjectionTemplateTest,
   startAdminWeeklyDispatch,
@@ -20,6 +21,7 @@ import {
   type SendTemplate,
   type SendTemplateVariable,
   type WeeklyDispatchJob,
+  type WeeklyDispatchJobResultItem,
 } from '@/lib/admin-send-campaigns'
 import { interpolate } from '@/lib/i18n'
 
@@ -32,6 +34,26 @@ const PLACEHOLDER_REGEX = /{{\s*([a-zA-Z0-9_]+)\s*}}/g
 const TRIMRY_WEBSITE_URL = 'https://trimry.com'
 const TRIMRY_LOGO_URL = `${TRIMRY_WEBSITE_URL}/logo-horizontal.png`
 const FULL_HTML_DOCUMENT_REGEX = /<\s*(?:!doctype\s+html|html[\s>])/i
+
+function dispatchItemHasFailure(item: WeeklyDispatchJobResultItem) {
+  return (
+    item.status === 'failed' ||
+    item.errors.length > 0 ||
+    Object.values(item.channelResults).some((status) => status === 'failed')
+  )
+}
+
+function failedDispatchChannels(item: WeeklyDispatchJobResultItem) {
+  return Object.entries(item.channelResults)
+    .filter(([, status]) => status === 'failed')
+    .map(([channel]) =>
+      channel === 'whatsappTemplate'
+        ? 'WhatsApp'
+        : channel === 'whatsappDetails'
+          ? 'WhatsApp details'
+          : 'Email',
+    )
+}
 
 type WhatsappVariableDraft = {
   id: string
@@ -470,8 +492,12 @@ export function AdminSendCampaigns() {
     useState('en')
   const [weeklyDispatchJob, setWeeklyDispatchJob] =
     useState<WeeklyDispatchJob | null>(null)
+  const [weeklyDispatchJobs, setWeeklyDispatchJobs] = useState<
+    WeeklyDispatchJob[]
+  >([])
   const [weeklyDispatchPollingError, setWeeklyDispatchPollingError] =
     useState('')
+  const [weeklyDispatchJobsError, setWeeklyDispatchJobsError] = useState('')
 
   const [whatsappExternalTemplateName, setWhatsappExternalTemplateName] =
     useState('')
@@ -560,16 +586,28 @@ export function AdminSendCampaigns() {
   const loadWorkspace = async () => {
     setLoading(true)
     setError('')
+    setWeeklyDispatchJobsError('')
 
     try {
-      const response = await fetchAdminSendWorkspace(
-        messages.dashboard.sendCampaigns.loadError,
-      )
+      const [response, dispatchJobsResponse] = await Promise.all([
+        fetchAdminSendWorkspace(messages.dashboard.sendCampaigns.loadError),
+        fetchAdminWeeklyDispatchJobs(
+          messages.dashboard.sendCampaigns.loadError,
+        ).catch((nextError) => {
+          setWeeklyDispatchJobsError(
+            nextError instanceof Error
+              ? nextError.message
+              : messages.dashboard.sendCampaigns.loadError,
+          )
+          return null
+        }),
+      ])
       setCampaigns(response.campaigns)
       setTemplates(response.templates)
       setAudience(response.audience)
       setSettings(response.settings)
       setDeliveryAutomation(response.deliveryAutomation)
+      setWeeklyDispatchJobs(dispatchJobsResponse?.jobs ?? [])
       setWhatsappPhoneNumberId(response.settings.whatsapp.phoneNumberId)
       setWhatsappGraphApiVersion(
         response.settings.whatsapp.graphApiVersion || 'v25.0',
@@ -648,12 +686,40 @@ export function AdminSendCampaigns() {
             void pollJob()
           }, 1500)
         } else if (response.job.status === 'completed') {
+          void fetchAdminWeeklyDispatchJobs(
+            messages.dashboard.sendCampaigns.loadError,
+          )
+            .then((jobsResponse) => {
+              setWeeklyDispatchJobs(jobsResponse.jobs)
+              setWeeklyDispatchJobsError('')
+            })
+            .catch((nextError) => {
+              setWeeklyDispatchJobsError(
+                nextError instanceof Error
+                  ? nextError.message
+                  : messages.dashboard.sendCampaigns.loadError,
+              )
+            })
           setSuccess(
             language === 'es'
               ? `Envío diario completado: ${response.job.processedCount} procesados y ${response.job.failedCount} fallidos.`
               : `Daily dispatch completed: ${response.job.processedCount} processed and ${response.job.failedCount} failed.`,
           )
         } else if (response.job.status === 'failed') {
+          void fetchAdminWeeklyDispatchJobs(
+            messages.dashboard.sendCampaigns.loadError,
+          )
+            .then((jobsResponse) => {
+              setWeeklyDispatchJobs(jobsResponse.jobs)
+              setWeeklyDispatchJobsError('')
+            })
+            .catch((nextError) => {
+              setWeeklyDispatchJobsError(
+                nextError instanceof Error
+                  ? nextError.message
+                  : messages.dashboard.sendCampaigns.loadError,
+              )
+            })
           setError(
             response.job.error ??
               (language === 'es'
@@ -1152,6 +1218,10 @@ export function AdminSendCampaigns() {
       )
 
       setWeeklyDispatchJob(response.job)
+      setWeeklyDispatchJobs((currentJobs) => [
+        response.job,
+        ...currentJobs.filter((job) => job.id !== response.job.id),
+      ])
     } catch (nextError) {
       setError(
         nextError instanceof Error
@@ -1207,6 +1277,7 @@ export function AdminSendCampaigns() {
           ? 'WhatsApp'
           : ''
     : ''
+  const recentWeeklyDispatchJobs = weeklyDispatchJobs.slice(0, 8)
   const closeWeeklyDispatchModal = () => {
     if (!weeklyDispatchIsActive) {
       setWeeklyDispatchJob(null)
@@ -1598,6 +1669,158 @@ export function AdminSendCampaigns() {
                   : 'Send daily projection'}
             </button>
           </div>
+        </div>
+
+        <div className="mt-6 rounded-[1.75rem] border border-white/10 bg-black/18 p-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
+                {language === 'es' ? 'Monitoreo' : 'Monitoring'}
+              </p>
+              <h3 className="mt-2 text-xl font-semibold text-slate-50">
+                {language === 'es'
+                  ? 'Últimas corridas diarias'
+                  : 'Recent daily runs'}
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => void loadWorkspace()}
+              disabled={busyAction !== null}
+              className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+            >
+              {language === 'es' ? 'Actualizar' : 'Refresh'}
+            </button>
+          </div>
+
+          {weeklyDispatchJobsError ? (
+            <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
+              {weeklyDispatchJobsError}
+            </p>
+          ) : null}
+
+          {recentWeeklyDispatchJobs.length === 0 ? (
+            <p className="cosmic-shell-meta mt-4 text-sm">
+              {language === 'es'
+                ? 'Todavía no hay corridas registradas.'
+                : 'No runs have been recorded yet.'}
+            </p>
+          ) : (
+            <div className="mt-5 space-y-3">
+              {recentWeeklyDispatchJobs.map((job) => {
+                const failedItems = (job.result?.items ?? []).filter(
+                  dispatchItemHasFailure,
+                )
+
+                return (
+                  <article
+                    key={job.id}
+                    className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                  >
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={clsx(
+                              'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em]',
+                              job.status === 'completed'
+                                ? 'bg-emerald-400/20 text-emerald-100'
+                                : job.status === 'failed'
+                                  ? 'bg-rose-400/18 text-rose-100'
+                                  : 'bg-cyan-400/18 text-cyan-100',
+                            )}
+                          >
+                            {job.status}
+                          </span>
+                          <span className="cosmic-shell-meta text-xs uppercase tracking-[0.16em]">
+                            {job.dryRun
+                              ? language === 'es'
+                                ? 'Prueba'
+                                : 'Dry run'
+                              : language === 'es'
+                                ? 'Real'
+                                : 'Live'}
+                          </span>
+                        </div>
+                        <p className="mt-3 text-sm font-semibold text-slate-50">
+                          {formatDate(job.createdAt) ?? job.createdAt}
+                        </p>
+                        <p className="mt-1 break-all text-xs text-slate-100/55">
+                          {job.id}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                        <div className="rounded-xl bg-black/20 px-3 py-2">
+                          <p className="text-[10px] uppercase tracking-[0.14em] text-slate-100/55">
+                            {language === 'es' ? 'Total' : 'Total'}
+                          </p>
+                          <p className="mt-1 font-semibold text-slate-50">
+                            {job.dueCount}
+                          </p>
+                        </div>
+                        <div className="rounded-xl bg-black/20 px-3 py-2">
+                          <p className="text-[10px] uppercase tracking-[0.14em] text-slate-100/55">
+                            {language === 'es' ? 'OK' : 'OK'}
+                          </p>
+                          <p className="mt-1 font-semibold text-emerald-100">
+                            {job.processedCount}
+                          </p>
+                        </div>
+                        <div className="rounded-xl bg-black/20 px-3 py-2">
+                          <p className="text-[10px] uppercase tracking-[0.14em] text-slate-100/55">
+                            {language === 'es' ? 'Fail' : 'Fail'}
+                          </p>
+                          <p className="mt-1 font-semibold text-rose-100">
+                            {job.failedCount}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {failedItems.length > 0 ? (
+                      <div className="mt-4 space-y-2">
+                        {failedItems.slice(0, 5).map((item) => {
+                          const failedChannels = failedDispatchChannels(item)
+
+                          return (
+                            <div
+                              key={`${job.id}-${item.subscriptionId}`}
+                              className="rounded-xl border border-rose-300/18 bg-rose-300/8 px-3 py-3 text-sm text-rose-50"
+                            >
+                              <p className="font-semibold">
+                                {item.recipientLabel ??
+                                  item.subscriptionId.slice(-8)}
+                                {failedChannels.length > 0
+                                  ? ` · ${failedChannels.join(', ')}`
+                                  : ''}
+                              </p>
+                              <p className="mt-1 break-all text-xs text-rose-50/70">
+                                {item.subscriptionId}
+                              </p>
+                              {item.errors.length > 0 ? (
+                                <ul className="mt-2 space-y-1 text-sm">
+                                  {item.errors.map((itemError) => (
+                                    <li key={itemError}>{itemError}</li>
+                                  ))}
+                                </ul>
+                              ) : null}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    ) : job.result ? (
+                      <p className="mt-4 text-sm text-emerald-100/82">
+                        {language === 'es'
+                          ? 'Sin fallas registradas en esta corrida.'
+                          : 'No failures recorded for this run.'}
+                      </p>
+                    ) : null}
+                  </article>
+                )
+              })}
+            </div>
+          )}
         </div>
       </section>
 

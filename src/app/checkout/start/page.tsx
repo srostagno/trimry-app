@@ -453,7 +453,10 @@ export default function CheckoutStartPage() {
                       account.subscription.deliveryHourLocal,
                       language,
                     ),
-                    zone: account.user.timeZone,
+                    zone:
+                      account.subscription.timeZone ||
+                      account.user.timeZone ||
+                      'America/Santiago',
                   })}
                 </p>
               </div>

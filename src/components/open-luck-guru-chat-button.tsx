@@ -19,7 +19,13 @@ export function OpenLuckGuruChatButton({
   analyticsLocation = 'seo_landing_cta',
 }: OpenLuckGuruChatButtonProps) {
   const { language } = useLanguage()
-  const resolvedLabel = label ?? (language === 'es' ? 'Habla con Luck Guru' : 'Talk to Luck Guru')
+  const resolvedLabel =
+    label ??
+    (language === 'es'
+      ? 'Habla con Luck Guru'
+      : language === 'pt'
+        ? 'Fale com Luck Guru'
+        : 'Talk to Luck Guru')
 
   return (
     <button

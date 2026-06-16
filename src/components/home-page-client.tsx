@@ -176,6 +176,15 @@ export function HomePageClient() {
           primary: `Comenzar ${trialPeriodDays} días gratis`,
           secondary: 'Preguntar al Luck Guru',
         }
+      : language === 'pt'
+        ? {
+            title: 'Trimry, seu guia de sorte',
+            subtitle:
+              `Comece com ${trialPeriodDays} dias grátis. Todos os dias você recebe sua projeção por email ou WhatsApp, e na web vê o calendário completo do mês para se manter alinhado com a sorte.`,
+            points: [`${trialPeriodDays} dias grátis`, 'lembrete diário', 'calendário mensal', 'Luck Guru com IA'],
+            primary: `Começar ${trialPeriodDays} dias grátis`,
+            secondary: 'Perguntar ao Luck Guru',
+          }
       : {
           title: 'Trimry, Your Luck Guide',
           subtitle:
@@ -193,6 +202,14 @@ export function HomePageClient() {
           line2: `Activa ${trialPeriodDays} días gratis para recibir el recordatorio diario por el canal que acordemos.`,
           cta: `Quiero ${trialPeriodDays} días gratis`,
         }
+      : language === 'pt'
+        ? {
+            badge: 'Leitura instantânea',
+            title: 'Abra o sinal de hoje e deixe a Trimry organizar sua sorte.',
+            line1: 'Seu guia combina timing ritual, zodíaco, calendário chinês e sinais de abundância.',
+            line2: `Ative ${trialPeriodDays} dias grátis para receber o lembrete diário pelo canal que combinarmos.`,
+            cta: `Quero ${trialPeriodDays} dias grátis`,
+          }
       : {
           badge: 'Instant reading',
           title: 'Open today’s signal and let Trimry organize your luck.',
@@ -211,6 +228,16 @@ export function HomePageClient() {
           topics: ['Cabello', 'Dinero', 'Relaciones', 'Energía'],
           whatsapp: 'Abrir WhatsApp',
         }
+      : language === 'pt'
+        ? {
+            eyebrow: '🍀 O Luck Guru está aqui',
+            title: 'Sua sorte tem sinais. Nós acompanhamos por você.',
+            text: 'Pergunte sobre dinheiro, relacionamentos, energia ou o melhor momento para soltar algo.',
+            button: 'Perguntar ao Luck Guru',
+            note: 'Cabelo · Dinheiro · Relacionamentos · Energia',
+            topics: ['Cabelo', 'Dinheiro', 'Relacionamentos', 'Energia'],
+            whatsapp: 'Abrir WhatsApp',
+          }
       : {
           eyebrow: '🍀 The Luck Guru is here',
           title: 'Your luck has signals. We track them for you.',
@@ -224,6 +251,8 @@ export function HomePageClient() {
   const whatsappUrl = `https://wa.me/${LUCK_GURU_WHATSAPP_NUMBER}?text=${encodeURIComponent(
     language === 'es'
       ? 'Hola Luck Guru, quiero una guía rápida para hoy.'
+      : language === 'pt'
+        ? 'Olá Luck Guru, quero uma orientação rápida para hoje.'
       : 'Hi Luck Guru, I want quick guidance for today.',
   )}`
 
@@ -247,7 +276,11 @@ export function HomePageClient() {
         <div className="relative z-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             <p className="cosmic-badge slide-up inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.22em] text-cyan-100">
-              {language === 'es' ? 'Guía de suerte' : 'Your Luck Guide'}
+              {language === 'es'
+                ? 'Guía de suerte'
+                : language === 'pt'
+                  ? 'Guia de sorte'
+                  : 'Your Luck Guide'}
             </p>
             <h1 className="slide-up-delay mt-5 max-w-4xl text-4xl leading-[1.04] text-slate-50 sm:text-6xl lg:text-7xl">
               {heroCopy.title}
@@ -298,11 +331,17 @@ export function HomePageClient() {
             <div className="relative z-10 flex h-full flex-col justify-end p-5 sm:p-6">
               <div className="rounded-2xl border border-cyan-100/26 bg-slate-950/42 p-4 backdrop-blur-sm">
                 <p className="text-xs font-bold uppercase tracking-[0.17em] text-cyan-100/84">
-                  {language === 'es' ? 'IA para señales de fortuna' : 'AI fortune signals'}
+                  {language === 'es'
+                    ? 'IA para señales de fortuna'
+                    : language === 'pt'
+                      ? 'IA para sinais de fortuna'
+                      : 'AI fortune signals'}
                 </p>
                 <p className="mt-2 text-sm text-slate-100/90">
                   {language === 'es'
                     ? 'Haz una pregunta y deja que Luck Guru conecte tus señales.'
+                    : language === 'pt'
+                      ? 'Faça uma pergunta e deixe Luck Guru conectar seus sinais.'
                     : 'Ask one question and let Luck Guru connect your signals.'}
                 </p>
                 <button
@@ -336,7 +375,11 @@ export function HomePageClient() {
             <p className="mt-2 max-w-3xl text-slate-100/84">{teaserCopy.line2}</p>
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <span className="text-2xl text-slate-50 sm:text-3xl">
-                {language === 'es' ? 'Podría ser...' : 'Could be...'}
+                {language === 'es'
+                  ? 'Podría ser...'
+                  : language === 'pt'
+                    ? 'Pode ser...'
+                    : 'Could be...'}
               </span>
               <span className={toneClasses(activePrediction.tone)}>
                 <span aria-hidden="true" className="oracle-tone-badge-icon">
@@ -347,6 +390,8 @@ export function HomePageClient() {
               <span className="rounded-full border border-amber-200/32 bg-amber-200/12 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-amber-50">
                 {language === 'es'
                   ? `Suerte hoy: ${luckScore}/100`
+                  : language === 'pt'
+                    ? `Sorte hoje: ${luckScore}/100`
                   : `Luck score today: ${luckScore}/100`}
               </span>
             </div>
@@ -387,13 +432,25 @@ export function HomePageClient() {
           </div>
           <div className="grid gap-2 text-xs uppercase tracking-[0.16em] text-cyan-100/78 sm:min-w-[13rem]">
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es' ? 'Recordatorio diario' : 'Daily reminder'}
+              {language === 'es'
+                ? 'Recordatorio diario'
+                : language === 'pt'
+                  ? 'Lembrete diário'
+                  : 'Daily reminder'}
             </span>
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es' ? 'Email o WhatsApp' : 'Email or WhatsApp'}
+              {language === 'es'
+                ? 'Email o WhatsApp'
+                : language === 'pt'
+                  ? 'Email ou WhatsApp'
+                  : 'Email or WhatsApp'}
             </span>
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es' ? 'Mes completo' : 'Full month'}
+              {language === 'es'
+                ? 'Mes completo'
+                : language === 'pt'
+                  ? 'Mês completo'
+                  : 'Full month'}
             </span>
           </div>
         </div>

@@ -12,6 +12,7 @@ import {
   trackMetaCustomEvent,
   trackMetaStandardEvent,
 } from '@/lib/analytics'
+import { normalizeLanguageCode, type LanguageCode } from '@/lib/i18n'
 
 const LUCK_GURU_WHATSAPP_NUMBER = '34689269278'
 const OPEN_LUCK_GURU_CHAT_EVENT = 'trimry:open-luck-guru-chat'
@@ -108,19 +109,162 @@ function sanitizeChatText(text: string) {
     .trim()
 }
 
+function getLuckGuruChatCopy(language: LanguageCode) {
+  if (language === 'es') {
+    return {
+      initial:
+        '🍀 Luck Guru está aquí. Hoy trae una energía inusual. ¿Para qué quieres guía: cabello, dinero, relaciones o energía?',
+      introActive:
+        '🍀 Luck Guru está aquí. Tus poderes están desbloqueados. Dime qué quieres alinear esta semana: suerte, fortuna, riqueza, timing o un nuevo comienzo.',
+      introAccount:
+        '🍀 Luck Guru está aquí. Puedo recordarte, pero mis poderes completos siguen bloqueados hasta que te suscribas. Al desbloquearlos, puedo ayudarte con suerte, fortuna y timing de riqueza.',
+      introAnonymous:
+        '🍀 Luck Guru está aquí. Mis poderes completos están bloqueados hasta que crees una cuenta y te suscribas. Desbloquea Trimry para generar suerte, fortuna y timing de riqueza conmigo.',
+      whatsappMessage:
+        'Hola Luck Guru, quiero seguir esta conversación sobre mi suerte.',
+      prompts: [
+        'Quiero una guía para cabello.',
+        'Necesito más suerte con dinero.',
+        '¿Cómo viene mi energía hoy?',
+      ],
+      dashboardLabel: 'Ir al dashboard',
+      dashboardDetail: 'Poderes desbloqueados',
+      unlockLabel: 'Desbloquear poderes',
+      unlockDetail: 'Activa la suscripción',
+      createLabel: 'Crear cuenta',
+      createDetail: 'Desbloquear poderes',
+      issue:
+        'Soy Luck Guru ✨ Tuve un problema temporal en el canal web. Puedes seguir conmigo por WhatsApp o intentar de nuevo en unos segundos.',
+      launcherLabel: 'Chat con Luck Guru',
+      launcherSubLabel: 'Ritual de suerte',
+      title: 'Tu ritual empieza aquí',
+      close: 'Cerrar',
+      memorySaved: 'Memoria guardada',
+      temporaryMemory: 'Memoria temporal',
+      accountGuidance: 'Guía basada en tu cuenta',
+      createAccountToSave: 'Crea una cuenta para guardarla',
+      powersUnlocked: 'Poderes desbloqueados',
+      powersLocked: 'Poderes bloqueados',
+      powersUnlockedDetail: 'Timing de suerte, fortuna y riqueza',
+      subscribeToUnlock:
+        'Suscríbete para desbloquear suerte, fortuna y riqueza',
+      createThenSubscribe:
+        'Crea una cuenta y luego suscríbete para desbloquear poderes',
+      typing: 'Luck Guru está leyendo las señales',
+      placeholder: 'Escribe tu intención...',
+      send: 'Enviar',
+      fullUnlocked: 'Ritual completo de fortuna desbloqueado 🍀',
+    }
+  }
+
+  if (language === 'pt') {
+    return {
+      initial:
+        '🍀 Luck Guru está aqui. Hoje carrega uma energia incomum. Para que você quer orientação: cabelo, dinheiro, relacionamentos ou energia?',
+      introActive:
+        '🍀 Luck Guru está aqui. Seus poderes completos estão desbloqueados. Diga o que você quer alinhar esta semana: sorte, fortuna, riqueza, timing ou um novo começo.',
+      introAccount:
+        '🍀 Luck Guru está aqui. Posso lembrar de você, mas meus poderes completos ainda estão bloqueados até você assinar. Depois disso, posso ajudar com sorte, fortuna e timing de riqueza.',
+      introAnonymous:
+        '🍀 Luck Guru está aqui. Meus poderes completos estão bloqueados até você criar uma conta e assinar. Desbloqueie a Trimry para gerar sorte, fortuna e timing de riqueza comigo.',
+      whatsappMessage:
+        'Olá Luck Guru, quero continuar esta conversa sobre minha sorte.',
+      prompts: [
+        'Quero orientação para cabelo.',
+        'Preciso de mais sorte com dinheiro.',
+        'Como está minha energia hoje?',
+      ],
+      dashboardLabel: 'Abrir painel',
+      dashboardDetail: 'Poderes desbloqueados',
+      unlockLabel: 'Desbloquear poderes',
+      unlockDetail: 'Ativar assinatura',
+      createLabel: 'Criar conta',
+      createDetail: 'Desbloquear poderes',
+      issue:
+        'Sou Luck Guru ✨ Tive um problema temporário no canal web. Você pode continuar comigo no WhatsApp ou tentar de novo em alguns segundos.',
+      launcherLabel: 'Chat com Luck Guru',
+      launcherSubLabel: 'Ritual de sorte',
+      title: 'Seu ritual começa aqui',
+      close: 'Fechar',
+      memorySaved: 'Memória salva',
+      temporaryMemory: 'Memória temporária',
+      accountGuidance: 'Orientação baseada na conta',
+      createAccountToSave: 'Crie uma conta para salvar',
+      powersUnlocked: 'Poderes desbloqueados',
+      powersLocked: 'Poderes bloqueados',
+      powersUnlockedDetail: 'Timing de sorte, fortuna e riqueza',
+      subscribeToUnlock:
+        'Assine para desbloquear sorte, fortuna e riqueza',
+      createThenSubscribe:
+        'Crie uma conta e depois assine para desbloquear poderes',
+      typing: 'Luck Guru está lendo os sinais',
+      placeholder: 'Escreva sua intenção...',
+      send: 'Enviar',
+      fullUnlocked: 'Ritual completo de fortuna desbloqueado 🍀',
+    }
+  }
+
+  return {
+    initial:
+      '🍀 The Luck Guru is here. Today carries unusual energy. What would you like guidance for? Hair, money, relationships, or energy.',
+    introActive:
+      '🍀 Luck Guru is here. Your full powers are unlocked. Tell me what you want to align this week: luck, fortune, riches, timing, or a fresh start.',
+    introAccount:
+      '🍀 Luck Guru is here. I can remember you, but my full powers are still locked until you subscribe. Once unlocked, I can help generate luck, fortune, and riches timing.',
+    introAnonymous:
+      '🍀 Luck Guru is here. My full powers are locked until you create an account and subscribe. Unlock Trimry to generate luck, fortune, and riches timing with me.',
+    whatsappMessage:
+      'Hi Luck Guru, I want to continue this conversation about my luck.',
+    prompts: [
+      'I want guidance for hair.',
+      'I need more luck with money.',
+      'How is my energy today?',
+    ],
+    dashboardLabel: 'Open dashboard',
+    dashboardDetail: 'Full powers unlocked',
+    unlockLabel: 'Unlock powers',
+    unlockDetail: 'Start the subscription',
+    createLabel: 'Create account',
+    createDetail: 'Unlock powers',
+    issue:
+      'I am Luck Guru ✨ I had a temporary issue in the web channel. You can keep going with me on WhatsApp, or try again in a few seconds.',
+    launcherLabel: 'Chat with Luck Guru',
+    launcherSubLabel: 'Luck ritual',
+    title: 'Your ritual starts here',
+    close: 'Close',
+    memorySaved: 'Memory saved',
+    temporaryMemory: 'Temporary memory',
+    accountGuidance: 'Account-based guidance',
+    createAccountToSave: 'Create an account to save it',
+    powersUnlocked: 'Powers unlocked',
+    powersLocked: 'Powers locked',
+    powersUnlockedDetail: 'Luck, fortune, and riches timing',
+    subscribeToUnlock: 'Subscribe to unlock luck, fortune, and riches',
+    createThenSubscribe:
+      'Create an account, then subscribe to unlock powers',
+    typing: 'Luck Guru is reading the signs',
+    placeholder: 'Write your intention...',
+    send: 'Send',
+    fullUnlocked: 'Full fortune ritual unlocked 🍀',
+  }
+}
+
 function buildConversationIntroMessage(input: {
   authenticated: boolean
   hasActiveSubscription: boolean
+  language: LanguageCode
 }) {
+  const copy = getLuckGuruChatCopy(input.language)
+
   if (input.hasActiveSubscription) {
-    return '🍀 Luck Guru is here. Your full powers are unlocked. Tell me what you want to align this week: luck, fortune, riches, timing, or a fresh start.'
+    return copy.introActive
   }
 
   if (input.authenticated) {
-    return '🍀 Luck Guru is here. I can remember you, but my full powers are still locked until you subscribe. Once unlocked, I can help generate luck, fortune, and riches timing.'
+    return copy.introAccount
   }
 
-  return '🍀 Luck Guru is here. My full powers are locked until you create an account and subscribe. Unlock Trimry to generate luck, fortune, and riches timing with me.'
+  return copy.introAnonymous
 }
 
 function buildWhatsappUrl(message: string) {
@@ -129,26 +273,27 @@ function buildWhatsappUrl(message: string) {
   )}`
 }
 
-function initialAssistantMessage() {
+function initialAssistantMessage(language: LanguageCode) {
+  const copy = getLuckGuruChatCopy(language)
+
   return {
     id: createId('assistant'),
     role: 'assistant' as const,
-    text:
-      '🍀 The Luck Guru is here. Today carries unusual energy. What would you like guidance for? Hair, money, relationships, or energy.',
+    text: copy.initial,
     createdAt: new Date().toISOString(),
   }
 }
 
-function loadStoredMessages() {
+function loadStoredMessages(language: LanguageCode) {
   if (typeof window === 'undefined') {
-    return [initialAssistantMessage()]
+    return [initialAssistantMessage(language)]
   }
 
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
 
     if (!raw) {
-      return [initialAssistantMessage()]
+      return [initialAssistantMessage(language)]
     }
 
     const parsed = JSON.parse(raw) as ChatMessage[]
@@ -168,9 +313,9 @@ function loadStoredMessages() {
       }))
       .slice(-MAX_LOCAL_MESSAGES)
 
-    return messages.length > 0 ? messages : [initialAssistantMessage()]
+    return messages.length > 0 ? messages : [initialAssistantMessage(language)]
   } catch {
-    return [initialAssistantMessage()]
+    return [initialAssistantMessage(language)]
   }
 }
 
@@ -216,6 +361,8 @@ function WhatsAppIcon() {
 
 export function LuckGuruChatWidget() {
   const { language } = useLanguage()
+  const chatLanguage = normalizeLanguageCode(language)
+  const copy = useMemo(() => getLuckGuruChatCopy(chatLanguage), [chatLanguage])
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [storageReady, setStorageReady] = useState(false)
@@ -230,52 +377,33 @@ export function LuckGuruChatWidget() {
   })
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const isSpanish = language === 'es'
-  const whatsappUrl = buildWhatsappUrl(
-    isSpanish
-      ? 'Hola Luck Guru, quiero seguir esta conversación sobre mi suerte.'
-      : 'Hi Luck Guru, I want to continue this conversation about my luck.',
-  )
-  const suggestedPrompts = useMemo(
-    () =>
-      isSpanish
-        ? [
-            'Quiero una guía para cabello.',
-            'Necesito más suerte con dinero.',
-            '¿Cómo viene mi energía hoy?',
-          ]
-        : [
-            'I want guidance for hair.',
-            'I need more luck with money.',
-            'How is my energy today?',
-          ],
-    [isSpanish],
-  )
+  const whatsappUrl = buildWhatsappUrl(copy.whatsappMessage)
+  const suggestedPrompts = copy.prompts
   const ctaCopy = state.hasActiveSubscription
     ? {
         href: '/dashboard',
-        label: isSpanish ? 'Ir al dashboard' : 'Open dashboard',
-        detail: isSpanish ? 'Poderes desbloqueados' : 'Full powers unlocked',
+        label: copy.dashboardLabel,
+        detail: copy.dashboardDetail,
       }
     : state.authenticated
       ? {
           href: '/checkout/start',
-          label: isSpanish ? 'Desbloquear poderes' : 'Unlock powers',
-          detail: isSpanish ? 'Activa la suscripción' : 'Start the subscription',
+          label: copy.unlockLabel,
+          detail: copy.unlockDetail,
         }
       : {
           href: '/account/register',
-          label: isSpanish ? 'Crear cuenta' : 'Create account',
-          detail: isSpanish ? 'Desbloquear poderes' : 'Unlock powers',
+          label: copy.createLabel,
+          detail: copy.createDetail,
         }
   const latestAssistantMessageId = [...messages]
     .reverse()
     .find((message) => message.role === 'assistant')?.id
 
   useEffect(() => {
-    setMessages(loadStoredMessages())
+    setMessages(loadStoredMessages(chatLanguage))
     setStorageReady(true)
-  }, [])
+  }, [chatLanguage])
 
   useEffect(() => {
     if (typeof window === 'undefined' || !storageReady) {
@@ -377,6 +505,7 @@ export function LuckGuruChatWidget() {
       const introText = buildConversationIntroMessage({
         authenticated: state.authenticated,
         hasActiveSubscription: state.hasActiveSubscription,
+        language: chatLanguage,
       })
 
       if (current[0].text === introText) {
@@ -390,7 +519,7 @@ export function LuckGuruChatWidget() {
         },
       ]
     })
-  }, [snapshotLoaded, state.authenticated, state.hasActiveSubscription])
+  }, [chatLanguage, snapshotLoaded, state.authenticated, state.hasActiveSubscription])
 
   const openWidget = useCallback(() => {
     setOpen(true)
@@ -448,6 +577,7 @@ export function LuckGuruChatWidget() {
         body: JSON.stringify({
           message: normalized,
           visitorId: getVisitorId(),
+          locale: language,
           localHistory: toServerHistory(previousMessages),
         }),
       })
@@ -475,8 +605,7 @@ export function LuckGuruChatWidget() {
           {
             id: createId('assistant'),
             role: 'assistant' as const,
-            text:
-              'I am Luck Guru ✨ I had a temporary issue in the web channel. You can keep going with me on WhatsApp, or try again in a few seconds.',
+            text: copy.issue,
             createdAt: new Date().toISOString(),
           },
         ].slice(-MAX_LOCAL_MESSAGES),
@@ -495,7 +624,7 @@ export function LuckGuruChatWidget() {
     return (
       <button
         type="button"
-        aria-label={isSpanish ? 'Chat con Luck Guru' : 'Chat with Luck Guru'}
+        aria-label={copy.launcherLabel}
         onClick={() => {
           trackEvent('ask_luck_guru_click', {
             language,
@@ -508,10 +637,10 @@ export function LuckGuruChatWidget() {
         <GuruGlyph size="launcher" />
         <span className="hidden pr-1 text-left sm:block">
           <span className="block text-sm font-black leading-tight">
-            {isSpanish ? 'Chat con Luck Guru' : 'Chat with Luck Guru'}
+            {copy.launcherLabel}
           </span>
           <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/78">
-            {isSpanish ? 'Ritual de suerte' : 'Luck ritual'}
+            {copy.launcherSubLabel}
           </span>
         </span>
       </button>
@@ -531,7 +660,7 @@ export function LuckGuruChatWidget() {
                   Luck Guru
                 </p>
                 <h2 className="mt-1 text-xl leading-none text-slate-50">
-                  {isSpanish ? 'Tu ritual empieza aquí' : 'Your ritual starts here'}
+                  {copy.title}
                 </h2>
               </div>
             </div>
@@ -540,31 +669,35 @@ export function LuckGuruChatWidget() {
               onClick={() => setOpen(false)}
               className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5 text-xs font-black text-slate-100 transition hover:bg-white/12"
             >
-              {isSpanish ? 'Cerrar' : 'Close'}
+              {copy.close}
             </button>
           </div>
 
           <div className="relative mt-4 grid grid-cols-2 gap-2 text-xs">
             <div className="rounded-2xl border border-cyan-100/14 bg-cyan-100/8 p-3">
               <p className="font-black text-cyan-100">
-                {state.memoryMode === 'account' ? 'Memory saved' : 'Temporary memory'}
+                {state.memoryMode === 'account'
+                  ? copy.memorySaved
+                  : copy.temporaryMemory}
               </p>
               <p className="mt-1 text-slate-100/68">
                 {state.memoryMode === 'account'
-                  ? 'Account-based guidance'
-                  : 'Create an account to save it'}
+                  ? copy.accountGuidance
+                  : copy.createAccountToSave}
             </p>
             </div>
             <div className="rounded-2xl border border-amber-100/14 bg-amber-100/8 p-3">
               <p className="font-black text-amber-100">
-                {state.hasActiveSubscription ? 'Powers unlocked' : 'Powers locked'}
+                {state.hasActiveSubscription
+                  ? copy.powersUnlocked
+                  : copy.powersLocked}
               </p>
               <p className="mt-1 text-slate-100/68">
                 {state.hasActiveSubscription
-                  ? 'Luck, fortune, and riches timing'
+                  ? copy.powersUnlockedDetail
                   : state.authenticated
-                    ? 'Subscribe to unlock luck, fortune, and riches'
-                    : 'Create an account, then subscribe to unlock powers'}
+                    ? copy.subscribeToUnlock
+                    : copy.createThenSubscribe}
               </p>
             </div>
           </div>
@@ -626,7 +759,7 @@ export function LuckGuruChatWidget() {
           {sending ? (
             <div className="flex justify-start">
               <div className="rounded-[1.35rem] rounded-bl-md border border-white/12 bg-white/[0.08] px-4 py-3 text-sm text-slate-100">
-                <span className="mr-2 text-amber-100">Luck Guru is reading the signs</span>
+                <span className="mr-2 text-amber-100">{copy.typing}</span>
                 <span className="inline-flex gap-1 align-middle">
                   <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-100 [animation-delay:-0.2s]" />
                   <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-100 [animation-delay:-0.1s]" />
@@ -658,9 +791,7 @@ export function LuckGuruChatWidget() {
               value={input}
               onChange={(event) => setInput(event.target.value)}
               placeholder={
-                isSpanish
-                  ? 'Escribe tu intención...'
-                  : 'Write your intention...'
+                copy.placeholder
               }
               className="min-w-0 flex-1 rounded-full border border-cyan-100/18 bg-slate-950/70 px-4 py-3 text-sm text-slate-50 outline-none transition placeholder:text-slate-300/42 focus:border-cyan-100/48 focus:ring-2 focus:ring-cyan-100/16"
               maxLength={900}
@@ -670,14 +801,14 @@ export function LuckGuruChatWidget() {
               disabled={sending || input.trim().length === 0}
               className="rounded-full bg-[linear-gradient(135deg,#d8fff6,#7be0ff_48%,#a28fff)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-slate-950 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Send
+              {copy.send}
             </button>
           </form>
 
           <div className="mt-3 grid gap-2">
             {state.hasActiveSubscription ? (
               <div className="rounded-2xl border border-emerald-100/18 bg-emerald-100/10 px-4 py-3 text-sm font-black text-emerald-50">
-                Full fortune ritual unlocked 🍀
+                {copy.fullUnlocked}
               </div>
             ) : null}
 

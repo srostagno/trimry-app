@@ -28,6 +28,7 @@ import { interpolate } from '@/lib/i18n'
 const localeByLanguage = {
   en: 'en-US',
   es: 'es-CL',
+  pt: 'pt-BR',
 } as const
 
 const PLACEHOLDER_REGEX = /{{\s*([a-zA-Z0-9_]+)\s*}}/g

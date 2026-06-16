@@ -23,7 +23,7 @@ import {
 import {
   DEFAULT_LANGUAGE,
   getMessages,
-  isLanguageCode,
+  languageFromLocale,
   type LanguageCode,
 } from '@/lib/i18n'
 
@@ -38,6 +38,8 @@ type LanguageContextValue = {
   messages: ReturnType<typeof getMessages>
 }
 
+type InitialLanguageSource = 'viewer' | 'stored' | 'detected' | 'default'
+
 const LanguageContext = createContext<LanguageContextValue | undefined>(
   undefined,
 )
@@ -45,20 +47,29 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(
 export function LanguageProvider({
   children,
   initialLanguage = DEFAULT_LANGUAGE,
+  initialLanguageSource = 'default',
 }: {
   children: ReactNode
   initialLanguage?: LanguageCode
+  initialLanguageSource?: InitialLanguageSource
 }) {
   const [language, setLanguageState] = useState<LanguageCode>(initialLanguage)
   const [planPricing, setPlanPricing] = useState<CheckoutPlanPricing | null>(null)
 
   useEffect(() => {
-    const storedLanguage = window.localStorage.getItem('trimry-language')
+    if (initialLanguageSource === 'viewer') {
+      window.localStorage.setItem('trimry-language', initialLanguage)
+      return
+    }
 
-    if (storedLanguage && isLanguageCode(storedLanguage)) {
+    const storedLanguage = languageFromLocale(
+      window.localStorage.getItem('trimry-language'),
+    )
+
+    if (storedLanguage) {
       setLanguageState(storedLanguage)
     }
-  }, [])
+  }, [initialLanguage, initialLanguageSource])
 
   useEffect(() => {
     document.documentElement.lang = language

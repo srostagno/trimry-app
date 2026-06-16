@@ -9,6 +9,7 @@ import { DeliveryPreferenceSelector } from '@/components/delivery-preference-sel
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { apiFetch, readApiError } from '@/lib/api-client'
+import { normalizeLanguageCode } from '@/lib/i18n'
 import {
   DEFAULT_WEEKLY_DELIVERY_HOUR,
   formatDeliveryHourLabel,
@@ -23,10 +24,10 @@ import {
 const SIGNUP_WHATSAPP_STORAGE_KEY = 'trimry:signup-whatsapp-number'
 
 function settingCopy(language: string) {
-  const isSpanish = language.startsWith('es')
+  const resolvedLanguage = normalizeLanguageCode(language)
 
-  return isSpanish
-    ? {
+  if (resolvedLanguage === 'es') {
+    return {
         badge: 'Ajustes de entrega',
         title: '¿Cómo debería Trimry entregar tu proyección diaria?',
         subtitle:
@@ -42,23 +43,88 @@ function settingCopy(language: string) {
         backButton: 'Volver al dashboard',
         success: 'Ajustes de entrega actualizados.',
         help: 'Los cambios se aplican solo a futuras entregas.',
+        editMode: 'Modo edición',
+        quickCards: [
+          'Email primero',
+          'WhatsApp acordado',
+          'Ambos cuando quieras',
+        ],
+        whatsappNumberLabel: 'Número de WhatsApp',
+        whatsappOptional:
+          'WhatsApp sigue siendo opcional salvo que lo actives.',
+        loadError: 'No pudimos cargar los ajustes de entrega.',
+        consentError:
+          'Confirma el consentimiento de WhatsApp antes de habilitar la entrega por WhatsApp.',
+        saveError: 'No pudimos guardar los ajustes de entrega.',
+        loading: 'Cargando ajustes de entrega...',
+        redirecting: 'Redirigiendo...',
       }
-    : {
-        badge: 'Delivery settings',
-        title: 'How should Trimry deliver your daily projection?',
-        subtitle:
-          'Email remains the default. WhatsApp can be agreed, and both channels can be enabled whenever you want.',
-        emailLabel: 'Delivery email',
-        channelLabel: 'Delivery channel',
-        scheduleLabel: 'Daily projection time',
-        consentLabel: 'I agree to receive Trimry messages on WhatsApp.',
-        consentHint: 'Required only if you choose WhatsApp delivery.',
-        saveButton: 'Save settings',
-        savingButton: 'Saving...',
-        backButton: 'Back to dashboard',
-        success: 'Delivery settings updated.',
-        help: 'Changes apply to future deliveries only.',
-      }
+  }
+
+  if (resolvedLanguage === 'pt') {
+    return {
+      badge: 'Ajustes de entrega',
+      title: 'Como a Trimry deve entregar sua projeção diária?',
+      subtitle:
+        'Email continua sendo o padrão. WhatsApp pode ser combinado, e ambos os canais podem ser ativados quando você quiser.',
+      emailLabel: 'Email de entrega',
+      channelLabel: 'Canal de entrega',
+      scheduleLabel: 'Horário da projeção diária',
+      consentLabel: 'Aceito receber mensagens da Trimry pelo WhatsApp.',
+      consentHint:
+        'Necessário apenas se você escolher entrega por WhatsApp.',
+      saveButton: 'Salvar ajustes',
+      savingButton: 'Salvando...',
+      backButton: 'Voltar ao painel',
+      success: 'Ajustes de entrega atualizados.',
+      help: 'As mudanças valem apenas para entregas futuras.',
+      editMode: 'Modo edição',
+      quickCards: [
+        'Email primeiro',
+        'WhatsApp combinado',
+        'Ambos quando quiser',
+      ],
+      whatsappNumberLabel: 'Número de WhatsApp',
+      whatsappOptional: 'WhatsApp continua opcional até você ativá-lo.',
+      loadError: 'Não foi possível carregar os ajustes de entrega.',
+      consentError:
+        'Confirme o consentimento do WhatsApp antes de habilitar a entrega por WhatsApp.',
+      saveError: 'Não foi possível salvar os ajustes de entrega.',
+      loading: 'Carregando ajustes de entrega...',
+      redirecting: 'Redirecionando...',
+    }
+  }
+
+  return {
+    badge: 'Delivery settings',
+    title: 'How should Trimry deliver your daily projection?',
+    subtitle:
+      'Email remains the default. WhatsApp can be agreed, and both channels can be enabled whenever you want.',
+    emailLabel: 'Delivery email',
+    channelLabel: 'Delivery channel',
+    scheduleLabel: 'Daily projection time',
+    consentLabel: 'I agree to receive Trimry messages on WhatsApp.',
+    consentHint: 'Required only if you choose WhatsApp delivery.',
+    saveButton: 'Save settings',
+    savingButton: 'Saving...',
+    backButton: 'Back to dashboard',
+    success: 'Delivery settings updated.',
+    help: 'Changes apply to future deliveries only.',
+    editMode: 'Edit mode',
+    quickCards: [
+      'Email first',
+      'WhatsApp agreed',
+      'Both whenever you want',
+    ],
+    whatsappNumberLabel: 'WhatsApp number',
+    whatsappOptional: 'WhatsApp remains optional unless you turn it on.',
+    loadError: 'Unable to load delivery settings.',
+    consentError:
+      'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
+    saveError: 'Unable to save delivery settings.',
+    loading: 'Loading delivery settings...',
+    redirecting: 'Redirecting...',
+  }
 }
 
 export default function DeliverySettingsPage() {
@@ -120,7 +186,7 @@ export default function DeliverySettingsPage() {
         }
       } catch {
         if (!cancelled) {
-          setError('Unable to load delivery settings.')
+          setError(copy.loadError)
         }
       } finally {
         if (!cancelled) {
@@ -134,7 +200,7 @@ export default function DeliverySettingsPage() {
     return () => {
       cancelled = true
     }
-  }, [router])
+  }, [copy.loadError, router])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -143,7 +209,7 @@ export default function DeliverySettingsPage() {
     setSuccess('')
 
     if (requiresWhatsappDelivery(deliveryPreference) && !whatsappConsentAccepted) {
-      setError('Please confirm WhatsApp consent before enabling WhatsApp delivery.')
+      setError(copy.consentError)
       setSaving(false)
       return
     }
@@ -163,7 +229,7 @@ export default function DeliverySettingsPage() {
       })
 
       if (!response.ok) {
-        setError(await readApiError(response, 'Unable to save delivery settings.'))
+        setError(await readApiError(response, copy.saveError))
         return
       }
 
@@ -188,7 +254,7 @@ export default function DeliverySettingsPage() {
       setSuccess(copy.success)
       router.refresh()
     } catch {
-      setError('Unable to save delivery settings.')
+      setError(copy.saveError)
     } finally {
       setSaving(false)
     }
@@ -198,7 +264,7 @@ export default function DeliverySettingsPage() {
     return (
       <section className="cosmic-shell mx-auto max-w-5xl p-4 sm:p-6">
         <div className="luck-glow cosmic-panel rounded-[2.3rem] p-6 text-slate-100 sm:p-8">
-          Loading delivery settings...
+          {copy.loading}
         </div>
       </section>
     )
@@ -208,7 +274,7 @@ export default function DeliverySettingsPage() {
     return (
       <section className="cosmic-shell mx-auto max-w-5xl p-4 sm:p-6">
         <div className="luck-glow cosmic-panel rounded-[2.3rem] p-6 text-slate-100 sm:p-8">
-          <p>Redirecting...</p>
+          <p>{copy.redirecting}</p>
         </div>
       </section>
     )
@@ -226,7 +292,7 @@ export default function DeliverySettingsPage() {
               </p>
               {isEditMode ? (
                 <span className="rounded-full border border-cyan-200/22 bg-cyan-100/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/86">
-                  Edit mode
+                  {copy.editMode}
                 </span>
               ) : null}
             </div>
@@ -247,11 +313,7 @@ export default function DeliverySettingsPage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                language.startsWith('es') ? 'Email primero' : 'Email first',
-                language.startsWith('es') ? 'WhatsApp acordado' : 'WhatsApp agreed',
-                language.startsWith('es') ? 'Ambos cuando quieras' : 'Both whenever you want',
-              ].map((item) => (
+              {copy.quickCards.map((item) => (
                 <div
                   key={item}
                   className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-cyan-50"
@@ -299,7 +361,7 @@ export default function DeliverySettingsPage() {
               {requiresWhatsappDelivery(deliveryPreference) ? (
                 <>
                   <label className="block text-sm font-semibold text-cyan-100/90">
-                    WhatsApp number
+                    {copy.whatsappNumberLabel}
                     <input
                       type="tel"
                       value={whatsappNumber}
@@ -327,9 +389,7 @@ export default function DeliverySettingsPage() {
                 </>
               ) : (
                 <div className="rounded-2xl border border-cyan-200/18 bg-slate-950/32 p-4 text-sm text-slate-100/76">
-                  {language.startsWith('es')
-                    ? 'WhatsApp sigue siendo opcional salvo que lo actives.'
-                    : 'WhatsApp remains optional unless you turn it on.'}
+                  {copy.whatsappOptional}
                 </div>
               )}
 

@@ -19,20 +19,33 @@ function WhatsAppIcon() {
 
 export function FloatingWhatsappButton() {
   const { language } = useLanguage()
-  const isSpanish = language === 'es'
-  const message = isSpanish
-    ? 'Hola Luck Guru, quiero saber cómo Trimry puede ayudarme a sentirme con más suerte.'
-    : 'Hi Luck Guru, I want to know how Trimry can help me feel luckier.'
-  const href = `https://wa.me/${LUCK_GURU_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
-  const label = isSpanish ? 'Habla con Luck Guru' : 'Talk to Luck Guru'
-  const subLabel = isSpanish ? 'WhatsApp' : 'WhatsApp'
+  const copy =
+    language === 'es'
+      ? {
+          message:
+            'Hola Luck Guru, quiero saber cómo Trimry puede ayudarme a sentirme con más suerte.',
+          label: 'Habla con Luck Guru',
+        }
+      : language === 'pt'
+        ? {
+            message:
+              'Olá Luck Guru, quero saber como a Trimry pode me ajudar a sentir mais sorte.',
+            label: 'Fale com Luck Guru',
+          }
+        : {
+            message:
+              'Hi Luck Guru, I want to know how Trimry can help me feel luckier.',
+            label: 'Talk to Luck Guru',
+          }
+  const href = `https://wa.me/${LUCK_GURU_WHATSAPP_NUMBER}?text=${encodeURIComponent(copy.message)}`
+  const subLabel = 'WhatsApp'
 
   return (
     <a
       href={href}
       target="_blank"
       rel="noreferrer"
-      aria-label={label}
+      aria-label={copy.label}
       onClick={() => {
         trackEvent('whatsapp_open', {
           placement: 'floating_button',
@@ -54,7 +67,7 @@ export function FloatingWhatsappButton() {
         <WhatsAppIcon />
       </span>
       <span className="hidden pr-1 text-left sm:block">
-        <span className="block text-sm font-black leading-tight">{label}</span>
+        <span className="block text-sm font-black leading-tight">{copy.label}</span>
         <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-emerald-50/82">
           {subLabel}
         </span>

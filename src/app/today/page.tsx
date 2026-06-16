@@ -10,6 +10,11 @@ import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { apiFetch } from '@/lib/api-client'
 import { buildFortuneDay, type ActivityTone } from '@/lib/fortune'
+import {
+  languageToIntlLocale,
+  normalizeLanguageCode,
+  type LanguageCode,
+} from '@/lib/i18n'
 import { buildPersonalSignProfile } from '@/lib/personal-signs'
 import {
   fetchAccountSnapshot,
@@ -43,17 +48,29 @@ function toUtcDayKey(date: Date) {
 }
 
 function toneLabel(language: string, tone: ActivityTone) {
-  const isSpanish = language.startsWith('es')
+  const resolvedLanguage = normalizeLanguageCode(language)
 
   if (tone === 'good') {
-    return isSpanish ? 'BUENO' : 'GOOD'
+    return resolvedLanguage === 'es'
+      ? 'BUENO'
+      : resolvedLanguage === 'pt'
+        ? 'BOM'
+        : 'GOOD'
   }
 
   if (tone === 'bad') {
-    return isSpanish ? 'MALO' : 'BAD'
+    return resolvedLanguage === 'es'
+      ? 'MALO'
+      : resolvedLanguage === 'pt'
+        ? 'RUIM'
+        : 'BAD'
   }
 
-  return isSpanish ? 'RARO' : 'RARE'
+  return resolvedLanguage === 'es'
+    ? 'RARO'
+    : resolvedLanguage === 'pt'
+      ? 'RARO'
+      : 'RARE'
 }
 
 function buildLuckScore(tone: ActivityTone) {
@@ -69,30 +86,38 @@ function buildLuckScore(tone: ActivityTone) {
 }
 
 function buildHeadline(language: string, tone: ActivityTone) {
-  const isSpanish = language.startsWith('es')
+  const resolvedLanguage = normalizeLanguageCode(language)
 
   if (tone === 'good') {
-    return isSpanish
+    return resolvedLanguage === 'es'
       ? 'Hoy favorece el movimiento, la claridad y los cambios limpios.'
+      : resolvedLanguage === 'pt'
+        ? 'Hoje favorece movimento, clareza e mudanças limpas.'
       : 'Today favors movement, clarity, and clean changes.'
   }
 
   if (tone === 'bad') {
-    return isSpanish
+    return resolvedLanguage === 'es'
       ? 'Hoy pide paciencia, mantenimiento y cero presión.'
+      : resolvedLanguage === 'pt'
+        ? 'Hoje pede paciência, manutenção e zero pressão.'
       : 'Today asks for patience, maintenance, and no pressure.'
   }
 
-  return isSpanish
+  return resolvedLanguage === 'es'
     ? 'Hoy se abre de forma extraña. Mantente atento a una oportunidad.'
+    : resolvedLanguage === 'pt'
+      ? 'Hoje se abre de um jeito incomum. Fique atento a uma oportunidade.'
     : 'Today bends in an unusual way. Stay alert for an opening.'
 }
 
 function buildUnlockLine(language: string) {
-  const isSpanish = language.startsWith('es')
+  const resolvedLanguage = normalizeLanguageCode(language)
 
-  return isSpanish
+  return resolvedLanguage === 'es'
     ? 'Desbloquea Trimry para recibir tu proyección diaria por email, WhatsApp o ambos, abrir el calendario mensual y activar los poderes de Luck Guru.'
+    : resolvedLanguage === 'pt'
+      ? 'Desbloqueie a Trimry para receber sua projeção diária por email, WhatsApp ou ambos, abrir o calendário mensal e ativar os poderes de Luck Guru.'
     : 'Unlock Trimry to receive your daily projection by email, WhatsApp, or both, open the monthly calendar, and unlock Luck Guru’s full powers.'
 }
 
@@ -123,14 +148,21 @@ function buildStrongAndCautionLabels(
     .filter(([, tone]) => tone === 'bad')
     .map(([activity]) => activity)
 
-  const isSpanish = language.startsWith('es')
-  const labelMap = isSpanish
+  const resolvedLanguage = normalizeLanguageCode(language)
+  const labelMap = resolvedLanguage === 'es'
     ? {
         haircut: 'cabello',
         shave: 'afeitado',
         nails: 'uñas',
         release: 'soltar',
       }
+    : resolvedLanguage === 'pt'
+      ? {
+          haircut: 'cabelo',
+          shave: 'barba',
+          nails: 'unhas',
+          release: 'soltar',
+        }
     : {
         haircut: 'haircuts',
         shave: 'shaving',
@@ -145,7 +177,7 @@ function buildStrongAndCautionLabels(
 }
 
 function createPreviewFromFortune(language: string, date: Date) {
-  const fortune = buildFortuneDay(date, language.startsWith('es') ? 'es-CL' : 'en-US')
+  const fortune = buildFortuneDay(date, languageToIntlLocale(language))
 
   return {
     dayKey: toUtcDayKey(date),
@@ -163,19 +195,35 @@ function createPreviewFromFortune(language: string, date: Date) {
 }
 
 function emptyActionLabel(language: string) {
-  return language.startsWith('es') ? 'Desbloquear Trimry' : 'Unlock Trimry'
+  const resolvedLanguage = normalizeLanguageCode(language)
+
+  if (resolvedLanguage === 'es') {
+    return 'Desbloquear Trimry'
+  }
+
+  if (resolvedLanguage === 'pt') {
+    return 'Desbloquear Trimry'
+  }
+
+  return 'Unlock Trimry'
 }
 
 function getStageCopy(language: string, stage: number, loadingPreview: boolean) {
-  const isSpanish = language.startsWith('es')
+  const resolvedLanguage = normalizeLanguageCode(language)
 
   if (loadingPreview || stage < 1) {
-    return isSpanish
+    return resolvedLanguage === 'es'
       ? {
           eyebrow: 'Luck Guru esta leyendo',
           title: 'La esfera esta buscando tu senal.',
           body: 'La agenda de hoy se esta alineando antes de revelar el resultado.',
         }
+      : resolvedLanguage === 'pt'
+        ? {
+            eyebrow: 'Luck Guru está lendo',
+            title: 'A esfera está buscando seu sinal.',
+            body: 'A agenda de hoje está se alinhando antes de revelar o resultado.',
+          }
       : {
           eyebrow: 'Luck Guru is reading',
           title: 'The crystal is finding your signal.',
@@ -184,12 +232,18 @@ function getStageCopy(language: string, stage: number, loadingPreview: boolean) 
   }
 
   if (stage < 2) {
-    return isSpanish
+    return resolvedLanguage === 'es'
       ? {
           eyebrow: 'Revelacion en curso',
           title: 'La energia esta cambiando.',
           body: 'Mira la esfera. La fortuna del dia esta por abrirse.',
         }
+      : resolvedLanguage === 'pt'
+        ? {
+            eyebrow: 'Revelação em andamento',
+            title: 'A energia está mudando.',
+            body: 'Observe a esfera. A fortuna do dia está prestes a se abrir.',
+          }
       : {
           eyebrow: 'Reveal in progress',
           title: 'The energy is shifting.',
@@ -197,17 +251,119 @@ function getStageCopy(language: string, stage: number, loadingPreview: boolean) 
         }
   }
 
-  return isSpanish
+  return resolvedLanguage === 'es'
     ? {
         eyebrow: 'Fortuna revelada',
         title: 'Esta es la senal de hoy.',
         body: 'Desbloquea Trimry para ver el mes completo y activar los poderes de Luck Guru.',
       }
+    : resolvedLanguage === 'pt'
+      ? {
+          eyebrow: 'Fortuna revelada',
+          title: 'Este é o sinal de hoje.',
+          body: 'Desbloqueie a Trimry para ver o mês completo e ativar os poderes de Luck Guru.',
+        }
     : {
         eyebrow: 'Fortune revealed',
         title: 'This is today’s sign.',
         body: 'Unlock Trimry to see the full month and activate Luck Guru’s powers.',
       }
+}
+
+function getTodayPageCopy(language: LanguageCode) {
+  if (language === 'es') {
+    return {
+      revealBadge: 'Revelación de hoy',
+      title: 'Luck Guru está abriendo tu suerte.',
+      subtitle:
+        'Primero mira la señal del día. Luego desbloquea el mes completo, tu capa zodiacal y sus poderes en el chat.',
+      strongPrefix: 'Fuerte',
+      avoidPrefix: 'Evita',
+      personalSignal: 'Señal personal',
+      zodiac: 'Zodíaco',
+      chineseCalendar: 'Calendario chino',
+      lockedPersonalSummary:
+        'Este es solo el resumen. Suscríbete para abrir el detalle completo y ver todo el mes en calendario.',
+      activePersonalSummary:
+        'Tu suscripción mantiene esta señal activa junto al calendario mensual y Luck Guru.',
+      personalPending: 'Señal personal pendiente',
+      personalPendingBody:
+        'Agrega tu fecha de nacimiento en el perfil para ver tu zodíaco y calendario chino aquí.',
+      signalLocked: 'Señal bloqueada',
+      fortunePending: 'La fortuna aún no se revela',
+      unlockTitle: 'Al desbloquear Trimry',
+      unlockBullets: [
+        'Recibes un recordatorio diario por email, WhatsApp o ambos.',
+        'Ves días buenos, malos y raros en el calendario mensual.',
+        'Tu zodíaco y calendario chino abren una capa personal de lectura.',
+      ],
+      resumeCheckout: 'Reanudar checkout',
+      dashboard: 'Ir al dashboard',
+      askLuckGuru: 'Preguntar al Luck Guru',
+    }
+  }
+
+  if (language === 'pt') {
+    return {
+      revealBadge: 'Revelação de hoje',
+      title: 'Luck Guru está abrindo sua sorte.',
+      subtitle:
+        'Primeiro veja o sinal do dia. Depois desbloqueie o mês completo, sua camada zodiacal e os poderes no chat.',
+      strongPrefix: 'Forte',
+      avoidPrefix: 'Evite',
+      personalSignal: 'Sinal pessoal',
+      zodiac: 'Zodíaco',
+      chineseCalendar: 'Calendário chinês',
+      lockedPersonalSummary:
+        'Este é apenas o resumo. Assine para abrir o detalhe completo e ver todo o mês no calendário.',
+      activePersonalSummary:
+        'Sua assinatura mantém este sinal ativo junto ao calendário mensal e ao Luck Guru.',
+      personalPending: 'Sinal pessoal pendente',
+      personalPendingBody:
+        'Adicione sua data de nascimento no perfil para ver seu zodíaco e calendário chinês aqui.',
+      signalLocked: 'Sinal bloqueado',
+      fortunePending: 'A fortuna ainda não foi revelada',
+      unlockTitle: 'Ao desbloquear a Trimry',
+      unlockBullets: [
+        'Você recebe um lembrete diário por email, WhatsApp ou ambos.',
+        'Você vê dias bons, ruins e raros no calendário mensal.',
+        'Seu zodíaco e calendário chinês abrem uma camada pessoal de leitura.',
+      ],
+      resumeCheckout: 'Retomar checkout',
+      dashboard: 'Ir para o painel',
+      askLuckGuru: 'Perguntar ao Luck Guru',
+    }
+  }
+
+  return {
+    revealBadge: 'Today’s reveal',
+    title: 'Luck Guru is opening your luck.',
+    subtitle:
+      'First see today’s sign. Then unlock the full month, your zodiac layer, and his powers in chat.',
+    strongPrefix: 'Strong',
+    avoidPrefix: 'Avoid',
+    personalSignal: 'Personal signal',
+    zodiac: 'Zodiac',
+    chineseCalendar: 'Chinese calendar',
+    lockedPersonalSummary:
+      'This is only the summary. Subscribe to open the full detail and see the whole month calendar.',
+    activePersonalSummary:
+      'Your subscription keeps this signal active with the monthly calendar and Luck Guru.',
+    personalPending: 'Personal signal pending',
+    personalPendingBody:
+      'Add your date of birth in your profile to see your zodiac and Chinese calendar here.',
+    signalLocked: 'Signal locked',
+    fortunePending: 'Fortune has not revealed yet',
+    unlockTitle: 'When Trimry unlocks',
+    unlockBullets: [
+      'You receive one daily reminder by email, WhatsApp, or both.',
+      'You see good, bad, and rare days before they arrive.',
+      'Your zodiac and Chinese calendar open a personal reading layer.',
+    ],
+    resumeCheckout: 'Resume checkout',
+    dashboard: 'Go to dashboard',
+    askLuckGuru: 'Ask the Luck Guru',
+  }
 }
 
 function MobileTodayActionBar({
@@ -252,6 +408,11 @@ function MobileTodayActionBar({
 
 export default function TodayLuckPage() {
   const { language } = useLanguage()
+  const resolvedLanguage = normalizeLanguageCode(language)
+  const todayCopy = useMemo(
+    () => getTodayPageCopy(resolvedLanguage),
+    [resolvedLanguage],
+  )
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
   const [preview, setPreview] = useState<TodayPreview>(() =>
     createPreviewFromFortune(language, new Date()),
@@ -259,8 +420,7 @@ export default function TodayLuckPage() {
   const [stage, setStage] = useState(0)
   const [loadingPreview, setLoadingPreview] = useState(true)
 
-  const isSpanish = language.startsWith('es')
-  const locale = isSpanish ? 'es-CL' : 'en-US'
+  const locale = languageToIntlLocale(resolvedLanguage)
   const dayKey = toUtcDayKey(new Date())
   const labels = useMemo(
     () => buildStrongAndCautionLabels(language, preview.activities),
@@ -294,15 +454,15 @@ export default function TodayLuckPage() {
     if (account.subscription.status === 'pending_checkout') {
       return {
         href: '/checkout/start',
-        label: isSpanish ? 'Reanudar checkout' : 'Resume checkout',
+        label: todayCopy.resumeCheckout,
       }
     }
 
     return {
       href: '/dashboard',
-      label: isSpanish ? 'Ir al dashboard' : 'Go to dashboard',
+      label: todayCopy.dashboard,
     }
-  }, [account, isSpanish, language])
+  }, [account, language, todayCopy.dashboard, todayCopy.resumeCheckout])
 
   useEffect(() => {
     trackEvent('today_preview_view', {
@@ -425,17 +585,13 @@ export default function TodayLuckPage() {
       <div className="relative z-10 mx-auto flex min-h-[calc(100svh-4.5rem)] max-w-6xl flex-col justify-start gap-6 px-4 py-5 sm:min-h-[calc(100svh-5rem)] sm:justify-between sm:gap-8 sm:px-6 sm:py-8 lg:px-8">
         <div className="max-w-xl">
           <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
-            {isSpanish ? 'Revelacion de hoy' : 'Today’s reveal'}
+            {todayCopy.revealBadge}
           </p>
           <h1 className="mt-4 max-w-2xl text-4xl leading-[1.04] text-slate-50 sm:text-5xl lg:text-6xl">
-            {isSpanish
-              ? 'Luck Guru está abriendo tu suerte.'
-              : 'Luck Guru is opening your luck.'}
+            {todayCopy.title}
           </h1>
           <p className="mt-4 max-w-lg text-base leading-7 text-slate-100/88 sm:text-lg">
-            {isSpanish
-              ? 'Primero mira la señal del día. Luego desbloquea el mes completo, tu capa zodiacal y sus poderes en el chat.'
-              : 'First see today’s sign. Then unlock the full month, your zodiac layer, and his powers in chat.'}
+            {todayCopy.subtitle}
           </p>
         </div>
 
@@ -513,7 +669,7 @@ export default function TodayLuckPage() {
                         key={activity}
                         className="rounded-full border border-emerald-200/22 bg-emerald-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-100"
                       >
-                        {isSpanish ? `Fuerte: ${activity}` : `Strong: ${activity}`}
+                        {todayCopy.strongPrefix}: {activity}
                       </span>
                     ))}
                     {labels.caution.slice(0, 2).map((activity) => (
@@ -521,7 +677,7 @@ export default function TodayLuckPage() {
                         key={activity}
                         className="rounded-full border border-amber-200/24 bg-amber-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-100"
                       >
-                        {isSpanish ? `Evita: ${activity}` : `Avoid: ${activity}`}
+                        {todayCopy.avoidPrefix}: {activity}
                       </span>
                     ))}
                   </div>
@@ -530,7 +686,7 @@ export default function TodayLuckPage() {
                     <div className="mt-5 rounded-[1.35rem] border border-amber-200/24 bg-amber-200/10 p-4">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-100/86">
-                          {isSpanish ? 'Señal personal' : 'Personal signal'}
+                          {todayCopy.personalSignal}
                         </p>
                         <span className="rounded-full border border-cyan-100/20 bg-cyan-100/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
                           {personalSigns.zodiac.name} · {personalSigns.chinese.name}
@@ -539,7 +695,7 @@ export default function TodayLuckPage() {
                       <div className="mt-3 grid gap-3 sm:grid-cols-2">
                         <article className="rounded-2xl border border-cyan-100/16 bg-slate-950/34 p-3">
                           <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
-                            {isSpanish ? 'Zodíaco' : 'Zodiac'}
+                            {todayCopy.zodiac}
                           </p>
                           <p className="mt-2 text-sm leading-6 text-slate-50">
                             {personalSigns.projection.zodiac}
@@ -547,7 +703,7 @@ export default function TodayLuckPage() {
                         </article>
                         <article className="rounded-2xl border border-cyan-100/16 bg-slate-950/34 p-3">
                           <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
-                            {isSpanish ? 'Calendario chino' : 'Chinese calendar'}
+                            {todayCopy.chineseCalendar}
                           </p>
                           <p className="mt-2 text-sm leading-6 text-slate-50">
                             {personalSigns.projection.chinese}
@@ -556,27 +712,21 @@ export default function TodayLuckPage() {
                       </div>
                       {!hasActiveSubscription ? (
                         <p className="mt-3 text-xs leading-5 text-amber-50/84">
-                          {isSpanish
-                            ? 'Este es solo el resumen. Suscríbete para abrir el detalle completo y ver todo el mes en calendario.'
-                            : 'This is only the summary. Subscribe to open the full detail and see the whole month calendar.'}
+                          {todayCopy.lockedPersonalSummary}
                         </p>
                       ) : (
                         <p className="mt-3 text-xs leading-5 text-amber-50/84">
-                          {isSpanish
-                            ? 'Tu suscripción mantiene esta señal activa junto al calendario mensual y Luck Guru.'
-                            : 'Your subscription keeps this signal active with the monthly calendar and Luck Guru.'}
+                          {todayCopy.activePersonalSummary}
                         </p>
                       )}
                     </div>
                   ) : account ? (
                     <div className="mt-5 rounded-[1.35rem] border border-cyan-100/18 bg-cyan-100/8 p-4">
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/80">
-                        {isSpanish ? 'Señal personal pendiente' : 'Personal signal pending'}
+                        {todayCopy.personalPending}
                       </p>
                       <p className="mt-2 text-sm leading-6 text-slate-100/82">
-                        {isSpanish
-                          ? 'Agrega tu fecha de nacimiento en el perfil para ver tu zodíaco y calendario chino aquí.'
-                          : 'Add your date of birth in your profile to see your zodiac and Chinese calendar here.'}
+                        {todayCopy.personalPendingBody}
                       </p>
                     </div>
                   ) : null}
@@ -584,12 +734,12 @@ export default function TodayLuckPage() {
               ) : (
                 <div className="today-sealed-result">
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/78">
-                    {isSpanish ? 'Senal bloqueada' : 'Signal locked'}
+                    {todayCopy.signalLocked}
                   </p>
                   <div className="mt-3 flex items-center gap-3">
                     <span className="today-hidden-score">??</span>
                     <span className="text-xs font-black uppercase leading-5 tracking-[0.18em] text-slate-100/70">
-                      {isSpanish ? 'La fortuna aun no se revela' : 'Fortune has not revealed yet'}
+                      {todayCopy.fortunePending}
                     </span>
                   </div>
                   <p className="mt-4 hidden text-base leading-7 text-slate-50 sm:block sm:text-lg">
@@ -602,24 +752,12 @@ export default function TodayLuckPage() {
 
           <div className="hidden rounded-[1.5rem] border border-cyan-100/18 bg-slate-950/48 p-4 backdrop-blur-md lg:block">
             <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/78">
-              {isSpanish ? 'Al desbloquear Trimry' : 'When Trimry unlocks'}
+              {todayCopy.unlockTitle}
             </p>
             <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-100/84">
-              <li>
-                {isSpanish
-                  ? 'Recibes un recordatorio diario por email, WhatsApp o ambos.'
-                  : 'You receive one daily reminder by email, WhatsApp, or both.'}
-              </li>
-              <li>
-                {isSpanish
-                  ? 'Ves días buenos, malos y raros en el calendario mensual.'
-                  : 'You see good, bad, and rare days before they arrive.'}
-              </li>
-              <li>
-                {isSpanish
-                  ? 'Tu zodíaco y calendario chino abren una capa personal de lectura.'
-                  : 'Your zodiac and Chinese calendar open a personal reading layer.'}
-              </li>
+              {todayCopy.unlockBullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
             </ul>
           </div>
         </div>
@@ -643,7 +781,7 @@ export default function TodayLuckPage() {
           </Link>
           <OpenLuckGuruChatButton
             analyticsLocation="today_preview"
-            label={isSpanish ? 'Preguntar al Luck Guru' : 'Ask the Luck Guru'}
+            label={todayCopy.askLuckGuru}
             className="cosmic-button-secondary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-cyan-50"
           />
         </div>

@@ -8,23 +8,32 @@ import { OpenLuckGuruChatButton } from '@/components/open-luck-guru-chat-button'
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { buildWeeklyFortune, type ActivityTone } from '@/lib/fortune'
+import { languageToIntlLocale, normalizeLanguageCode } from '@/lib/i18n'
 import {
   type AccountSnapshot,
   fetchAccountSnapshot,
 } from '@/lib/start-flow'
 
 function toneLabel(language: string, tone: ActivityTone) {
-  const isSpanish = language.startsWith('es')
+  const resolvedLanguage = normalizeLanguageCode(language)
 
   if (tone === 'good') {
-    return isSpanish ? 'BUENO' : 'GOOD'
+    return resolvedLanguage === 'es'
+      ? 'BUENO'
+      : resolvedLanguage === 'pt'
+        ? 'BOM'
+        : 'GOOD'
   }
 
   if (tone === 'bad') {
-    return isSpanish ? 'MALO' : 'BAD'
+    return resolvedLanguage === 'es'
+      ? 'MALO'
+      : resolvedLanguage === 'pt'
+        ? 'RUIM'
+        : 'BAD'
   }
 
-  return isSpanish ? 'RARO' : 'RARE'
+  return resolvedLanguage === 'en' ? 'RARE' : 'RARO'
 }
 
 export default function ActivationGatewayPage() {
@@ -33,10 +42,10 @@ export default function ActivationGatewayPage() {
   const [loading, setLoading] = useState(true)
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
 
-  const isSpanish = language.startsWith('es')
+  const resolvedLanguage = normalizeLanguageCode(language)
   const sampleFortune = useMemo(
-    () => buildWeeklyFortune(new Date(), isSpanish ? 'es-CL' : 'en-US').slice(0, 3),
-    [isSpanish],
+    () => buildWeeklyFortune(new Date(), languageToIntlLocale(resolvedLanguage)).slice(0, 3),
+    [resolvedLanguage],
   )
 
   useEffect(() => {
@@ -187,7 +196,13 @@ export default function ActivationGatewayPage() {
               </Link>
               <OpenLuckGuruChatButton
                 analyticsLocation="activation_gate"
-                label={isSpanish ? 'Hablar con Luck Guru' : 'Talk to Luck Guru'}
+                label={
+                  resolvedLanguage === 'es'
+                    ? 'Hablar con Luck Guru'
+                    : resolvedLanguage === 'pt'
+                      ? 'Falar com Luck Guru'
+                      : 'Talk to Luck Guru'
+                }
                 className="cosmic-button-secondary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-cyan-50"
               />
             </div>

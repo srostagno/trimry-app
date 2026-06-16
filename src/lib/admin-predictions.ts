@@ -7,6 +7,7 @@ export type PredictionActivities = Record<FortuneActivity, PredictionTone>
 export type PredictionNotesByLanguage = {
   en: string
   es: string
+  pt: string
 }
 
 export type AdminPredictionDayImage = {

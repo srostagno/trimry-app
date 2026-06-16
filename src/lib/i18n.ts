@@ -1,9 +1,46 @@
 export const LANGUAGE_OPTIONS = [
   { code: 'en', label: 'English' },
-  { code: 'es', label: 'Espanol' },
+  { code: 'es', label: 'Español' },
+  { code: 'pt', label: 'Português' },
 ] as const
 
 export type LanguageCode = (typeof LANGUAGE_OPTIONS)[number]['code']
+
+const SPANISH_SPEAKING_COUNTRY_CODES = new Set([
+  'AR',
+  'BO',
+  'CL',
+  'CO',
+  'CR',
+  'CU',
+  'DO',
+  'EC',
+  'ES',
+  'GQ',
+  'GT',
+  'HN',
+  'MX',
+  'NI',
+  'PA',
+  'PE',
+  'PR',
+  'PY',
+  'SV',
+  'UY',
+  'VE',
+])
+
+const PORTUGUESE_SPEAKING_COUNTRY_CODES = new Set([
+  'AO',
+  'BR',
+  'CV',
+  'GW',
+  'MO',
+  'MZ',
+  'PT',
+  'ST',
+  'TL',
+])
 
 type LegalSection = {
   title: string
@@ -338,6 +375,7 @@ export type MessageSection = {
       notesLabel: string
       notesEnglishLabel: string
       notesSpanishLabel: string
+      notesPortugueseLabel: string
       notesHint: string
       goodOption: string
       badOption: string
@@ -968,8 +1006,9 @@ const englishMessages: MessageSection = {
       notesLabel: 'Prediction note',
       notesEnglishLabel: 'Note (English)',
       notesSpanishLabel: 'Note (Spanish)',
+      notesPortugueseLabel: 'Note (Portuguese)',
       notesHint:
-        'Both notes are required and will be used according to the active language.',
+        'All notes are required and will be used according to the active language.',
       goodOption: 'Good',
       badOption: 'Bad',
       rareOption: 'Rare',
@@ -1759,8 +1798,9 @@ const spanishMessages: MessageSection = {
       notesLabel: 'Nota de predicción',
       notesEnglishLabel: 'Nota (inglés)',
       notesSpanishLabel: 'Nota (español)',
+      notesPortugueseLabel: 'Nota (portugués)',
       notesHint:
-        'Ambas notas son obligatorias y se usan según el idioma activo.',
+        'Todas las notas son obligatorias y se usan según el idioma activo.',
       goodOption: 'Bueno',
       badOption: 'Malo',
       rareOption: 'Raro',
@@ -2109,13 +2149,596 @@ const spanishMessages: MessageSection = {
   },
 }
 
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends Array<unknown>
+    ? T[K]
+    : T[K] extends object
+      ? DeepPartial<T[K]>
+      : T[K]
+}
+
+function mergeMessages(
+  base: MessageSection,
+  overrides: DeepPartial<MessageSection>,
+): MessageSection {
+  const mergeValue = (baseValue: unknown, overrideValue: unknown): unknown => {
+    if (overrideValue === undefined) {
+      return baseValue
+    }
+
+    if (
+      Array.isArray(baseValue) ||
+      Array.isArray(overrideValue) ||
+      typeof baseValue !== 'object' ||
+      baseValue === null ||
+      typeof overrideValue !== 'object' ||
+      overrideValue === null
+    ) {
+      return overrideValue
+    }
+
+    return Object.fromEntries(
+      Object.entries(baseValue).map(([key, value]) => [
+        key,
+        mergeValue(value, (overrideValue as Record<string, unknown>)[key]),
+      ]),
+    )
+  }
+
+  return mergeValue(base, overrides) as MessageSection
+}
+
+const portugueseMessages = mergeMessages(englishMessages, {
+  common: {
+    loading: 'Carregando...',
+    saving: 'Salvando...',
+    previous: 'Anterior',
+    next: 'Próximo',
+    cancel: 'Cancelar',
+    continue: 'Continuar',
+    backToLogin: 'Voltar ao login',
+    backToDashboard: 'Voltar ao painel',
+    tryAgain: 'Tentar novamente',
+    returnHome: 'Voltar ao início',
+  },
+  languageSwitcher: {
+    label: 'Idioma',
+  },
+  nav: {
+    home: 'Início',
+    blog: 'Blog',
+    guide: 'Guia',
+    howItWorks: 'Como funciona',
+    pricing: 'Plano',
+    faq: 'FAQ',
+    legal: 'Legal',
+    login: 'Entrar',
+    register: 'Criar conta',
+    dashboard: 'Painel',
+    profile: 'Perfil',
+    admin: 'Admin',
+    logout: 'Sair',
+  },
+  footer: {
+    rightsReserved: 'Todos os direitos reservados.',
+    companyNumber: 'Número da empresa',
+    registeredOffice: 'Sede registrada',
+    operationsOffice: 'Escritório operacional',
+    contact: 'Contato',
+  },
+  hero: {
+    badge: 'Your Luck Guide',
+    title: 'Trimry, seu guia de sorte',
+    subtitle:
+      'Projeções diárias por email ou WhatsApp, além de um calendário mensal completo de sinais de fortuna na web.',
+    primary: 'Ver a sorte de hoje',
+    secondary: 'Perguntar ao Luck Guru',
+  },
+  home: {
+    releaseBadge: 'Soltar também tem timing',
+    releaseText:
+      'Um corte pode ser cosmético. No momento certo, parece uma quebra limpa com a dúvida, o peso e a energia parada.',
+    releaseChannels:
+      'Escolha entrega diária por email, WhatsApp ou ambos.',
+    releaseImageAlt:
+      'Uma pessoa cortando o cabelo enquanto energia luminosa sai do corte como uma liberação ritual.',
+    beliefBadge: 'Motor da crença',
+    beliefTitle: 'Sentir-se com sorte muda como você entra no ambiente.',
+    beliefSubtitle:
+      'A tese da Trimry é simples: quando você sente que o timing está a seu favor, percebe oportunidades mais rápido, age com mais otimismo e torna o impulso visível.',
+    teaserEyebrow: 'Prévia cósmica diária',
+    couldBe: 'Pode ser...',
+    teaserNote:
+      'Assine para revelar a transmissão real dia a dia e receber um lembrete diário por email, WhatsApp ou ambos.',
+    teaserButton: 'Revelar minha previsão real',
+    seoGuideBadge: 'Guia SEO',
+    seoGuideTitle: 'Quer o guia completo de dias bons e ruins?',
+    seoGuideSubtitle:
+      'Leia nosso guia em inglês sobre “Good and Bad Days to Cut your Hair, Nails and more” com regras semanais práticas.',
+    seoGuideButton: 'Ler guia completo',
+    predictions: [
+      {
+        tone: 'good',
+        text: 'A boa fortuna se expande ao seu redor. Uma mensagem sobre dinheiro ou uma oportunidade útil pode chegar.',
+      },
+      {
+        tone: 'good',
+        text: 'A energia do amor se abre. Você pode conhecer alguém magnético ou receber um sinal romântico inesperado.',
+      },
+      {
+        tone: 'bad',
+        text: 'Mal-entendidos podem crescer rápido hoje. Evite decisões emocionais e gastos arriscados.',
+      },
+      {
+        tone: 'bad',
+        text: 'Planos podem travar e o apoio pode parecer distante. Seja prático e adie grandes compromissos.',
+      },
+      {
+        tone: 'rare',
+        text: 'Dia curinga raro: uma coincidência estranha pode trazer um presente, pista ou convite repentino.',
+      },
+      {
+        tone: 'rare',
+        text: 'Cruzamento kármico: um amor antigo ou assunto antigo pode voltar pedindo encerramento.',
+      },
+      {
+        tone: 'good',
+        text: 'Janela de prosperidade: um pagamento atrasado, desconto ou aliado útil pode aparecer inesperadamente.',
+      },
+      {
+        tone: 'bad',
+        text: 'A energia está pesada e reativa. Proteja sua paz e evite discussões sobre dinheiro ou relacionamentos.',
+      },
+      {
+        tone: 'rare',
+        text: 'Um magnetismo incomum cerca você. Alguém influente pode compartilhar um conselho confidencial ou uma oportunidade oculta.',
+      },
+    ],
+  },
+  story: {
+    title: 'Seu guia de sorte para todos os dias, não só para um ritual ocasional.',
+    subtitle:
+      'A Trimry combina timing ritual, sinais do zodíaco, energia do calendário chinês e lembretes práticos para manter você alinhado com a sorte.',
+    card1Title: 'Sinais diários de fortuna',
+    card1Text:
+      'Cada dia recebe um sinal Bom, Ruim ou Raro para ação, liberação, dinheiro, relacionamentos e energia.',
+    card2Title: 'Um lembrete diário',
+    card2Text:
+      'Assinantes recebem a projeção do dia por email ou WhatsApp, conforme o canal escolhido.',
+    card3Title: 'Calendário mensal',
+    card3Text:
+      'O painel web abre o mês completo para você ver dias favoráveis e cautelosos antes que cheguem.',
+  },
+  pricing: {
+    title: 'Experimente a Trimry grátis por {trialPeriodDays} dias',
+    subtitle:
+      'Comece com o trial completo, sinta o ritmo diário e continue apenas se a Trimry ajudar você a se mover com mais sorte.',
+    planTitle: 'Entrega diária de fortuna',
+    billing:
+      '{trialPeriodDays} dias grátis, depois {billingInline}. Cancele quando quiser.',
+    include1:
+      'Um lembrete diário com sua projeção por email, WhatsApp ou ambos',
+    include2:
+      'Calendário mensal completo com sinais Bons, Ruins e Raros',
+    include3:
+      'Sinais de manifestação para dinheiro, relacionamentos, energia e timing pessoal',
+    cta: 'Começar grátis',
+  },
+  weekly: {
+    title: 'Previsão cósmica de hoje',
+    subtitle:
+      'Uma prévia rotativa sobre fortuna, amor, dinheiro e sorte. Assine para desbloquear a transmissão mensal completa.',
+    good: 'Bom',
+    bad: 'Ruim',
+    rare: 'Raro',
+  },
+  faq: {
+    title: 'Perguntas frequentes',
+    q1: 'Isso é uma recomendação médica ou científica?',
+    a1: 'Não. A Trimry é um serviço cultural e ritual de timing para rotinas pessoais.',
+    q2: 'Quando recebo a mensagem?',
+    a2: 'Assinantes recebem um lembrete diário com a projeção do dia pelo canal escolhido: email, WhatsApp ou ambos.',
+    q3: 'Como gerencio a cobrança?',
+    a3: 'Pelo painel, onde você pode cancelar quando quiser, reativar depois e abrir o portal seguro da Stripe para métodos de pagamento e faturas.',
+    q4: 'Qual fuso horário é usado?',
+    a4: 'Usamos o fuso horário IANA salvo na sua conta. Você pode alterar o fuso e o horário diário de entrega no painel.',
+  },
+  cta: {
+    title: 'Mantenha-se alinhado com a sorte todos os dias.',
+    subtitle:
+      'Crie sua conta Trimry, escolha email, WhatsApp ou ambos, e mantenha seus sinais diários de fortuna por perto.',
+    button: 'Abrir minha conta',
+  },
+  auth: {
+    registerTitle: 'Comece em 10 segundos',
+    registerSubtitle:
+      'Informe seu nome, data de nascimento e contato para abrir seu código pessoal de sorte.',
+    loginTitle: 'Bem-vindo de volta',
+    loginSubtitle: 'Entre para gerenciar sua entrega diária de sorte.',
+    firstNameLabel: 'Nome',
+    lastNameLabel: 'Sobrenome',
+    birthDateLabel: 'Data de nascimento',
+    timeZoneLabel: 'Fuso horário',
+    timeZoneHint:
+      'Usamos isso para agendar sua projeção diária no horário local correto.',
+    emailLabel: 'Email',
+    passwordLabel: 'Senha',
+    whatsappLabel: 'Número de WhatsApp',
+    passwordHint:
+      'Mínimo de 10 caracteres, incluindo maiúscula, minúscula e número.',
+    registerButton: 'Continuar',
+    loginButton: 'Entrar',
+    needAccount: 'Precisa de uma conta?',
+    alreadyHaveAccount: 'Já tem uma conta?',
+  },
+  deliveryChannels: {
+    bothTitle: 'Email + WhatsApp',
+    bothDescription: 'Email primeiro, com WhatsApp como segundo canal opcional.',
+    emailTitle: 'Somente email',
+    emailDescription: 'A opção padrão mais simples para a maioria dos usuários.',
+    whatsappTitle: 'Somente WhatsApp',
+    whatsappDescription: 'Entrega no celular quando você preferir.',
+  },
+  deliveryOnboarding: {
+    loading: 'Carregando seu onboarding...',
+    loadError: 'Não foi possível carregar sua conta agora.',
+    prepBadge: 'Ativação de fortuna',
+    prepTitle: 'Preparando sua fortuna...',
+    prepSubtitle:
+      'Estamos conectando seu canal escolhido ao seu ritmo diário de sorte e preparando a etapa de ativação da assinatura.',
+    preparationSteps: [
+      'Escolhendo seu ritual de entrega',
+      'Ajustando seu timing de liberação',
+      'Carregando abundância diária',
+      'Preparando sua porta de ativação',
+    ],
+    editBadge: 'Configurações de entrega',
+    createBadge: 'Etapa 1',
+    editTitle: 'Atualize onde a Trimry deve entregar sua projeção diária',
+    createTitle: 'Como a Trimry deve entregar sua projeção diária?',
+    editSubtitle:
+      'Altere sua preferência de entrega quando quiser. Use email, WhatsApp ou mantenha ambos os canais ativos.',
+    createSubtitle:
+      'Email é o padrão. Adicione WhatsApp apenas se também quiser entrega no celular.',
+    activationChecklist: [
+      'Escolha email primeiro e adicione WhatsApp somente se quiser.',
+      'Sua página de ativação abre antes da Stripe.',
+      'Você pode alterar a entrega depois no painel.',
+    ],
+    dashboardChecklist: [
+      'Escolha sua preferência de entrega.',
+      'Adicione WhatsApp somente se quiser ativá-lo.',
+      'Você volta para o painel.',
+    ],
+    setupTitle: 'Configuração de entrega',
+    setupSubtitle:
+      'O email chega à sua caixa de entrada. WhatsApp continua opcional até você ativar.',
+    channelLabel: 'Canal de entrega',
+    mondayTimeLabel: 'Horário da projeção diária',
+    mondayTimeHint: 'Agendado todos os dias às {time} em {zone}.',
+    emailDeliveryLabel: 'Entrega por email',
+    whatsappOffHint:
+      'WhatsApp fica desativado por padrão. Ative apenas se também quiser entrega no celular.',
+    whatsappConsentLabel:
+      'Concordo em receber mensagens de assinatura da Trimry por WhatsApp neste número.',
+    whatsappConsentHint:
+      'Você pode sair quando quiser respondendo STOP no WhatsApp ou desativando a entrega por WhatsApp no painel.',
+    submitContinue: 'Continuar para ativação',
+    submitSave: 'Salvar configurações de entrega',
+    saveError: 'Não foi possível salvar suas configurações de entrega agora.',
+    whatsappConsentError:
+      'Confirme o consentimento do WhatsApp antes de habilitar a entrega por WhatsApp.',
+  },
+  activate: {
+    loading: 'Carregando sua etapa de ativação...',
+    loadError: 'Não foi possível carregar sua ativação agora.',
+    unavailable: 'Não é possível continuar agora.',
+    badge: '{trialPeriodDays} dias grátis',
+    title: 'Comece seu guia diário de sorte grátis por {trialPeriodDays} dias.',
+    subtitle:
+      'Hoje não há cobrança. A Trimry entrega um sinal diário para focar sua intenção, fortalecer sua crença e ajudar você a se mover sentindo mais sorte e abertura para fortuna real.',
+    cards: [
+      '{trialPeriodDays} dias grátis antes da primeira cobrança.',
+      'Sinais diários de manifestação para dinheiro, relacionamentos, energia e liberação.',
+      'Calendário mensal para escolher melhores momentos.',
+    ],
+    primaryButton: 'Começar {trialPeriodDays} dias grátis',
+    secondaryButton: 'Alterar entrega',
+    snapshotTitle: 'Seu resumo de ativação',
+    deliveryPreferenceLabel: 'Preferência de entrega',
+    emailDeliveryLabel: 'Entrega por email',
+    projectionTimingLabel: 'Horário da projeção',
+    whatsappDeliveryLabel: 'Entrega por WhatsApp',
+    billingLabel: 'Hoje',
+    billingValue:
+      'Grátis por {trialPeriodDays} dias, depois {billingInline}. Cancele quando quiser.',
+    previewBadge: 'Prévia do trial',
+    previewTitle: 'O que desbloqueia durante o trial',
+    previewLabel: 'Prévia',
+    previewDayLabel: 'Sinal diário',
+    emailFirstTitle: 'Entrega primeiro por email',
+    whyItWorksLabel: 'Por que funciona',
+    whyItWorksText:
+      'A manifestação funciona melhor quando a crença vira postura diária. A Trimry transforma essa crença em um ritmo simples: notar o sinal, definir intenção e agir como se a sorte já estivesse se movendo com você.',
+    carouselBadge: 'Psicologia do impulso',
+    carouselTitle:
+      'A sorte fica mais forte quando sua mente começa a se mover com ela.',
+    carouselSubtitle:
+      'Todas essas vozes apontam para o mesmo mecanismo: crença muda postura, postura muda ação e ação muda o que parece possível.',
+  },
+  checkout: {
+    badge: '{trialPeriodDays} dias grátis',
+    badgeCancelled: 'Checkout pausado',
+    title: 'Abrindo seu trial grátis da Trimry...',
+    titleCancelled: 'Seu trial grátis está esperando',
+    subtitle:
+      'Hoje não há cobrança. A Stripe confirma seu método de pagamento com segurança para que seu guia diário de sorte comece agora.',
+    subtitleCancelled:
+      'Nada foi perdido. Suas configurações continuam salvas e você pode começar seus {trialPeriodDays} dias grátis quando quiser.',
+    openError: 'Não foi possível abrir o checkout da Stripe agora.',
+    resumeTitle: 'Começar seu trial grátis de {trialPeriodDays} dias',
+    resumeSubtitle:
+      'Seu guia diário ainda está esperando. Continue para a Stripe, confirme seu método de pagamento e desbloqueie a entrega sem cobrança hoje.',
+    resumeButton: 'Começar grátis',
+    resumeHint: 'Hoje não há cobrança. Checkout seguro da Stripe. Cancele quando quiser.',
+    deliveryLabel: 'Canal de entrega',
+    timingLabel: 'Horário diário',
+    helper:
+      'Estamos criando o checkout seguro da Stripe para seus {trialPeriodDays} dias grátis. Se nada acontecer, espere um segundo ou recarregue esta página.',
+    trialHighlights: [
+      'Sinal diário de fortuna entregue por email, WhatsApp ou ambos.',
+      'Ritmo de manifestação para crença, ação e oportunidade.',
+      'Calendário mensal completo desbloqueado durante o trial.',
+    ],
+  },
+  dashboard: {
+    title: 'Seu painel de assinatura',
+    intro: 'Gerencie seus canais de entrega e seu plano diário da Trimry.',
+    adminBadge: 'Conta admin',
+    loading: 'Carregando sua conta...',
+    noData: 'Entre para acessar seu painel.',
+    tabs: {
+      account: 'Conta',
+      predictionCalendar: 'Calendário',
+      sends: 'Envios',
+    },
+    status: 'Status',
+    nextMessage: 'Próxima mensagem diária',
+    subscribeButton: 'Ativar assinatura',
+    noSubscription: 'Você ainda não tem uma assinatura ativa.',
+    paymentPending: 'Pagamento pendente',
+    paymentIssue: 'Problema de pagamento',
+    billingSuccess:
+      'A Stripe reportou um checkout bem-sucedido. Estamos sincronizando sua assinatura agora.',
+    profileTitle: 'Perfil da conta',
+    profileSubtitle:
+      'Atualize seus dados e o fuso horário usado para sua projeção diária.',
+    profileSave: 'Salvar perfil',
+    profileTimeZoneHint:
+      'A entrega diária é calculada a partir deste fuso horário IANA.',
+    projectionCalendar: {
+      title: 'Calendário de projeção',
+      subtitle:
+        'Acompanhe seu ritmo diário de projeção. Assinantes podem acessar o mês completo.',
+      fullAccessHint:
+        'Mês completo desbloqueado. Revise cada dia e planeje seus rituais com antecedência.',
+      lockedAccessHint:
+        'Nesta conta, apenas hoje está desbloqueado. Ative sua assinatura para desbloquear o mês completo.',
+      loadError: 'Não foi possível carregar seu calendário de projeção agora.',
+      lockedDayBadge: 'Bloqueado',
+      lockedDayTitle: 'Dia bloqueado',
+      lockedDaySubtitle:
+        'Ative sua assinatura para revelar este dia e desbloquear a projeção mensal completa.',
+    },
+    predictionCalendar: {
+      notesPortugueseLabel: 'Nota (português)',
+      notesHint:
+        'Todas as notas são obrigatórias e serão usadas conforme o idioma ativo.',
+    },
+    passwordTitle: 'Segurança',
+    passwordSubtitle:
+      'Altere sua senha quando precisar. Primeiro confirme sua senha atual.',
+    currentPasswordLabel: 'Senha atual',
+    newPasswordLabel: 'Nova senha',
+    confirmPasswordLabel: 'Confirmar nova senha',
+    passwordSave: 'Atualizar senha',
+    passwordSuccess: 'Senha atualizada com sucesso.',
+    passwordMismatchError: 'A nova senha e a confirmação não coincidem.',
+    passwordDifferentError:
+      'A nova senha deve ser diferente da senha atual.',
+    passwordSaveError: 'Não foi possível atualizar sua senha agora.',
+    dangerTitle: 'Zona de risco',
+    dangerSubtitle:
+      'Exclua sua conta e saia imediatamente. Mantemos um registro marcado como excluído para auditoria, mas seu email de login é anonimizado e seus canais ativos são interrompidos.',
+    deleteButton: 'Excluir conta',
+    deleteLoading: 'Excluindo...',
+    deleteConfirm:
+      'Excluir sua conta? Isso encerrará sua sessão imediatamente e interromperá seus canais atuais de entrega.',
+    deleteError: 'Não foi possível excluir sua conta agora.',
+    noSubscriptionSubtitle:
+      '{billingCompact} · projeção diária por email, WhatsApp ou ambos',
+    mondayProjectionTime: 'Horário da projeção diária',
+    sentOnMondaysAt: 'Enviado todos os dias às {time} em {zone}.',
+    emailDeliveryLabel: 'Entrega por email',
+    whatsappOffSetup:
+      'WhatsApp está desligado. Você pode ativar só por email ou reativar quando quiser.',
+    whatsappConsentLabel:
+      'Concordo em receber mensagens de assinatura da Trimry por WhatsApp neste número.',
+    whatsappConsentHint:
+      'Você pode sair quando quiser respondendo STOP no WhatsApp ou desativando o WhatsApp aqui.',
+    whatsappConsentError:
+      'Confirme o consentimento do WhatsApp antes de habilitar a entrega por WhatsApp.',
+    pendingTitle: 'Ative sua assinatura Trimry',
+    pendingSubtitle:
+      'Sua preferência de entrega já está salva. Antes do pagamento, passamos por uma etapa breve de ativação e depois abrimos o checkout seguro da Stripe.',
+    pendingDeliveryPreferenceLabel: 'Preferência de entrega',
+    pendingEmailDeliveryLabel: 'Entrega por email',
+    pendingProjectionTimingLabel: 'Horário da projeção',
+    pendingWhatsappLabel: 'Entrega por WhatsApp',
+    continueActivation: 'Continuar ativação',
+    changeDeliverySettings: 'Alterar entrega',
+    activePlanTitle: 'Entrega diária de fortuna Trimry',
+    canceledPlanTitle: 'Sua assinatura Trimry está cancelada',
+    canceledNote:
+      'Você pode reativar quando quiser por esta conta. Seus canais de entrega e horário diário continuam salvos abaixo.',
+    activeNote:
+      'Cancele quando quiser por este painel. Se voltar depois, você pode reativar pela mesma conta.',
+    deliveryPreferenceLabel: 'Preferência de entrega',
+    nextMessageIfReactivated: 'Se reativada hoje, sua próxima mensagem seria',
+    weeklyProjectionTimeLabel: 'Horário diário da projeção',
+    futureMessagesHint: 'As futuras mensagens diárias seguirão este horário em {zone}.',
+    whatsappOffActive:
+      'WhatsApp está desativado para esta assinatura. Ative acima se também quiser entrega no celular.',
+    saveDeliverySettings: 'Salvar configurações de entrega',
+    reactivateButton: 'Reativar assinatura',
+    reactivateLoading: 'Preparando reativação...',
+    cancelButton: 'Cancelar assinatura',
+    cancelLoading: 'Cancelando...',
+    manageBillingButton: 'Gerenciar cobrança na Stripe',
+    manageBillingLoading: 'Abrindo Stripe...',
+    billingFootnoteCanceled:
+      'Você pode reativar por esta conta quando quiser. Stripe Billing continua disponível para faturas e histórico.',
+    billingFootnoteActive:
+      'Mudanças no método de pagamento e histórico de faturas continuam na Stripe Billing, mas agora você também pode cancelar diretamente por este painel.',
+    cancelConfirm:
+      'Cancelar sua assinatura agora? A cobrança futura será interrompida imediatamente e você poderá reativar depois.',
+    cancelSuccess:
+      'Sua assinatura foi cancelada. Suas configurações de entrega continuam salvas e você pode reativar quando quiser.',
+    cancelError: 'Não foi possível cancelar sua assinatura agora.',
+    reactivateError: 'Não foi possível reativar sua assinatura agora.',
+    openBillingError: 'Não foi possível abrir a cobrança da Stripe agora.',
+    saveDeliveryError: 'Não foi possível salvar suas configurações de entrega.',
+  },
+  statuses: {
+    active: 'Ativa',
+    paused: 'Pausada',
+    canceled: 'Cancelada',
+  },
+  legal: {
+    terms: 'Termos de serviço',
+    privacy: 'Política de privacidade',
+    disclaimer: 'Aviso ritual',
+    dataDeletion: 'Instruções de exclusão de dados',
+    englishNotice:
+      'O texto legal principal é mantido em inglês. Esta tradução é fornecida por conveniência.',
+  },
+  cookieConsent: {
+    title: 'Cookies e analytics',
+    description:
+      'Usamos cookies essenciais e medição de anúncios/analytics. Este aviso é visual e sua escolha só controla a exibição desta mensagem.',
+    accept: 'Aceitar analytics',
+    decline: 'Recusar analytics',
+    learnMore: 'Ler política de privacidade',
+  },
+  notifications: {
+    success: 'Salvo com sucesso.',
+    error: 'Algo deu errado. Tente novamente.',
+  },
+  carousel: {
+    proofLabel: 'Prova rotativa de mentalidade',
+    whyTitle: 'Por que isso importa',
+    whyText:
+      'Quando as pessoas sentem que o timing as favorece, carregam mais confiança, percebem mais aberturas e se movem com menos hesitação.',
+    effectTitle: 'Efeito Trimry',
+    effectText:
+      'A mensagem diária foi criada para aguçar a atenção, reforçar o otimismo e transformar ritual em impulso que você realmente sente.',
+    sequenceLabel: 'Sequência de citações',
+  },
+  notFound: {
+    title: 'Página não encontrada',
+    description: 'A página solicitada não está disponível.',
+    cta: 'Voltar ao início',
+  },
+} satisfies DeepPartial<MessageSection>)
+
 const translations: Record<LanguageCode, MessageSection> = {
   en: englishMessages,
   es: spanishMessages,
+  pt: portugueseMessages,
 }
 
 export function isLanguageCode(value: string): value is LanguageCode {
   return LANGUAGE_OPTIONS.some((language) => language.code === value)
+}
+
+export function languageFromLocale(value?: string | null): LanguageCode | null {
+  const candidate = value?.trim().toLowerCase()
+
+  if (!candidate) {
+    return null
+  }
+
+  if (candidate.startsWith('es')) {
+    return 'es'
+  }
+
+  if (candidate.startsWith('pt')) {
+    return 'pt'
+  }
+
+  if (candidate.startsWith('en')) {
+    return 'en'
+  }
+
+  return null
+}
+
+export function normalizeLanguageCode(value?: string | null): LanguageCode {
+  return languageFromLocale(value) ?? DEFAULT_LANGUAGE
+}
+
+export function languageFromCountryCode(
+  countryCode?: string | null,
+): LanguageCode | null {
+  const normalized = countryCode?.trim().toUpperCase()
+
+  if (!normalized) {
+    return null
+  }
+
+  if (SPANISH_SPEAKING_COUNTRY_CODES.has(normalized)) {
+    return 'es'
+  }
+
+  if (PORTUGUESE_SPEAKING_COUNTRY_CODES.has(normalized)) {
+    return 'pt'
+  }
+
+  return null
+}
+
+export function languageFromAcceptLanguage(
+  acceptLanguage?: string | null,
+): LanguageCode | null {
+  const candidates =
+    acceptLanguage
+      ?.split(',')
+      .map((entry) => entry.split(';')[0]?.trim())
+      .filter((entry): entry is string => Boolean(entry)) ?? []
+
+  for (const candidate of candidates) {
+    const language = languageFromLocale(candidate)
+
+    if (language) {
+      return language
+    }
+  }
+
+  return null
+}
+
+export function languageToIntlLocale(language?: string | null) {
+  const normalized = normalizeLanguageCode(language)
+
+  if (normalized === 'es') {
+    return 'es-CL'
+  }
+
+  if (normalized === 'pt') {
+    return 'pt-BR'
+  }
+
+  return 'en-US'
 }
 
 export function getMessages(language: LanguageCode): MessageSection {

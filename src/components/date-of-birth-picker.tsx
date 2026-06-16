@@ -2,6 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
+import {
+  languageToIntlLocale,
+  normalizeLanguageCode,
+} from '@/lib/i18n'
+
 type DateOfBirthPickerProps = {
   idPrefix: string
   value: string
@@ -55,8 +60,14 @@ export function DateOfBirthPicker({
   required = false,
 }: DateOfBirthPickerProps) {
   const [{ year, month, day }, setParts] = useState(() => parseValue(value))
-  const locale = language.startsWith('es') ? 'es-CL' : 'en-US'
-  const isSpanish = language.startsWith('es')
+  const locale = languageToIntlLocale(language)
+  const resolvedLanguage = normalizeLanguageCode(language)
+  const labels =
+    resolvedLanguage === 'es'
+      ? { month: 'Mes', day: 'Día', year: 'Año' }
+      : resolvedLanguage === 'pt'
+        ? { month: 'Mês', day: 'Dia', year: 'Ano' }
+        : { month: 'Month', day: 'Day', year: 'Year' }
   const currentYear = new Date().getFullYear()
   const maxDay = daysInMonth(year, month)
 
@@ -114,7 +125,7 @@ export function DateOfBirthPicker({
     <div className="rounded-[1.35rem] border border-cyan-100/18 bg-slate-950/30 p-3">
       <div className="grid gap-3 sm:grid-cols-[1.15fr_0.85fr_0.85fr]">
         <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-          {isSpanish ? 'Mes' : 'Month'}
+          {labels.month}
           <select
             id={`${idPrefix}-month`}
             value={month}
@@ -122,7 +133,7 @@ export function DateOfBirthPicker({
             required={required}
             className={`${selectClassName} mt-2`}
           >
-            <option value="">{isSpanish ? 'Mes' : 'Month'}</option>
+            <option value="">{labels.month}</option>
             {months.map((monthOption) => (
               <option key={monthOption.value} value={monthOption.value}>
                 {monthOption.label}
@@ -132,7 +143,7 @@ export function DateOfBirthPicker({
         </label>
 
         <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-          {isSpanish ? 'Día' : 'Day'}
+          {labels.day}
           <select
             id={`${idPrefix}-day`}
             value={day}
@@ -140,7 +151,7 @@ export function DateOfBirthPicker({
             required={required}
             className={`${selectClassName} mt-2`}
           >
-            <option value="">{isSpanish ? 'Día' : 'Day'}</option>
+            <option value="">{labels.day}</option>
             {days.map((dayOption) => (
               <option key={dayOption} value={dayOption}>
                 {Number.parseInt(dayOption, 10)}
@@ -150,7 +161,7 @@ export function DateOfBirthPicker({
         </label>
 
         <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-          {isSpanish ? 'Año' : 'Year'}
+          {labels.year}
           <select
             id={`${idPrefix}-year`}
             value={year}
@@ -158,7 +169,7 @@ export function DateOfBirthPicker({
             required={required}
             className={`${selectClassName} mt-2`}
           >
-            <option value="">{isSpanish ? 'Año' : 'Year'}</option>
+            <option value="">{labels.year}</option>
             {years.map((yearOption) => (
               <option key={yearOption} value={yearOption}>
                 {yearOption}

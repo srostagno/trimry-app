@@ -7,6 +7,7 @@ export type MemberPredictionActivities = Record<FortuneActivity, MemberPredictio
 export type MemberPredictionNotesByLanguage = {
   en: string
   es: string
+  pt: string
 }
 
 export type MemberPredictionDay = {

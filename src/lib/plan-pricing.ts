@@ -1,5 +1,9 @@
 import { SUBSCRIPTION_PLAN } from '@/lib/company'
-import { interpolate, type LanguageCode } from '@/lib/i18n'
+import {
+  interpolate,
+  languageToIntlLocale,
+  type LanguageCode,
+} from '@/lib/i18n'
 
 type BillingInterval = 'day' | 'week' | 'month' | 'year'
 
@@ -42,7 +46,7 @@ const DEFAULT_CHECKOUT_PLAN_PRICING: NormalizedCheckoutPlanPricing = {
 }
 
 function languageLocale(language: LanguageCode) {
-  return language === 'es' ? 'es-CL' : 'en-US'
+  return languageToIntlLocale(language)
 }
 
 function intervalLabel(
@@ -64,6 +68,22 @@ function intervalLabel(
     }
 
     return intervalCount === 1 ? 'año' : `${intervalCount} años`
+  }
+
+  if (language === 'pt') {
+    if (interval === 'day') {
+      return intervalCount === 1 ? 'dia' : `${intervalCount} dias`
+    }
+
+    if (interval === 'week') {
+      return intervalCount === 1 ? 'semana' : `${intervalCount} semanas`
+    }
+
+    if (interval === 'month') {
+      return intervalCount === 1 ? 'mês' : `${intervalCount} meses`
+    }
+
+    return intervalCount === 1 ? 'ano' : `${intervalCount} anos`
   }
 
   if (interval === 'day') {
@@ -104,6 +124,26 @@ function legalCadenceLabel(
     }
 
     return `cada ${intervalLabel(language, interval, intervalCount)}`
+  }
+
+  if (language === 'pt') {
+    if (intervalCount === 1) {
+      if (interval === 'day') {
+        return 'por dia'
+      }
+
+      if (interval === 'week') {
+        return 'por semana'
+      }
+
+      if (interval === 'month') {
+        return 'por mês'
+      }
+
+      return 'por ano'
+    }
+
+    return `a cada ${intervalLabel(language, interval, intervalCount)}`
   }
 
   if (intervalCount === 1) {

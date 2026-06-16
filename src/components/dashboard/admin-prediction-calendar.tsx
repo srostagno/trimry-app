@@ -28,6 +28,7 @@ import {
 const localeByLanguage = {
   en: 'en-US',
   es: 'es-CL',
+  pt: 'pt-BR',
 } as const
 
 const MAX_IMPORT_IMAGE_DIMENSION = 1600
@@ -79,10 +80,12 @@ function normalizeNotesByLanguage(
   const fallbackNote = fallback.trim()
   const english = notesByLanguage?.en?.trim() ?? ''
   const spanish = notesByLanguage?.es?.trim() ?? ''
+  const portuguese = notesByLanguage?.pt?.trim() ?? ''
 
   return {
-    en: english || fallbackNote || spanish,
-    es: spanish || fallbackNote || english,
+    en: english || fallbackNote || spanish || portuguese,
+    es: spanish || fallbackNote || english || portuguese,
+    pt: portuguese || fallbackNote || spanish || english,
   }
 }
 
@@ -262,6 +265,7 @@ export function AdminPredictionCalendar() {
   const [notesByLanguage, setNotesByLanguage] = useState<PredictionNotesByLanguage>({
     en: '',
     es: '',
+    pt: '',
   })
   const [saveBusy, setSaveBusy] = useState(false)
   const [importBusy, setImportBusy] = useState(false)
@@ -484,9 +488,12 @@ export function AdminPredictionCalendar() {
     setSaveError('')
   }, [selectedDay])
 
-  const noteLanguageFromUi = language === 'es' ? 'es' : 'en'
+  const noteLanguageFromUi =
+    language === 'es' ? 'es' : language === 'pt' ? 'pt' : 'en'
   const notesReadyToSave =
-    notesByLanguage.en.trim().length > 0 && notesByLanguage.es.trim().length > 0
+    notesByLanguage.en.trim().length > 0 &&
+    notesByLanguage.es.trim().length > 0 &&
+    notesByLanguage.pt.trim().length > 0
   const selectedWeekDayKeys = useMemo(
     () => selectedWeek.map((day) => toDayKey(day.date)),
     [selectedWeek],
@@ -1396,6 +1403,25 @@ export function AdminPredictionCalendar() {
                           setNotesByLanguage((current) => ({
                             ...current,
                             es: event.target.value,
+                          }))
+                        }
+                        rows={4}
+                        maxLength={600}
+                        disabled={saveBusy}
+                        className="cosmic-input min-h-[7.6rem] w-full rounded-2xl px-4 py-3"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="mb-2 block text-[0.7rem] font-black uppercase tracking-[0.16em] text-cyan-100/66">
+                        {messages.dashboard.predictionCalendar.notesPortugueseLabel}
+                      </span>
+                      <textarea
+                        value={notesByLanguage.pt}
+                        onChange={(event) =>
+                          setNotesByLanguage((current) => ({
+                            ...current,
+                            pt: event.target.value,
                           }))
                         }
                         rows={4}

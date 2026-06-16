@@ -121,6 +121,63 @@ const QUOTES: Record<LanguageCode, LuckBeliefQuote[]> = {
       context: 'Actriz y productora',
     },
   ],
+  pt: [
+    {
+      quote:
+        'Acredite que a vida vale a pena, e sua crença ajudará a criar esse fato.',
+      author: 'William James',
+      context: 'Psicólogo e filósofo',
+    },
+    {
+      quote: 'O otimismo é a fé que leva à realização.',
+      author: 'Helen Keller',
+      context: 'Autora e palestrante',
+    },
+    {
+      quote:
+        'Pessoas superficiais acreditam na sorte e nas circunstâncias. Pessoas fortes acreditam em causa e efeito.',
+      author: 'Ralph Waldo Emerson',
+      context: 'Ensaísta',
+    },
+    {
+      quote: 'Eles conseguem porque acreditam que conseguem.',
+      author: 'Virgílio',
+      context: 'Poeta',
+    },
+    {
+      quote:
+        'Nossas dúvidas são traidoras e nos fazem perder o bem que poderíamos ganhar por medo de tentar.',
+      author: 'William Shakespeare',
+      context: 'Dramaturgo',
+    },
+    {
+      quote: 'Uma pessoa é literalmente aquilo que pensa.',
+      author: 'James Allen',
+      context: 'Escritor',
+    },
+    {
+      quote: 'Todos os dias, em todos os sentidos, estou cada vez melhor.',
+      author: 'Emile Coue',
+      context: 'Psicólogo e farmacêutico',
+    },
+    {
+      quote:
+        'As pessoas não se perturbam pelas coisas, mas pelas ideias que formam sobre elas.',
+      author: 'Epicteto',
+      context: 'Filósofo estoico',
+    },
+    {
+      quote:
+        'O sucesso deve ser medido menos pela posição alcançada e mais pelos obstáculos superados.',
+      author: 'Booker T. Washington',
+      context: 'Educador e autor',
+    },
+    {
+      quote: 'Você pode ter um novo começo no momento que escolher.',
+      author: 'Mary Pickford',
+      context: 'Atriz e produtora',
+    },
+  ],
 }
 
 export function getLuckBeliefQuotes(language: LanguageCode) {

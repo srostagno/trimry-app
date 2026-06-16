@@ -70,6 +70,7 @@ type MeResponse = {
 const localeByLanguage = {
   en: 'en-US',
   es: 'es-CL',
+  pt: 'pt-BR',
 } as const
 
 const projectionActivityOrder = ['haircut', 'shave', 'nails', 'release'] as const
@@ -863,7 +864,11 @@ export default function DashboardPage() {
           {profileSigns ? (
             <div className="sm:col-span-2 rounded-[1.35rem] border border-amber-200/24 bg-amber-200/10 p-4">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-100/86">
-                {language === 'es' ? 'Tu código de fortuna' : 'Your fortune code'}
+                {language === 'es'
+                  ? 'Tu código de fortuna'
+                  : language === 'pt'
+                    ? 'Seu código de fortuna'
+                    : 'Your fortune code'}
               </p>
               <p className="mt-2 text-sm leading-6 text-slate-100/84">
                 {profileSigns.zodiac.name} · {profileSigns.chinese.name}

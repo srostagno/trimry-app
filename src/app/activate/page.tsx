@@ -29,7 +29,7 @@ function toneLabel(language: string, tone: ActivityTone) {
 
 export default function ActivationGatewayPage() {
   const router = useRouter()
-  const { language } = useLanguage()
+  const { language, messages } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
 
@@ -96,27 +96,32 @@ export default function ActivationGatewayPage() {
     if (!account?.subscription) {
       return {
         href: '/checkout/start',
-        label: isSpanish ? 'Desbloquear Trimry' : 'Unlock Trimry',
+        label: messages.activate.primaryButton,
       }
     }
 
     if (account.subscription.status === 'pending_checkout') {
       return {
         href: '/checkout/start',
-        label: isSpanish ? 'Reanudar checkout' : 'Resume checkout',
+        label: messages.checkout.resumeButton,
       }
     }
 
     return {
       href: '/dashboard',
-      label: isSpanish ? 'Ir al dashboard' : 'Go to dashboard',
+      label: messages.nav.dashboard,
     }
-  }, [account?.subscription, isSpanish])
+  }, [
+    account?.subscription,
+    messages.activate.primaryButton,
+    messages.checkout.resumeButton,
+    messages.nav.dashboard,
+  ])
 
   if (loading) {
     return (
       <section className="cosmic-shell mx-auto max-w-5xl rounded-[2rem] p-6 text-slate-100 sm:p-8">
-        <p>{isSpanish ? 'Preparando el ritual...' : 'Preparing the ritual...'}</p>
+        <p>{messages.activate.loading}</p>
       </section>
     )
   }
@@ -128,25 +133,17 @@ export default function ActivationGatewayPage() {
         <div className="relative z-10 grid gap-6 lg:grid-cols-[1.04fr_0.96fr] lg:gap-8">
           <div className="space-y-5">
             <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
-              {isSpanish ? 'Desbloqueo' : 'Unlock'}
+              {messages.activate.badge}
             </p>
             <h1 className="max-w-2xl text-4xl leading-[1.04] text-slate-50 sm:text-5xl lg:text-6xl">
-              {isSpanish
-                ? 'Trimry ya preparó tu guía diaria de suerte.'
-                : 'Trimry has prepared your daily luck guide.'}
+              {messages.activate.title}
             </h1>
             <p className="max-w-xl text-base text-slate-100/86 sm:text-lg">
-              {isSpanish
-                ? 'Después de pagar, recibes todos los días tu proyección por email o WhatsApp según acordemos. También desbloqueas el calendario mensual completo y los poderes de Luck Guru.'
-                : 'After payment, you receive your daily projection by email or WhatsApp as agreed. You also unlock the full monthly calendar and Luck Guru’s powers.'}
+              {messages.activate.subtitle}
             </p>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              {[
-                isSpanish ? 'Recordatorio diario' : 'Daily reminder',
-                isSpanish ? 'Email o WhatsApp' : 'Email or WhatsApp',
-                isSpanish ? 'Calendario mensual' : 'Monthly calendar',
-              ].map((item) => (
+              {messages.activate.cards.map((item) => (
                 <div
                   key={item}
                   className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-cyan-50"
@@ -158,25 +155,17 @@ export default function ActivationGatewayPage() {
 
             <div className="rounded-[1.7rem] border border-cyan-200/18 bg-slate-950/42 p-4 sm:p-5">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/78">
-                {isSpanish ? 'Tu guía diaria incluye' : 'Your daily guide includes'}
+                {messages.activate.billingLabel}
               </p>
-              <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-100/84">
-                <li>
-                  {isSpanish
-                    ? 'La proyección del día enviada por el canal acordado.'
-                    : 'The day’s projection sent through the agreed channel.'}
-                </li>
-                <li>
-                  {isSpanish
-                    ? 'Calendario mensual completo con días buenos, malos y raros.'
-                    : 'Full monthly calendar with good, bad, and rare days.'}
-                </li>
-                <li>
-                  {isSpanish
-                    ? 'Resumen personal de zodíaco y calendario chino con detalle premium.'
-                    : 'Personal zodiac and Chinese calendar summary with premium detail.'}
-                </li>
-              </ul>
+              <p className="mt-2 text-xl leading-tight text-slate-50 sm:text-2xl">
+                {messages.activate.billingValue}
+              </p>
+              <p className="mt-4 text-xs font-black uppercase tracking-[0.18em] text-amber-100/84">
+                {messages.activate.whyItWorksLabel}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-100/84">
+                {messages.activate.whyItWorksText}
+              </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -206,8 +195,11 @@ export default function ActivationGatewayPage() {
 
           <div className="rounded-[2rem] border border-cyan-200/18 bg-slate-950/46 p-4 sm:p-5">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-100/84">
-              {isSpanish ? 'Vista previa diaria' : 'Daily preview'}
+              {messages.activate.previewBadge}
             </p>
+            <h2 className="mt-2 text-2xl leading-tight text-slate-50">
+              {messages.activate.previewTitle}
+            </h2>
             <div className="mt-4 grid gap-3">
               {sampleFortune.map((day) => (
                 <article

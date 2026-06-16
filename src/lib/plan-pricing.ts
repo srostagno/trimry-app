@@ -11,20 +11,23 @@ export type CheckoutPlanPricing = {
   interval: BillingInterval | null
   intervalCount: number | null
   cadence: string
+  trialPeriodDays: number | null
 }
 
 export type PricingTemplateValues = {
   billingInline: string
   billingCompact: string
   billingLegal: string
+  trialPeriodDays: number
 }
 
 type NormalizedCheckoutPlanPricing = Omit<
   CheckoutPlanPricing,
-  'interval' | 'intervalCount'
+  'interval' | 'intervalCount' | 'trialPeriodDays'
 > & {
   interval: BillingInterval
   intervalCount: number
+  trialPeriodDays: number
 }
 
 const DEFAULT_CHECKOUT_PLAN_PRICING: NormalizedCheckoutPlanPricing = {
@@ -35,6 +38,7 @@ const DEFAULT_CHECKOUT_PLAN_PRICING: NormalizedCheckoutPlanPricing = {
   interval: 'month',
   intervalCount: 1,
   cadence: SUBSCRIPTION_PLAN.cadence,
+  trialPeriodDays: SUBSCRIPTION_PLAN.trialPeriodDays,
 }
 
 function languageLocale(language: LanguageCode) {
@@ -163,6 +167,13 @@ function normalizePricing(
     pricing.intervalCount > 0
       ? pricing.intervalCount
       : 1
+  const trialPeriodDays =
+    typeof pricing.trialPeriodDays === 'number' &&
+    Number.isFinite(pricing.trialPeriodDays) &&
+    Number.isInteger(pricing.trialPeriodDays) &&
+    pricing.trialPeriodDays >= 0
+      ? pricing.trialPeriodDays
+      : DEFAULT_CHECKOUT_PLAN_PRICING.trialPeriodDays
 
   return {
     priceId: pricing.priceId,
@@ -172,6 +183,7 @@ function normalizePricing(
     interval,
     intervalCount,
     cadence: pricing.cadence,
+    trialPeriodDays,
   }
 }
 
@@ -193,6 +205,7 @@ export function resolvePricingTemplateValues(
     billingInline: `${amountWithSymbol} ${normalized.currency} / ${slashCadence}`,
     billingCompact: `${amountWithSymbol}/${slashCadence}`,
     billingLegal: `${normalized.currency} ${plainAmount} ${legalCadence}`,
+    trialPeriodDays: normalized.trialPeriodDays,
   }
 }
 
@@ -262,6 +275,13 @@ export function parseCheckoutPlanPricing(payload: unknown): CheckoutPlanPricing 
       : null
   const priceId = typeof candidate.priceId === 'string' ? candidate.priceId : ''
   const cadence = typeof candidate.cadence === 'string' ? candidate.cadence : ''
+  const trialPeriodDays =
+    typeof candidate.trialPeriodDays === 'number' &&
+    Number.isFinite(candidate.trialPeriodDays) &&
+    Number.isInteger(candidate.trialPeriodDays) &&
+    candidate.trialPeriodDays >= 0
+      ? candidate.trialPeriodDays
+      : null
 
   if (!currency || amount === null || amountMinor === null) {
     return null
@@ -275,5 +295,6 @@ export function parseCheckoutPlanPricing(payload: unknown): CheckoutPlanPricing 
     interval,
     intervalCount,
     cadence,
+    trialPeriodDays,
   }
 }

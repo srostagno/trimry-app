@@ -381,6 +381,18 @@ export default function CheckoutStartPage() {
             : messages.checkout.title}
         </h1>
         <p className="cosmic-shell-copy mt-4 text-lg">{recoveryCopy}</p>
+        {!checkoutCancelled ? (
+          <ul className="mt-6 grid gap-3 text-sm leading-6 text-slate-100/82">
+            {messages.checkout.trialHighlights.map((highlight) => (
+              <li
+                key={highlight}
+                className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 px-4 py-3"
+              >
+                {highlight}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </section>
     )
   }
@@ -429,6 +441,16 @@ export default function CheckoutStartPage() {
           <p className="mt-3 text-sm leading-6 text-slate-100/82">
             {messages.checkout.resumeSubtitle}
           </p>
+          <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-100/82">
+            {messages.checkout.trialHighlights.map((highlight) => (
+              <li
+                key={highlight}
+                className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 px-4 py-3"
+              >
+                {highlight}
+              </li>
+            ))}
+          </ul>
           {account?.subscription ? (
             <div className="mt-4 grid gap-3 text-sm text-slate-100/80 sm:grid-cols-2">
               <div className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 p-4">
@@ -492,7 +514,17 @@ export default function CheckoutStartPage() {
         </div>
       ) : (
         <div className="cosmic-info-box cosmic-shell-copy mt-6 rounded-3xl p-5">
-          {messages.checkout.helper}
+          <p>{messages.checkout.helper}</p>
+          <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-100/82">
+            {messages.checkout.trialHighlights.map((highlight) => (
+              <li
+                key={highlight}
+                className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 px-4 py-3"
+              >
+                {highlight}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </section>

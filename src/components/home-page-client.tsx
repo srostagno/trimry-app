@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { StartFlowButton } from '@/components/start-flow-button'
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent } from '@/lib/analytics'
+import { SUBSCRIPTION_PLAN } from '@/lib/company'
 
 type OracleTone = 'good' | 'bad' | 'rare'
 const OPEN_LUCK_GURU_CHAT_EVENT = 'trimry:open-luck-guru-chat'
@@ -41,6 +42,7 @@ function calculateDayDiff(from: string, to: string) {
 
 export function HomePageClient() {
   const { language, messages } = useLanguage()
+  const trialPeriodDays = SUBSCRIPTION_PLAN.trialPeriodDays
 
   const rotatingPredictions = useMemo(() => messages.home.predictions, [messages.home.predictions])
   const teaserRef = useRef<HTMLElement | null>(null)
@@ -169,17 +171,17 @@ export function HomePageClient() {
       ? {
           title: 'Trimry, tu guía de suerte',
           subtitle:
-            'Todos los días recibes tu proyección por email o WhatsApp, y en la web ves el calendario completo del mes para mantenerte alineado con la suerte.',
-          points: ['recordatorio diario', 'calendario mensual', 'zodíaco personal', 'Luck Guru con IA'],
-          primary: 'Revisar mi suerte de hoy',
+            `Empieza con ${trialPeriodDays} días gratis. Todos los días recibes tu proyección por email o WhatsApp, y en la web ves el calendario completo del mes para mantenerte alineado con la suerte.`,
+          points: [`${trialPeriodDays} días gratis`, 'recordatorio diario', 'calendario mensual', 'Luck Guru con IA'],
+          primary: `Comenzar ${trialPeriodDays} días gratis`,
           secondary: 'Preguntar al Luck Guru',
         }
       : {
           title: 'Trimry, Your Luck Guide',
           subtitle:
-            'Every day, receive your projection by email or WhatsApp, and use the web calendar to see the full month of fortune signals ahead.',
-          points: ['daily reminder', 'monthly calendar', 'personal zodiac', 'AI Luck Guru'],
-          primary: 'Check Today’s Luck',
+            `Start with ${trialPeriodDays} days free. Every day, receive your projection by email or WhatsApp, and use the web calendar to see the full month of fortune signals ahead.`,
+          points: [`${trialPeriodDays} days free`, 'daily reminder', 'monthly calendar', 'AI Luck Guru'],
+          primary: `Start ${trialPeriodDays} Days Free`,
           secondary: 'Ask The Luck Guru',
         }
   const teaserCopy =
@@ -188,15 +190,15 @@ export function HomePageClient() {
           badge: 'Lectura instantánea',
           title: 'Abre la señal de hoy y deja que Trimry ordene tu suerte.',
           line1: 'Tu guía cruza timing ritual, zodíaco, calendario chino y señales de abundancia.',
-          line2: 'Al suscribirte, el recordatorio llega todos los días por el canal que acordemos.',
-          cta: 'Quiero mi lectura completa',
+          line2: `Activa ${trialPeriodDays} días gratis para recibir el recordatorio diario por el canal que acordemos.`,
+          cta: `Quiero ${trialPeriodDays} días gratis`,
         }
       : {
           badge: 'Instant reading',
           title: 'Open today’s signal and let Trimry organize your luck.',
           line1: 'Your guide blends ritual timing, zodiac, Chinese calendar, and abundance signals.',
-          line2: 'After you subscribe, the reminder arrives every day through the channel we agree.',
-          cta: 'Unlock my full reading',
+          line2: `Start ${trialPeriodDays} days free to receive the daily reminder through the channel we agree.`,
+          cta: `Start ${trialPeriodDays} Days Free`,
         }
   const luckGuruCardCopy =
     language === 'es'

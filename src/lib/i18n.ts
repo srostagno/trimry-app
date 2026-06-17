@@ -685,11 +685,12 @@ const englishMessages: MessageSection = {
       'The web dashboard opens the complete monthly plan so you can see fortunate and cautious days before they arrive.',
   },
   pricing: {
-    title: 'Try Trimry free for {trialPeriodDays} days',
+    title: 'Try Trimry free for {internalTrialPeriodDays} days',
     subtitle:
       'Start with a full trial, feel the daily rhythm, and continue only if Trimry helps you move with more luck.',
     planTitle: 'Daily fortune delivery',
-    billing: '{trialPeriodDays} days free, then {billingInline}. Cancel anytime.',
+    billing:
+      '{internalTrialPeriodDays} days free now, then {trialPeriodDays} more free days in Stripe before {billingInline}. Cancel anytime.',
     include1: 'A daily projection reminder by email, WhatsApp, or both',
     include2: 'Full monthly calendar with Good, Bad, and Rare fortune signals',
     include3:
@@ -805,16 +806,17 @@ const englishMessages: MessageSection = {
     loading: 'Loading your activation step...',
     loadError: 'Unable to load your activation step right now.',
     unavailable: 'Unable to continue right now.',
-    badge: '{trialPeriodDays}-day free trial',
-    title: 'Start your daily luck guide free for {trialPeriodDays} days.',
+    badge: '{internalTrialPeriodDays}-day free trial',
+    title:
+      'Start your daily luck guide free for {internalTrialPeriodDays} days.',
     subtitle:
       'No charge today. Trimry gives you a daily signal designed to focus intention, strengthen belief, and help you move through the day feeling luckier and more open to real fortune.',
     cards: [
-      '{trialPeriodDays} days free before the first charge.',
+      '{internalTrialPeriodDays} days free before Stripe.',
       'Daily manifestation cues for money, relationships, energy, and release.',
       'Monthly timing calendar to help you choose better moments.',
     ],
-    primaryButton: 'Start {trialPeriodDays} days free',
+    primaryButton: 'Start {internalTrialPeriodDays} days free',
     secondaryButton: 'Change delivery settings',
     snapshotTitle: 'Your activation snapshot',
     deliveryPreferenceLabel: 'Delivery preference',
@@ -822,7 +824,8 @@ const englishMessages: MessageSection = {
     projectionTimingLabel: 'Projection timing',
     whatsappDeliveryLabel: 'WhatsApp delivery',
     billingLabel: 'Today',
-    billingValue: 'Free for {trialPeriodDays} days, then {billingInline}. Cancel anytime.',
+    billingValue:
+      'Free for {internalTrialPeriodDays} days now. After that, Stripe gives you {trialPeriodDays} more free days before {billingInline}.',
     previewBadge: 'Trial preview',
     previewTitle: 'What unlocks during your trial',
     previewLabel: 'Preview',
@@ -1477,11 +1480,12 @@ const spanishMessages: MessageSection = {
       'El dashboard web abre el mes completo para ver días favorables y cautelosos antes de que lleguen.',
   },
   pricing: {
-    title: 'Prueba Trimry gratis por {trialPeriodDays} días',
+    title: 'Prueba Trimry gratis por {internalTrialPeriodDays} días',
     subtitle:
       'Empieza con el trial completo, siente el ritmo diario y continúa solo si Trimry te ayuda a moverte con más suerte.',
     planTitle: 'Entrega diaria de fortuna',
-    billing: '{trialPeriodDays} días gratis, luego {billingInline}. Cancela cuando quieras.',
+    billing:
+      '{internalTrialPeriodDays} días gratis ahora, luego {trialPeriodDays} días gratis más en Stripe antes de {billingInline}. Cancela cuando quieras.',
     include1: 'Un recordatorio diario con tu proyección por email, WhatsApp o ambos',
     include2: 'Calendario mensual completo con señales Buenas, Malas y Raras',
     include3: 'Señales de manifestación para dinero, relaciones, energía y timing personal',
@@ -1596,16 +1600,17 @@ const spanishMessages: MessageSection = {
     loading: 'Cargando tu paso de activación...',
     loadError: 'No pudimos cargar tu activación en este momento.',
     unavailable: 'No es posible continuar ahora.',
-    badge: '{trialPeriodDays} días gratis',
-    title: 'Empieza gratis tu guía diaria de suerte por {trialPeriodDays} días.',
+    badge: '{internalTrialPeriodDays} días gratis',
+    title:
+      'Empieza gratis tu guía diaria de suerte por {internalTrialPeriodDays} días.',
     subtitle:
       'Hoy no pagas. Trimry te entrega una señal diaria diseñada para enfocar tu intención, fortalecer tu creencia y ayudarte a moverte sintiéndote más afortunado y abierto a fortuna real.',
     cards: [
-      '{trialPeriodDays} días gratis antes del primer cobro.',
+      '{internalTrialPeriodDays} días gratis antes de Stripe.',
       'Señales diarias de manifestación para dinero, relaciones, energía y liberación.',
       'Calendario mensual para elegir mejores momentos.',
     ],
-    primaryButton: 'Comenzar {trialPeriodDays} días gratis',
+    primaryButton: 'Comenzar {internalTrialPeriodDays} días gratis',
     secondaryButton: 'Cambiar ajustes de entrega',
     snapshotTitle: 'Tu resumen de activación',
     deliveryPreferenceLabel: 'Preferencia de entrega',
@@ -1613,7 +1618,8 @@ const spanishMessages: MessageSection = {
     projectionTimingLabel: 'Horario de proyección',
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Hoy',
-    billingValue: 'Gratis por {trialPeriodDays} días, luego {billingInline}. Cancela cuando quieras.',
+    billingValue:
+      'Gratis por {internalTrialPeriodDays} días ahora. Después Stripe te da {trialPeriodDays} días gratis más antes de {billingInline}.',
     previewBadge: 'Vista del trial',
     previewTitle: 'Lo que se desbloquea durante tu trial',
     previewLabel: 'Vista previa',
@@ -2310,12 +2316,12 @@ const portugueseMessages = mergeMessages(englishMessages, {
       'O painel web abre o mês completo para você ver dias favoráveis e cautelosos antes que cheguem.',
   },
   pricing: {
-    title: 'Experimente a Trimry grátis por {trialPeriodDays} dias',
+    title: 'Experimente a Trimry grátis por {internalTrialPeriodDays} dias',
     subtitle:
       'Comece com o trial completo, sinta o ritmo diário e continue apenas se a Trimry ajudar você a se mover com mais sorte.',
     planTitle: 'Entrega diária de fortuna',
     billing:
-      '{trialPeriodDays} dias grátis, depois {billingInline}. Cancele quando quiser.',
+      '{internalTrialPeriodDays} dias grátis agora, depois mais {trialPeriodDays} dias grátis na Stripe antes de {billingInline}. Cancele quando quiser.',
     include1:
       'Um lembrete diário com sua projeção por email, WhatsApp ou ambos',
     include2:
@@ -2433,16 +2439,17 @@ const portugueseMessages = mergeMessages(englishMessages, {
     loading: 'Carregando sua etapa de ativação...',
     loadError: 'Não foi possível carregar sua ativação agora.',
     unavailable: 'Não é possível continuar agora.',
-    badge: '{trialPeriodDays} dias grátis',
-    title: 'Comece seu guia diário de sorte grátis por {trialPeriodDays} dias.',
+    badge: '{internalTrialPeriodDays} dias grátis',
+    title:
+      'Comece seu guia diário de sorte grátis por {internalTrialPeriodDays} dias.',
     subtitle:
       'Hoje não há cobrança. A Trimry entrega um sinal diário para focar sua intenção, fortalecer sua crença e ajudar você a se mover sentindo mais sorte e abertura para fortuna real.',
     cards: [
-      '{trialPeriodDays} dias grátis antes da primeira cobrança.',
+      '{internalTrialPeriodDays} dias grátis antes da Stripe.',
       'Sinais diários de manifestação para dinheiro, relacionamentos, energia e liberação.',
       'Calendário mensal para escolher melhores momentos.',
     ],
-    primaryButton: 'Começar {trialPeriodDays} dias grátis',
+    primaryButton: 'Começar {internalTrialPeriodDays} dias grátis',
     secondaryButton: 'Alterar entrega',
     snapshotTitle: 'Seu resumo de ativação',
     deliveryPreferenceLabel: 'Preferência de entrega',
@@ -2451,7 +2458,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Hoje',
     billingValue:
-      'Grátis por {trialPeriodDays} dias, depois {billingInline}. Cancele quando quiser.',
+      'Grátis por {internalTrialPeriodDays} dias agora. Depois a Stripe dá mais {trialPeriodDays} dias grátis antes de {billingInline}.',
     previewBadge: 'Prévia do trial',
     previewTitle: 'O que desbloqueia durante o trial',
     previewLabel: 'Prévia',

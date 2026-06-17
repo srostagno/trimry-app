@@ -55,6 +55,13 @@ export type AccountSnapshot = {
     nextMessageAt: string
     planId: string
     canManageBilling: boolean
+    trialSource: 'internal' | 'stripe' | null
+    internalTrialStartedAt: string | null
+    internalTrialEndsAt: string | null
+    internalTrialEndedAt: string | null
+    internalTrialEndNotificationSentAt: string | null
+    stripeTrialStartedAt: string | null
+    stripeTrialEndsAt: string | null
     createdAt: string
     updatedAt: string
   } | null

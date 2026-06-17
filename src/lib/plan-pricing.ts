@@ -16,6 +16,8 @@ export type CheckoutPlanPricing = {
   intervalCount: number | null
   cadence: string
   trialPeriodDays: number | null
+  internalTrialPeriodDays: number | null
+  stripeTrialPeriodDays: number | null
 }
 
 export type PricingTemplateValues = {
@@ -23,15 +25,23 @@ export type PricingTemplateValues = {
   billingCompact: string
   billingLegal: string
   trialPeriodDays: number
+  internalTrialPeriodDays: number
+  stripeTrialPeriodDays: number
 }
 
 type NormalizedCheckoutPlanPricing = Omit<
   CheckoutPlanPricing,
-  'interval' | 'intervalCount' | 'trialPeriodDays'
+  | 'interval'
+  | 'intervalCount'
+  | 'trialPeriodDays'
+  | 'internalTrialPeriodDays'
+  | 'stripeTrialPeriodDays'
 > & {
   interval: BillingInterval
   intervalCount: number
   trialPeriodDays: number
+  internalTrialPeriodDays: number
+  stripeTrialPeriodDays: number
 }
 
 const DEFAULT_CHECKOUT_PLAN_PRICING: NormalizedCheckoutPlanPricing = {
@@ -42,7 +52,9 @@ const DEFAULT_CHECKOUT_PLAN_PRICING: NormalizedCheckoutPlanPricing = {
   interval: 'month',
   intervalCount: 1,
   cadence: SUBSCRIPTION_PLAN.cadence,
-  trialPeriodDays: SUBSCRIPTION_PLAN.trialPeriodDays,
+  trialPeriodDays: SUBSCRIPTION_PLAN.stripeTrialPeriodDays,
+  internalTrialPeriodDays: SUBSCRIPTION_PLAN.internalTrialPeriodDays,
+  stripeTrialPeriodDays: SUBSCRIPTION_PLAN.stripeTrialPeriodDays,
 }
 
 function languageLocale(language: LanguageCode) {
@@ -214,6 +226,20 @@ function normalizePricing(
     pricing.trialPeriodDays >= 0
       ? pricing.trialPeriodDays
       : DEFAULT_CHECKOUT_PLAN_PRICING.trialPeriodDays
+  const internalTrialPeriodDays =
+    typeof pricing.internalTrialPeriodDays === 'number' &&
+    Number.isFinite(pricing.internalTrialPeriodDays) &&
+    Number.isInteger(pricing.internalTrialPeriodDays) &&
+    pricing.internalTrialPeriodDays >= 0
+      ? pricing.internalTrialPeriodDays
+      : DEFAULT_CHECKOUT_PLAN_PRICING.internalTrialPeriodDays
+  const stripeTrialPeriodDays =
+    typeof pricing.stripeTrialPeriodDays === 'number' &&
+    Number.isFinite(pricing.stripeTrialPeriodDays) &&
+    Number.isInteger(pricing.stripeTrialPeriodDays) &&
+    pricing.stripeTrialPeriodDays >= 0
+      ? pricing.stripeTrialPeriodDays
+      : trialPeriodDays
 
   return {
     priceId: pricing.priceId,
@@ -224,6 +250,8 @@ function normalizePricing(
     intervalCount,
     cadence: pricing.cadence,
     trialPeriodDays,
+    internalTrialPeriodDays,
+    stripeTrialPeriodDays,
   }
 }
 
@@ -246,6 +274,8 @@ export function resolvePricingTemplateValues(
     billingCompact: `${amountWithSymbol}/${slashCadence}`,
     billingLegal: `${normalized.currency} ${plainAmount} ${legalCadence}`,
     trialPeriodDays: normalized.trialPeriodDays,
+    internalTrialPeriodDays: normalized.internalTrialPeriodDays,
+    stripeTrialPeriodDays: normalized.stripeTrialPeriodDays,
   }
 }
 
@@ -322,6 +352,20 @@ export function parseCheckoutPlanPricing(payload: unknown): CheckoutPlanPricing 
     candidate.trialPeriodDays >= 0
       ? candidate.trialPeriodDays
       : null
+  const internalTrialPeriodDays =
+    typeof candidate.internalTrialPeriodDays === 'number' &&
+    Number.isFinite(candidate.internalTrialPeriodDays) &&
+    Number.isInteger(candidate.internalTrialPeriodDays) &&
+    candidate.internalTrialPeriodDays >= 0
+      ? candidate.internalTrialPeriodDays
+      : null
+  const stripeTrialPeriodDays =
+    typeof candidate.stripeTrialPeriodDays === 'number' &&
+    Number.isFinite(candidate.stripeTrialPeriodDays) &&
+    Number.isInteger(candidate.stripeTrialPeriodDays) &&
+    candidate.stripeTrialPeriodDays >= 0
+      ? candidate.stripeTrialPeriodDays
+      : null
 
   if (!currency || amount === null || amountMinor === null) {
     return null
@@ -336,5 +380,7 @@ export function parseCheckoutPlanPricing(payload: unknown): CheckoutPlanPricing 
     intervalCount,
     cadence,
     trialPeriodDays,
+    internalTrialPeriodDays,
+    stripeTrialPeriodDays,
   }
 }

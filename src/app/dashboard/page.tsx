@@ -49,6 +49,13 @@ type Subscription = {
   nextMessageAt: string
   planId: string
   canManageBilling: boolean
+  trialSource: 'internal' | 'stripe' | null
+  internalTrialStartedAt: string | null
+  internalTrialEndsAt: string | null
+  internalTrialEndedAt: string | null
+  internalTrialEndNotificationSentAt: string | null
+  stripeTrialStartedAt: string | null
+  stripeTrialEndsAt: string | null
   updatedAt: string
 }
 
@@ -528,12 +535,11 @@ export default function DashboardPage() {
         delivery_preference: deliveryPreference,
         delivery_hour_local: deliveryHourLocal,
         requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),
-        destination: action === 'subscribe' ? 'activate' : 'dashboard',
+        destination: 'dashboard',
       })
 
       if (action === 'subscribe') {
-        router.push('/activate')
-        router.refresh()
+        await loadData()
         return
       }
 

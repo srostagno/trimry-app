@@ -15,5 +15,6 @@ export const SUBSCRIPTION_PLAN = {
   cadence: 'Daily',
   monthlyPriceUsd: 2.99,
   currency: 'USD',
-  trialPeriodDays: 7,
+  internalTrialPeriodDays: 4,
+  stripeTrialPeriodDays: 7,
 } as const

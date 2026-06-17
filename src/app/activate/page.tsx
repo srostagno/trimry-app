@@ -7,8 +7,10 @@ import { useRouter } from 'next/navigation'
 import { OpenLuckGuruChatButton } from '@/components/open-luck-guru-chat-button'
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
+import { apiFetch, readApiError } from '@/lib/api-client'
 import { buildWeeklyFortune, type ActivityTone } from '@/lib/fortune'
 import { languageToIntlLocale, normalizeLanguageCode } from '@/lib/i18n'
+import { DEFAULT_WEEKLY_DELIVERY_HOUR } from '@/lib/schedule'
 import {
   type AccountSnapshot,
   fetchAccountSnapshot,
@@ -40,6 +42,8 @@ export default function ActivationGatewayPage() {
   const router = useRouter()
   const { language, messages } = useLanguage()
   const [loading, setLoading] = useState(true)
+  const [activating, setActivating] = useState(false)
+  const [error, setError] = useState('')
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
 
   const resolvedLanguage = normalizeLanguageCode(language)
@@ -56,7 +60,7 @@ export default function ActivationGatewayPage() {
         const currentAccount = await fetchAccountSnapshot()
 
         if (!currentAccount) {
-          router.replace('/account/register')
+          router.replace('/account/login')
           return
         }
 
@@ -85,7 +89,7 @@ export default function ActivationGatewayPage() {
         }
       } catch {
         if (!cancelled) {
-          router.replace('/account/register')
+          router.replace('/account/login')
         }
       } finally {
         if (!cancelled) {
@@ -104,7 +108,7 @@ export default function ActivationGatewayPage() {
   const actionState = useMemo(() => {
     if (!account?.subscription) {
       return {
-        href: '/checkout/start',
+        href: '/dashboard',
         label: messages.activate.primaryButton,
       }
     }
@@ -126,6 +130,62 @@ export default function ActivationGatewayPage() {
     messages.checkout.resumeButton,
     messages.nav.dashboard,
   ])
+
+  const activateInternalTrial = async () => {
+    if (!account) {
+      router.replace('/account/login')
+      return
+    }
+
+    if (account.subscription?.status === 'pending_checkout') {
+      router.push('/checkout/start')
+      return
+    }
+
+    setActivating(true)
+    setError('')
+
+    try {
+      const response = await apiFetch(
+        '/subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'subscribe',
+            deliveryPreference: 'email',
+            deliveryHourLocal: DEFAULT_WEEKLY_DELIVERY_HOUR,
+          }),
+        },
+        { retryUnauthorized: false },
+      )
+
+      if (response.status === 401) {
+        router.replace('/account/login')
+        return
+      }
+
+      if (!response.ok) {
+        setError(await readApiError(response, messages.activate.unavailable))
+        return
+      }
+
+      trackEvent('internal_trial_started', {
+        user_id: account.user.id,
+        delivery_preference: 'email',
+      })
+      trackMetaCustomEvent('InternalTrialStarted', {
+        user_id: account.user.id,
+        delivery_preference: 'email',
+      })
+
+      router.push('/dashboard')
+      router.refresh()
+    } catch {
+      setError(messages.activate.unavailable)
+    } finally {
+      setActivating(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -178,22 +238,43 @@ export default function ActivationGatewayPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Link
-                href={actionState.href}
-                onClick={() => {
-                  trackEvent('activate_subscription_click', {
-                    language,
-                    destination: actionState.href,
-                  })
-                  trackMetaCustomEvent('ActivateSubscriptionClick', {
-                    language,
-                    destination: actionState.href,
-                  })
-                }}
-                className="cosmic-button-primary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em]"
-              >
-                {actionState.label}
-              </Link>
+              {account?.subscription?.status === 'pending_checkout' ? (
+                <Link
+                  href={actionState.href}
+                  onClick={() => {
+                    trackEvent('activate_subscription_click', {
+                      language,
+                      destination: actionState.href,
+                    })
+                    trackMetaCustomEvent('ActivateSubscriptionClick', {
+                      language,
+                      destination: actionState.href,
+                    })
+                  }}
+                  className="cosmic-button-primary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em]"
+                >
+                  {actionState.label}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackEvent('activate_subscription_click', {
+                      language,
+                      destination: '/dashboard',
+                    })
+                    trackMetaCustomEvent('ActivateSubscriptionClick', {
+                      language,
+                      destination: '/dashboard',
+                    })
+                    void activateInternalTrial()
+                  }}
+                  disabled={activating}
+                  className="cosmic-button-primary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] disabled:opacity-70"
+                >
+                  {activating ? messages.common.loading : actionState.label}
+                </button>
+              )}
               <OpenLuckGuruChatButton
                 analyticsLocation="activation_gate"
                 label={
@@ -206,6 +287,11 @@ export default function ActivationGatewayPage() {
                 className="cosmic-button-secondary inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-cyan-50"
               />
             </div>
+            {error ? (
+              <p className="cosmic-error-box rounded-xl px-4 py-3 text-sm">
+                {error}
+              </p>
+            ) : null}
           </div>
 
           <div className="rounded-[2rem] border border-cyan-200/18 bg-slate-950/46 p-4 sm:p-5">

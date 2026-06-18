@@ -60,6 +60,8 @@ export type AccountSnapshot = {
     internalTrialEndsAt: string | null
     internalTrialEndedAt: string | null
     internalTrialEndNotificationSentAt: string | null
+    internalTrialEndNotificationAttemptCount: number
+    internalTrialEndNotificationNextAt: string | null
     stripeTrialStartedAt: string | null
     stripeTrialEndsAt: string | null
     createdAt: string

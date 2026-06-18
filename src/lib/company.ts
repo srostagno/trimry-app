@@ -16,5 +16,5 @@ export const SUBSCRIPTION_PLAN = {
   monthlyPriceUsd: 2.99,
   currency: 'USD',
   internalTrialPeriodDays: 4,
-  stripeTrialPeriodDays: 7,
+  stripeTrialPeriodDays: 0,
 } as const

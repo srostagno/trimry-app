@@ -690,7 +690,7 @@ const englishMessages: MessageSection = {
       'Start with a full trial, feel the daily rhythm, and continue only if Trimry helps you move with more luck.',
     planTitle: 'Daily fortune delivery',
     billing:
-      '{internalTrialPeriodDays} days free now, then {trialPeriodDays} more free days in Stripe before {billingInline}. Cancel anytime.',
+      '{internalTrialPeriodDays} days free now, then subscribe in Stripe for {billingInline}. Cancel anytime.',
     include1: 'A daily projection reminder by email, WhatsApp, or both',
     include2: 'Full monthly calendar with Good, Bad, and Rare fortune signals',
     include3:
@@ -825,7 +825,7 @@ const englishMessages: MessageSection = {
     whatsappDeliveryLabel: 'WhatsApp delivery',
     billingLabel: 'Today',
     billingValue:
-      'Free for {internalTrialPeriodDays} days now. After that, Stripe gives you {trialPeriodDays} more free days before {billingInline}.',
+      'Free for {internalTrialPeriodDays} days now. After that, continue in Stripe for {billingInline}.',
     previewBadge: 'Trial preview',
     previewTitle: 'What unlocks during your trial',
     previewLabel: 'Preview',
@@ -840,28 +840,28 @@ const englishMessages: MessageSection = {
       'These voices all point at the same mechanism: belief changes posture, posture changes action, and action changes what feels possible.',
   },
   checkout: {
-    badge: '{trialPeriodDays}-day free trial',
+    badge: 'Stripe subscription',
     badgeCancelled: 'Checkout paused',
-    title: 'Opening your free Trimry trial...',
-    titleCancelled: 'Your free trial is waiting',
+    title: 'Opening your Trimry subscription...',
+    titleCancelled: 'Your subscription is waiting',
     subtitle:
-      'No charge today. Stripe securely confirms your payment method so your daily luck guide can start now.',
+      'Stripe securely confirms your payment method so your daily luck guide can continue.',
     subtitleCancelled:
-      'Nothing was lost. Your settings are still saved, and you can start your {trialPeriodDays}-day free trial whenever you are ready.',
+      'Nothing was lost. Your settings are still saved, and you can subscribe whenever you are ready.',
     openError: 'Unable to open Stripe checkout right now.',
-    resumeTitle: 'Start your {trialPeriodDays}-day free trial',
+    resumeTitle: 'Subscribe to Trimry',
     resumeSubtitle:
-      'Your daily guidance is still waiting. Continue to Stripe, confirm your payment method, and unlock delivery with no charge today.',
-    resumeButton: 'Start free trial',
-    resumeHint: 'No charge today. Secure Stripe checkout. Cancel anytime.',
+      'Your daily guidance is still waiting. Continue to Stripe and confirm your subscription.',
+    resumeButton: 'Subscribe with Stripe',
+    resumeHint: 'Secure Stripe checkout. Cancel anytime.',
     deliveryLabel: 'Delivery channel',
     timingLabel: 'Daily timing',
     helper:
-      'We are creating secure Stripe checkout for your {trialPeriodDays}-day free trial. If nothing happens, wait a second or reload this page.',
+      'We are creating secure Stripe checkout for your subscription. If nothing happens, wait a second or reload this page.',
     trialHighlights: [
       'Daily fortune signal delivered by email, WhatsApp, or both.',
       'Manifestation rhythm for belief, action, and opportunity.',
-      'Full monthly calendar unlocked during the trial.',
+      'Full monthly calendar unlocked with your subscription.',
     ],
   },
   dashboard: {
@@ -1485,7 +1485,7 @@ const spanishMessages: MessageSection = {
       'Empieza con el trial completo, siente el ritmo diario y continúa solo si Trimry te ayuda a moverte con más suerte.',
     planTitle: 'Entrega diaria de fortuna',
     billing:
-      '{internalTrialPeriodDays} días gratis ahora, luego {trialPeriodDays} días gratis más en Stripe antes de {billingInline}. Cancela cuando quieras.',
+      '{internalTrialPeriodDays} días gratis ahora, luego suscríbete en Stripe por {billingInline}. Cancela cuando quieras.',
     include1: 'Un recordatorio diario con tu proyección por email, WhatsApp o ambos',
     include2: 'Calendario mensual completo con señales Buenas, Malas y Raras',
     include3: 'Señales de manifestación para dinero, relaciones, energía y timing personal',
@@ -1619,7 +1619,7 @@ const spanishMessages: MessageSection = {
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Hoy',
     billingValue:
-      'Gratis por {internalTrialPeriodDays} días ahora. Después Stripe te da {trialPeriodDays} días gratis más antes de {billingInline}.',
+      'Gratis por {internalTrialPeriodDays} días ahora. Después continúas en Stripe por {billingInline}.',
     previewBadge: 'Vista del trial',
     previewTitle: 'Lo que se desbloquea durante tu trial',
     previewLabel: 'Vista previa',
@@ -1634,28 +1634,28 @@ const spanishMessages: MessageSection = {
       'Todas estas voces apuntan al mismo mecanismo: la creencia cambia la postura, la postura cambia la acción y la acción cambia lo que se siente posible.',
   },
   checkout: {
-    badge: '{trialPeriodDays} días gratis',
+    badge: 'Suscripción Stripe',
     badgeCancelled: 'Checkout en pausa',
-    title: 'Abriendo tu trial gratis de Trimry...',
-    titleCancelled: 'Tu trial gratis te espera',
+    title: 'Abriendo tu suscripción Trimry...',
+    titleCancelled: 'Tu suscripción te espera',
     subtitle:
-      'Hoy no pagas. Stripe confirma tu método de pago de forma segura para que tu guía diaria de suerte empiece ahora.',
+      'Stripe confirma tu método de pago de forma segura para que tu guía diaria de suerte continúe.',
     subtitleCancelled:
-      'No se perdió nada. Tus ajustes siguen guardados y puedes empezar tus {trialPeriodDays} días gratis cuando quieras.',
+      'No se perdió nada. Tus ajustes siguen guardados y puedes suscribirte cuando quieras.',
     openError: 'No pudimos abrir el checkout de Stripe en este momento.',
-    resumeTitle: 'Comenzar tu trial gratis de {trialPeriodDays} días',
+    resumeTitle: 'Suscribirte a Trimry',
     resumeSubtitle:
-      'Tu guía diaria sigue esperando. Continúa a Stripe, confirma tu método de pago y desbloquea la entrega sin cargo hoy.',
-    resumeButton: 'Comenzar gratis',
-    resumeHint: 'Hoy no pagas. Checkout seguro de Stripe. Cancela cuando quieras.',
+      'Tu guía diaria sigue esperando. Continúa a Stripe y confirma tu suscripción.',
+    resumeButton: 'Suscribirme con Stripe',
+    resumeHint: 'Checkout seguro de Stripe. Cancela cuando quieras.',
     deliveryLabel: 'Canal de entrega',
     timingLabel: 'Horario diario',
     helper:
-      'Estamos creando el checkout seguro de Stripe para tus {trialPeriodDays} días gratis. Si no pasa nada, espera un segundo o recarga esta página.',
+      'Estamos creando el checkout seguro de Stripe para tu suscripción. Si no pasa nada, espera un segundo o recarga esta página.',
     trialHighlights: [
       'Señal diaria de fortuna por email, WhatsApp o ambos.',
       'Ritmo de manifestación para creencia, acción y oportunidad.',
-      'Calendario mensual completo desbloqueado durante el trial.',
+      'Calendario mensual completo desbloqueado con tu suscripción.',
     ],
   },
   dashboard: {
@@ -2321,7 +2321,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
       'Comece com o trial completo, sinta o ritmo diário e continue apenas se a Trimry ajudar você a se mover com mais sorte.',
     planTitle: 'Entrega diária de fortuna',
     billing:
-      '{internalTrialPeriodDays} dias grátis agora, depois mais {trialPeriodDays} dias grátis na Stripe antes de {billingInline}. Cancele quando quiser.',
+      '{internalTrialPeriodDays} dias grátis agora, depois assine na Stripe por {billingInline}. Cancele quando quiser.',
     include1:
       'Um lembrete diário com sua projeção por email, WhatsApp ou ambos',
     include2:
@@ -2458,7 +2458,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Hoje',
     billingValue:
-      'Grátis por {internalTrialPeriodDays} dias agora. Depois a Stripe dá mais {trialPeriodDays} dias grátis antes de {billingInline}.',
+      'Grátis por {internalTrialPeriodDays} dias agora. Depois continue na Stripe por {billingInline}.',
     previewBadge: 'Prévia do trial',
     previewTitle: 'O que desbloqueia durante o trial',
     previewLabel: 'Prévia',
@@ -2474,28 +2474,28 @@ const portugueseMessages = mergeMessages(englishMessages, {
       'Todas essas vozes apontam para o mesmo mecanismo: crença muda postura, postura muda ação e ação muda o que parece possível.',
   },
   checkout: {
-    badge: '{trialPeriodDays} dias grátis',
+    badge: 'Assinatura Stripe',
     badgeCancelled: 'Checkout pausado',
-    title: 'Abrindo seu trial grátis da Trimry...',
-    titleCancelled: 'Seu trial grátis está esperando',
+    title: 'Abrindo sua assinatura da Trimry...',
+    titleCancelled: 'Sua assinatura está esperando',
     subtitle:
-      'Hoje não há cobrança. A Stripe confirma seu método de pagamento com segurança para que seu guia diário de sorte comece agora.',
+      'A Stripe confirma seu método de pagamento com segurança para seu guia diário de sorte continuar.',
     subtitleCancelled:
-      'Nada foi perdido. Suas configurações continuam salvas e você pode começar seus {trialPeriodDays} dias grátis quando quiser.',
+      'Nada foi perdido. Suas configurações continuam salvas e você pode assinar quando quiser.',
     openError: 'Não foi possível abrir o checkout da Stripe agora.',
-    resumeTitle: 'Começar seu trial grátis de {trialPeriodDays} dias',
+    resumeTitle: 'Assinar a Trimry',
     resumeSubtitle:
-      'Seu guia diário ainda está esperando. Continue para a Stripe, confirme seu método de pagamento e desbloqueie a entrega sem cobrança hoje.',
-    resumeButton: 'Começar grátis',
-    resumeHint: 'Hoje não há cobrança. Checkout seguro da Stripe. Cancele quando quiser.',
+      'Sua orientação diária continua esperando. Continue para a Stripe e confirme sua assinatura.',
+    resumeButton: 'Assinar com Stripe',
+    resumeHint: 'Checkout seguro da Stripe. Cancele quando quiser.',
     deliveryLabel: 'Canal de entrega',
     timingLabel: 'Horário diário',
     helper:
-      'Estamos criando o checkout seguro da Stripe para seus {trialPeriodDays} dias grátis. Se nada acontecer, espere um segundo ou recarregue esta página.',
+      'Estamos criando o checkout seguro da Stripe para sua assinatura. Se nada acontecer, espere um segundo ou recarregue esta página.',
     trialHighlights: [
       'Sinal diário de fortuna entregue por email, WhatsApp ou ambos.',
       'Ritmo de manifestação para crença, ação e oportunidade.',
-      'Calendário mensal completo desbloqueado durante o trial.',
+      'Calendário mensal completo desbloqueado com sua assinatura.',
     ],
   },
   dashboard: {

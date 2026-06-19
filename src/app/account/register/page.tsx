@@ -13,9 +13,6 @@ import { buildPersonalSignProfile } from '@/lib/personal-signs'
 import { detectBrowserTimeZone } from '@/lib/schedule'
 
 const EMAIL_CONTACT_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const WHATSAPP_CONTACT_PATTERN = /^\+?[1-9][0-9]{7,14}$/
-const SYNTHETIC_WHATSAPP_EMAIL_DOMAIN = 'whatsapp.trimry.local'
-const SIGNUP_WHATSAPP_STORAGE_KEY = 'trimry:signup-whatsapp-number'
 
 function getRegisterInlineCopy(language: string) {
   const resolvedLanguage = normalizeLanguageCode(language)
@@ -23,7 +20,7 @@ function getRegisterInlineCopy(language: string) {
   if (resolvedLanguage === 'es') {
     return {
       invalidContact:
-        'Ingresa un correo válido o un WhatsApp en formato internacional (ejemplo: +56912345678).',
+        'Ingresa un correo válido.',
       missingBirthDate:
         'Ingresa tu fecha de nacimiento para calcular tu código de fortuna.',
       birthHint:
@@ -31,17 +28,17 @@ function getRegisterInlineCopy(language: string) {
       fortuneCode: 'Código de fortuna',
       zodiac: 'Zodíaco',
       chineseCalendar: 'Calendario chino',
-      contactLabel: 'Email o WhatsApp',
-      contactPlaceholder: 'tu@correo.com o +56912345678',
+      contactLabel: 'Email',
+      contactPlaceholder: 'tu@correo.com',
       contactHint:
-        'Email es el canal base; WhatsApp se puede acordar después de activar.',
+        'Usaremos este email para tu cuenta. Después de suscribirte podrás elegir si recibes predicciones por email, WhatsApp o ambos.',
     }
   }
 
   if (resolvedLanguage === 'pt') {
     return {
       invalidContact:
-        'Digite um email válido ou um WhatsApp em formato internacional (exemplo: +5511999999999).',
+        'Digite um email válido.',
       missingBirthDate:
         'Digite sua data de nascimento para calcular seu código de fortuna.',
       birthHint:
@@ -49,16 +46,16 @@ function getRegisterInlineCopy(language: string) {
       fortuneCode: 'Código de fortuna',
       zodiac: 'Zodíaco',
       chineseCalendar: 'Calendário chinês',
-      contactLabel: 'Email ou WhatsApp',
-      contactPlaceholder: 'voce@email.com ou +5511999999999',
+      contactLabel: 'Email',
+      contactPlaceholder: 'voce@email.com',
       contactHint:
-        'Email é o canal base; WhatsApp pode ser combinado depois da ativação.',
+        'Usaremos este email para sua conta. Depois de assinar, você poderá escolher email, WhatsApp ou ambos para receber previsões.',
     }
   }
 
   return {
     invalidContact:
-      'Enter a valid email or a WhatsApp number in international format (example: +14155550123).',
+      'Enter a valid email.',
     missingBirthDate:
       'Enter your date of birth so we can calculate your fortune code.',
     birthHint:
@@ -66,10 +63,10 @@ function getRegisterInlineCopy(language: string) {
     fortuneCode: 'Fortune code',
     zodiac: 'Zodiac',
     chineseCalendar: 'Chinese calendar',
-    contactLabel: 'Email or WhatsApp',
-    contactPlaceholder: 'you@email.com or +14155550123',
+    contactLabel: 'Email',
+    contactPlaceholder: 'you@email.com',
     contactHint:
-      'Email is the base channel; WhatsApp can be arranged after activation.',
+      'We use this email for your account. After subscribing, you can choose email, WhatsApp, or both for prediction delivery.',
   }
 }
 
@@ -100,29 +97,6 @@ function collectRegistrationClientMetadata(timeZone: string) {
   }
 }
 
-function normalizeWhatsappNumber(value: string) {
-  let normalized = value.replace(/[^0-9+]/g, '').replace(/(?!^)\+/g, '')
-
-  if (normalized.startsWith('00')) {
-    normalized = `+${normalized.slice(2)}`
-  }
-
-  if (!normalized.startsWith('+')) {
-    normalized = `+${normalized}`
-  }
-
-  if (!WHATSAPP_CONTACT_PATTERN.test(normalized)) {
-    return null
-  }
-
-  return normalized
-}
-
-function buildSyntheticEmailFromWhatsapp(whatsappNumber: string) {
-  const digits = whatsappNumber.replace(/\D/g, '').slice(-15)
-  return `wa-${digits}@${SYNTHETIC_WHATSAPP_EMAIL_DOMAIN}`
-}
-
 export default function RegisterPage() {
   const router = useRouter()
   const { language, setLanguage, messages } = useLanguage()
@@ -146,12 +120,8 @@ export default function RegisterPage() {
 
     const normalizedFirstName = firstName.trim()
     const normalizedContact = contact.trim()
-    const isEmailContact = EMAIL_CONTACT_PATTERN.test(normalizedContact)
-    const whatsappNumber = isEmailContact
-      ? null
-      : normalizeWhatsappNumber(normalizedContact)
 
-    if (!isEmailContact && !whatsappNumber) {
+    if (!EMAIL_CONTACT_PATTERN.test(normalizedContact)) {
       setError(inlineCopy.invalidContact)
       setLoading(false)
       return
@@ -163,10 +133,8 @@ export default function RegisterPage() {
       return
     }
 
-    const resolvedEmail = isEmailContact
-      ? normalizedContact.toLowerCase()
-      : buildSyntheticEmailFromWhatsapp(whatsappNumber!)
-    const contactType = isEmailContact ? 'email' : 'whatsapp'
+    const resolvedEmail = normalizedContact.toLowerCase()
+    const contactType = 'email'
 
     trackEvent('signup_started', {
       language,
@@ -220,10 +188,6 @@ export default function RegisterPage() {
         status: 'created',
         language: nextLocale ?? language,
       })
-
-      if (whatsappNumber && typeof window !== 'undefined') {
-        window.sessionStorage.setItem(SIGNUP_WHATSAPP_STORAGE_KEY, whatsappNumber)
-      }
 
       router.push('/activate')
       router.refresh()
@@ -302,7 +266,7 @@ export default function RegisterPage() {
         <label className="cosmic-field-label block text-sm font-semibold">
           {inlineCopy.contactLabel}
           <input
-            type="text"
+            type="email"
             value={contact}
             onChange={(event) => setContact(event.target.value)}
             required

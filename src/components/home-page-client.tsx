@@ -42,7 +42,7 @@ function calculateDayDiff(from: string, to: string) {
 
 export function HomePageClient() {
   const { language, messages } = useLanguage()
-  const trialPeriodDays = SUBSCRIPTION_PLAN.internalTrialPeriodDays
+  const trialPeriodDays = SUBSCRIPTION_PLAN.stripeTrialPeriodDays
 
   const rotatingPredictions = useMemo(() => messages.home.predictions, [messages.home.predictions])
   const teaserRef = useRef<HTMLElement | null>(null)

@@ -99,7 +99,9 @@ export default function CheckoutStartPage() {
   const [loading, setLoading] = useState(true)
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
   const pendingCheckoutCreatedRef = useRef(false)
+  const whatsappCheckoutClaimedRef = useRef(false)
   const checkoutCancelled = searchParams.get('billing') === 'cancelled'
+  const whatsappCheckoutToken = searchParams.get('wa_checkout')?.trim() ?? ''
 
   useEffect(() => {
     trackEventOnce('checkout-page-viewed', 'checkout_page_viewed', {
@@ -117,6 +119,36 @@ export default function CheckoutStartPage() {
 
     const loadAndMaybeRedirect = async () => {
       try {
+        if (whatsappCheckoutToken && !whatsappCheckoutClaimedRef.current) {
+          whatsappCheckoutClaimedRef.current = true
+
+          const claimResponse = await apiFetch(
+            '/auth/whatsapp-checkout',
+            {
+              method: 'POST',
+              body: JSON.stringify({
+                token: whatsappCheckoutToken,
+              }),
+            },
+            { retryUnauthorized: false },
+          )
+
+          if (!claimResponse.ok) {
+            throw new Error(
+              await readApiError(claimResponse, messages.checkout.openError),
+            )
+          }
+
+          const claimPayload = (await claimResponse.json()) as {
+            redirectPath?: string
+          }
+
+          if (claimPayload.redirectPath === '/dashboard') {
+            router.replace('/dashboard')
+            return
+          }
+        }
+
         let currentAccount = await fetchAccountSnapshot()
 
         if (!currentAccount) {
@@ -165,46 +197,6 @@ export default function CheckoutStartPage() {
           currentAccount = {
             ...currentAccount,
             subscription,
-          }
-        } else if (subscription.status === 'pending_checkout') {
-          const normalizedPreference = subscription.deliveryPreference ?? 'email'
-
-          if (normalizedPreference !== 'email') {
-            const normalizeResponse = await apiFetch(
-              '/subscription',
-              {
-                method: 'POST',
-                body: JSON.stringify({
-                  action: 'update-delivery',
-                  deliveryPreference: 'email',
-                  deliveryHourLocal:
-                    subscription.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR,
-                }),
-              },
-              { retryUnauthorized: false },
-            )
-
-            if (normalizeResponse.status === 401) {
-              router.replace('/account/login')
-              return
-            }
-
-            if (!normalizeResponse.ok) {
-              throw new Error(
-                await readApiError(normalizeResponse, messages.checkout.openError),
-              )
-            }
-
-            const normalizePayload = (await normalizeResponse.json()) as {
-              subscription?: AccountSnapshot['subscription']
-            }
-
-            subscription =
-              normalizePayload.subscription ?? currentAccount.subscription
-            currentAccount = {
-              ...currentAccount,
-              subscription,
-            }
           }
         }
 
@@ -363,7 +355,7 @@ export default function CheckoutStartPage() {
     return () => {
       cancelled = true
     }
-  }, [checkoutCancelled, messages.checkout.openError, router])
+  }, [checkoutCancelled, messages.checkout.openError, router, whatsappCheckoutToken])
 
   const recoveryCopy = checkoutCancelled
     ? messages.checkout.subtitleCancelled
@@ -382,16 +374,21 @@ export default function CheckoutStartPage() {
         </h1>
         <p className="cosmic-shell-copy mt-4 text-lg">{recoveryCopy}</p>
         {!checkoutCancelled ? (
-          <ul className="mt-6 grid gap-3 text-sm leading-6 text-slate-100/82">
-            {messages.checkout.trialHighlights.map((highlight) => (
-              <li
-                key={highlight}
-                className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 px-4 py-3"
-              >
-                {highlight}
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-6 grid gap-3 text-sm leading-6 text-slate-100/82">
+              {messages.checkout.trialHighlights.map((highlight) => (
+                <li
+                  key={highlight}
+                  className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 px-4 py-3"
+                >
+                  {highlight}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 rounded-2xl border border-emerald-200/18 bg-emerald-300/10 px-4 py-3 text-sm leading-6 text-emerald-50">
+              {messages.checkout.unsubscribeHelp}
+            </p>
+          </>
         ) : null}
       </section>
     )
@@ -451,6 +448,9 @@ export default function CheckoutStartPage() {
               </li>
             ))}
           </ul>
+          <p className="mt-4 rounded-2xl border border-emerald-200/18 bg-emerald-300/10 px-4 py-3 text-sm leading-6 text-emerald-50">
+            {messages.checkout.unsubscribeHelp}
+          </p>
           {account?.subscription ? (
             <div className="mt-4 grid gap-3 text-sm text-slate-100/80 sm:grid-cols-2">
               <div className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 p-4">
@@ -525,6 +525,9 @@ export default function CheckoutStartPage() {
               </li>
             ))}
           </ul>
+          <p className="mt-4 rounded-2xl border border-emerald-200/18 bg-emerald-300/10 px-4 py-3 text-sm leading-6 text-emerald-50">
+            {messages.checkout.unsubscribeHelp}
+          </p>
         </div>
       )}
     </section>

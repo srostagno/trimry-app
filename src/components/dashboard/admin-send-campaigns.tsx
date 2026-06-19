@@ -8,6 +8,7 @@ import {
   fetchAdminSendWorkspace,
   fetchAdminWeeklyDispatchJob,
   fetchAdminWeeklyDispatchJobs,
+  revertInternalTrialFromAdmin,
   runAdminSendCampaignAction,
   sendAdminDailyProjectionTemplateTest,
   startAdminWeeklyDispatch,
@@ -491,6 +492,7 @@ export function AdminSendCampaigns() {
     useState('daily_projection_1')
   const [dailyProjectionTemplateLanguage, setDailyProjectionTemplateLanguage] =
     useState('en')
+  const [revertInternalTrialEmail, setRevertInternalTrialEmail] = useState('')
   const [weeklyDispatchJob, setWeeklyDispatchJob] =
     useState<WeeklyDispatchJob | null>(null)
   const [weeklyDispatchJobs, setWeeklyDispatchJobs] = useState<
@@ -1157,6 +1159,45 @@ export function AdminSendCampaigns() {
     }
   }
 
+  const runRevertInternalTrial = async () => {
+    setBusyAction('revert-internal-trial')
+    setError('')
+    setSuccess('')
+
+    const normalizedEmail = revertInternalTrialEmail.trim().toLowerCase()
+
+    if (!normalizedEmail) {
+      setError(
+        language === 'es'
+          ? 'Ingresa el email del usuario a revertir.'
+          : 'Enter the user email to revert.',
+      )
+      setBusyAction(null)
+      return
+    }
+
+    try {
+      const response = await revertInternalTrialFromAdmin(
+        { email: normalizedEmail },
+        messages.dashboard.sendCampaigns.loadError,
+      )
+      setSuccess(
+        language === 'es'
+          ? `Trial interno revertido para ${response.email}. La suscripción ${response.subscriptionId} quedó en pending_checkout con ${response.stripeTrialPeriodDays} días de trial en Stripe.`
+          : `Internal trial reverted for ${response.email}. Subscription ${response.subscriptionId} is now pending_checkout with ${response.stripeTrialPeriodDays} Stripe trial days.`,
+      )
+      await loadWorkspace()
+    } catch (nextError) {
+      setError(
+        nextError instanceof Error
+          ? nextError.message
+          : messages.dashboard.sendCampaigns.loadError,
+      )
+    } finally {
+      setBusyAction(null)
+    }
+  }
+
   const runDailyProjectionTemplateTest = async () => {
     setBusyAction('daily-template-test')
     setError('')
@@ -1467,6 +1508,47 @@ export function AdminSendCampaigns() {
                 ? 'Ejecutar flujo de bienvenida'
                 : 'Trigger welcome flow'}
           </button>
+        </div>
+
+        <div className="mt-6 rounded-[1.75rem] border border-amber-300/24 bg-black/18 p-5">
+          <h3 className="text-xl font-semibold text-slate-50">
+            {language === 'es'
+              ? 'Revertir trial interno'
+              : 'Revert internal trial'}
+          </h3>
+          <p className="cosmic-shell-meta mt-2 text-sm">
+            {language === 'es'
+              ? 'Quita una cuenta del trial interno. El usuario pasa a pending_checkout y recupera 7 días de trial en Stripe para su próximo checkout.'
+              : 'Remove one account from internal trial. The user moves to pending_checkout and gets back a 7-day Stripe trial for the next checkout.'}
+          </p>
+          <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-end">
+            <label className="cosmic-field-label text-sm font-semibold lg:min-w-[340px]">
+              {language === 'es' ? 'Email del usuario' : 'User email'}
+              <input
+                type="email"
+                value={revertInternalTrialEmail}
+                onChange={(event) =>
+                  setRevertInternalTrialEmail(event.target.value)
+                }
+                placeholder="user@example.com"
+                className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => void runRevertInternalTrial()}
+              disabled={busyAction !== null}
+              className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
+            >
+              {busyAction === 'revert-internal-trial'
+                ? language === 'es'
+                  ? 'Revirtiendo'
+                  : 'Reverting'
+                : language === 'es'
+                  ? 'Revertir a trial Stripe'
+                  : 'Revert to Stripe trial'}
+            </button>
+          </div>
         </div>
 
         <div className="mt-6 rounded-[1.75rem] border border-violet-300/18 bg-black/18 p-5">

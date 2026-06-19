@@ -23,6 +23,12 @@ import {
 
 const SIGNUP_WHATSAPP_STORAGE_KEY = 'trimry:signup-whatsapp-number'
 
+function waitForStripeWebhook(delayMs: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, delayMs)
+  })
+}
+
 function settingCopy(language: string) {
   const resolvedLanguage = normalizeLanguageCode(language)
 
@@ -41,6 +47,11 @@ function settingCopy(language: string) {
         saveButton: 'Guardar ajustes',
         savingButton: 'Guardando...',
         backButton: 'Volver al dashboard',
+        confirmBadge: 'Confirmación de entrega',
+        confirmTitle: 'Confirma dónde quieres recibir tus predicciones',
+        confirmSubtitle:
+          'Tu suscripción ya quedó lista. Antes de entrar al dashboard, confirma si quieres recibir Trimry por email, WhatsApp o ambos.',
+        confirmBackButton: 'Ir al dashboard',
         success: 'Ajustes de entrega actualizados.',
         help: 'Los cambios se aplican solo a futuras entregas.',
         editMode: 'Modo edición',
@@ -76,6 +87,11 @@ function settingCopy(language: string) {
       saveButton: 'Salvar ajustes',
       savingButton: 'Salvando...',
       backButton: 'Voltar ao painel',
+      confirmBadge: 'Confirmação de entrega',
+      confirmTitle: 'Confirme onde quer receber suas previsões',
+      confirmSubtitle:
+        'Sua assinatura já está pronta. Antes de entrar no painel, confirme se quer receber a Trimry por email, WhatsApp ou ambos.',
+      confirmBackButton: 'Ir para o painel',
       success: 'Ajustes de entrega atualizados.',
       help: 'As mudanças valem apenas para entregas futuras.',
       editMode: 'Modo edição',
@@ -108,6 +124,11 @@ function settingCopy(language: string) {
     saveButton: 'Save settings',
     savingButton: 'Saving...',
     backButton: 'Back to dashboard',
+    confirmBadge: 'Delivery confirmation',
+    confirmTitle: 'Confirm where you want to receive predictions',
+    confirmSubtitle:
+      'Your subscription is ready. Before entering the dashboard, confirm whether Trimry should reach you by email, WhatsApp, or both.',
+    confirmBackButton: 'Go to dashboard',
     success: 'Delivery settings updated.',
     help: 'Changes apply to future deliveries only.',
     editMode: 'Edit mode',
@@ -145,20 +166,21 @@ export default function DeliverySettingsPage() {
   const [whatsappNumber, setWhatsappNumber] = useState('')
   const [whatsappConsentAccepted, setWhatsappConsentAccepted] = useState(false)
   const isEditMode = searchParams.get('edit') === '1'
+  const isConfirmMode = searchParams.get('confirm') === '1'
 
   useEffect(() => {
     let cancelled = false
 
     const loadState = async () => {
       try {
-        const currentAccount = await fetchAccountSnapshot()
+        let currentAccount = await fetchAccountSnapshot()
 
         if (!currentAccount) {
           router.replace('/account/login')
           return
         }
 
-        const subscription = currentAccount.subscription
+        let subscription = currentAccount.subscription
 
         if (!subscription) {
           router.replace('/activate')
@@ -166,8 +188,31 @@ export default function DeliverySettingsPage() {
         }
 
         if (subscription.status === 'pending_checkout') {
-          router.replace('/checkout/start')
-          return
+          if (isConfirmMode) {
+            for (let attempt = 0; attempt < 6; attempt += 1) {
+              await waitForStripeWebhook(850)
+
+              const refreshedAccount = await fetchAccountSnapshot()
+              const refreshedSubscription = refreshedAccount?.subscription
+
+              if (
+                refreshedAccount &&
+                refreshedSubscription &&
+                refreshedSubscription.status !== 'pending_checkout'
+              ) {
+                currentAccount = refreshedAccount
+                subscription = refreshedSubscription
+                break
+              }
+            }
+          }
+
+          if (subscription.status === 'pending_checkout') {
+            router.replace(
+              isConfirmMode ? '/dashboard?billing=success' : '/checkout/start',
+            )
+            return
+          }
         }
 
         if (subscription.status === 'canceled') {
@@ -200,7 +245,7 @@ export default function DeliverySettingsPage() {
     return () => {
       cancelled = true
     }
-  }, [copy.loadError, router])
+  }, [copy.loadError, isConfirmMode, router])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -234,14 +279,22 @@ export default function DeliverySettingsPage() {
       }
 
       trackEvent('delivery_settings_saved', {
-        entry_point: isEditMode ? 'dashboard_settings' : 'settings_page',
+        entry_point: isConfirmMode
+          ? 'post_checkout_confirmation'
+          : isEditMode
+            ? 'dashboard_settings'
+            : 'settings_page',
         user_id: account?.user.id,
         delivery_preference: deliveryPreference,
         delivery_hour_local: deliveryHourLocal,
         requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),
       })
       trackMetaCustomEvent('SubscriptionSetup', {
-        entry_point: isEditMode ? 'dashboard_settings' : 'settings_page',
+        entry_point: isConfirmMode
+          ? 'post_checkout_confirmation'
+          : isEditMode
+            ? 'dashboard_settings'
+            : 'settings_page',
         delivery_preference: deliveryPreference,
         delivery_hour_local: deliveryHourLocal,
         requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),
@@ -253,6 +306,10 @@ export default function DeliverySettingsPage() {
 
       setSuccess(copy.success)
       router.refresh()
+
+      if (isConfirmMode) {
+        router.push('/dashboard?billing=success')
+      }
     } catch {
       setError(copy.saveError)
     } finally {
@@ -288,9 +345,9 @@ export default function DeliverySettingsPage() {
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-3">
               <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
-                {copy.badge}
+                {isConfirmMode ? copy.confirmBadge : copy.badge}
               </p>
-              {isEditMode ? (
+              {isEditMode && !isConfirmMode ? (
                 <span className="rounded-full border border-cyan-200/22 bg-cyan-100/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/86">
                   {copy.editMode}
                 </span>
@@ -298,10 +355,10 @@ export default function DeliverySettingsPage() {
             </div>
 
             <h1 className="max-w-2xl text-3xl leading-[1.04] text-slate-50 sm:text-4xl lg:text-5xl">
-              {copy.title}
+              {isConfirmMode ? copy.confirmTitle : copy.title}
             </h1>
             <p className="max-w-xl text-base text-slate-100/86 sm:text-lg">
-              {copy.subtitle}
+              {isConfirmMode ? copy.confirmSubtitle : copy.subtitle}
             </p>
 
             <div className="rounded-[1.7rem] border border-cyan-200/18 bg-slate-950/42 p-4 sm:p-5">
@@ -414,10 +471,10 @@ export default function DeliverySettingsPage() {
                   {saving ? copy.savingButton : copy.saveButton}
                 </button>
                 <Link
-                  href="/dashboard"
+                  href={isConfirmMode ? '/dashboard?billing=success' : '/dashboard'}
                   className="cosmic-outline-button inline-flex rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em]"
                 >
-                  {copy.backButton}
+                  {isConfirmMode ? copy.confirmBackButton : copy.backButton}
                 </Link>
               </div>
             </form>

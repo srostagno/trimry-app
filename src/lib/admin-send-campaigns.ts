@@ -315,6 +315,32 @@ export async function triggerAdminWelcomeFlowTest(fallbackMessage: string) {
   }
 }
 
+export async function revertInternalTrialFromAdmin(
+  payload: {
+    email?: string
+    userId?: string
+  },
+  fallbackMessage: string,
+) {
+  const response = await apiFetch('/admin/subscriptions/revert-internal-trial', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    userId: string
+    email: string
+    subscriptionId: string
+    status: 'pending_checkout'
+    stripeTrialPeriodDays: number
+  }
+}
+
 export async function sendAdminDailyProjectionTemplateTest(
   payload: {
     recipient: string

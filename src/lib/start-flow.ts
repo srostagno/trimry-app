@@ -64,6 +64,10 @@ export type AccountSnapshot = {
     internalTrialEndNotificationNextAt: string | null
     stripeTrialStartedAt: string | null
     stripeTrialEndsAt: string | null
+    sampleDeliverySentAt: string | null
+    sampleDeliverySendingAt: string | null
+    sampleDeliveryChannel: 'email' | 'whatsapp' | 'both' | null
+    sampleDeliveryLastError: string | null
     createdAt: string
     updatedAt: string
   } | null

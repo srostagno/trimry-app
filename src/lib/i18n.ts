@@ -229,6 +229,20 @@ export type MessageSection = {
     whatsappDeliveryLabel: string
     billingLabel: string
     billingValue: string
+    unsubscribeTitle: string
+    unsubscribeText: string
+    sampleTitle: string
+    sampleText: string
+    sampleEmailButton: string
+    sampleWhatsappButton: string
+    sampleBothButton: string
+    sampleWhatsappNumberLabel: string
+    sampleWhatsappPlaceholder: string
+    sampleWhatsappConsentLabel: string
+    sampleAlreadySent: string
+    sampleSuccess: string
+    sampleEmailUnavailable: string
+    sampleWhatsappConsentError: string
     previewBadge: string
     previewTitle: string
     previewLabel: string
@@ -255,6 +269,7 @@ export type MessageSection = {
     deliveryLabel: string
     timingLabel: string
     helper: string
+    unsubscribeHelp: string
     trialHighlights: string[]
   }
   dashboard: {
@@ -685,12 +700,12 @@ const englishMessages: MessageSection = {
       'The web dashboard opens the complete monthly plan so you can see fortunate and cautious days before they arrive.',
   },
   pricing: {
-    title: 'Try Trimry free for {internalTrialPeriodDays} days',
+    title: 'Try Trimry free for {trialPeriodDays} days',
     subtitle:
       'Start with a full trial, feel the daily rhythm, and continue only if Trimry helps you move with more luck.',
     planTitle: 'Daily fortune delivery',
     billing:
-      '{internalTrialPeriodDays} days free now, then subscribe in Stripe for {billingInline}. Cancel anytime.',
+      '{trialPeriodDays} days free in Stripe, then continue for {billingInline}. Cancel anytime.',
     include1: 'A daily projection reminder by email, WhatsApp, or both',
     include2: 'Full monthly calendar with Good, Bad, and Rare fortune signals',
     include3:
@@ -806,17 +821,17 @@ const englishMessages: MessageSection = {
     loading: 'Loading your activation step...',
     loadError: 'Unable to load your activation step right now.',
     unavailable: 'Unable to continue right now.',
-    badge: '{internalTrialPeriodDays}-day free trial',
+    badge: '{trialPeriodDays}-day free trial',
     title:
-      'Start your daily luck guide free for {internalTrialPeriodDays} days.',
+      'Start your daily luck guide free for {trialPeriodDays} days.',
     subtitle:
       'No charge today. Trimry gives you a daily signal designed to focus intention, strengthen belief, and help you move through the day feeling luckier and more open to real fortune.',
     cards: [
-      '{internalTrialPeriodDays} days free before Stripe.',
+      '{trialPeriodDays} days free in Stripe checkout.',
       'Daily manifestation cues for money, relationships, energy, and release.',
       'Monthly timing calendar to help you choose better moments.',
     ],
-    primaryButton: 'Start {internalTrialPeriodDays} days free',
+    primaryButton: 'Start {trialPeriodDays} days free',
     secondaryButton: 'Change delivery settings',
     snapshotTitle: 'Your activation snapshot',
     deliveryPreferenceLabel: 'Delivery preference',
@@ -825,7 +840,27 @@ const englishMessages: MessageSection = {
     whatsappDeliveryLabel: 'WhatsApp delivery',
     billingLabel: 'Today',
     billingValue:
-      'Free for {internalTrialPeriodDays} days now. After that, continue in Stripe for {billingInline}.',
+      'Free for {trialPeriodDays} days in Stripe. After that, continue for {billingInline}.',
+    unsubscribeTitle: 'Easy to unsubscribe',
+    unsubscribeText:
+      'If Trimry is not for you, cancellation is simple: message Luck Guru, cancel from the web dashboard, or ask us by email.',
+    sampleTitle: 'Try one real daily projection',
+    sampleText:
+      'Send yourself one sample before subscribing. Use it as a manifestation habit: read the signal, set an intention, and notice how fortune starts shaping your posture.',
+    sampleEmailButton: 'Send email sample',
+    sampleWhatsappButton: 'Send WhatsApp sample',
+    sampleBothButton: 'Send both',
+    sampleWhatsappNumberLabel: 'WhatsApp number',
+    sampleWhatsappPlaceholder: '+14155550123',
+    sampleWhatsappConsentLabel:
+      'I consent to receive this Trimry sample and subscription messages on WhatsApp.',
+    sampleAlreadySent: 'Your one-time sample was already sent.',
+    sampleSuccess:
+      'Sample sent. If this rhythm feels useful, continue with Stripe to receive Trimry every day.',
+    sampleEmailUnavailable:
+      'This account does not have a regular email address for sample delivery.',
+    sampleWhatsappConsentError:
+      'Confirm WhatsApp consent before sending the sample.',
     previewBadge: 'Trial preview',
     previewTitle: 'What unlocks during your trial',
     previewLabel: 'Preview',
@@ -858,6 +893,8 @@ const englishMessages: MessageSection = {
     timingLabel: 'Daily timing',
     helper:
       'We are creating secure Stripe checkout for your subscription. If nothing happens, wait a second or reload this page.',
+    unsubscribeHelp:
+      'Unsubscribing is easy: message Luck Guru, cancel from the web dashboard, or ask us by email.',
     trialHighlights: [
       'Daily fortune signal delivered by email, WhatsApp, or both.',
       'Manifestation rhythm for belief, action, and opportunity.',
@@ -1480,12 +1517,12 @@ const spanishMessages: MessageSection = {
       'El dashboard web abre el mes completo para ver días favorables y cautelosos antes de que lleguen.',
   },
   pricing: {
-    title: 'Prueba Trimry gratis por {internalTrialPeriodDays} días',
+    title: 'Prueba Trimry gratis por {trialPeriodDays} días',
     subtitle:
       'Empieza con el trial completo, siente el ritmo diario y continúa solo si Trimry te ayuda a moverte con más suerte.',
     planTitle: 'Entrega diaria de fortuna',
     billing:
-      '{internalTrialPeriodDays} días gratis ahora, luego suscríbete en Stripe por {billingInline}. Cancela cuando quieras.',
+      '{trialPeriodDays} días gratis en Stripe, luego continúas por {billingInline}. Cancela cuando quieras.',
     include1: 'Un recordatorio diario con tu proyección por email, WhatsApp o ambos',
     include2: 'Calendario mensual completo con señales Buenas, Malas y Raras',
     include3: 'Señales de manifestación para dinero, relaciones, energía y timing personal',
@@ -1600,17 +1637,17 @@ const spanishMessages: MessageSection = {
     loading: 'Cargando tu paso de activación...',
     loadError: 'No pudimos cargar tu activación en este momento.',
     unavailable: 'No es posible continuar ahora.',
-    badge: '{internalTrialPeriodDays} días gratis',
+    badge: '{trialPeriodDays} días gratis',
     title:
-      'Empieza gratis tu guía diaria de suerte por {internalTrialPeriodDays} días.',
+      'Empieza gratis tu guía diaria de suerte por {trialPeriodDays} días.',
     subtitle:
       'Hoy no pagas. Trimry te entrega una señal diaria diseñada para enfocar tu intención, fortalecer tu creencia y ayudarte a moverte sintiéndote más afortunado y abierto a fortuna real.',
     cards: [
-      '{internalTrialPeriodDays} días gratis antes de Stripe.',
+      '{trialPeriodDays} días gratis en el checkout de Stripe.',
       'Señales diarias de manifestación para dinero, relaciones, energía y liberación.',
       'Calendario mensual para elegir mejores momentos.',
     ],
-    primaryButton: 'Comenzar {internalTrialPeriodDays} días gratis',
+    primaryButton: 'Comenzar {trialPeriodDays} días gratis',
     secondaryButton: 'Cambiar ajustes de entrega',
     snapshotTitle: 'Tu resumen de activación',
     deliveryPreferenceLabel: 'Preferencia de entrega',
@@ -1619,7 +1656,27 @@ const spanishMessages: MessageSection = {
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Hoy',
     billingValue:
-      'Gratis por {internalTrialPeriodDays} días ahora. Después continúas en Stripe por {billingInline}.',
+      'Gratis por {trialPeriodDays} días en Stripe. Después continúas por {billingInline}.',
+    unsubscribeTitle: 'Desuscribirte es fácil',
+    unsubscribeText:
+      'Si Trimry no es para ti, cancelar es simple: escríbele a Luck Guru, cancela desde el dashboard web o pídenoslo por email.',
+    sampleTitle: 'Prueba una proyección diaria real',
+    sampleText:
+      'Envíate una muestra antes de suscribirte. Úsala como hábito de manifestación: lee la señal, fija una intención y observa cómo la fortuna empieza a cambiar tu postura.',
+    sampleEmailButton: 'Enviar muestra por email',
+    sampleWhatsappButton: 'Enviar muestra por WhatsApp',
+    sampleBothButton: 'Enviar por ambos',
+    sampleWhatsappNumberLabel: 'Número de WhatsApp',
+    sampleWhatsappPlaceholder: '+56941163414',
+    sampleWhatsappConsentLabel:
+      'Consiento recibir esta muestra de Trimry y mensajes de suscripción por WhatsApp.',
+    sampleAlreadySent: 'Tu muestra única ya fue enviada.',
+    sampleSuccess:
+      'Muestra enviada. Si este ritmo te sirve, continúa con Stripe para recibir Trimry todos los días.',
+    sampleEmailUnavailable:
+      'Esta cuenta no tiene un email regular para enviar la muestra.',
+    sampleWhatsappConsentError:
+      'Confirma el consentimiento de WhatsApp antes de enviar la muestra.',
     previewBadge: 'Vista del trial',
     previewTitle: 'Lo que se desbloquea durante tu trial',
     previewLabel: 'Vista previa',
@@ -1652,6 +1709,8 @@ const spanishMessages: MessageSection = {
     timingLabel: 'Horario diario',
     helper:
       'Estamos creando el checkout seguro de Stripe para tu suscripción. Si no pasa nada, espera un segundo o recarga esta página.',
+    unsubscribeHelp:
+      'Desuscribirte es fácil: escríbele a Luck Guru, cancela desde el dashboard web o pídenoslo por email.',
     trialHighlights: [
       'Señal diaria de fortuna por email, WhatsApp o ambos.',
       'Ritmo de manifestación para creencia, acción y oportunidad.',
@@ -2316,12 +2375,12 @@ const portugueseMessages = mergeMessages(englishMessages, {
       'O painel web abre o mês completo para você ver dias favoráveis e cautelosos antes que cheguem.',
   },
   pricing: {
-    title: 'Experimente a Trimry grátis por {internalTrialPeriodDays} dias',
+    title: 'Experimente a Trimry grátis por {trialPeriodDays} dias',
     subtitle:
       'Comece com o trial completo, sinta o ritmo diário e continue apenas se a Trimry ajudar você a se mover com mais sorte.',
     planTitle: 'Entrega diária de fortuna',
     billing:
-      '{internalTrialPeriodDays} dias grátis agora, depois assine na Stripe por {billingInline}. Cancele quando quiser.',
+      '{trialPeriodDays} dias grátis na Stripe, depois continue por {billingInline}. Cancele quando quiser.',
     include1:
       'Um lembrete diário com sua projeção por email, WhatsApp ou ambos',
     include2:
@@ -2439,17 +2498,17 @@ const portugueseMessages = mergeMessages(englishMessages, {
     loading: 'Carregando sua etapa de ativação...',
     loadError: 'Não foi possível carregar sua ativação agora.',
     unavailable: 'Não é possível continuar agora.',
-    badge: '{internalTrialPeriodDays} dias grátis',
+    badge: '{trialPeriodDays} dias grátis',
     title:
-      'Comece seu guia diário de sorte grátis por {internalTrialPeriodDays} dias.',
+      'Comece seu guia diário de sorte grátis por {trialPeriodDays} dias.',
     subtitle:
       'Hoje não há cobrança. A Trimry entrega um sinal diário para focar sua intenção, fortalecer sua crença e ajudar você a se mover sentindo mais sorte e abertura para fortuna real.',
     cards: [
-      '{internalTrialPeriodDays} dias grátis antes da Stripe.',
+      '{trialPeriodDays} dias grátis no checkout da Stripe.',
       'Sinais diários de manifestação para dinheiro, relacionamentos, energia e liberação.',
       'Calendário mensal para escolher melhores momentos.',
     ],
-    primaryButton: 'Começar {internalTrialPeriodDays} dias grátis',
+    primaryButton: 'Começar {trialPeriodDays} dias grátis',
     secondaryButton: 'Alterar entrega',
     snapshotTitle: 'Seu resumo de ativação',
     deliveryPreferenceLabel: 'Preferência de entrega',
@@ -2458,7 +2517,27 @@ const portugueseMessages = mergeMessages(englishMessages, {
     whatsappDeliveryLabel: 'Entrega por WhatsApp',
     billingLabel: 'Hoje',
     billingValue:
-      'Grátis por {internalTrialPeriodDays} dias agora. Depois continue na Stripe por {billingInline}.',
+      'Grátis por {trialPeriodDays} dias na Stripe. Depois continue por {billingInline}.',
+    unsubscribeTitle: 'Cancelar é fácil',
+    unsubscribeText:
+      'Se a Trimry não for para você, cancelar é simples: fale com Luck Guru, cancele pelo painel web ou peça por email.',
+    sampleTitle: 'Teste uma projeção diária real',
+    sampleText:
+      'Envie uma amostra antes de assinar. Use como hábito de manifestação: leia o sinal, defina uma intenção e observe como a fortuna começa a mudar sua postura.',
+    sampleEmailButton: 'Enviar amostra por email',
+    sampleWhatsappButton: 'Enviar amostra por WhatsApp',
+    sampleBothButton: 'Enviar por ambos',
+    sampleWhatsappNumberLabel: 'Número de WhatsApp',
+    sampleWhatsappPlaceholder: '+5511999999999',
+    sampleWhatsappConsentLabel:
+      'Concordo em receber esta amostra da Trimry e mensagens de assinatura por WhatsApp.',
+    sampleAlreadySent: 'Sua amostra única já foi enviada.',
+    sampleSuccess:
+      'Amostra enviada. Se esse ritmo for útil, continue com a Stripe para receber a Trimry todos os dias.',
+    sampleEmailUnavailable:
+      'Esta conta não tem um email regular para envio da amostra.',
+    sampleWhatsappConsentError:
+      'Confirme o consentimento do WhatsApp antes de enviar a amostra.',
     previewBadge: 'Prévia do trial',
     previewTitle: 'O que desbloqueia durante o trial',
     previewLabel: 'Prévia',
@@ -2492,6 +2571,8 @@ const portugueseMessages = mergeMessages(englishMessages, {
     timingLabel: 'Horário diário',
     helper:
       'Estamos criando o checkout seguro da Stripe para sua assinatura. Se nada acontecer, espere um segundo ou recarregue esta página.',
+    unsubscribeHelp:
+      'Cancelar é fácil: fale com Luck Guru, cancele pelo painel web ou peça por email.',
     trialHighlights: [
       'Sinal diário de fortuna entregue por email, WhatsApp ou ambos.',
       'Ritmo de manifestação para crença, ação e oportunidade.',

@@ -16,6 +16,10 @@ import {
   fetchAccountSnapshot,
 } from '@/lib/start-flow'
 
+type SampleDeliveryChannel = 'email' | 'whatsapp' | 'both'
+
+const SYNTHETIC_WHATSAPP_EMAIL_DOMAIN = '@whatsapp.trimry.local'
+
 function toneLabel(language: string, tone: ActivityTone) {
   const resolvedLanguage = normalizeLanguageCode(language)
 
@@ -38,6 +42,12 @@ function toneLabel(language: string, tone: ActivityTone) {
   return resolvedLanguage === 'en' ? 'RARE' : 'RARO'
 }
 
+function hasRegularEmail(account: AccountSnapshot | null) {
+  const email = account?.user.email?.trim().toLowerCase()
+
+  return Boolean(email && !email.endsWith(SYNTHETIC_WHATSAPP_EMAIL_DOMAIN))
+}
+
 export default function ActivationGatewayPage() {
   const router = useRouter()
   const { language, messages } = useLanguage()
@@ -45,8 +55,16 @@ export default function ActivationGatewayPage() {
   const [activating, setActivating] = useState(false)
   const [error, setError] = useState('')
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
+  const [sampleSendingChannel, setSampleSendingChannel] =
+    useState<SampleDeliveryChannel | null>(null)
+  const [sampleError, setSampleError] = useState('')
+  const [sampleSuccess, setSampleSuccess] = useState('')
+  const [sampleWhatsappNumber, setSampleWhatsappNumber] = useState('')
+  const [sampleWhatsappConsent, setSampleWhatsappConsent] = useState(false)
 
   const resolvedLanguage = normalizeLanguageCode(language)
+  const sampleAlreadySent = Boolean(account?.subscription?.sampleDeliverySentAt)
+  const sampleEmailAvailable = hasRegularEmail(account)
   const sampleFortune = useMemo(
     () => buildWeeklyFortune(new Date(), languageToIntlLocale(resolvedLanguage)).slice(0, 3),
     [resolvedLanguage],
@@ -78,6 +96,8 @@ export default function ActivationGatewayPage() {
 
         if (!cancelled) {
           setAccount(currentAccount)
+          setSampleWhatsappNumber(currentAccount.subscription?.whatsappNumber ?? '')
+          setSampleWhatsappConsent(Boolean(currentAccount.subscription?.whatsappNumber))
           trackEvent('activate_subscription_view', {
             user_id: currentAccount.user.id,
             subscription_status: status ?? 'none',
@@ -178,12 +198,102 @@ export default function ActivationGatewayPage() {
         delivery_preference: 'email',
       })
 
-      router.push('/dashboard')
+      router.push('/checkout/start')
       router.refresh()
     } catch {
       setError(messages.activate.unavailable)
     } finally {
       setActivating(false)
+    }
+  }
+
+  const sendSampleDelivery = async (sampleChannel: SampleDeliveryChannel) => {
+    if (!account) {
+      router.replace('/account/login')
+      return
+    }
+
+    if (sampleAlreadySent) {
+      setSampleError(messages.activate.sampleAlreadySent)
+      return
+    }
+
+    if (
+      (sampleChannel === 'email' || sampleChannel === 'both') &&
+      !sampleEmailAvailable
+    ) {
+      setSampleError(messages.activate.sampleEmailUnavailable)
+      return
+    }
+
+    if (
+      (sampleChannel === 'whatsapp' || sampleChannel === 'both') &&
+      !sampleWhatsappConsent
+    ) {
+      setSampleError(messages.activate.sampleWhatsappConsentError)
+      return
+    }
+
+    setSampleSendingChannel(sampleChannel)
+    setSampleError('')
+    setSampleSuccess('')
+    setError('')
+
+    try {
+      const response = await apiFetch(
+        '/subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'send-sample',
+            sampleChannel,
+            deliveryHourLocal: DEFAULT_WEEKLY_DELIVERY_HOUR,
+            ...(sampleChannel === 'whatsapp' || sampleChannel === 'both'
+              ? {
+                  whatsappNumber: sampleWhatsappNumber,
+                  whatsappConsentAccepted: sampleWhatsappConsent,
+                }
+              : {}),
+          }),
+        },
+        { retryUnauthorized: false },
+      )
+
+      if (response.status === 401) {
+        router.replace('/account/login')
+        return
+      }
+
+      if (!response.ok) {
+        setSampleError(await readApiError(response, messages.activate.unavailable))
+        return
+      }
+
+      const payload = (await response.json()) as {
+        subscription: AccountSnapshot['subscription']
+      }
+
+      setAccount((currentAccount) =>
+        currentAccount
+          ? {
+              ...currentAccount,
+              subscription: payload.subscription ?? currentAccount.subscription,
+            }
+          : currentAccount,
+      )
+      setSampleSuccess(messages.activate.sampleSuccess)
+      trackEvent('subscription_sample_sent', {
+        user_id: account.user.id,
+        channel: sampleChannel,
+      })
+      trackMetaCustomEvent('SubscriptionSampleSent', {
+        user_id: account.user.id,
+        channel: sampleChannel,
+      })
+    } catch {
+      setSampleError(messages.activate.unavailable)
+    } finally {
+      setSampleSendingChannel(null)
     }
   }
 
@@ -235,6 +345,123 @@ export default function ActivationGatewayPage() {
               <p className="mt-2 text-sm leading-6 text-slate-100/84">
                 {messages.activate.whyItWorksText}
               </p>
+              <div className="mt-4 rounded-2xl border border-emerald-200/18 bg-emerald-300/10 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-100/86">
+                  {messages.activate.unsubscribeTitle}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-100/84">
+                  {messages.activate.unsubscribeText}
+                </p>
+              </div>
+            </div>
+
+            <div className="cosmic-info-box rounded-[1.7rem] p-4 sm:p-5">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-100/78">
+                {messages.activate.previewLabel}
+              </p>
+              <h2 className="mt-2 text-xl leading-tight text-slate-50">
+                {messages.activate.sampleTitle}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-100/84">
+                {messages.activate.sampleText}
+              </p>
+
+              <div className="mt-4 grid gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    void sendSampleDelivery('email')
+                  }}
+                  disabled={
+                    sampleAlreadySent ||
+                    !sampleEmailAvailable ||
+                    sampleSendingChannel !== null
+                  }
+                  className="cosmic-button-secondary inline-flex justify-center rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-cyan-50 disabled:opacity-50"
+                >
+                  {sampleSendingChannel === 'email'
+                    ? messages.common.loading
+                    : messages.activate.sampleEmailButton}
+                </button>
+
+                {!sampleEmailAvailable ? (
+                  <p className="text-xs leading-5 text-amber-100/82">
+                    {messages.activate.sampleEmailUnavailable}
+                  </p>
+                ) : null}
+
+                <div className="rounded-2xl border border-cyan-100/14 bg-slate-950/32 p-3">
+                  <label className="block text-xs font-black uppercase tracking-[0.16em] text-cyan-100/78">
+                    {messages.activate.sampleWhatsappNumberLabel}
+                    <input
+                      type="tel"
+                      value={sampleWhatsappNumber}
+                      onChange={(event) => {
+                        setSampleWhatsappNumber(event.target.value)
+                      }}
+                      placeholder={messages.activate.sampleWhatsappPlaceholder}
+                      disabled={sampleAlreadySent || sampleSendingChannel !== null}
+                      className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3 text-sm font-semibold text-slate-50 disabled:opacity-60"
+                    />
+                  </label>
+                  <label className="mt-3 flex gap-3 text-xs leading-5 text-slate-100/82">
+                    <input
+                      type="checkbox"
+                      checked={sampleWhatsappConsent}
+                      onChange={(event) => {
+                        setSampleWhatsappConsent(event.target.checked)
+                      }}
+                      disabled={sampleAlreadySent || sampleSendingChannel !== null}
+                      className="mt-1 h-4 w-4 accent-cyan-300"
+                    />
+                    <span>{messages.activate.sampleWhatsappConsentLabel}</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void sendSampleDelivery('whatsapp')
+                    }}
+                    disabled={sampleAlreadySent || sampleSendingChannel !== null}
+                    className="cosmic-button-secondary mt-3 inline-flex w-full justify-center rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-cyan-50 disabled:opacity-50"
+                  >
+                    {sampleSendingChannel === 'whatsapp'
+                      ? messages.common.loading
+                      : messages.activate.sampleWhatsappButton}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void sendSampleDelivery('both')
+                    }}
+                    disabled={
+                      sampleAlreadySent ||
+                      !sampleEmailAvailable ||
+                      sampleSendingChannel !== null
+                    }
+                    className="cosmic-button-primary mt-3 inline-flex w-full justify-center rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-50"
+                  >
+                    {sampleSendingChannel === 'both'
+                      ? messages.common.loading
+                      : messages.activate.sampleBothButton}
+                  </button>
+                </div>
+              </div>
+
+              {sampleAlreadySent && !sampleSuccess ? (
+                <p className="mt-3 rounded-xl border border-emerald-200/20 bg-emerald-300/10 px-4 py-3 text-sm text-emerald-50">
+                  {messages.activate.sampleAlreadySent}
+                </p>
+              ) : null}
+              {sampleSuccess ? (
+                <p className="mt-3 rounded-xl border border-emerald-200/20 bg-emerald-300/10 px-4 py-3 text-sm text-emerald-50">
+                  {sampleSuccess}
+                </p>
+              ) : null}
+              {sampleError ? (
+                <p className="cosmic-error-box mt-3 rounded-xl px-4 py-3 text-sm">
+                  {sampleError}
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -261,11 +488,11 @@ export default function ActivationGatewayPage() {
                   onClick={() => {
                     trackEvent('activate_subscription_click', {
                       language,
-                      destination: '/dashboard',
+                      destination: '/checkout/start',
                     })
                     trackMetaCustomEvent('ActivateSubscriptionClick', {
                       language,
-                      destination: '/dashboard',
+                      destination: '/checkout/start',
                     })
                     void activateInternalTrial()
                   }}

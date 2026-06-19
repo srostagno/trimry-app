@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 
 import { DateOfBirthPicker } from '@/components/date-of-birth-picker'
@@ -11,6 +11,7 @@ import { trackEvent, trackMetaStandardEvent } from '@/lib/analytics'
 import { isLanguageCode, normalizeLanguageCode } from '@/lib/i18n'
 import { buildPersonalSignProfile } from '@/lib/personal-signs'
 import { detectBrowserTimeZone } from '@/lib/schedule'
+import { resolveSafeRedirectPath } from '@/lib/start-flow'
 
 const EMAIL_CONTACT_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -99,6 +100,7 @@ function collectRegistrationClientMetadata(timeZone: string) {
 
 export default function RegisterPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { language, setLanguage, messages } = useLanguage()
   const [firstName, setFirstName] = useState('')
   const [birthDate, setBirthDate] = useState('')
@@ -106,6 +108,13 @@ export default function RegisterPage() {
   const [contact, setContact] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const requestedRedirectPath = resolveSafeRedirectPath(
+    searchParams.get('redirect'),
+    '',
+  )
+  const loginHref = requestedRedirectPath
+    ? `/account/login?redirect=${encodeURIComponent(requestedRedirectPath)}`
+    : '/account/login'
   const inlineCopy = getRegisterInlineCopy(language)
   const personalSigns = buildPersonalSignProfile(birthDate, language)
 
@@ -189,7 +198,7 @@ export default function RegisterPage() {
         language: nextLocale ?? language,
       })
 
-      router.push('/activate')
+      router.push(requestedRedirectPath || '/activate')
       router.refresh()
     } catch {
       setError(messages.notifications.error)
@@ -296,7 +305,7 @@ export default function RegisterPage() {
 
       <p className="cosmic-shell-meta mt-5 text-sm">
         {messages.auth.alreadyHaveAccount}{' '}
-        <Link href="/account/login" className="cosmic-link font-bold">
+        <Link href={loginHref} className="cosmic-link font-bold">
           {messages.auth.loginButton}
         </Link>
       </p>

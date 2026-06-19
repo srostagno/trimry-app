@@ -18,6 +18,7 @@ export type WeeklyFortuneDay = {
   notesByLanguage: {
     en: string
     es: string
+    pt: string
   }
   activities: {
     haircut: ActivityTone
@@ -90,6 +91,23 @@ export async function fetchAccountSnapshot() {
   }
 
   return (await response.json()) as AccountSnapshot
+}
+
+export function resolveSafeRedirectPath(
+  path: string | null | undefined,
+  fallback: string,
+) {
+  const normalizedPath = path?.trim()
+
+  if (!normalizedPath) {
+    return fallback
+  }
+
+  if (!normalizedPath.startsWith('/') || normalizedPath.startsWith('//')) {
+    return fallback
+  }
+
+  return normalizedPath
 }
 
 export function getStartFlowDestination(account: AccountSnapshot | null) {

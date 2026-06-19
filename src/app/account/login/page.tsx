@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 
 import { useLanguage } from '@/components/language-provider'
@@ -11,15 +11,24 @@ import { isLanguageCode } from '@/lib/i18n'
 import {
   fetchAccountSnapshot,
   getStartFlowDestination,
+  resolveSafeRedirectPath,
 } from '@/lib/start-flow'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { language, setLanguage, messages } = useLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const requestedRedirectPath = resolveSafeRedirectPath(
+    searchParams.get('redirect'),
+    '',
+  )
+  const registerHref = requestedRedirectPath
+    ? `/account/register?redirect=${encodeURIComponent(requestedRedirectPath)}`
+    : '/account/register'
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -59,13 +68,15 @@ export default function LoginPage() {
         language: nextLocale ?? language,
       })
 
-      let destination = '/dashboard'
+      let destination = requestedRedirectPath || '/dashboard'
 
-      try {
-        const account = await fetchAccountSnapshot()
-        destination = getStartFlowDestination(account)
-      } catch {
-        destination = '/dashboard'
+      if (!requestedRedirectPath) {
+        try {
+          const account = await fetchAccountSnapshot()
+          destination = getStartFlowDestination(account)
+        } catch {
+          destination = '/dashboard'
+        }
       }
 
       router.push(destination)
@@ -122,7 +133,7 @@ export default function LoginPage() {
 
       <p className="cosmic-shell-meta mt-5 text-sm">
         {messages.auth.needAccount}{' '}
-        <Link href="/account/register" className="cosmic-link font-bold">
+        <Link href={registerHref} className="cosmic-link font-bold">
           {messages.auth.registerButton}
         </Link>
       </p>

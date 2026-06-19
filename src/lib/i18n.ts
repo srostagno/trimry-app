@@ -623,10 +623,10 @@ const englishMessages: MessageSection = {
   },
   hero: {
     badge: 'Your Luck Guide',
-    title: 'Trimry, Your Luck Guide',
+    title: 'Manifest Better Luck',
     subtitle:
-      'Daily projections by email or WhatsApp, plus a full monthly calendar of fortune signals on the web.',
-    primary: 'Check Today’s Luck',
+      'Daily signals, rituals, and timing insights designed to help you align with opportunity.',
+    primary: 'Reveal Today’s Luck',
     secondary: 'Ask The Luck Guru',
   },
   home: {
@@ -1444,10 +1444,10 @@ const spanishMessages: MessageSection = {
   },
   hero: {
     badge: 'Your Luck Guide',
-    title: 'Trimry, tu guía de suerte',
+    title: 'Manifiesta mejor suerte',
     subtitle:
-      'Proyecciones diarias por email o WhatsApp, más un calendario mensual completo de señales de fortuna en la web.',
-    primary: 'Revisar mi suerte de hoy',
+      'Señales diarias, rituales y momentos clave diseñados para ayudarte a alinearte con la oportunidad.',
+    primary: 'Revela la suerte de hoy',
     secondary: 'Preguntar al Luck Guru',
   },
   home: {
@@ -2305,10 +2305,10 @@ const portugueseMessages = mergeMessages(englishMessages, {
   },
   hero: {
     badge: 'Your Luck Guide',
-    title: 'Trimry, seu guia de sorte',
+    title: 'Manifeste mais sorte',
     subtitle:
-      'Projeções diárias por email ou WhatsApp, além de um calendário mensal completo de sinais de fortuna na web.',
-    primary: 'Ver a sorte de hoje',
+      'Sinais diários, rituais e insights de timing criados para ajudar você a se alinhar com a oportunidade.',
+    primary: 'Revele a sorte de hoje',
     secondary: 'Perguntar ao Luck Guru',
   },
   home: {

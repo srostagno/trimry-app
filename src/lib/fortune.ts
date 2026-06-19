@@ -32,22 +32,66 @@ export type FortuneMonth = {
   rareDays: number
 }
 
+type FortuneNoteByLanguage = {
+  en: string
+  es: string
+  pt: string
+}
+
 const energyPulse = [3, -2, 2, -3, 1, -1, 2, -2, 3, -1, 1, -2]
-const positiveNotes = [
-  'Flow aligns with clean starts and confidence rituals.',
-  'A strong day to release old weight and invite momentum.',
-  'Fortune favors lightness and intentional renewal today.',
-]
-const badNotes = [
-  'Hold steady today and postpone major grooming changes.',
-  'Energy feels unsettled; prefer maintenance over sharp changes.',
-  'A reflective day. Plan your reset, but execute tomorrow.',
-]
-const rareNotes = [
-  'A wildcard day. Strange timing could open an unusual door.',
-  'Rare signal today: stay observant because an unexpected turn may matter.',
-  'The pattern bends here. A coincidence, invitation, or sudden shift could land.',
-]
+const notesByTone: Record<ActivityTone, FortuneNoteByLanguage[]> = {
+  good: [
+    {
+      en: 'Flow aligns with clean starts and confidence rituals.',
+      es: 'El flujo favorece comienzos limpios y rituales de confianza.',
+      pt: 'O fluxo favorece comecos limpos e rituais de confianca.',
+    },
+    {
+      en: 'A strong day to release old weight and invite momentum.',
+      es: 'Un dia fuerte para soltar peso viejo e invitar impulso.',
+      pt: 'Um dia forte para soltar pesos antigos e convidar impulso.',
+    },
+    {
+      en: 'Fortune favors lightness and intentional renewal today.',
+      es: 'La fortuna favorece la ligereza y una renovacion intencional hoy.',
+      pt: 'A fortuna favorece leveza e renovacao intencional hoje.',
+    },
+  ],
+  bad: [
+    {
+      en: 'Hold steady today and postpone major grooming changes.',
+      es: 'Mantente estable hoy y posterga cambios grandes de grooming.',
+      pt: 'Mantenha-se estavel hoje e adie grandes mudancas de aparencia.',
+    },
+    {
+      en: 'Energy feels unsettled; prefer maintenance over sharp changes.',
+      es: 'La energia esta inestable; prioriza mantencion sobre cambios bruscos.',
+      pt: 'A energia esta instavel; prefira manutencao em vez de mudancas bruscas.',
+    },
+    {
+      en: 'A reflective day. Plan your reset, but execute tomorrow.',
+      es: 'Un dia de reflexion. Planifica tu reinicio, pero ejecutalo manana.',
+      pt: 'Um dia de reflexao. Planeje seu reinicio, mas execute amanha.',
+    },
+  ],
+  rare: [
+    {
+      en: 'A wildcard day. Strange timing could open an unusual door.',
+      es: 'Un dia comodin. Un timing extrano puede abrir una puerta inusual.',
+      pt: 'Um dia curinga. Um timing estranho pode abrir uma porta incomum.',
+    },
+    {
+      en: 'Rare signal today: stay observant because an unexpected turn may matter.',
+      es: 'Senal rara hoy: mantente atento porque un giro inesperado puede importar.',
+      pt: 'Sinal raro hoje: fique atento porque uma virada inesperada pode importar.',
+    },
+    {
+      en: 'The pattern bends here. A coincidence, invitation, or sudden shift could land.',
+      es: 'Aqui el patron se dobla. Puede aparecer una coincidencia, invitacion o giro subito.',
+      pt: 'O padrao se curva aqui. Uma coincidencia, convite ou mudanca subita pode chegar.',
+    },
+  ],
+}
 const DEFAULT_LOCALE = 'en-US'
 
 function createUtcDate(year: number, month: number, day: number) {
@@ -86,6 +130,37 @@ function firstOfMonth(date: Date) {
   return createUtcDate(date.getUTCFullYear(), date.getUTCMonth(), 1)
 }
 
+function resolveFortuneLanguage(locale = DEFAULT_LOCALE) {
+  const normalized = locale.trim().toLowerCase()
+
+  if (normalized.startsWith('es')) {
+    return 'es'
+  }
+
+  if (normalized.startsWith('pt')) {
+    return 'pt'
+  }
+
+  return 'en'
+}
+
+function selectLocalizedFortuneNote(
+  notes: FortuneNoteByLanguage,
+  locale = DEFAULT_LOCALE,
+) {
+  const language = resolveFortuneLanguage(locale)
+
+  if (language === 'es') {
+    return notes.es || notes.en || notes.pt
+  }
+
+  if (language === 'pt') {
+    return notes.pt || notes.en || notes.es
+  }
+
+  return notes.en || notes.es || notes.pt
+}
+
 export function buildFortuneDay(
   referenceDate = new Date(),
   locale = DEFAULT_LOCALE,
@@ -112,13 +187,10 @@ export function buildFortuneDay(
 
   const summary: ActivityTone =
     score >= 2 ? 'good' : score <= -2 ? 'bad' : 'rare'
-  const noteIndex = (day.getUTCDate() - 1) % positiveNotes.length
-  const notes =
-    summary === 'good'
-      ? positiveNotes[noteIndex]
-      : summary === 'bad'
-        ? badNotes[noteIndex]
-        : rareNotes[noteIndex]
+  const notesForTone = notesByTone[summary]
+  const noteIndex = (day.getUTCDate() - 1) % notesForTone.length
+  const noteByLanguage = notesForTone[noteIndex] ?? notesForTone[0]
+  const notes = selectLocalizedFortuneNote(noteByLanguage, locale)
 
   return {
     date: day.toISOString(),

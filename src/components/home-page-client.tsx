@@ -43,6 +43,8 @@ function calculateDayDiff(from: string, to: string) {
 export function HomePageClient() {
   const { language, messages } = useLanguage()
   const trialPeriodDays = SUBSCRIPTION_PLAN.stripeTrialPeriodDays
+  const startNowLabel = 'Start Now'
+  const startNowButtonTitle = 'Start being luckier now by clicking the above button.'
 
   const rotatingPredictions = useMemo(() => messages.home.predictions, [messages.home.predictions])
   const teaserRef = useRef<HTMLElement | null>(null)
@@ -169,28 +171,28 @@ export function HomePageClient() {
   const heroCopy =
     language === 'es'
       ? {
-          title: 'Trimry, tu guía de suerte',
+          title: 'Manifiesta mejor suerte',
           subtitle:
-            `Empieza con ${trialPeriodDays} días gratis. Todos los días recibes tu proyección por email o WhatsApp, y en la web ves el calendario completo del mes para mantenerte alineado con la suerte.`,
+            'Señales diarias, rituales y momentos clave diseñados para ayudarte a alinearte con la oportunidad.',
           points: [`${trialPeriodDays} días gratis`, 'recordatorio diario', 'calendario mensual', 'Luck Guru con IA'],
-          primary: `Comenzar ${trialPeriodDays} días gratis`,
+          primary: 'Revela la suerte de hoy',
           secondary: 'Preguntar al Luck Guru',
         }
       : language === 'pt'
         ? {
-            title: 'Trimry, seu guia de sorte',
+            title: 'Manifeste mais sorte',
             subtitle:
-              `Comece com ${trialPeriodDays} dias grátis. Todos os dias você recebe sua projeção por email ou WhatsApp, e na web vê o calendário completo do mês para se manter alinhado com a sorte.`,
+              'Sinais diários, rituais e insights de timing criados para ajudar você a se alinhar com a oportunidade.',
             points: [`${trialPeriodDays} dias grátis`, 'lembrete diário', 'calendário mensal', 'Luck Guru com IA'],
-            primary: `Começar ${trialPeriodDays} dias grátis`,
+            primary: 'Revele a sorte de hoje',
             secondary: 'Perguntar ao Luck Guru',
           }
       : {
-          title: 'Trimry, Your Luck Guide',
+          title: 'Manifest Better Luck',
           subtitle:
-            `Start with ${trialPeriodDays} days free. Every day, receive your projection by email or WhatsApp, and use the web calendar to see the full month of fortune signals ahead.`,
+            'Daily signals, rituals, and timing insights designed to help you align with opportunity.',
           points: [`${trialPeriodDays} days free`, 'daily reminder', 'monthly calendar', 'AI Luck Guru'],
-          primary: `Start ${trialPeriodDays} Days Free`,
+          primary: 'Reveal Today’s Luck',
           secondary: 'Ask The Luck Guru',
         }
   const teaserCopy =
@@ -302,8 +304,9 @@ export function HomePageClient() {
               <StartFlowButton
                 analyticsLocation="home_hero_primary"
                 className="cosmic-button-primary rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
+                title={startNowButtonTitle}
               >
-                {heroCopy.primary}
+                {startNowLabel}
               </StartFlowButton>
               <button
                 type="button"
@@ -418,8 +421,9 @@ export function HomePageClient() {
               <StartFlowButton
                 analyticsLocation="home_teaser_primary"
                 className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
+                title={startNowButtonTitle}
               >
-                {teaserCopy.cta}
+                {startNowLabel}
               </StartFlowButton>
               <button
                 type="button"
@@ -571,8 +575,9 @@ export function HomePageClient() {
           <StartFlowButton
             analyticsLocation="home_pricing"
             className="cosmic-button-primary mt-6 inline-flex rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
+            title={startNowButtonTitle}
           >
-            {messages.pricing.cta}
+            {startNowLabel}
           </StartFlowButton>
         </div>
       </section>
@@ -602,8 +607,9 @@ export function HomePageClient() {
         <StartFlowButton
           analyticsLocation="home_final_cta"
           className="cosmic-button-primary mt-8 inline-flex rounded-full px-8 py-3 text-sm font-black uppercase tracking-[0.17em] transition"
+          title={startNowButtonTitle}
         >
-          {messages.cta.button}
+          {startNowLabel}
         </StartFlowButton>
       </section>
     </div>

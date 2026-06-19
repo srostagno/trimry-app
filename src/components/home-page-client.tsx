@@ -43,8 +43,24 @@ function calculateDayDiff(from: string, to: string) {
 export function HomePageClient() {
   const { language, messages } = useLanguage()
   const trialPeriodDays = SUBSCRIPTION_PLAN.stripeTrialPeriodDays
-  const startNowLabel = 'Start Now'
-  const startNowButtonTitle = 'Start being luckier now by clicking the above button.'
+  const startNowCopy =
+    language === 'es'
+      ? {
+          label: 'Empieza ahora',
+          title: 'Empieza a tener más suerte ahora haciendo clic en el botón.',
+          loadingLabel: 'Abriendo...',
+        }
+      : language === 'pt'
+        ? {
+            label: 'Comece agora',
+            title: 'Comece a ter mais sorte agora clicando no botão.',
+            loadingLabel: 'Abrindo...',
+          }
+        : {
+            label: 'Start Now',
+            title: 'Start being luckier now by clicking the above button.',
+            loadingLabel: 'Opening...',
+          }
 
   const rotatingPredictions = useMemo(() => messages.home.predictions, [messages.home.predictions])
   const teaserRef = useRef<HTMLElement | null>(null)
@@ -304,9 +320,10 @@ export function HomePageClient() {
               <StartFlowButton
                 analyticsLocation="home_hero_primary"
                 className="cosmic-button-primary rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
-                title={startNowButtonTitle}
+                title={startNowCopy.title}
+                loadingLabel={startNowCopy.loadingLabel}
               >
-                {startNowLabel}
+                {startNowCopy.label}
               </StartFlowButton>
               <button
                 type="button"
@@ -421,9 +438,10 @@ export function HomePageClient() {
               <StartFlowButton
                 analyticsLocation="home_teaser_primary"
                 className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
-                title={startNowButtonTitle}
+                title={startNowCopy.title}
+                loadingLabel={startNowCopy.loadingLabel}
               >
-                {startNowLabel}
+                {startNowCopy.label}
               </StartFlowButton>
               <button
                 type="button"
@@ -575,9 +593,10 @@ export function HomePageClient() {
           <StartFlowButton
             analyticsLocation="home_pricing"
             className="cosmic-button-primary mt-6 inline-flex rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
-            title={startNowButtonTitle}
+            title={startNowCopy.title}
+            loadingLabel={startNowCopy.loadingLabel}
           >
-            {startNowLabel}
+            {startNowCopy.label}
           </StartFlowButton>
         </div>
       </section>
@@ -607,9 +626,10 @@ export function HomePageClient() {
         <StartFlowButton
           analyticsLocation="home_final_cta"
           className="cosmic-button-primary mt-8 inline-flex rounded-full px-8 py-3 text-sm font-black uppercase tracking-[0.17em] transition"
-          title={startNowButtonTitle}
+          title={startNowCopy.title}
+          loadingLabel={startNowCopy.loadingLabel}
         >
-          {startNowLabel}
+          {startNowCopy.label}
         </StartFlowButton>
       </section>
     </div>

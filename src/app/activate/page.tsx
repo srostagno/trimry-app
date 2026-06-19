@@ -2,7 +2,7 @@
 
 import clsx from 'clsx'
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { useLanguage } from '@/components/language-provider'
@@ -16,6 +16,7 @@ import { DEFAULT_WEEKLY_DELIVERY_HOUR } from '@/lib/schedule'
 import {
   type AccountSnapshot,
   fetchAccountSnapshot,
+  saveActivationFunnelStep,
 } from '@/lib/start-flow'
 
 type TodayPreview = {
@@ -500,6 +501,7 @@ export default function ActivationGatewayPage() {
     createPreviewFromFortune(resolvedLanguage, new Date()),
   )
   const [calendarPreview, setCalendarPreview] = useState<CalendarPreviewDay[]>([])
+  const persistedMaxStepRef = useRef(0)
 
   const personalSigns = useMemo(
     () => buildPersonalSignProfile(account?.user.birthDate, resolvedLanguage, todayPreview.summary),
@@ -552,9 +554,19 @@ export default function ActivationGatewayPage() {
 
         const dayKey = toUtcDayKey(new Date())
         const locale = languageToIntlLocale(resolvedLanguage)
+        const storedMaxStep = Math.max(
+          0,
+          Math.min(
+            TOTAL_STEPS,
+            currentAccount.user.activationFunnel?.maxStepReached ?? 0,
+          ),
+        )
+        const initialStep = Math.max(1, storedMaxStep || 1)
 
         if (!cancelled) {
+          persistedMaxStepRef.current = storedMaxStep
           setAccount(currentAccount)
+          setCurrentStep(initialStep)
           setCalendarPreview(buildCalendarPreview(resolvedLanguage))
         }
 
@@ -616,6 +628,40 @@ export default function ActivationGatewayPage() {
       step: currentStep,
     })
   }, [currentStep, loading, resolvedLanguage])
+
+  useEffect(() => {
+    if (loading || !account) {
+      return
+    }
+
+    if (currentStep <= persistedMaxStepRef.current) {
+      return
+    }
+
+    let cancelled = false
+
+    const syncFunnelStep = async () => {
+      try {
+        const response = await saveActivationFunnelStep(currentStep, TOTAL_STEPS)
+
+        if (cancelled) {
+          return
+        }
+
+        const nextMaxStep = response?.activationFunnel?.maxStepReached ?? currentStep
+        persistedMaxStepRef.current = Math.max(
+          persistedMaxStepRef.current,
+          Math.min(TOTAL_STEPS, nextMaxStep),
+        )
+      } catch {}
+    }
+
+    void syncFunnelStep()
+
+    return () => {
+      cancelled = true
+    }
+  }, [account, currentStep, loading])
 
   const goToStep = (step: number) => {
     const normalizedStep = Math.max(1, Math.min(TOTAL_STEPS, step))

@@ -42,6 +42,14 @@ export type AccountSnapshot = {
     birthDate: string | null
     locale: string
     timeZone: string
+    activationFunnel: {
+      currentStep: number
+      maxStepReached: number
+      totalSteps: number
+      startedAt: string
+      lastSeenAt: string
+      completedAt: string | null
+    } | null
   }
   subscription: {
     id: string
@@ -91,6 +99,35 @@ export async function fetchAccountSnapshot() {
   }
 
   return (await response.json()) as AccountSnapshot
+}
+
+export async function saveActivationFunnelStep(
+  step: number,
+  totalSteps?: number,
+) {
+  const response = await apiFetch(
+    '/me/activation-funnel',
+    {
+      method: 'PATCH',
+      body: JSON.stringify({
+        step,
+        ...(typeof totalSteps === 'number' ? { totalSteps } : {}),
+      }),
+    },
+    { retryUnauthorized: false },
+  )
+
+  if (response.status === 401) {
+    return null
+  }
+
+  if (!response.ok) {
+    throw new Error('Unable to save activation funnel progress.')
+  }
+
+  return (await response.json()) as {
+    activationFunnel: AccountSnapshot['user']['activationFunnel']
+  }
 }
 
 export function resolveSafeRedirectPath(

@@ -233,6 +233,10 @@ export type MessageSection = {
     unsubscribeText: string
     sampleTitle: string
     sampleText: string
+    sampleChannelLabel: string
+    sampleEmailOption: string
+    sampleWhatsappOption: string
+    sampleBothOption: string
     sampleEmailButton: string
     sampleWhatsappButton: string
     sampleBothButton: string
@@ -847,6 +851,10 @@ const englishMessages: MessageSection = {
     sampleTitle: 'Try one real daily projection',
     sampleText:
       'Send yourself one sample before subscribing. Use it as a manifestation habit: read the signal, set an intention, and notice how fortune starts shaping your posture.',
+    sampleChannelLabel: 'Send it by',
+    sampleEmailOption: 'Email',
+    sampleWhatsappOption: 'WhatsApp',
+    sampleBothOption: 'Both',
     sampleEmailButton: 'Send email sample',
     sampleWhatsappButton: 'Send WhatsApp sample',
     sampleBothButton: 'Send both',
@@ -1663,6 +1671,10 @@ const spanishMessages: MessageSection = {
     sampleTitle: 'Prueba una proyección diaria real',
     sampleText:
       'Envíate una muestra antes de suscribirte. Úsala como hábito de manifestación: lee la señal, fija una intención y observa cómo la fortuna empieza a cambiar tu postura.',
+    sampleChannelLabel: 'Enviarla por',
+    sampleEmailOption: 'Email',
+    sampleWhatsappOption: 'WhatsApp',
+    sampleBothOption: 'Ambos',
     sampleEmailButton: 'Enviar muestra por email',
     sampleWhatsappButton: 'Enviar muestra por WhatsApp',
     sampleBothButton: 'Enviar por ambos',
@@ -2524,6 +2536,10 @@ const portugueseMessages = mergeMessages(englishMessages, {
     sampleTitle: 'Teste uma projeção diária real',
     sampleText:
       'Envie uma amostra antes de assinar. Use como hábito de manifestação: leia o sinal, defina uma intenção e observe como a fortuna começa a mudar sua postura.',
+    sampleChannelLabel: 'Enviar por',
+    sampleEmailOption: 'Email',
+    sampleWhatsappOption: 'WhatsApp',
+    sampleBothOption: 'Ambos',
     sampleEmailButton: 'Enviar amostra por email',
     sampleWhatsappButton: 'Enviar amostra por WhatsApp',
     sampleBothButton: 'Enviar por ambos',

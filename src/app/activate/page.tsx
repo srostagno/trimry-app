@@ -2,9 +2,10 @@
 
 import clsx from 'clsx'
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+import { DateOfBirthPicker } from '@/components/date-of-birth-picker'
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { apiFetch, readApiError } from '@/lib/api-client'
@@ -12,7 +13,7 @@ import { SUBSCRIPTION_PLAN } from '@/lib/company'
 import { buildFortuneDay, type ActivityTone } from '@/lib/fortune'
 import { languageToIntlLocale, normalizeLanguageCode, type LanguageCode } from '@/lib/i18n'
 import { buildPersonalSignProfile } from '@/lib/personal-signs'
-import { DEFAULT_WEEKLY_DELIVERY_HOUR } from '@/lib/schedule'
+import { DEFAULT_WEEKLY_DELIVERY_HOUR, detectBrowserTimeZone } from '@/lib/schedule'
 import {
   type AccountSnapshot,
   fetchAccountSnapshot,
@@ -61,6 +62,24 @@ type ActivationFlowCopy = {
     badge: string
     title: string
     body: string
+    unlockBadge: string
+    unlockTitle: string
+    unlockBody: string
+    unlockHint: string
+    unlockButton: string
+    unlockingButton: string
+    continueLockedLabel: string
+    firstNameLabel: string
+    emailLabel: string
+    emailPlaceholder: string
+    birthDateLabel: string
+    birthHint: string
+    invalidEmail: string
+    missingBirthDate: string
+    registerError: string
+    fortuneCode: string
+    nextFortuneLead: string
+    nextFortuneDateLabel: string
     previewBadge: string
     strongPrefix: string
     avoidPrefix: string
@@ -97,6 +116,34 @@ type ActivationFlowCopy = {
 }
 
 const TOTAL_STEPS = 4
+const EMAIL_CONTACT_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function collectRegistrationClientMetadata(timeZone: string) {
+  if (typeof window === 'undefined') {
+    return {
+      timeZone,
+    }
+  }
+
+  return {
+    browserLocale: navigator.language || null,
+    browserLanguages: Array.from(navigator.languages ?? []).slice(0, 12),
+    timeZone,
+    timeZoneOffsetMinutes: new Date().getTimezoneOffset(),
+    platform: navigator.platform || null,
+    referrer: document.referrer || null,
+    landingUrl: window.location.href,
+    screen: {
+      width: window.screen?.width ?? null,
+      height: window.screen?.height ?? null,
+      pixelRatio: window.devicePixelRatio ?? null,
+    },
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    },
+  }
+}
 
 function toUtcDayKey(date: Date) {
   const year = date.getUTCFullYear()
@@ -275,6 +322,27 @@ function getActivationFlowCopy(
         title: 'Descubre la proyeccion de hoy',
         body:
           'Luck Guru abre tu suerte del dia. A la izquierda el canal visual; a la derecha la lectura accionable completa.',
+        unlockBadge: 'Video demo (autoplay)',
+        unlockTitle: 'Registra tus datos para revelar la proyeccion de hoy',
+        unlockBody:
+          'Primero mira este demo rapido. Luego completa tu registro y desbloquea la lectura completa de Luck Guru al instante.',
+        unlockHint:
+          'Crear tu cuenta toma segundos. Despues podras elegir email, WhatsApp o ambos para recibir tus señales.',
+        unlockButton: 'Revelar proyeccion de hoy',
+        unlockingButton: 'Desbloqueando proyeccion...',
+        continueLockedLabel: 'Completa registro para continuar',
+        firstNameLabel: 'Nombre',
+        emailLabel: 'Email',
+        emailPlaceholder: 'tu@correo.com',
+        birthDateLabel: 'Fecha de nacimiento',
+        birthHint:
+          'Usamos tu nacimiento para abrir tu zodiaco y tu calendario chino personalizados.',
+        invalidEmail: 'Ingresa un correo valido.',
+        missingBirthDate: 'Ingresa tu fecha de nacimiento para revelar hoy.',
+        registerError: 'No pudimos completar tu registro ahora. Intenta nuevamente.',
+        fortuneCode: 'Codigo de fortuna',
+        nextFortuneLead: 'Pero espera, tu proximo dia de fortuna es...',
+        nextFortuneDateLabel: 'Proximo dia favorable',
         previewBadge: 'Fortuna revelada',
         strongPrefix: 'Fuerte',
         avoidPrefix: 'Evita',
@@ -347,6 +415,27 @@ function getActivationFlowCopy(
         title: 'Descubra a projecao de hoje',
         body:
           'Luck Guru abre sua sorte do dia. Visual de um lado; leitura acionavel do outro.',
+        unlockBadge: 'Video demo (autoplay)',
+        unlockTitle: 'Preencha seus dados para liberar a projecao de hoje',
+        unlockBody:
+          'Primeiro assista ao demo rapido. Depois conclua seu cadastro e destrave a leitura completa do Luck Guru agora.',
+        unlockHint:
+          'Criar a conta leva segundos. Depois voce escolhe email, WhatsApp ou ambos para receber seus sinais.',
+        unlockButton: 'Liberar projecao de hoje',
+        unlockingButton: 'Liberando projecao...',
+        continueLockedLabel: 'Conclua o cadastro para continuar',
+        firstNameLabel: 'Nome',
+        emailLabel: 'Email',
+        emailPlaceholder: 'voce@email.com',
+        birthDateLabel: 'Data de nascimento',
+        birthHint:
+          'Usamos seu nascimento para liberar seu zodiaco e calendario chines personalizados.',
+        invalidEmail: 'Digite um email valido.',
+        missingBirthDate: 'Digite sua data de nascimento para liberar hoje.',
+        registerError: 'Nao conseguimos concluir seu cadastro agora. Tente novamente.',
+        fortuneCode: 'Codigo de fortuna',
+        nextFortuneLead: 'Mas espere, seu proximo dia de fortuna e...',
+        nextFortuneDateLabel: 'Proximo dia favoravel',
         previewBadge: 'Fortuna revelada',
         strongPrefix: 'Forte',
         avoidPrefix: 'Evite',
@@ -418,6 +507,27 @@ function getActivationFlowCopy(
       title: 'Discover today’s projection',
       body:
         'Luck Guru opens your daily signal. Visual channel on one side, actionable reading on the other.',
+      unlockBadge: 'Demo video (autoplay)',
+      unlockTitle: 'Enter your details to unlock today’s projection',
+      unlockBody:
+        'Watch this quick demo first. Then complete registration to reveal the full Luck Guru reading instantly.',
+      unlockHint:
+        'Account creation takes seconds. After subscribing you can choose email, WhatsApp, or both.',
+      unlockButton: 'Reveal today’s projection',
+      unlockingButton: 'Unlocking projection...',
+      continueLockedLabel: 'Complete registration to continue',
+      firstNameLabel: 'First name',
+      emailLabel: 'Email',
+      emailPlaceholder: 'you@email.com',
+      birthDateLabel: 'Date of birth',
+      birthHint:
+        'We use your birthday to unlock your personalized zodiac and Chinese calendar layers.',
+      invalidEmail: 'Enter a valid email.',
+      missingBirthDate: 'Enter your date of birth to reveal today.',
+      registerError: 'Unable to complete registration right now. Try again.',
+      fortuneCode: 'Fortune code',
+      nextFortuneLead: 'But wait, your next fortune day is...',
+      nextFortuneDateLabel: 'Next favorable day',
       previewBadge: 'Fortune revealed',
       strongPrefix: 'Strong',
       avoidPrefix: 'Avoid',
@@ -501,11 +611,21 @@ export default function ActivationGatewayPage() {
     createPreviewFromFortune(resolvedLanguage, new Date()),
   )
   const [calendarPreview, setCalendarPreview] = useState<CalendarPreviewDay[]>([])
+  const [registrationFirstName, setRegistrationFirstName] = useState('')
+  const [registrationEmail, setRegistrationEmail] = useState('')
+  const [registrationBirthDate, setRegistrationBirthDate] = useState('')
+  const [registrationTimeZone, setRegistrationTimeZone] = useState('UTC')
+  const [registering, setRegistering] = useState(false)
+  const [registerError, setRegisterError] = useState('')
   const persistedMaxStepRef = useRef(0)
 
   const personalSigns = useMemo(
     () => buildPersonalSignProfile(account?.user.birthDate, resolvedLanguage, todayPreview.summary),
     [account?.user.birthDate, resolvedLanguage, todayPreview.summary],
+  )
+  const registrationSigns = useMemo(
+    () => buildPersonalSignProfile(registrationBirthDate, resolvedLanguage, todayPreview.summary),
+    [registrationBirthDate, resolvedLanguage, todayPreview.summary],
   )
   const todayLabels = useMemo(
     () => buildStrongAndCautionLabels(resolvedLanguage, todayPreview.activities),
@@ -521,7 +641,31 @@ export default function ActivationGatewayPage() {
       }),
     [resolvedLanguage],
   )
+  const nextFortuneDate = useMemo(() => {
+    if (todayPreview.summary !== 'bad') {
+      return null
+    }
+
+    const locale = languageToIntlLocale(resolvedLanguage)
+
+    for (let dayOffset = 1; dayOffset <= 14; dayOffset += 1) {
+      const targetDate = addUtcDays(new Date(), dayOffset)
+      const forecast = buildFortuneDay(targetDate, locale)
+
+      if (forecast.summary === 'good') {
+        return targetDate
+      }
+    }
+
+    return null
+  }, [resolvedLanguage, todayPreview.summary])
+  const isProjectionUnlocked = Boolean(account)
+  const maxReachableStep = isProjectionUnlocked ? TOTAL_STEPS : 2
   const progressPercent = (currentStep / TOTAL_STEPS) * 100
+
+  useEffect(() => {
+    setRegistrationTimeZone(detectBrowserTimeZone())
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -530,43 +674,46 @@ export default function ActivationGatewayPage() {
       try {
         const currentAccount = await fetchAccountSnapshot()
 
-        if (!currentAccount) {
-          router.replace('/account/login')
-          return
-        }
-
-        const status = currentAccount.subscription?.status ?? null
-
-        if (
-          status === 'active' ||
-          status === 'past_due' ||
-          status === 'paused' ||
-          status === 'canceled'
-        ) {
-          router.replace('/dashboard')
-          return
-        }
-
-        if (status === 'pending_checkout') {
-          router.replace('/checkout/start')
-          return
-        }
-
         const dayKey = toUtcDayKey(new Date())
         const locale = languageToIntlLocale(resolvedLanguage)
-        const storedMaxStep = Math.max(
-          0,
-          Math.min(
-            TOTAL_STEPS,
-            currentAccount.user.activationFunnel?.maxStepReached ?? 0,
-          ),
-        )
-        const initialStep = Math.max(1, storedMaxStep || 1)
 
-        if (!cancelled) {
-          persistedMaxStepRef.current = storedMaxStep
-          setAccount(currentAccount)
-          setCurrentStep(initialStep)
+        if (currentAccount) {
+          const status = currentAccount.subscription?.status ?? null
+
+          if (
+            status === 'active' ||
+            status === 'past_due' ||
+            status === 'paused' ||
+            status === 'canceled'
+          ) {
+            router.replace('/dashboard')
+            return
+          }
+
+          if (status === 'pending_checkout') {
+            router.replace('/checkout/start')
+            return
+          }
+
+          const storedMaxStep = Math.max(
+            0,
+            Math.min(
+              TOTAL_STEPS,
+              currentAccount.user.activationFunnel?.maxStepReached ?? 0,
+            ),
+          )
+          const initialStep = Math.max(1, storedMaxStep || 1)
+
+          if (!cancelled) {
+            persistedMaxStepRef.current = storedMaxStep
+            setAccount(currentAccount)
+            setCurrentStep(initialStep)
+            setCalendarPreview(buildCalendarPreview(resolvedLanguage))
+          }
+        } else if (!cancelled) {
+          persistedMaxStepRef.current = 0
+          setAccount(null)
+          setCurrentStep((current) => Math.max(1, Math.min(2, current)))
           setCalendarPreview(buildCalendarPreview(resolvedLanguage))
         }
 
@@ -664,21 +811,99 @@ export default function ActivationGatewayPage() {
   }, [account, currentStep, loading])
 
   const goToStep = (step: number) => {
-    const normalizedStep = Math.max(1, Math.min(TOTAL_STEPS, step))
+    if (!isProjectionUnlocked && step > 2) {
+      setFlowError(copy.step2.continueLockedLabel)
+    } else {
+      setFlowError('')
+    }
+
+    const normalizedStep = Math.max(1, Math.min(maxReachableStep, step))
     setCurrentStep(normalizedStep)
   }
 
   const goToNextStep = () => {
-    setCurrentStep((current) => Math.min(TOTAL_STEPS, current + 1))
+    setCurrentStep((current) => {
+      if (!isProjectionUnlocked && current >= 2) {
+        return 2
+      }
+
+      return Math.min(TOTAL_STEPS, current + 1)
+    })
   }
 
   const goToPreviousStep = () => {
     setCurrentStep((current) => Math.max(1, current - 1))
   }
 
+  const registerAndUnlockProjection = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setRegisterError('')
+    setFlowError('')
+
+    const normalizedFirstName = registrationFirstName.trim()
+    const normalizedEmail = registrationEmail.trim().toLowerCase()
+
+    if (!EMAIL_CONTACT_PATTERN.test(normalizedEmail)) {
+      setRegisterError(copy.step2.invalidEmail)
+      return
+    }
+
+    if (!registrationBirthDate) {
+      setRegisterError(copy.step2.missingBirthDate)
+      return
+    }
+
+    setRegistering(true)
+
+    try {
+      const response = await apiFetch(
+        '/auth/register',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            firstName: normalizedFirstName,
+            birthDate: registrationBirthDate,
+            email: normalizedEmail,
+            locale: resolvedLanguage,
+            timeZone: registrationTimeZone,
+            clientMetadata: collectRegistrationClientMetadata(registrationTimeZone),
+          }),
+        },
+        { retryUnauthorized: false },
+      )
+
+      if (!response.ok) {
+        setRegisterError(await readApiError(response, copy.step2.registerError))
+        return
+      }
+
+      trackEvent('activate_flow_projection_unlocked', {
+        language: resolvedLanguage,
+      })
+      trackMetaCustomEvent('ActivateFlowProjectionUnlocked', {
+        language: resolvedLanguage,
+      })
+
+      const refreshedAccount = await fetchAccountSnapshot().catch(() => null)
+
+      if (refreshedAccount) {
+        setAccount(refreshedAccount)
+        setCurrentStep(2)
+        return
+      }
+
+      router.refresh()
+    } catch {
+      setRegisterError(copy.step2.registerError)
+    } finally {
+      setRegistering(false)
+    }
+  }
+
   const activateInternalTrial = async () => {
     if (!account) {
-      router.replace('/account/login')
+      setCurrentStep(2)
+      setFlowError(copy.step2.continueLockedLabel)
       return
     }
 
@@ -775,14 +1000,17 @@ export default function ActivationGatewayPage() {
                 const stepNumber = index + 1
                 const active = stepNumber === currentStep
                 const completed = stepNumber < currentStep
+                const blocked = stepNumber > maxReachableStep
 
                 return (
                   <button
                     key={title}
                     type="button"
+                    disabled={blocked}
                     onClick={() => goToStep(stepNumber)}
                     className={clsx(
-                      'min-w-[9.2rem] shrink-0 rounded-xl border px-3 py-2 text-left transition sm:min-w-0 sm:py-3',
+                      'min-w-[9.2rem] shrink-0 rounded-xl border px-3 py-2 text-left transition disabled:cursor-not-allowed sm:min-w-0 sm:py-3',
+                      blocked && 'opacity-55',
                       active
                         ? 'border-cyan-100/55 bg-cyan-100/16'
                         : completed
@@ -831,8 +1059,7 @@ export default function ActivationGatewayPage() {
                     <video
                       aria-hidden="true"
                       className="absolute inset-0 h-full w-full object-cover"
-                      src="/luck-guru-processing.mp4"
-                      poster="/luck-guru-processing-poster.jpg"
+                      src="/crystal-sphere.mp4"
                       autoPlay
                       muted
                       loop
@@ -847,12 +1074,19 @@ export default function ActivationGatewayPage() {
             {currentStep === 2 ? (
               <div className="grid gap-6 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,1fr)] lg:items-start">
                 <aside className="relative mx-auto w-full max-w-[20rem] overflow-hidden rounded-[1.4rem] border border-cyan-100/24 bg-slate-950/30 lg:mx-0">
-                  <div className="relative aspect-square sm:aspect-[9/16]">
+                  <p className="px-4 pt-4 text-xs font-black uppercase tracking-[0.18em] text-cyan-100/78">
+                    {isProjectionUnlocked ? copy.step2.badge : copy.step2.unlockBadge}
+                  </p>
+                  <div className="relative mt-3 aspect-square">
                     <video
                       aria-hidden="true"
                       className="absolute inset-0 h-full w-full object-cover"
-                      src="/luck-guru-revealed.mp4"
-                      poster="/luck-guru-revealed-poster.jpg"
+                      src={isProjectionUnlocked ? '/luck-guru-revealed.mp4' : '/luck-guru-processing.mp4'}
+                      poster={
+                        isProjectionUnlocked
+                          ? '/luck-guru-revealed-poster.jpg'
+                          : '/luck-guru-processing-poster.jpg'
+                      }
                       autoPlay
                       muted
                       loop
@@ -862,118 +1096,218 @@ export default function ActivationGatewayPage() {
                   </div>
                 </aside>
 
-                <div className="rounded-[1.4rem] border border-cyan-100/20 bg-slate-950/42 p-5 sm:p-6">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/82">
-                        {copy.step2.badge}
-                      </p>
-                      <h2 className="mt-2 text-3xl leading-tight text-slate-50 sm:text-4xl">
-                        {copy.step2.title}
-                      </h2>
-                      <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-100/84 sm:text-base">
-                        {copy.step2.body}
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={goToNextStep}
-                      className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.15em]"
-                    >
-                      {copy.step2.nextLabel}
-                    </button>
-                  </div>
-
-                  <div className="mt-5 border-t border-cyan-100/12 pt-5">
-                    <div className="flex items-start justify-between gap-3">
+                {isProjectionUnlocked ? (
+                  <div className="rounded-[1.4rem] border border-cyan-100/20 bg-slate-950/42 p-5 sm:p-6">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/82">
-                          {copy.step2.previewBadge}
+                          {copy.step2.badge}
                         </p>
-                        <p className="mt-2 text-xl leading-tight text-slate-50 sm:text-2xl">
-                          {todayPreview.headline}
+                        <h2 className="mt-2 text-3xl leading-tight text-slate-50 sm:text-4xl">
+                          {copy.step2.title}
+                        </h2>
+                        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-100/84 sm:text-base">
+                          {copy.step2.body}
                         </p>
                       </div>
-                      <span className={clsx(toneBadgeClass(todayPreview.summary), 'shrink-0')}>
-                        <span aria-hidden="true" className="oracle-tone-badge-icon">
-                          {toneGlyph(todayPreview.summary)}
-                        </span>
-                        {todayPreview.summaryLabel}
-                      </span>
+
+                      <button
+                        type="button"
+                        onClick={goToNextStep}
+                        className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.15em]"
+                      >
+                        {copy.step2.nextLabel}
+                      </button>
                     </div>
 
-                    <div className="mt-4 flex items-end gap-3">
-                      <p className="text-5xl font-semibold leading-none text-slate-50 sm:text-6xl">
-                        {todayPreview.luckScore}
-                      </p>
-                      <p className="pb-1 text-sm font-black uppercase tracking-[0.2em] text-cyan-100/82">
-                        /100
-                      </p>
-                    </div>
-                    <p className="mt-4 text-sm leading-6 text-slate-100/84 sm:text-base">
-                      {todayPreview.notes}
-                    </p>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {todayLabels.strong.slice(0, 2).map((activity) => (
-                        <span
-                          key={activity}
-                          className="rounded-full border border-emerald-200/22 bg-emerald-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-100"
-                        >
-                          {copy.step2.strongPrefix}: {activity}
-                        </span>
-                      ))}
-                      {todayLabels.caution.slice(0, 2).map((activity) => (
-                        <span
-                          key={activity}
-                          className="rounded-full border border-amber-200/24 bg-amber-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-100"
-                        >
-                          {copy.step2.avoidPrefix}: {activity}
-                        </span>
-                      ))}
-                    </div>
-
-                    {personalSigns ? (
-                      <div className="mt-5">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/74">
-                            {copy.step2.personalSignal}
+                    <div className="mt-5 border-t border-cyan-100/12 pt-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/82">
+                            {copy.step2.previewBadge}
                           </p>
-                          <span className="rounded-full border border-cyan-100/20 bg-cyan-100/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
-                            {personalSigns.zodiac.name} · {personalSigns.chinese.name}
+                          <p className="mt-2 text-xl leading-tight text-slate-50 sm:text-2xl">
+                            {todayPreview.headline}
+                          </p>
+                        </div>
+                        <span className={clsx(toneBadgeClass(todayPreview.summary), 'shrink-0')}>
+                          <span aria-hidden="true" className="oracle-tone-badge-icon">
+                            {toneGlyph(todayPreview.summary)}
                           </span>
-                        </div>
-                        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                          <article className="rounded-xl bg-slate-900/36 p-4 ring-1 ring-cyan-100/14">
-                            <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
-                              {copy.step2.zodiac}
-                            </p>
-                            <p className="mt-2 text-sm leading-6 text-slate-50">
-                              {personalSigns.projection.zodiac}
-                            </p>
-                          </article>
-                          <article className="rounded-xl bg-slate-900/36 p-4 ring-1 ring-cyan-100/14">
-                            <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
-                              {copy.step2.chineseCalendar}
-                            </p>
-                            <p className="mt-2 text-sm leading-6 text-slate-50">
-                              {personalSigns.projection.chinese}
-                            </p>
-                          </article>
-                        </div>
+                          {todayPreview.summaryLabel}
+                        </span>
                       </div>
-                    ) : (
-                      <div className="mt-5 rounded-xl bg-cyan-100/8 p-4 ring-1 ring-cyan-100/18">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/80">
-                          {copy.step2.pendingPersonalTitle}
+
+                      <div className="mt-4 flex items-end gap-3">
+                        <p className="text-5xl font-semibold leading-none text-slate-50 sm:text-6xl">
+                          {todayPreview.luckScore}
                         </p>
-                        <p className="mt-2 text-sm leading-6 text-slate-100/84">
-                          {copy.step2.pendingPersonalBody}
+                        <p className="pb-1 text-sm font-black uppercase tracking-[0.2em] text-cyan-100/82">
+                          /100
                         </p>
                       </div>
-                    )}
+                      <p className="mt-4 text-sm leading-6 text-slate-100/84 sm:text-base">
+                        {todayPreview.notes}
+                      </p>
+                      {nextFortuneDate ? (
+                        <div className="mt-4 rounded-xl border border-emerald-200/24 bg-emerald-200/10 p-4">
+                          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-emerald-100/90">
+                            {copy.step2.nextFortuneLead}
+                          </p>
+                          <p className="mt-2 text-base font-semibold text-slate-50 sm:text-lg">
+                            {copy.step2.nextFortuneDateLabel}: {previewDateFormatter.format(nextFortuneDate)}
+                          </p>
+                        </div>
+                      ) : null}
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {todayLabels.strong.slice(0, 2).map((activity) => (
+                          <span
+                            key={activity}
+                            className="rounded-full border border-emerald-200/22 bg-emerald-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-100"
+                          >
+                            {copy.step2.strongPrefix}: {activity}
+                          </span>
+                        ))}
+                        {todayLabels.caution.slice(0, 2).map((activity) => (
+                          <span
+                            key={activity}
+                            className="rounded-full border border-amber-200/24 bg-amber-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-100"
+                          >
+                            {copy.step2.avoidPrefix}: {activity}
+                          </span>
+                        ))}
+                      </div>
+
+                      {personalSigns ? (
+                        <div className="mt-5">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/74">
+                              {copy.step2.personalSignal}
+                            </p>
+                            <span className="rounded-full border border-cyan-100/20 bg-cyan-100/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
+                              {personalSigns.zodiac.name} · {personalSigns.chinese.name}
+                            </span>
+                          </div>
+                          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                            <article className="rounded-xl bg-slate-900/36 p-4 ring-1 ring-cyan-100/14">
+                              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                                {copy.step2.zodiac}
+                              </p>
+                              <p className="mt-2 text-sm leading-6 text-slate-50">
+                                {personalSigns.projection.zodiac}
+                              </p>
+                            </article>
+                            <article className="rounded-xl bg-slate-900/36 p-4 ring-1 ring-cyan-100/14">
+                              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                                {copy.step2.chineseCalendar}
+                              </p>
+                              <p className="mt-2 text-sm leading-6 text-slate-50">
+                                {personalSigns.projection.chinese}
+                              </p>
+                            </article>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-5 rounded-xl bg-cyan-100/8 p-4 ring-1 ring-cyan-100/18">
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/80">
+                            {copy.step2.pendingPersonalTitle}
+                          </p>
+                          <p className="mt-2 text-sm leading-6 text-slate-100/84">
+                            {copy.step2.pendingPersonalBody}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="rounded-[1.4rem] border border-cyan-100/20 bg-slate-950/42 p-5 sm:p-6">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/82">
+                      {copy.step2.badge}
+                    </p>
+                    <h2 className="mt-2 text-3xl leading-tight text-slate-50 sm:text-4xl">
+                      {copy.step2.unlockTitle}
+                    </h2>
+                    <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-100/84 sm:text-base">
+                      {copy.step2.unlockBody}
+                    </p>
+
+                    <form className="mt-5 space-y-3" onSubmit={(event) => void registerAndUnlockProjection(event)}>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <label className="cosmic-field-label block text-sm font-semibold">
+                          {copy.step2.firstNameLabel}
+                          <input
+                            type="text"
+                            value={registrationFirstName}
+                            onChange={(event) => setRegistrationFirstName(event.target.value)}
+                            required
+                            autoComplete="given-name"
+                            minLength={1}
+                            className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+                          />
+                        </label>
+
+                        <label className="cosmic-field-label block text-sm font-semibold">
+                          {copy.step2.emailLabel}
+                          <input
+                            type="email"
+                            value={registrationEmail}
+                            onChange={(event) => setRegistrationEmail(event.target.value)}
+                            required
+                            autoComplete="email"
+                            className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+                            placeholder={copy.step2.emailPlaceholder}
+                          />
+                        </label>
+                      </div>
+
+                      <div>
+                        <label
+                          className="cosmic-field-label block text-sm font-semibold"
+                          htmlFor="activate-birth-month"
+                        >
+                          {copy.step2.birthDateLabel}
+                        </label>
+                        <div className="mt-2">
+                          <DateOfBirthPicker
+                            idPrefix="activate-birth"
+                            value={registrationBirthDate}
+                            onChange={setRegistrationBirthDate}
+                            language={resolvedLanguage}
+                            required
+                          />
+                        </div>
+                        <span className="cosmic-shell-meta mt-2 block text-xs text-slate-100/74">
+                          {copy.step2.birthHint}
+                        </span>
+                      </div>
+
+                      {registrationSigns ? (
+                        <div className="rounded-xl border border-cyan-100/18 bg-cyan-100/8 p-3">
+                          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/82">
+                            {copy.step2.fortuneCode}
+                          </p>
+                          <p className="mt-1 text-sm text-slate-50">
+                            {registrationSigns.zodiac.name} · {registrationSigns.chinese.name}
+                          </p>
+                        </div>
+                      ) : null}
+
+                      {registerError ? (
+                        <p className="cosmic-error-box rounded-xl px-4 py-3 text-sm">{registerError}</p>
+                      ) : null}
+
+                      <button
+                        type="submit"
+                        disabled={registering}
+                        className="cosmic-button-primary inline-flex rounded-full px-6 py-3 text-xs font-black uppercase tracking-[0.16em] disabled:opacity-70"
+                      >
+                        {registering ? copy.step2.unlockingButton : copy.step2.unlockButton}
+                      </button>
+                    </form>
+
+                    <p className="mt-4 text-sm leading-6 text-cyan-100/82">{copy.step2.unlockHint}</p>
+                  </div>
+                )}
               </div>
             ) : null}
 
@@ -1122,9 +1456,12 @@ export default function ActivationGatewayPage() {
                 <button
                   type="button"
                   onClick={goToNextStep}
-                  className="cosmic-button-primary rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
+                  disabled={!isProjectionUnlocked && currentStep === 2}
+                  className="cosmic-button-primary rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {copy.nav.continueTo} {copy.stepTitles[currentStep]}
+                  {!isProjectionUnlocked && currentStep === 2
+                    ? copy.step2.continueLockedLabel
+                    : `${copy.nav.continueTo} ${copy.stepTitles[currentStep]}`}
                 </button>
               ) : (
                 <button

@@ -8,7 +8,15 @@ export type SubscriptionStatus =
   | 'paused'
   | 'canceled'
 
-export type DeliveryPreference = 'email' | 'whatsapp' | 'both'
+export type DeliveryPreference = 'none' | 'email' | 'whatsapp' | 'both'
+
+export type ManifestationWishHistoryEntry = {
+  id: string
+  previousWish: string | null
+  nextWish: string | null
+  changedAt: string
+  source: 'onboarding' | 'account' | 'admin' | 'system'
+}
 
 export type WeeklyFortuneDay = {
   date: string
@@ -40,8 +48,11 @@ export type AccountSnapshot = {
     lastName: string
     fullName: string
     birthDate: string | null
+    manifestationWish: string | null
+    manifestationWishHistory: ManifestationWishHistoryEntry[]
     locale: string
     timeZone: string
+    admin: boolean
     activationFunnel: {
       currentStep: number
       maxStepReached: number

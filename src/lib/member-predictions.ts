@@ -27,8 +27,10 @@ export type MemberPredictionDay = {
 }
 
 export type MemberPredictionMonth = {
-  accessMode: 'full' | 'today_only'
+  accessMode: 'week' | 'today_only'
+  hasWeekAccess: boolean
   hasFullMonthAccess: boolean
+  unlockedThrough: string
   monthLabel: string
   weekdayLabels: string[]
   weeks: MemberPredictionDay[][]

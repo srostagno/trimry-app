@@ -159,7 +159,7 @@ export default function DeliverySettingsPage() {
   const [success, setSuccess] = useState('')
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
   const [deliveryPreference, setDeliveryPreference] =
-    useState<DeliveryPreference>('email')
+    useState<DeliveryPreference>('none')
   const [deliveryHourLocal, setDeliveryHourLocal] = useState(
     DEFAULT_WEEKLY_DELIVERY_HOUR,
   )
@@ -222,7 +222,7 @@ export default function DeliverySettingsPage() {
 
         if (!cancelled) {
           setAccount(currentAccount)
-          setDeliveryPreference(subscription.deliveryPreference ?? 'email')
+          setDeliveryPreference(subscription.deliveryPreference ?? 'none')
           setDeliveryHourLocal(
             subscription.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR,
           )

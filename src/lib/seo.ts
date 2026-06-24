@@ -43,7 +43,7 @@ export const SITE_NAME = COMPANY.brandName
 export const SITE_SLOGAN = 'Your Luck Guide'
 export const SITE_TITLE = `${SITE_SLOGAN} | ${SITE_NAME}`
 export const SITE_DESCRIPTION =
-  'Trimry is Your Luck Guide: daily fortune projections by email or WhatsApp, plus a monthly calendar of good, bad, and rare timing signals on the web.'
+  'Trimry is Your Luck Guide: a personalized luck calendar shaped by your symbols, timing patterns, and manifestation wish.'
 export const SITE_KEYWORDS = [
   'good & bad days to cut your hair',
   'good and bad days to cut your hair',
@@ -60,8 +60,8 @@ export const SITE_KEYWORDS = [
   'ritual release guidance',
   'Tibetan calendar timing',
   'daily luck forecast',
-  'WhatsApp fortune messages',
-  'email fortune forecast',
+  'personal luck calendar',
+  'manifestation calendar',
   'grooming timing guidance',
   'lucky days calendar',
 ] as const

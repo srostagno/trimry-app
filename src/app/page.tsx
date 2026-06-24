@@ -5,13 +5,13 @@ import { createPageMetadata, homePageJsonLd } from '@/lib/seo'
 export const metadata = createPageMetadata({
   title: 'Your Luck Guide',
   description:
-    'Trimry sends daily luck projections by email or WhatsApp and unlocks a monthly calendar of fortune signals for money, relationships, energy, and release rituals.',
+    'Trimry unlocks a personalized luck calendar shaped by your symbols, timing patterns, and manifestation wish.',
   keywords: [
     'lucky days',
     'luck timing',
     'daily luck ritual',
     'daily luck projection',
-    'luck guru',
+    'personal luck calendar',
     'fortune timing guidance',
   ],
   path: '/',

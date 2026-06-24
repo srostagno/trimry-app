@@ -16,7 +16,7 @@ export type SubscriptionStatus =
   | 'paused'
   | 'canceled'
 
-export type DeliveryPreference = 'email' | 'whatsapp' | 'both'
+export type DeliveryPreference = 'none' | 'email' | 'whatsapp' | 'both'
 
 export type UserRecord = {
   name: string

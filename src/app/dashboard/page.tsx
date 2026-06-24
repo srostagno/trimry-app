@@ -33,6 +33,7 @@ import {
 } from '@/lib/schedule'
 import {
   type DeliveryPreference,
+  type ManifestationWishHistoryEntry,
   requiresWhatsappDelivery,
 } from '@/lib/start-flow'
 
@@ -69,6 +70,8 @@ type MeResponse = {
     lastName: string
     fullName: string
     birthDate: string | null
+    manifestationWish: string | null
+    manifestationWishHistory: ManifestationWishHistoryEntry[]
     locale: string
     timeZone: string
     admin: boolean
@@ -81,6 +84,75 @@ const localeByLanguage = {
   es: 'es-CL',
   pt: 'pt-BR',
 } as const
+
+function getWishAccountCopy(language: keyof typeof localeByLanguage) {
+  if (language === 'es') {
+    return {
+      title: 'Deseo de manifestación',
+      body:
+        'Luck Guru usa este deseo como contexto prioritario para asesorarte, conectar tus señales y ayudarte a elegir mejores días para actuar.',
+      label: 'Tu deseo activo',
+      placeholder: 'Ej: quiero atraer una oportunidad profesional importante',
+      hint:
+        'Puedes cambiarlo cuando quieras. Guardamos un historial para que tu proceso de manifestación tenga continuidad.',
+      historyTitle: 'Historial de deseos',
+      historyEmpty: 'Aún no tienes ediciones de deseo guardadas.',
+      previousLabel: 'Antes',
+      nextLabel: 'Ahora',
+      currentBadge: 'Foco actual',
+      sourceLabels: {
+        onboarding: 'Onboarding',
+        account: 'Cuenta',
+        admin: 'Admin',
+        system: 'Sistema',
+      },
+    }
+  }
+
+  if (language === 'pt') {
+    return {
+      title: 'Pedido de manifestação',
+      body:
+        'Luck Guru usa esse pedido como contexto prioritário para orientar você, conectar seus sinais e ajudar a escolher melhores dias para agir.',
+      label: 'Seu pedido ativo',
+      placeholder: 'Ex: quero atrair uma oportunidade profissional importante',
+      hint:
+        'Você pode mudar quando quiser. Salvamos um histórico para dar continuidade ao seu processo de manifestação.',
+      historyTitle: 'Histórico de pedidos',
+      historyEmpty: 'Ainda não há edições de pedido salvas.',
+      previousLabel: 'Antes',
+      nextLabel: 'Agora',
+      currentBadge: 'Foco atual',
+      sourceLabels: {
+        onboarding: 'Onboarding',
+        account: 'Conta',
+        admin: 'Admin',
+        system: 'Sistema',
+      },
+    }
+  }
+
+  return {
+    title: 'Manifestation wish',
+    body:
+      'Luck Guru uses this wish as priority context to advise you, connect your signals, and help you choose better days to act.',
+    label: 'Your active wish',
+    placeholder: 'Example: I want to attract an important career opportunity',
+    hint:
+      'You can change it anytime. We keep a history so your manifestation process has continuity.',
+    historyTitle: 'Wish history',
+    historyEmpty: 'No wish edits saved yet.',
+    previousLabel: 'Before',
+    nextLabel: 'Now',
+    currentBadge: 'Current focus',
+    sourceLabels: {
+      onboarding: 'Onboarding',
+      account: 'Account',
+      admin: 'Admin',
+      system: 'System',
+    },
+  }
+}
 
 const projectionActivityOrder = ['haircut', 'shave', 'nails', 'release'] as const
 
@@ -122,7 +194,7 @@ export default function DashboardPage() {
   const [error, setError] = useState('')
   const [data, setData] = useState<MeResponse | null>(null)
   const [deliveryPreference, setDeliveryPreference] =
-    useState<DeliveryPreference>('both')
+    useState<DeliveryPreference>('none')
   const [deliveryHourLocal, setDeliveryHourLocal] = useState(
     DEFAULT_WEEKLY_DELIVERY_HOUR,
   )
@@ -132,6 +204,7 @@ export default function DashboardPage() {
   const [profileFirstName, setProfileFirstName] = useState('')
   const [profileLastName, setProfileLastName] = useState('')
   const [profileBirthDate, setProfileBirthDate] = useState('')
+  const [profileManifestationWish, setProfileManifestationWish] = useState('')
   const [profileTimeZone, setProfileTimeZone] = useState('UTC')
   const [profileBusy, setProfileBusy] = useState(false)
   const [profileError, setProfileError] = useState('')
@@ -148,7 +221,7 @@ export default function DashboardPage() {
   const [billingBusy, setBillingBusy] = useState(false)
   const [logoutBusy, setLogoutBusy] = useState(false)
   const [activeTab, setActiveTab] = useState<
-    'account' | 'prediction-calendar' | 'sends'
+    'account' | 'prediction-calendar' | 'sends' | 'onboarding'
   >('account')
   const [projectionMonth, setProjectionMonth] = useState(() =>
     startOfMonth(new Date()),
@@ -163,6 +236,10 @@ export default function DashboardPage() {
   const selectedProjectionDateKeyRef = useRef(selectedProjectionDateKey)
   const billingSuccess = searchParams.get('billing') === 'success'
   const deliveryLabel = (preference: DeliveryPreference) => {
+    if (preference === 'none') {
+      return messages.deliveryChannels.noneTitle
+    }
+
     if (preference === 'both') {
       return messages.deliveryChannels.bothTitle
     }
@@ -200,7 +277,7 @@ export default function DashboardPage() {
 
       const typedPayload = payload as MeResponse
       setData(typedPayload)
-      setDeliveryPreference(typedPayload.subscription?.deliveryPreference ?? 'email')
+      setDeliveryPreference(typedPayload.subscription?.deliveryPreference ?? 'none')
       setDeliveryHourLocal(
         typedPayload.subscription?.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR,
       )
@@ -209,6 +286,7 @@ export default function DashboardPage() {
       setProfileFirstName(typedPayload.user.firstName)
       setProfileLastName(typedPayload.user.lastName)
       setProfileBirthDate(typedPayload.user.birthDate ?? '')
+      setProfileManifestationWish(typedPayload.user.manifestationWish ?? '')
       setProfileTimeZone(typedPayload.user.timeZone || 'UTC')
     } catch {
       setError(messages.notifications.error)
@@ -300,12 +378,14 @@ export default function DashboardPage() {
         ? 'prediction-calendar'
         : searchParams.get('tab') === 'sends'
           ? 'sends'
+          : searchParams.get('tab') === 'onboarding'
+            ? 'onboarding'
           : 'account',
     )
   }, [data?.user.admin, searchParams])
 
   const setDashboardTab = (
-    nextTab: 'account' | 'prediction-calendar' | 'sends',
+    nextTab: 'account' | 'prediction-calendar' | 'sends' | 'onboarding',
   ) => {
     setActiveTab(nextTab)
 
@@ -315,6 +395,8 @@ export default function DashboardPage() {
       params.set('tab', 'prediction-calendar')
     } else if (nextTab === 'sends') {
       params.set('tab', 'sends')
+    } else if (nextTab === 'onboarding') {
+      params.set('tab', 'onboarding')
     } else {
       params.delete('tab')
     }
@@ -446,7 +528,7 @@ export default function DashboardPage() {
   const projectionUnlockBusy =
     busyAction === 'reactivate-subscription' || billingBusy
   const projectionHasFullAccess =
-    projectionCalendar?.hasFullMonthAccess ??
+    projectionCalendar?.hasWeekAccess ??
     (projectionStatus === 'active' || projectionStatus === 'past_due')
   const projectionUnlockButtonLabel =
     projectionStatus === 'pending_checkout'
@@ -492,6 +574,10 @@ export default function DashboardPage() {
   const profileSigns = useMemo(
     () => buildPersonalSignProfile(profileBirthDate, language),
     [language, profileBirthDate],
+  )
+  const wishAccountCopy = useMemo(
+    () => getWishAccountCopy(language),
+    [language],
   )
 
   const runAction = async (
@@ -611,6 +697,7 @@ export default function DashboardPage() {
           firstName: profileFirstName,
           lastName: profileLastName,
           birthDate: profileBirthDate || null,
+          manifestationWish: profileManifestationWish.trim() || null,
           timeZone: profileTimeZone,
         }),
       })
@@ -621,7 +708,7 @@ export default function DashboardPage() {
       }
 
       trackEvent('profile_updated', {
-        updated_fields: 'profile',
+        updated_fields: 'profile,manifestation_wish',
       })
       setProfileSuccess(messages.notifications.success)
       await loadData()
@@ -828,6 +915,23 @@ export default function DashboardPage() {
 
   const subscriptionDeliveryTimeZone =
     data.subscription?.timeZone || data.user.timeZone || 'America/Santiago'
+  const wishHistory = [...(data.user.manifestationWishHistory ?? [])].sort(
+    (left, right) =>
+      new Date(right.changedAt).getTime() - new Date(left.changedAt).getTime(),
+  )
+  const wishHistoryDateFormatter = new Intl.DateTimeFormat(projectionLocale, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+  const formatWishHistoryDate = (dateIso: string) => {
+    const date = new Date(dateIso)
+
+    if (Number.isNaN(date.getTime())) {
+      return dateIso
+    }
+
+    return wishHistoryDateFormatter.format(date)
+  }
   const accountContent = (
     <>
       <section className="cosmic-shell rounded-[2rem] p-8">
@@ -883,6 +987,91 @@ export default function DashboardPage() {
               </p>
             </div>
           ) : null}
+
+          <div className="relative overflow-hidden rounded-[1.6rem] border border-cyan-100/20 bg-slate-950/38 p-5 sm:col-span-2">
+            <div className="pointer-events-none absolute -right-12 -top-14 h-36 w-36 rounded-full bg-cyan-300/14 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-16 left-8 h-32 w-32 rounded-full bg-amber-200/12 blur-3xl" />
+            <div className="relative grid gap-5 lg:grid-cols-[0.84fr_1.16fr]">
+              <div>
+                <span className="inline-flex rounded-full border border-amber-200/24 bg-amber-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
+                  {wishAccountCopy.currentBadge}
+                </span>
+                <h3 className="mt-3 text-2xl leading-tight text-slate-50">
+                  {wishAccountCopy.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-100/78">
+                  {wishAccountCopy.body}
+                </p>
+              </div>
+
+              <div>
+                <label className="cosmic-field-label text-sm font-semibold">
+                  {wishAccountCopy.label}
+                  <textarea
+                    value={profileManifestationWish}
+                    onChange={(event) =>
+                      setProfileManifestationWish(event.target.value)
+                    }
+                    maxLength={240}
+                    rows={4}
+                    placeholder={wishAccountCopy.placeholder}
+                    className="cosmic-input mt-2 block min-h-[112px] w-full resize-y rounded-xl px-4 py-3"
+                  />
+                </label>
+                <p className="cosmic-shell-meta mt-2 text-xs">
+                  {wishAccountCopy.hint}
+                </p>
+              </div>
+            </div>
+
+            <div className="relative mt-5 rounded-2xl border border-cyan-100/14 bg-cyan-100/8 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/82">
+                  {wishAccountCopy.historyTitle}
+                </p>
+                <span className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300/70">
+                  {wishHistory.length}
+                </span>
+              </div>
+
+              {wishHistory.length > 0 ? (
+                <div className="mt-3 grid gap-3">
+                  {wishHistory.slice(0, 5).map((entry) => (
+                    <article
+                      key={entry.id}
+                      className="rounded-xl border border-slate-600/40 bg-slate-950/42 p-3"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300/70">
+                        <span>{formatWishHistoryDate(entry.changedAt)}</span>
+                        <span>
+                          {wishAccountCopy.sourceLabels[entry.source] ??
+                            entry.source}
+                        </span>
+                      </div>
+                      <div className="mt-3 grid gap-2 text-sm leading-6 text-slate-100/84 sm:grid-cols-2">
+                        <p>
+                          <span className="block text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+                            {wishAccountCopy.previousLabel}
+                          </span>
+                          {entry.previousWish || '...'}
+                        </p>
+                        <p>
+                          <span className="block text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
+                            {wishAccountCopy.nextLabel}
+                          </span>
+                          {entry.nextWish || '...'}
+                        </p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm leading-6 text-slate-100/74">
+                  {wishAccountCopy.historyEmpty}
+                </p>
+              )}
+            </div>
+          </div>
 
           <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
             {messages.auth.timeZoneLabel}
@@ -1219,12 +1408,14 @@ export default function DashboardPage() {
                   })}
                 </p>
               </div>
-              <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
-                  {messages.dashboard.emailDeliveryLabel}
-                </p>
-                <p className="mt-2 text-base text-slate-50">{data.user.email}</p>
-              </div>
+              {deliveryPreference === 'email' || deliveryPreference === 'both' ? (
+                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
+                    {messages.dashboard.emailDeliveryLabel}
+                  </p>
+                  <p className="mt-2 text-base text-slate-50">{data.user.email}</p>
+                </div>
+              ) : null}
               {requiresWhatsappDelivery(deliveryPreference) ? (
                 <>
                   <input
@@ -1278,14 +1469,19 @@ export default function DashboardPage() {
                 {messages.dashboard.pendingDeliveryPreferenceLabel}:{' '}
                 {deliveryLabel(data.subscription.deliveryPreference)}
               </div>
-              <div className="cosmic-info-box rounded-2xl p-4">
-                {messages.dashboard.pendingEmailDeliveryLabel}: {data.user.email}
-              </div>
-              <div className="cosmic-info-box rounded-2xl p-4">
-                {messages.dashboard.pendingProjectionTimingLabel}:{' '}
-                {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
-                {subscriptionDeliveryTimeZone})
-              </div>
+              {data.subscription.deliveryPreference === 'email' ||
+              data.subscription.deliveryPreference === 'both' ? (
+                <div className="cosmic-info-box rounded-2xl p-4">
+                  {messages.dashboard.pendingEmailDeliveryLabel}: {data.user.email}
+                </div>
+              ) : null}
+              {data.subscription.deliveryPreference === 'none' ? null : (
+                <div className="cosmic-info-box rounded-2xl p-4">
+                  {messages.dashboard.pendingProjectionTimingLabel}:{' '}
+                  {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
+                  {subscriptionDeliveryTimeZone})
+                </div>
+              )}
               {requiresWhatsappDelivery(data.subscription.deliveryPreference) ? (
                 <div className="cosmic-info-box rounded-2xl p-4">
                   {messages.dashboard.pendingWhatsappLabel}: {data.subscription.whatsappNumber}
@@ -1325,20 +1521,28 @@ export default function DashboardPage() {
                 {deliveryLabel(data.subscription.deliveryPreference)}
               </span>
             </p>
-            <p className="cosmic-shell-copy mt-1">
-              {data.subscription.status === 'canceled'
-                ? messages.dashboard.nextMessageIfReactivated
-                : messages.dashboard.nextMessage}
-              :{' '}
-              {formatNextDelivery(data.subscription.nextMessageAt, language, subscriptionDeliveryTimeZone)}
-            </p>
-            <p className="cosmic-shell-copy mt-1">
-              {messages.dashboard.weeklyProjectionTimeLabel}:{' '}
-              <span className="font-bold text-slate-50">
-                {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
-                {subscriptionDeliveryTimeZone})
-              </span>
-            </p>
+            {data.subscription.deliveryPreference === 'none' ? (
+              <p className="cosmic-shell-copy mt-1">
+                {messages.deliveryChannels.noneDescription}
+              </p>
+            ) : (
+              <>
+                <p className="cosmic-shell-copy mt-1">
+                  {data.subscription.status === 'canceled'
+                    ? messages.dashboard.nextMessageIfReactivated
+                    : messages.dashboard.nextMessage}
+                  :{' '}
+                  {formatNextDelivery(data.subscription.nextMessageAt, language, subscriptionDeliveryTimeZone)}
+                </p>
+                <p className="cosmic-shell-copy mt-1">
+                  {messages.dashboard.weeklyProjectionTimeLabel}:{' '}
+                  <span className="font-bold text-slate-50">
+                    {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
+                    {subscriptionDeliveryTimeZone})
+                  </span>
+                </p>
+              </>
+            )}
 
             <form className="mt-5 space-y-4" onSubmit={(event) => runAction('update-delivery', event)}>
               <DeliveryPreferenceSelector
@@ -1365,12 +1569,14 @@ export default function DashboardPage() {
                   })}
                 </p>
               </div>
-              <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
-                  {messages.dashboard.emailDeliveryLabel}
-                </p>
-                <p className="mt-2 text-base text-slate-50">{data.user.email}</p>
-              </div>
+              {deliveryPreference === 'email' || deliveryPreference === 'both' ? (
+                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
+                    {messages.dashboard.emailDeliveryLabel}
+                  </p>
+                  <p className="mt-2 text-base text-slate-50">{data.user.email}</p>
+                </div>
+              ) : null}
               {requiresWhatsappDelivery(deliveryPreference) ? (
                 <>
                   <input
@@ -1478,6 +1684,21 @@ export default function DashboardPage() {
   )
 
   const showDangerZone = !data.user.admin || activeTab === 'account'
+  const onboardingContent = (
+    <section className="cosmic-shell rounded-[2rem] p-8">
+      <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.onboarding.title}</h2>
+      <p className="cosmic-shell-copy mt-2">{messages.dashboard.onboarding.subtitle}</p>
+      <div className="mt-5 flex flex-wrap gap-3">
+        <Link
+          href="/activate?preview=admin-onboarding"
+          className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
+        >
+          {messages.dashboard.onboarding.cta}
+        </Link>
+      </div>
+      <p className="cosmic-shell-meta mt-3 text-xs">{messages.dashboard.onboarding.hint}</p>
+    </section>
+  )
 
   return (
     <div className="space-y-8">
@@ -1533,6 +1754,15 @@ export default function DashboardPage() {
             >
               {messages.dashboard.tabs.sends}
             </button>
+            <button
+              type="button"
+              onClick={() => setDashboardTab('onboarding')}
+              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
+                activeTab === 'onboarding' ? 'cosmic-tab-active-alt' : 'cosmic-tab'
+              }`}
+            >
+              {messages.dashboard.tabs.onboarding}
+            </button>
           </div>
         ) : null}
       </section>
@@ -1541,6 +1771,8 @@ export default function DashboardPage() {
         <AdminPredictionCalendar />
       ) : data.user.admin && activeTab === 'sends' ? (
         <AdminSendCampaigns />
+      ) : data.user.admin && activeTab === 'onboarding' ? (
+        onboardingContent
       ) : (
         accountContent
       )}

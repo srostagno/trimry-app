@@ -12,6 +12,6 @@ export default function OpenGraphImage() {
     eyebrow: 'Your Luck Guide',
     title: 'Trimry Daily Fortune Signals',
     subtitle:
-      'Daily projections by email or WhatsApp, plus a full monthly calendar of Good, Bad, and Rare signals.',
+      'A weekly luck calendar with Good, Bad, and Rare signals. Email and WhatsApp reminders are optional.',
   })
 }

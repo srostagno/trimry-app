@@ -176,6 +176,8 @@ export type MessageSection = {
     alreadyHaveAccount: string
   }
   deliveryChannels: {
+    noneTitle: string
+    noneDescription: string
     bothTitle: string
     bothDescription: string
     emailTitle: string
@@ -286,6 +288,13 @@ export type MessageSection = {
       account: string
       predictionCalendar: string
       sends: string
+      onboarding: string
+    }
+    onboarding: {
+      title: string
+      subtitle: string
+      cta: string
+      hint: string
     }
     status: string
     nextMessage: string
@@ -627,7 +636,7 @@ const englishMessages: MessageSection = {
     subtitle:
       'Daily signals, rituals, and timing insights designed to help you align with opportunity.',
     primary: 'Reveal Today’s Luck',
-    secondary: 'Ask The Luck Guru',
+    secondary: 'Start Now',
   },
   home: {
     releaseBadge: 'Release has timing',
@@ -643,7 +652,7 @@ const englishMessages: MessageSection = {
     teaserEyebrow: 'Daily cosmic teaser',
     couldBe: 'Could be...',
     teaserNote:
-      'Subscribe to reveal the true day-by-day transmission and receive a daily reminder by email, WhatsApp, or both.',
+      'Start the flow to reveal your symbols and open your personal calendar preview.',
     teaserButton: 'Reveal my real forecast',
     seoGuideBadge: 'SEO guide',
     seoGuideTitle: 'Need the full guide on good and bad haircut and nail days?',
@@ -690,28 +699,28 @@ const englishMessages: MessageSection = {
     ],
   },
   story: {
-    title: 'Your luck guide for every day, not just an occasional ritual.',
+    title: 'Your personal timing guide for what may lie ahead.',
     subtitle:
-      'Trimry blends ritual timing, zodiac signals, Chinese calendar energy, and practical reminders so you stay aligned with luck.',
-    card1Title: 'Daily fortune signals',
+      'Trimry reads your zodiac, Chinese symbol, and ancient timing patterns to help you plan with more intention.',
+    card1Title: 'Personal symbols',
     card1Text:
-      'Every day receives a clear Good, Bad, or Rare signal for action, release, money, relationships, and energy.',
-    card2Title: 'One daily reminder',
+      'Your birth date opens a zodiac and Chinese symbol layer that shapes the calendar around you.',
+    card2Title: 'Timing windows',
     card2Text:
-      'Subscribers receive the day’s projection by email or WhatsApp, depending on the agreed channel.',
-    card3Title: 'Monthly calendar',
+      'See when the pattern invites action, patience, release, or a cleaner decision.',
+    card3Title: 'Calendar preview',
     card3Text:
-      'The web dashboard opens the complete monthly plan so you can see fortunate and cautious days before they arrive.',
+      'Open a focused view of the coming days and unlock the full planning layer when you are ready.',
   },
   pricing: {
-    title: 'Try Trimry free for {trialPeriodDays} days',
+    title: 'Unlock your personalized luck calendar',
     subtitle:
-      'Start with a full trial, feel the daily rhythm, and continue only if Trimry helps you move with more luck.',
-    planTitle: 'Daily fortune delivery',
+      'Begin when you are ready to reveal the next days and plan around the rhythm of your symbols.',
+    planTitle: 'Personal luck calendar',
     billing:
-      '{trialPeriodDays} days free in Stripe, then continue for {billingInline}. Cancel anytime.',
-    include1: 'A daily projection reminder by email, WhatsApp, or both',
-    include2: 'Full monthly calendar with Good, Bad, and Rare fortune signals',
+      'Trial starts in Stripe, then continue for {billingInline}. Cancel anytime.',
+    include1: 'A rolling 7-day calendar with Good, Bad, and Rare fortune signals',
+    include2: 'Personalized guidance shaped by your symbols and wish',
     include3:
       'Manifestation cues for money, relationships, energy, and personal timing',
     cta: 'Start free trial',
@@ -719,7 +728,7 @@ const englishMessages: MessageSection = {
   weekly: {
     title: 'Today’s cosmic prediction',
     subtitle:
-      'A rotating teaser about fortune, love, money, and luck. Subscribe to unlock the full monthly transmission.',
+      'A rotating teaser about fortune, love, money, and luck. Subscribe to unlock the full calendar view.',
     good: 'Good',
     bad: 'Bad',
     rare: 'Rare',
@@ -729,7 +738,7 @@ const englishMessages: MessageSection = {
     q1: 'Is this a medical or scientific recommendation?',
     a1: 'No. Trimry is a cultural and ritual timing service for personal routines.',
     q2: 'When do I receive the message?',
-    a2: 'Subscribers receive one daily reminder with that day’s projection by the agreed channel: email, WhatsApp, or both.',
+    a2: 'Subscribers unlock a rolling 7-day calendar and can review the next signals from the dashboard.',
     q3: 'How do I manage billing?',
     a3: 'From your dashboard, where you can cancel anytime, reactivate later, and still open the secure Stripe billing portal for payment methods and invoices.',
     q4: 'Which timezone is used?',
@@ -738,7 +747,7 @@ const englishMessages: MessageSection = {
   cta: {
     title: 'Stay aligned with luck every day.',
     subtitle:
-      'Create your Trimry account, choose email, WhatsApp, or both, and keep your daily fortune signals close.',
+      'Create your Trimry account, reveal your symbols, and keep your personal calendar close.',
     button: 'Open my account',
   },
   auth: {
@@ -764,6 +773,8 @@ const englishMessages: MessageSection = {
     alreadyHaveAccount: 'Already have an account?',
   },
   deliveryChannels: {
+    noneTitle: 'No reminders',
+    noneDescription: 'Use Trimry as your luck calendar first. Add email or WhatsApp later if you want nudges.',
     bothTitle: 'Email + WhatsApp',
     bothDescription: 'Email first, with WhatsApp as an optional second channel.',
     emailTitle: 'Email only',
@@ -906,7 +917,7 @@ const englishMessages: MessageSection = {
     trialHighlights: [
       'Daily fortune signal delivered by email, WhatsApp, or both.',
       'Manifestation rhythm for belief, action, and opportunity.',
-      'Full monthly calendar unlocked with your subscription.',
+      'Weekly luck calendar unlocked with your subscription.',
     ],
   },
   dashboard: {
@@ -919,6 +930,14 @@ const englishMessages: MessageSection = {
       account: 'Account',
       predictionCalendar: 'Prediction calendar',
       sends: 'Sends',
+      onboarding: 'Onboarding',
+    },
+    onboarding: {
+      title: 'Admin onboarding lab',
+      subtitle:
+        'Use this section to open and test the onboarding flow as an admin account without leaving your dashboard.',
+      cta: 'Open onboarding flow',
+      hint: 'This opens /activate in admin testing mode.',
     },
     status: 'Status',
     nextMessage: 'Next daily message',
@@ -936,16 +955,16 @@ const englishMessages: MessageSection = {
     projectionCalendar: {
       title: 'Projection calendar',
       subtitle:
-        'Track your daily projection rhythm. Subscribers can access the full month.',
+        'Plan around your next 7 luck days. Subscribers unlock the current week, not the whole month ahead.',
       fullAccessHint:
-        'Full month unlocked. Review each day and plan your rituals ahead of time.',
+        'Luck week unlocked. Review the next 7 days and plan your moves with better timing.',
       lockedAccessHint:
-        'Only today is unlocked on this account. Activate your subscription to unlock the full month.',
+        'Only today is unlocked on this account. Activate your subscription to reveal the full luck week.',
       loadError: 'Unable to load your projection calendar right now.',
       lockedDayBadge: 'Locked',
       lockedDayTitle: 'Day locked',
       lockedDaySubtitle:
-        'Activate your subscription to reveal this day and unlock the full monthly projection.',
+        'Activate your subscription to reveal this day inside your 7-day luck plan.',
     },
     passwordTitle: 'Security',
     passwordSubtitle:
@@ -968,12 +987,12 @@ const englishMessages: MessageSection = {
       'Delete your account? This will sign you out immediately and stop your current delivery channels.',
     deleteError: 'Unable to delete your account right now.',
     noSubscriptionSubtitle:
-      '{billingCompact} · daily projection by email, WhatsApp, or both',
-    mondayProjectionTime: 'Daily projection time',
-    sentOnMondaysAt: 'Sent every day at {time} in {zone}.',
+      '{billingCompact} · unlock your 7-day luck calendar. Reminders are optional.',
+    mondayProjectionTime: 'Optional reminder time',
+    sentOnMondaysAt: 'If reminders are enabled, they send every day at {time} in {zone}.',
     emailDeliveryLabel: 'Email delivery',
     whatsappOffSetup:
-      'WhatsApp is off. You can activate by email only or re-enable it at any time.',
+      'WhatsApp is off. You can use Trimry only as a calendar, or enable reminders later.',
     whatsappConsentLabel:
       'I consent to receive Trimry subscription messages on WhatsApp at this number.',
     whatsappConsentHint:
@@ -989,7 +1008,7 @@ const englishMessages: MessageSection = {
     pendingWhatsappLabel: 'WhatsApp delivery',
     continueActivation: 'Continue activation',
     changeDeliverySettings: 'Change delivery settings',
-    activePlanTitle: 'Trimry Daily Fortune Delivery',
+    activePlanTitle: 'Trimry Luck Calendar',
     canceledPlanTitle: 'Your Trimry subscription is canceled',
     canceledNote:
       'You can reactivate anytime from this account. Your delivery channels and daily timing are still saved below.',
@@ -997,11 +1016,11 @@ const englishMessages: MessageSection = {
       'Cancel anytime from this dashboard. If you return later, you can reactivate from the same account.',
     deliveryPreferenceLabel: 'Delivery preference',
     nextMessageIfReactivated: 'If reactivated today, your next message would be',
-    weeklyProjectionTimeLabel: 'Daily projection time',
-    futureMessagesHint: 'Future daily messages follow this hour in {zone}.',
+    weeklyProjectionTimeLabel: 'Optional reminder time',
+    futureMessagesHint: 'If reminders are enabled, future messages follow this hour in {zone}.',
     whatsappOffActive:
-      'WhatsApp is off for this subscription. Turn it on above if you want phone delivery too.',
-    saveDeliverySettings: 'Save delivery settings',
+      'WhatsApp is off. Your calendar still works; turn WhatsApp on only if you want phone reminders.',
+    saveDeliverySettings: 'Save reminder settings',
     reactivateButton: 'Reactivate subscription',
     reactivateLoading: 'Preparing reactivation...',
     cancelButton: 'Cancel subscription',
@@ -1243,14 +1262,14 @@ const englishMessages: MessageSection = {
       'Legal master text is maintained in English. Localized interface labels are provided for convenience.',
     termsSections: [
       {
-        title: '1. Service description',
-        body:
-          'Trimry provides daily timing guidance for fortune, grooming, energy, relationships, money, and symbolic release routines. Delivery is available by email, WhatsApp, or both, and subscribers can view the full monthly calendar on the web.',
+          title: '1. Service description',
+          body:
+          'Trimry provides weekly timing guidance for fortune, grooming, energy, relationships, money, and symbolic release routines. Subscribers can view a rolling 7-day luck calendar on the web. Email and WhatsApp reminders are optional.',
       },
       {
         title: '2. Subscription and billing',
         body:
-          'The Trimry plan is billed at {billingLegal}. It includes a daily projection reminder delivered by your selected or agreed channel: email, WhatsApp, or both. You can cancel your subscription at any time from your account dashboard. If you decide to come back later, you can reactivate from the same account by starting a new Stripe checkout. Billing details, payment methods, invoices, and historical billing records remain available through the Stripe-hosted billing tools linked from your dashboard.',
+          'The Trimry plan is billed at {billingLegal}. It includes access to a rolling 7-day luck calendar. Email and WhatsApp reminders are optional and depend on the channel selected in your dashboard. You can cancel your subscription at any time from your account dashboard. If you decide to come back later, you can reactivate from the same account by starting a new Stripe checkout. Billing details, payment methods, invoices, and historical billing records remain available through the Stripe-hosted billing tools linked from your dashboard.',
       },
       {
         title: '3. WhatsApp consent and contact rules',
@@ -1448,7 +1467,7 @@ const spanishMessages: MessageSection = {
     subtitle:
       'Señales diarias, rituales y momentos clave diseñados para ayudarte a alinearte con la oportunidad.',
     primary: 'Revela la suerte de hoy',
-    secondary: 'Preguntar al Luck Guru',
+    secondary: 'Empezar ahora',
   },
   home: {
     releaseBadge: 'Soltar también tiene su momento',
@@ -1464,7 +1483,7 @@ const spanishMessages: MessageSection = {
     teaserEyebrow: 'Avance cósmico diario',
     couldBe: 'Podría ser...',
     teaserNote:
-      'Suscríbete para revelar la transmisión real día por día y recibir un recordatorio diario por email, WhatsApp o ambos.',
+      'Empieza el flujo para revelar tus símbolos y abrir tu vista personal de calendario.',
     teaserButton: 'Revelar mi pronóstico real',
     seoGuideBadge: 'Guía SEO',
     seoGuideTitle: '¿Quieres la guía completa de días buenos y malos?',
@@ -1511,35 +1530,35 @@ const spanishMessages: MessageSection = {
     ],
   },
   story: {
-    title: 'Tu guía de suerte para todos los días, no solo un ritual ocasional.',
+    title: 'Tu guía personal de timing para lo que podría venir.',
     subtitle:
-      'Trimry mezcla timing ritual, zodíaco, energía del calendario chino y recordatorios prácticos para mantenerte alineado con la suerte.',
-    card1Title: 'Señales diarias de fortuna',
+      'Trimry lee tu zodíaco, símbolo chino y patrones antiguos de timing para ayudarte a planificar con más intención.',
+    card1Title: 'Símbolos personales',
     card1Text:
-      'Cada día recibe una señal Buena, Mala o Rara para acción, liberación, dinero, relaciones y energía.',
-    card2Title: 'Un recordatorio diario',
+      'Tu fecha de nacimiento abre una capa zodiacal y china que da forma al calendario alrededor de ti.',
+    card2Title: 'Ventanas de timing',
     card2Text:
-      'Los suscriptores reciben la proyección del día por email o WhatsApp, según el canal acordado.',
-    card3Title: 'Calendario mensual',
+      'Ve cuándo el patrón invita a actuar, esperar, soltar o tomar una decisión más limpia.',
+    card3Title: 'Vista de calendario',
     card3Text:
-      'El dashboard web abre el mes completo para ver días favorables y cautelosos antes de que lleguen.',
+      'Abre una vista enfocada de los próximos días y desbloquea la capa completa cuando estés listo.',
   },
   pricing: {
-    title: 'Prueba Trimry gratis por {trialPeriodDays} días',
+    title: 'Desbloquea tu calendario personalizado de suerte',
     subtitle:
-      'Empieza con el trial completo, siente el ritmo diario y continúa solo si Trimry te ayuda a moverte con más suerte.',
-    planTitle: 'Entrega diaria de fortuna',
+      'Empieza cuando estés listo para revelar los próximos días y planificar según el ritmo de tus símbolos.',
+    planTitle: 'Calendario personal de suerte',
     billing:
-      '{trialPeriodDays} días gratis en Stripe, luego continúas por {billingInline}. Cancela cuando quieras.',
-    include1: 'Un recordatorio diario con tu proyección por email, WhatsApp o ambos',
-    include2: 'Calendario mensual completo con señales Buenas, Malas y Raras',
+      'El trial empieza en Stripe; luego continúas por {billingInline}. Cancela cuando quieras.',
+    include1: 'Calendario rodante de 7 días con señales Buenas, Malas y Raras',
+    include2: 'Guía personalizada según tus símbolos y tu deseo',
     include3: 'Señales de manifestación para dinero, relaciones, energía y timing personal',
     cta: 'Comenzar gratis',
   },
   weekly: {
     title: 'Predicción cósmica de hoy',
     subtitle:
-      'Un avance rotativo sobre fortuna, amor, dinero y suerte. Suscríbete para desbloquear la transmisión mensual completa.',
+      'Un avance rotativo sobre fortuna, amor, dinero y suerte. Suscríbete para desbloquear la vista completa del calendario.',
     good: 'Bueno',
     bad: 'Malo',
     rare: 'Raro',
@@ -1549,7 +1568,7 @@ const spanishMessages: MessageSection = {
     q1: '¿Es una recomendación médica o científica?',
     a1: 'No. Trimry es un servicio cultural y ritual de timing para rutinas personales.',
     q2: '¿Cuándo recibo el mensaje?',
-    a2: 'Los suscriptores reciben un recordatorio diario con la proyección del día por el canal acordado: email, WhatsApp o ambos.',
+    a2: 'Los suscriptores desbloquean un calendario rodante de 7 días y pueden revisar las próximas señales desde el panel.',
     q3: '¿Cómo administro el cobro?',
     a3: 'Desde tu panel, donde puedes cancelar cuando quieras, reactivar después y también abrir el portal seguro de Stripe para métodos de pago y facturas.',
     q4: '¿Qué zona horaria se usa?',
@@ -1558,7 +1577,7 @@ const spanishMessages: MessageSection = {
   cta: {
     title: 'Mantente alineado con la suerte todos los días.',
     subtitle:
-      'Crea tu cuenta Trimry, elige email, WhatsApp o ambos, y mantén tus señales diarias de fortuna cerca.',
+      'Crea tu cuenta Trimry, revela tus símbolos y mantén cerca tu calendario personal.',
     button: 'Abrir mi cuenta',
   },
   auth: {
@@ -1584,6 +1603,8 @@ const spanishMessages: MessageSection = {
     alreadyHaveAccount: '¿Ya tienes una cuenta?',
   },
   deliveryChannels: {
+    noneTitle: 'Sin recordatorios',
+    noneDescription: 'Usa Trimry primero como calendario de suerte. Activa email o WhatsApp después si quieres avisos.',
     bothTitle: 'Email + WhatsApp',
     bothDescription: 'Email primero, con WhatsApp como canal secundario opcional.',
     emailTitle: 'Solo email',
@@ -1739,6 +1760,14 @@ const spanishMessages: MessageSection = {
       account: 'Cuenta',
       predictionCalendar: 'Calendario',
       sends: 'Envíos',
+      onboarding: 'Onboarding',
+    },
+    onboarding: {
+      title: 'Laboratorio de onboarding admin',
+      subtitle:
+        'Usa esta sección para abrir y probar el flujo de onboarding como cuenta admin sin salir del dashboard.',
+      cta: 'Abrir flujo onboarding',
+      hint: 'Esto abre /activate en modo de prueba admin.',
     },
     status: 'Estado',
     nextMessage: 'Próximo mensaje diario',
@@ -1756,16 +1785,16 @@ const spanishMessages: MessageSection = {
     projectionCalendar: {
       title: 'Calendario de proyección',
       subtitle:
-        'Sigue tu ritmo diario de proyección. Los suscriptores pueden ver el mes completo.',
+        'Planifica tus próximos 7 días de suerte. Los suscriptores desbloquean la semana actual, no todo el mes por adelantado.',
       fullAccessHint:
-        'Mes completo desbloqueado. Revisa cada día y planifica tus rituales con anticipación.',
+        'Semana de suerte desbloqueada. Revisa los próximos 7 días y planifica tus movimientos con mejor timing.',
       lockedAccessHint:
-        'En esta cuenta solo hoy está desbloqueado. Activa tu suscripción para desbloquear todo el mes.',
+        'En esta cuenta solo hoy está desbloqueado. Activa tu suscripción para revelar la semana completa.',
       loadError: 'No pudimos cargar tu calendario de proyección en este momento.',
       lockedDayBadge: 'Bloqueado',
       lockedDayTitle: 'Día bloqueado',
       lockedDaySubtitle:
-        'Activa tu suscripción para revelar este día y desbloquear la proyección mensual completa.',
+        'Activa tu suscripción para revelar este día dentro de tu plan de suerte de 7 días.',
     },
     passwordTitle: 'Seguridad',
     passwordSubtitle:
@@ -1789,12 +1818,12 @@ const spanishMessages: MessageSection = {
       '¿Eliminar tu cuenta? Esto cerrará tu sesión de inmediato y detendrá tus canales actuales de entrega.',
     deleteError: 'No pudimos eliminar tu cuenta en este momento.',
     noSubscriptionSubtitle:
-      '{billingCompact} · proyección diaria por email, WhatsApp o ambos',
-    mondayProjectionTime: 'Hora de proyección diaria',
-    sentOnMondaysAt: 'Se envía todos los días a las {time} en {zone}.',
+      '{billingCompact} · desbloquea tu calendario de suerte de 7 días. Los recordatorios son opcionales.',
+    mondayProjectionTime: 'Hora opcional de recordatorio',
+    sentOnMondaysAt: 'Si activas recordatorios, se envían todos los días a las {time} en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffSetup:
-      'WhatsApp está apagado. Puedes dejar solo email o volver a habilitarlo cuando quieras.',
+      'WhatsApp está apagado. Puedes usar Trimry solo como calendario o activar recordatorios después.',
     whatsappConsentLabel:
       'Consiento recibir mensajes de suscripción de Trimry por WhatsApp en este número.',
     whatsappConsentHint:
@@ -1810,7 +1839,7 @@ const spanishMessages: MessageSection = {
     pendingWhatsappLabel: 'Entrega por WhatsApp',
     continueActivation: 'Continuar activación',
     changeDeliverySettings: 'Cambiar ajustes de entrega',
-    activePlanTitle: 'Entrega diaria de fortuna Trimry',
+    activePlanTitle: 'Calendario de suerte Trimry',
     canceledPlanTitle: 'Tu suscripción Trimry está cancelada',
     canceledNote:
       'Puedes reactivarla cuando quieras desde esta cuenta. Tus canales de entrega y el horario diario siguen guardados abajo.',
@@ -1818,11 +1847,11 @@ const spanishMessages: MessageSection = {
       'Cancela cuando quieras desde este panel. Si vuelves después, puedes reactivarla desde la misma cuenta.',
     deliveryPreferenceLabel: 'Preferencia de entrega',
     nextMessageIfReactivated: 'Si la reactivaras hoy, tu próximo mensaje sería',
-    weeklyProjectionTimeLabel: 'Hora diaria de proyección',
-    futureMessagesHint: 'Los futuros mensajes diarios seguirán este horario en {zone}.',
+    weeklyProjectionTimeLabel: 'Hora opcional de recordatorio',
+    futureMessagesHint: 'Si activas recordatorios, los futuros mensajes seguirán este horario en {zone}.',
     whatsappOffActive:
-      'WhatsApp está desactivado para esta suscripción. Actívalo arriba si también quieres entrega al teléfono.',
-    saveDeliverySettings: 'Guardar ajustes de entrega',
+      'WhatsApp está desactivado. Tu calendario sigue funcionando; actívalo solo si quieres recordatorios al teléfono.',
+    saveDeliverySettings: 'Guardar ajustes de recordatorio',
     reactivateButton: 'Reactivar suscripción',
     reactivateLoading: 'Preparando reactivación...',
     cancelButton: 'Cancelar suscripción',
@@ -2065,14 +2094,14 @@ const spanishMessages: MessageSection = {
       'El texto legal maestro se mantiene en inglés. Esta traducción se ofrece por conveniencia.',
     termsSections: [
       {
-        title: '1. Descripción del servicio',
-        body:
-          'Trimry entrega orientación diaria de timing para fortuna, grooming, energía, relaciones, dinero y rutinas simbólicas de liberación. La entrega está disponible por email, WhatsApp o ambos, y los suscriptores pueden ver el calendario mensual completo en la web.',
+          title: '1. Descripción del servicio',
+          body:
+          'Trimry entrega orientación semanal de timing para fortuna, grooming, energía, relaciones, dinero y rutinas simbólicas de liberación. Los suscriptores pueden ver un calendario rodante de 7 días en la web. Email y WhatsApp son recordatorios opcionales.',
       },
       {
         title: '2. Suscripción y cobro',
         body:
-          'El plan Trimry se cobra a {billingLegal}. Incluye un recordatorio diario con tu proyección por el canal elegido o acordado: email, WhatsApp o ambos. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
+          'El plan Trimry se cobra a {billingLegal}. Incluye acceso a un calendario rodante de suerte de 7 días. Email y WhatsApp son recordatorios opcionales según el canal elegido en tu panel. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
       },
       {
         title: '3. Consentimiento y contacto por WhatsApp',
@@ -2309,7 +2338,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
     subtitle:
       'Sinais diários, rituais e insights de timing criados para ajudar você a se alinhar com a oportunidade.',
     primary: 'Revele a sorte de hoje',
-    secondary: 'Perguntar ao Luck Guru',
+    secondary: 'Começar agora',
   },
   home: {
     releaseBadge: 'Soltar também tem timing',
@@ -2326,7 +2355,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
     teaserEyebrow: 'Prévia cósmica diária',
     couldBe: 'Pode ser...',
     teaserNote:
-      'Assine para revelar a transmissão real dia a dia e receber um lembrete diário por email, WhatsApp ou ambos.',
+      'Comece o fluxo para revelar seus símbolos e abrir sua prévia pessoal do calendário.',
     teaserButton: 'Revelar minha previsão real',
     seoGuideBadge: 'Guia SEO',
     seoGuideTitle: 'Quer o guia completo de dias bons e ruins?',
@@ -2373,30 +2402,30 @@ const portugueseMessages = mergeMessages(englishMessages, {
     ],
   },
   story: {
-    title: 'Seu guia de sorte para todos os dias, não só para um ritual ocasional.',
+    title: 'Seu guia pessoal de timing para o que pode vir.',
     subtitle:
-      'A Trimry combina timing ritual, sinais do zodíaco, energia do calendário chinês e lembretes práticos para manter você alinhado com a sorte.',
-    card1Title: 'Sinais diários de fortuna',
+      'A Trimry lê seu zodíaco, símbolo chinês e padrões antigos de timing para ajudar você a planejar com mais intenção.',
+    card1Title: 'Símbolos pessoais',
     card1Text:
-      'Cada dia recebe um sinal Bom, Ruim ou Raro para ação, liberação, dinheiro, relacionamentos e energia.',
-    card2Title: 'Um lembrete diário',
+      'Sua data de nascimento abre uma camada zodiacal e chinesa que molda o calendário ao seu redor.',
+    card2Title: 'Janelas de timing',
     card2Text:
-      'Assinantes recebem a projeção do dia por email ou WhatsApp, conforme o canal escolhido.',
-    card3Title: 'Calendário mensal',
+      'Veja quando o padrão convida ação, espera, liberação ou uma decisão mais limpa.',
+    card3Title: 'Vista de calendário',
     card3Text:
-      'O painel web abre o mês completo para você ver dias favoráveis e cautelosos antes que cheguem.',
+      'Abra uma visão focada dos próximos dias e desbloqueie a camada completa quando estiver pronto.',
   },
   pricing: {
-    title: 'Experimente a Trimry grátis por {trialPeriodDays} dias',
+    title: 'Desbloqueie seu calendário personalizado de sorte',
     subtitle:
-      'Comece com o trial completo, sinta o ritmo diário e continue apenas se a Trimry ajudar você a se mover com mais sorte.',
-    planTitle: 'Entrega diária de fortuna',
+      'Comece quando estiver pronto para revelar os próximos dias e planejar pelo ritmo dos seus símbolos.',
+    planTitle: 'Calendário pessoal de sorte',
     billing:
-      '{trialPeriodDays} dias grátis na Stripe, depois continue por {billingInline}. Cancele quando quiser.',
+      'O trial começa na Stripe; depois continue por {billingInline}. Cancele quando quiser.',
     include1:
-      'Um lembrete diário com sua projeção por email, WhatsApp ou ambos',
+      'Calendário contínuo de 7 dias com sinais Bons, Ruins e Raros',
     include2:
-      'Calendário mensal completo com sinais Bons, Ruins e Raros',
+      'Guia personalizada pelos seus símbolos e seu pedido',
     include3:
       'Sinais de manifestação para dinheiro, relacionamentos, energia e timing pessoal',
     cta: 'Começar grátis',
@@ -2404,7 +2433,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
   weekly: {
     title: 'Previsão cósmica de hoje',
     subtitle:
-      'Uma prévia rotativa sobre fortuna, amor, dinheiro e sorte. Assine para desbloquear a transmissão mensal completa.',
+      'Uma prévia rotativa sobre fortuna, amor, dinheiro e sorte. Assine para desbloquear a vista completa do calendário.',
     good: 'Bom',
     bad: 'Ruim',
     rare: 'Raro',
@@ -2414,7 +2443,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
     q1: 'Isso é uma recomendação médica ou científica?',
     a1: 'Não. A Trimry é um serviço cultural e ritual de timing para rotinas pessoais.',
     q2: 'Quando recebo a mensagem?',
-    a2: 'Assinantes recebem um lembrete diário com a projeção do dia pelo canal escolhido: email, WhatsApp ou ambos.',
+    a2: 'Assinantes desbloqueiam um calendário contínuo de 7 dias e podem revisar os próximos sinais no painel.',
     q3: 'Como gerencio a cobrança?',
     a3: 'Pelo painel, onde você pode cancelar quando quiser, reativar depois e abrir o portal seguro da Stripe para métodos de pagamento e faturas.',
     q4: 'Qual fuso horário é usado?',
@@ -2423,7 +2452,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
   cta: {
     title: 'Mantenha-se alinhado com a sorte todos os dias.',
     subtitle:
-      'Crie sua conta Trimry, escolha email, WhatsApp ou ambos, e mantenha seus sinais diários de fortuna por perto.',
+      'Crie sua conta Trimry, revele seus símbolos e mantenha seu calendário pessoal por perto.',
     button: 'Abrir minha conta',
   },
   auth: {
@@ -2449,6 +2478,8 @@ const portugueseMessages = mergeMessages(englishMessages, {
     alreadyHaveAccount: 'Já tem uma conta?',
   },
   deliveryChannels: {
+    noneTitle: 'Sem lembretes',
+    noneDescription: 'Use a Trimry primeiro como calendário de sorte. Ative email ou WhatsApp depois se quiser avisos.',
     bothTitle: 'Email + WhatsApp',
     bothDescription: 'Email primeiro, com WhatsApp como segundo canal opcional.',
     emailTitle: 'Somente email',
@@ -2605,6 +2636,14 @@ const portugueseMessages = mergeMessages(englishMessages, {
       account: 'Conta',
       predictionCalendar: 'Calendário',
       sends: 'Envios',
+      onboarding: 'Onboarding',
+    },
+    onboarding: {
+      title: 'Laboratório de onboarding admin',
+      subtitle:
+        'Use esta seção para abrir e testar o fluxo de onboarding como conta admin sem sair do painel.',
+      cta: 'Abrir fluxo onboarding',
+      hint: 'Isso abre /activate no modo de teste admin.',
     },
     status: 'Status',
     nextMessage: 'Próxima mensagem diária',
@@ -2623,16 +2662,16 @@ const portugueseMessages = mergeMessages(englishMessages, {
     projectionCalendar: {
       title: 'Calendário de projeção',
       subtitle:
-        'Acompanhe seu ritmo diário de projeção. Assinantes podem acessar o mês completo.',
+        'Planeje seus próximos 7 dias de sorte. Assinantes desbloqueiam a semana atual, não o mês inteiro antecipado.',
       fullAccessHint:
-        'Mês completo desbloqueado. Revise cada dia e planeje seus rituais com antecedência.',
+        'Semana de sorte desbloqueada. Revise os próximos 7 dias e planeje seus movimentos com melhor timing.',
       lockedAccessHint:
-        'Nesta conta, apenas hoje está desbloqueado. Ative sua assinatura para desbloquear o mês completo.',
+        'Nesta conta, apenas hoje está desbloqueado. Ative sua assinatura para revelar a semana completa.',
       loadError: 'Não foi possível carregar seu calendário de projeção agora.',
       lockedDayBadge: 'Bloqueado',
       lockedDayTitle: 'Dia bloqueado',
       lockedDaySubtitle:
-        'Ative sua assinatura para revelar este dia e desbloquear a projeção mensal completa.',
+        'Ative sua assinatura para revelar este dia dentro do seu plano de sorte de 7 dias.',
     },
     predictionCalendar: {
       notesPortugueseLabel: 'Nota (português)',
@@ -2660,12 +2699,12 @@ const portugueseMessages = mergeMessages(englishMessages, {
       'Excluir sua conta? Isso encerrará sua sessão imediatamente e interromperá seus canais atuais de entrega.',
     deleteError: 'Não foi possível excluir sua conta agora.',
     noSubscriptionSubtitle:
-      '{billingCompact} · projeção diária por email, WhatsApp ou ambos',
-    mondayProjectionTime: 'Horário da projeção diária',
-    sentOnMondaysAt: 'Enviado todos os dias às {time} em {zone}.',
+      '{billingCompact} · desbloqueie seu calendário de sorte de 7 dias. Lembretes são opcionais.',
+    mondayProjectionTime: 'Horário opcional do lembrete',
+    sentOnMondaysAt: 'Se os lembretes estiverem ativos, são enviados todos os dias às {time} em {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffSetup:
-      'WhatsApp está desligado. Você pode ativar só por email ou reativar quando quiser.',
+      'WhatsApp está desligado. Você pode usar a Trimry só como calendário ou ativar lembretes depois.',
     whatsappConsentLabel:
       'Concordo em receber mensagens de assinatura da Trimry por WhatsApp neste número.',
     whatsappConsentHint:
@@ -2681,7 +2720,7 @@ const portugueseMessages = mergeMessages(englishMessages, {
     pendingWhatsappLabel: 'Entrega por WhatsApp',
     continueActivation: 'Continuar ativação',
     changeDeliverySettings: 'Alterar entrega',
-    activePlanTitle: 'Entrega diária de fortuna Trimry',
+    activePlanTitle: 'Calendário de sorte Trimry',
     canceledPlanTitle: 'Sua assinatura Trimry está cancelada',
     canceledNote:
       'Você pode reativar quando quiser por esta conta. Seus canais de entrega e horário diário continuam salvos abaixo.',
@@ -2689,11 +2728,11 @@ const portugueseMessages = mergeMessages(englishMessages, {
       'Cancele quando quiser por este painel. Se voltar depois, você pode reativar pela mesma conta.',
     deliveryPreferenceLabel: 'Preferência de entrega',
     nextMessageIfReactivated: 'Se reativada hoje, sua próxima mensagem seria',
-    weeklyProjectionTimeLabel: 'Horário diário da projeção',
-    futureMessagesHint: 'As futuras mensagens diárias seguirão este horário em {zone}.',
+    weeklyProjectionTimeLabel: 'Horário opcional do lembrete',
+    futureMessagesHint: 'Se os lembretes estiverem ativos, as futuras mensagens seguirão este horário em {zone}.',
     whatsappOffActive:
-      'WhatsApp está desativado para esta assinatura. Ative acima se também quiser entrega no celular.',
-    saveDeliverySettings: 'Salvar configurações de entrega',
+      'WhatsApp está desativado. Seu calendário continua funcionando; ative só se quiser lembretes no celular.',
+    saveDeliverySettings: 'Salvar configurações de lembrete',
     reactivateButton: 'Reativar assinatura',
     reactivateLoading: 'Preparando reativação...',
     cancelButton: 'Cancelar assinatura',

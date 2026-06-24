@@ -171,7 +171,7 @@ export default function CheckoutStartPage() {
               method: 'POST',
               body: JSON.stringify({
                 action: 'subscribe',
-                deliveryPreference: 'email',
+                deliveryPreference: 'none',
                 deliveryHourLocal: DEFAULT_WEEKLY_DELIVERY_HOUR,
               }),
             },
@@ -264,7 +264,7 @@ export default function CheckoutStartPage() {
               method: 'POST',
               body: JSON.stringify({
                 action: 'subscribe',
-                deliveryPreference: 'email',
+                deliveryPreference: subscription.deliveryPreference ?? 'none',
                 deliveryHourLocal:
                   subscription.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR,
               }),
@@ -458,11 +458,13 @@ export default function CheckoutStartPage() {
                   {messages.checkout.deliveryLabel}
                 </p>
                 <p className="mt-2 text-slate-50">
-                  {account.subscription.deliveryPreference === 'email'
-                    ? messages.deliveryChannels.emailTitle
-                    : account.subscription.deliveryPreference === 'whatsapp'
-                      ? messages.deliveryChannels.whatsappTitle
-                      : messages.deliveryChannels.bothTitle}
+                  {account.subscription.deliveryPreference === 'none'
+                    ? messages.deliveryChannels.noneTitle
+                    : account.subscription.deliveryPreference === 'email'
+                      ? messages.deliveryChannels.emailTitle
+                      : account.subscription.deliveryPreference === 'whatsapp'
+                        ? messages.deliveryChannels.whatsappTitle
+                        : messages.deliveryChannels.bothTitle}
                 </p>
               </div>
               <div className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 p-4">

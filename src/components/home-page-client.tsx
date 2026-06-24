@@ -6,12 +6,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { StartFlowButton } from '@/components/start-flow-button'
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent } from '@/lib/analytics'
-import { SUBSCRIPTION_PLAN } from '@/lib/company'
 
 type OracleTone = 'good' | 'bad' | 'rare'
-const OPEN_LUCK_GURU_CHAT_EVENT = 'trimry:open-luck-guru-chat'
 const LANDING_LAST_VISIT_KEY = 'trimry:landing-last-visit'
-const LUCK_GURU_WHATSAPP_NUMBER = '34689269278'
 
 function toneClasses(tone: OracleTone) {
   return tone === 'good'
@@ -42,7 +39,6 @@ function calculateDayDiff(from: string, to: string) {
 
 export function HomePageClient() {
   const { language, messages } = useLanguage()
-  const trialPeriodDays = SUBSCRIPTION_PLAN.stripeTrialPeriodDays
   const startNowCopy =
     language === 'es'
       ? {
@@ -189,103 +185,46 @@ export function HomePageClient() {
       ? {
           title: 'Manifiesta mejor suerte',
           subtitle:
-            'Señales diarias, rituales y momentos clave diseñados para ayudarte a alinearte con la oportunidad.',
-          points: [`${trialPeriodDays} días gratis`, 'recordatorio diario', 'calendario mensual', 'Luck Guru con IA'],
-          primary: 'Revela la suerte de hoy',
-          secondary: 'Preguntar al Luck Guru',
+            'Descubre el ritmo oculto de tus símbolos y abre una planificación personalizada para tomar mejores decisiones.',
+          primary: 'Empezar ahora',
         }
       : language === 'pt'
         ? {
             title: 'Manifeste mais sorte',
             subtitle:
-              'Sinais diários, rituais e insights de timing criados para ajudar você a se alinhar com a oportunidade.',
-            points: [`${trialPeriodDays} dias grátis`, 'lembrete diário', 'calendário mensal', 'Luck Guru com IA'],
-            primary: 'Revele a sorte de hoje',
-            secondary: 'Perguntar ao Luck Guru',
+              'Descubra o ritmo oculto dos seus símbolos e abra um planejamento personalizado para tomar melhores decisões.',
+            primary: 'Comece agora',
           }
-      : {
-          title: 'Manifest Better Luck',
-          subtitle:
-            'Daily signals, rituals, and timing insights designed to help you align with opportunity.',
-          points: [`${trialPeriodDays} days free`, 'daily reminder', 'monthly calendar', 'AI Luck Guru'],
-          primary: 'Reveal Today’s Luck',
-          secondary: 'Ask The Luck Guru',
-        }
+        : {
+            title: 'Manifest Better Luck',
+            subtitle:
+              'Discover the hidden rhythm of your symbols and open a personalized plan for making better-timed decisions.',
+            primary: 'Start Now',
+          }
   const teaserCopy =
     language === 'es'
       ? {
           badge: 'Lectura instantánea',
           title: 'Abre la señal de hoy y deja que Trimry ordene tu suerte.',
           line1: 'Tu guía cruza timing ritual, zodíaco, calendario chino y señales de abundancia.',
-          line2: `Activa ${trialPeriodDays} días gratis para recibir el recordatorio diario por el canal que acordemos.`,
-          cta: `Quiero ${trialPeriodDays} días gratis`,
+          line2: 'Empieza el flujo y revela cómo se están alineando tus símbolos personales.',
+          cta: 'Empezar ahora',
         }
       : language === 'pt'
         ? {
             badge: 'Leitura instantânea',
             title: 'Abra o sinal de hoje e deixe a Trimry organizar sua sorte.',
             line1: 'Seu guia combina timing ritual, zodíaco, calendário chinês e sinais de abundância.',
-            line2: `Ative ${trialPeriodDays} dias grátis para receber o lembrete diário pelo canal que combinarmos.`,
-            cta: `Quero ${trialPeriodDays} dias grátis`,
+            line2: 'Comece o fluxo e revele como seus símbolos pessoais estão se alinhando.',
+            cta: 'Comece agora',
           }
       : {
           badge: 'Instant reading',
           title: 'Open today’s signal and let Trimry organize your luck.',
           line1: 'Your guide blends ritual timing, zodiac, Chinese calendar, and abundance signals.',
-          line2: `Start ${trialPeriodDays} days free to receive the daily reminder through the channel we agree.`,
-          cta: `Start ${trialPeriodDays} Days Free`,
+          line2: 'Start the flow and reveal how your personal symbols are aligning.',
+          cta: 'Start Now',
         }
-  const luckGuruCardCopy =
-    language === 'es'
-      ? {
-          eyebrow: '🍀 El Luck Guru está aquí',
-          title: 'Tu suerte tiene señales. Nosotros las seguimos por ti.',
-          text: 'Pregunta por dinero, relaciones, energía o por el mejor momento para soltar algo.',
-          button: 'Preguntar al Luck Guru',
-          note: 'Cabello · Dinero · Relaciones · Energía',
-          topics: ['Cabello', 'Dinero', 'Relaciones', 'Energía'],
-          whatsapp: 'Abrir WhatsApp',
-        }
-      : language === 'pt'
-        ? {
-            eyebrow: '🍀 O Luck Guru está aqui',
-            title: 'Sua sorte tem sinais. Nós acompanhamos por você.',
-            text: 'Pergunte sobre dinheiro, relacionamentos, energia ou o melhor momento para soltar algo.',
-            button: 'Perguntar ao Luck Guru',
-            note: 'Cabelo · Dinheiro · Relacionamentos · Energia',
-            topics: ['Cabelo', 'Dinheiro', 'Relacionamentos', 'Energia'],
-            whatsapp: 'Abrir WhatsApp',
-          }
-      : {
-          eyebrow: '🍀 The Luck Guru is here',
-          title: 'Your luck has signals. We track them for you.',
-          text: 'Ask about money, relationships, energy, or the best moment to release something.',
-          button: 'Ask The Luck Guru',
-          note: 'Hair · Money · Relationships · Energy',
-          topics: ['Hair', 'Money', 'Relationships', 'Energy'],
-          whatsapp: 'Open WhatsApp',
-        }
-
-  const whatsappUrl = `https://wa.me/${LUCK_GURU_WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    language === 'es'
-      ? 'Hola Luck Guru, quiero una guía rápida para hoy.'
-      : language === 'pt'
-        ? 'Olá Luck Guru, quero uma orientação rápida para hoje.'
-      : 'Hi Luck Guru, I want quick guidance for today.',
-  )}`
-
-  const openLuckGuruChat = (location: string) => {
-    trackEvent('ask_luck_guru_click', {
-      language,
-      location,
-    })
-    trackEvent('home_luck_guru_card_click', {
-      language,
-      destination: 'luck_guru_web_chat',
-      location,
-    })
-    window.dispatchEvent(new CustomEvent(OPEN_LUCK_GURU_CHAT_EVENT))
-  }
 
   return (
     <div className="space-y-12 pb-12">
@@ -306,16 +245,6 @@ export function HomePageClient() {
             <p className="slide-up mt-5 text-base text-slate-100/88 sm:text-lg">
               {heroCopy.subtitle}
             </p>
-            <ul className="mt-3 grid max-w-xs grid-cols-2 gap-2 text-sm text-cyan-100/92 sm:text-base">
-              {heroCopy.points.map((point) => (
-                <li
-                  key={point}
-                  className="rounded-xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-2"
-                >
-                  {point}
-                </li>
-              ))}
-            </ul>
             <div className="slide-up mt-7 flex flex-wrap gap-3">
               <StartFlowButton
                 analyticsLocation="home_hero_primary"
@@ -325,13 +254,6 @@ export function HomePageClient() {
               >
                 {startNowCopy.label}
               </StartFlowButton>
-              <button
-                type="button"
-                onClick={() => openLuckGuruChat('home_hero_secondary')}
-                className="cosmic-button-secondary rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.15em] text-cyan-50 transition hover:bg-cyan-300/14"
-              >
-                {heroCopy.secondary}
-              </button>
             </div>
           </div>
 
@@ -352,25 +274,18 @@ export function HomePageClient() {
               <div className="rounded-2xl border border-cyan-100/26 bg-slate-950/42 p-4 backdrop-blur-sm">
                 <p className="text-xs font-bold uppercase tracking-[0.17em] text-cyan-100/84">
                   {language === 'es'
-                    ? 'IA para señales de fortuna'
+                    ? 'Calendario personal'
                     : language === 'pt'
-                      ? 'IA para sinais de fortuna'
-                      : 'AI fortune signals'}
+                      ? 'Calendário pessoal'
+                      : 'Personal calendar'}
                 </p>
                 <p className="mt-2 text-sm text-slate-100/90">
                   {language === 'es'
-                    ? 'Haz una pregunta y deja que Luck Guru conecte tus señales.'
+                    ? 'Revela tus símbolos, pide un deseo y descubre cuándo conviene avanzar.'
                     : language === 'pt'
-                      ? 'Faça uma pergunta e deixe Luck Guru conectar seus sinais.'
-                    : 'Ask one question and let Luck Guru connect your signals.'}
+                      ? 'Revele seus símbolos, faça um pedido e descubra quando avançar.'
+                    : 'Reveal your symbols, make a wish, and discover when to move.'}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => openLuckGuruChat('home_hero_guru_visual')}
-                  className="cosmic-button-secondary mt-3 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.15em] text-cyan-50"
-                >
-                  {heroCopy.secondary}
-                </button>
               </div>
             </div>
           </aside>
@@ -443,107 +358,30 @@ export function HomePageClient() {
               >
                 {startNowCopy.label}
               </StartFlowButton>
-              <button
-                type="button"
-                onClick={() => openLuckGuruChat('home_teaser_secondary')}
-                className="cosmic-button-secondary rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.15em] text-cyan-50"
-              >
-                {heroCopy.secondary}
-              </button>
             </div>
           </div>
           <div className="grid gap-2 text-xs uppercase tracking-[0.16em] text-cyan-100/78 sm:min-w-[13rem]">
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
               {language === 'es'
-                ? 'Recordatorio diario'
+                ? 'Símbolos personales'
                 : language === 'pt'
-                  ? 'Lembrete diário'
-                  : 'Daily reminder'}
+                  ? 'Símbolos pessoais'
+                  : 'Personal symbols'}
             </span>
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
               {language === 'es'
-                ? 'Email o WhatsApp'
+                ? 'Timing tibetano'
                 : language === 'pt'
-                  ? 'Email ou WhatsApp'
-                  : 'Email or WhatsApp'}
+                  ? 'Timing tibetano'
+                  : 'Tibetan timing'}
             </span>
             <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
               {language === 'es'
-                ? 'Mes completo'
+                ? 'Vista de calendario'
                 : language === 'pt'
-                  ? 'Mês completo'
-                  : 'Full month'}
+                  ? 'Vista de calendário'
+                  : 'Calendar view'}
             </span>
-          </div>
-        </div>
-      </section>
-
-      <section className="cosmic-panel relative overflow-hidden rounded-[2rem] p-6 sm:p-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_18%,rgba(247,223,161,0.18),transparent_30%),radial-gradient(circle_at_84%_8%,rgba(121,242,255,0.16),transparent_28%),linear-gradient(135deg,rgba(13,18,46,0.25),transparent)]" />
-        <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[0.75fr_1.25fr]">
-          <div className="guru-aura relative mx-auto w-full max-w-[16rem] rounded-[2rem] border border-amber-200/36 bg-slate-950/45 p-3">
-            <div className="guru-crystal-pulse relative aspect-[1/1] overflow-hidden rounded-[1.5rem] border border-amber-100/34">
-              <Image
-                src="/luck-guru-avatar.webp"
-                alt="Luck Guru"
-                fill
-                sizes="(min-width: 1024px) 280px, 70vw"
-                className="object-cover object-center"
-              />
-              <span className="guru-eye-glow pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_22%,rgba(247,223,161,0.35),transparent_28%),radial-gradient(circle_at_52%_44%,transparent_42%,rgba(2,7,20,0.46)_100%)]" />
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-amber-100/82">
-              {luckGuruCardCopy.eyebrow}
-            </p>
-            <h2 className="mt-2 text-3xl leading-tight text-slate-50 sm:text-4xl">
-              {luckGuruCardCopy.title}
-            </h2>
-            <p className="mt-3 max-w-3xl text-slate-100/84">
-              {luckGuruCardCopy.text}
-            </p>
-            <p className="mt-3 text-sm font-semibold text-cyan-100/78">{luckGuruCardCopy.note}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {luckGuruCardCopy.topics.map((topic) => (
-                <button
-                  key={topic}
-                  type="button"
-                  onClick={() =>
-                    openLuckGuruChat(
-                      `home_guru_topic_${topic.toLowerCase().replace(/\s+/g, '_')}`,
-                    )
-                  }
-                  className="rounded-full border border-cyan-100/20 bg-cyan-100/8 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-50 transition hover:bg-cyan-100/14"
-                >
-                  {topic}
-                </button>
-              ))}
-            </div>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => openLuckGuruChat('home_guru_primary')}
-                className="cosmic-button-primary inline-flex justify-center rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] transition hover:-translate-y-0.5"
-              >
-                {luckGuruCardCopy.button}
-              </button>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() =>
-                  trackEvent('whatsapp_open', {
-                    language,
-                    location: 'home_guru_section',
-                  })
-                }
-                className="cosmic-button-secondary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-cyan-50"
-              >
-                {luckGuruCardCopy.whatsapp}
-              </a>
-            </div>
           </div>
         </div>
       </section>

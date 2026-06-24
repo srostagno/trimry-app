@@ -114,7 +114,7 @@ export type WeeklyDispatchJobResultItem = {
   subscriptionId: string
   userId: string
   recipientLabel: string | null
-  deliveryPreference: 'email' | 'whatsapp' | 'both'
+  deliveryPreference: 'none' | 'email' | 'whatsapp' | 'both'
   dueAt: string
   nextMessageAt: string | null
   status: 'processed' | 'failed' | 'dry_run'
@@ -152,7 +152,7 @@ export type WeeklyDispatchJob = {
   failedCount: number
   currentSubscriptionId: string | null
   currentUserId: string | null
-  currentDeliveryPreference: 'email' | 'whatsapp' | 'both' | null
+  currentDeliveryPreference: 'none' | 'email' | 'whatsapp' | 'both' | null
   currentChannel: 'email' | 'whatsapp' | 'both' | null
   currentRecipientLabel: string | null
   message: string | null

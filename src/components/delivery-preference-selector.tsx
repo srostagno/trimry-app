@@ -19,6 +19,11 @@ export function DeliveryPreferenceSelector({
     description: string
   }> = [
     {
+      value: 'none',
+      title: messages.deliveryChannels.noneTitle,
+      description: messages.deliveryChannels.noneDescription,
+    },
+    {
       value: 'email',
       title: messages.deliveryChannels.emailTitle,
       description: messages.deliveryChannels.emailDescription,

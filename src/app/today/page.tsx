@@ -115,10 +115,10 @@ function buildUnlockLine(language: string) {
   const resolvedLanguage = normalizeLanguageCode(language)
 
   return resolvedLanguage === 'es'
-    ? 'Desbloquea Trimry para recibir tu proyección diaria por email, WhatsApp o ambos, abrir el calendario mensual y activar los poderes de Luck Guru.'
+    ? 'Desbloquea Trimry para abrir tu semana de suerte completa. Email y WhatsApp son opcionales.'
     : resolvedLanguage === 'pt'
-      ? 'Desbloqueie a Trimry para receber sua projeção diária por email, WhatsApp ou ambos, abrir o calendário mensal e ativar os poderes de Luck Guru.'
-    : 'Unlock Trimry to receive your daily projection by email, WhatsApp, or both, open the monthly calendar, and unlock Luck Guru’s full powers.'
+      ? 'Desbloqueie a Trimry para abrir sua semana completa de sorte. Email e WhatsApp são opcionais.'
+    : 'Unlock Trimry to open your full luck week. Email and WhatsApp are optional.'
 }
 
 function toneBadgeClass(tone: ActivityTone) {
@@ -255,18 +255,18 @@ function getStageCopy(language: string, stage: number, loadingPreview: boolean) 
     ? {
         eyebrow: 'Fortuna revelada',
         title: 'Esta es la senal de hoy.',
-        body: 'Desbloquea Trimry para ver el mes completo y activar los poderes de Luck Guru.',
+        body: 'Desbloquea Trimry para ver tu semana completa de suerte y activar los poderes de Luck Guru.',
       }
     : resolvedLanguage === 'pt'
       ? {
           eyebrow: 'Fortuna revelada',
           title: 'Este é o sinal de hoje.',
-          body: 'Desbloqueie a Trimry para ver o mês completo e ativar os poderes de Luck Guru.',
+          body: 'Desbloqueie a Trimry para ver sua semana completa de sorte e ativar os poderes de Luck Guru.',
         }
     : {
         eyebrow: 'Fortune revealed',
         title: 'This is today’s sign.',
-        body: 'Unlock Trimry to see the full month and activate Luck Guru’s powers.',
+        body: 'Unlock Trimry to see your full luck week and activate Luck Guru’s powers.',
       }
 }
 
@@ -276,16 +276,16 @@ function getTodayPageCopy(language: LanguageCode) {
       revealBadge: 'Revelación de hoy',
       title: 'Luck Guru está abriendo tu suerte.',
       subtitle:
-        'Primero mira la señal del día. Luego desbloquea el mes completo, tu capa zodiacal y sus poderes en el chat.',
+        'Primero mira la señal del día. Luego desbloquea tu semana de suerte, tu capa zodiacal y sus poderes en el chat.',
       strongPrefix: 'Fuerte',
       avoidPrefix: 'Evita',
       personalSignal: 'Señal personal',
       zodiac: 'Zodíaco',
       chineseCalendar: 'Calendario chino',
       lockedPersonalSummary:
-        'Este es solo el resumen. Suscríbete para abrir el detalle completo y ver todo el mes en calendario.',
+        'Este es solo el resumen. Suscríbete para abrir el detalle completo y ver tu semana de suerte.',
       activePersonalSummary:
-        'Tu suscripción mantiene esta señal activa junto al calendario mensual y Luck Guru.',
+        'Tu suscripción mantiene esta señal activa junto a tu calendario semanal y Luck Guru.',
       personalPending: 'Señal personal pendiente',
       personalPendingBody:
         'Agrega tu fecha de nacimiento en el perfil para ver tu zodíaco y calendario chino aquí.',
@@ -293,8 +293,8 @@ function getTodayPageCopy(language: LanguageCode) {
       fortunePending: 'La fortuna aún no se revela',
       unlockTitle: 'Al desbloquear Trimry',
       unlockBullets: [
-        'Recibes un recordatorio diario por email, WhatsApp o ambos.',
-        'Ves días buenos, malos y raros en el calendario mensual.',
+        'Desbloqueas los próximos 7 días de suerte.',
+        'Puedes activar recordatorios por email o WhatsApp si quieres.',
         'Tu zodíaco y calendario chino abren una capa personal de lectura.',
       ],
       resumeCheckout: 'Reanudar checkout',
@@ -308,16 +308,16 @@ function getTodayPageCopy(language: LanguageCode) {
       revealBadge: 'Revelação de hoje',
       title: 'Luck Guru está abrindo sua sorte.',
       subtitle:
-        'Primeiro veja o sinal do dia. Depois desbloqueie o mês completo, sua camada zodiacal e os poderes no chat.',
+        'Primeiro veja o sinal do dia. Depois desbloqueie sua semana de sorte, sua camada zodiacal e os poderes no chat.',
       strongPrefix: 'Forte',
       avoidPrefix: 'Evite',
       personalSignal: 'Sinal pessoal',
       zodiac: 'Zodíaco',
       chineseCalendar: 'Calendário chinês',
       lockedPersonalSummary:
-        'Este é apenas o resumo. Assine para abrir o detalhe completo e ver todo o mês no calendário.',
+        'Este é apenas o resumo. Assine para abrir o detalhe completo e ver sua semana de sorte.',
       activePersonalSummary:
-        'Sua assinatura mantém este sinal ativo junto ao calendário mensal e ao Luck Guru.',
+        'Sua assinatura mantém este sinal ativo junto ao calendário semanal e ao Luck Guru.',
       personalPending: 'Sinal pessoal pendente',
       personalPendingBody:
         'Adicione sua data de nascimento no perfil para ver seu zodíaco e calendário chinês aqui.',
@@ -325,8 +325,8 @@ function getTodayPageCopy(language: LanguageCode) {
       fortunePending: 'A fortuna ainda não foi revelada',
       unlockTitle: 'Ao desbloquear a Trimry',
       unlockBullets: [
-        'Você recebe um lembrete diário por email, WhatsApp ou ambos.',
-        'Você vê dias bons, ruins e raros no calendário mensal.',
+        'Você desbloqueia os próximos 7 dias de sorte.',
+        'Pode ativar lembretes por email ou WhatsApp se quiser.',
         'Seu zodíaco e calendário chinês abrem uma camada pessoal de leitura.',
       ],
       resumeCheckout: 'Retomar checkout',
@@ -339,16 +339,16 @@ function getTodayPageCopy(language: LanguageCode) {
     revealBadge: 'Today’s reveal',
     title: 'Luck Guru is opening your luck.',
     subtitle:
-      'First see today’s sign. Then unlock the full month, your zodiac layer, and his powers in chat.',
+      'First see today’s sign. Then unlock your luck week, your zodiac layer, and his powers in chat.',
     strongPrefix: 'Strong',
     avoidPrefix: 'Avoid',
     personalSignal: 'Personal signal',
     zodiac: 'Zodiac',
     chineseCalendar: 'Chinese calendar',
     lockedPersonalSummary:
-      'This is only the summary. Subscribe to open the full detail and see the whole month calendar.',
+      'This is only the summary. Subscribe to open the full detail and see your luck week.',
     activePersonalSummary:
-      'Your subscription keeps this signal active with the monthly calendar and Luck Guru.',
+      'Your subscription keeps this signal active with the weekly calendar and Luck Guru.',
     personalPending: 'Personal signal pending',
     personalPendingBody:
       'Add your date of birth in your profile to see your zodiac and Chinese calendar here.',
@@ -356,8 +356,8 @@ function getTodayPageCopy(language: LanguageCode) {
     fortunePending: 'Fortune has not revealed yet',
     unlockTitle: 'When Trimry unlocks',
     unlockBullets: [
-      'You receive one daily reminder by email, WhatsApp, or both.',
-      'You see good, bad, and rare days before they arrive.',
+      'You unlock the next 7 luck days.',
+      'You can enable email or WhatsApp reminders if you want them.',
       'Your zodiac and Chinese calendar open a personal reading layer.',
     ],
     resumeCheckout: 'Resume checkout',

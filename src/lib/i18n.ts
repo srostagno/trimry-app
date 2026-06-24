@@ -161,6 +161,13 @@ export type MessageSection = {
     registerSubtitle: string
     loginTitle: string
     loginSubtitle: string
+    loginWithLinkHint: string
+    loginWithLinkButton: string
+    loginWithLinkSending: string
+    loginWithLinkSent: string
+    loginWithLinkConsuming: string
+    loginWithLinkInvalid: string
+    loginWithLinkDivider: string
     firstNameLabel: string
     lastNameLabel: string
     birthDateLabel: string
@@ -756,6 +763,16 @@ const englishMessages: MessageSection = {
       'Enter your name, birth date, and contact so Trimry can open your personal luck code.',
     loginTitle: 'Welcome back',
     loginSubtitle: 'Sign in to manage your daily luck delivery.',
+    loginWithLinkHint:
+      'Prefer passwordless access? We can email you a secure sign-in link.',
+    loginWithLinkButton: 'Email me a sign-in link',
+    loginWithLinkSending: 'Sending sign-in link...',
+    loginWithLinkSent:
+      'If this email has an account, we sent a secure sign-in link. Check inbox and spam.',
+    loginWithLinkConsuming: 'Validating your secure sign-in link...',
+    loginWithLinkInvalid:
+      'This sign-in link is invalid or expired. Request a new one.',
+    loginWithLinkDivider: 'or',
     firstNameLabel: 'First name',
     lastNameLabel: 'Last name',
     birthDateLabel: 'Date of birth',
@@ -1586,6 +1603,16 @@ const spanishMessages: MessageSection = {
       'Ingresa tu nombre, fecha de nacimiento y contacto para abrir tu código personal de suerte.',
     loginTitle: 'Bienvenido de vuelta',
     loginSubtitle: 'Ingresa para administrar tu entrega diaria de suerte.',
+    loginWithLinkHint:
+      '¿Prefieres entrar sin contraseña? Te enviamos un link seguro por correo.',
+    loginWithLinkButton: 'Enviarme link de ingreso',
+    loginWithLinkSending: 'Enviando link de ingreso...',
+    loginWithLinkSent:
+      'Si este correo tiene una cuenta, enviamos un link seguro de ingreso. Revisa bandeja y spam.',
+    loginWithLinkConsuming: 'Validando tu link seguro de ingreso...',
+    loginWithLinkInvalid:
+      'Este link de ingreso es invalido o vencio. Solicita uno nuevo.',
+    loginWithLinkDivider: 'o',
     firstNameLabel: 'Nombre',
     lastNameLabel: 'Apellido',
     birthDateLabel: 'Fecha de nacimiento',
@@ -2461,6 +2488,16 @@ const portugueseMessages = mergeMessages(englishMessages, {
       'Informe seu nome, data de nascimento e contato para abrir seu código pessoal de sorte.',
     loginTitle: 'Bem-vindo de volta',
     loginSubtitle: 'Entre para gerenciar sua entrega diária de sorte.',
+    loginWithLinkHint:
+      'Prefere entrar sem senha? Enviamos um link seguro por email.',
+    loginWithLinkButton: 'Enviar link de acesso',
+    loginWithLinkSending: 'Enviando link de acesso...',
+    loginWithLinkSent:
+      'Se este email tiver uma conta, enviamos um link seguro de acesso. Verifique caixa de entrada e spam.',
+    loginWithLinkConsuming: 'Validando seu link seguro de acesso...',
+    loginWithLinkInvalid:
+      'Este link de acesso e invalido ou expirou. Solicite um novo.',
+    loginWithLinkDivider: 'ou',
     firstNameLabel: 'Nome',
     lastNameLabel: 'Sobrenome',
     birthDateLabel: 'Data de nascimento',

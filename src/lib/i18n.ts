@@ -363,7 +363,7 @@ export type MessageSection = {
       eventCount: string
       upcomingCount: string
       lastFetched: string
-      freeKeyWarning: string
+      providerNote: string
       summary: string
       statesTitle: string
       loadError: string
@@ -753,7 +753,7 @@ const legalEn: MessageSection['legal'] = {
     },
     {
       title: 'Third parties',
-      body: 'Stripe (billing), MailerSend (email), Meta WhatsApp Cloud API (messaging), OpenAI (assistant and digest copy generation, only the conversation and your sports preferences are shared), TheSportsDB (schedules), Google Analytics and Meta Pixel (measurement).',
+      body: 'Stripe (billing), MailerSend (email), Meta WhatsApp Cloud API (messaging), OpenAI (assistant, digest copy and schedule lookups through web search; only the conversation and your sports preferences are shared), Google Analytics and Meta Pixel (measurement).',
     },
     {
       title: 'Retention and rights',
@@ -767,7 +767,7 @@ const legalEn: MessageSection['legal'] = {
   disclaimerSections: [
     {
       title: 'Where the data comes from',
-      body: 'Schedules come from TheSportsDB and are refreshed periodically. Kickoff times are converted to the time zone saved on your account.',
+      body: 'Schedules are collected from official league, team and broadcaster websites using AI-assisted web search, cached and refreshed several times a day. Kickoff times are converted to the time zone saved on your account.',
     },
     {
       title: 'Things can change',
@@ -841,7 +841,7 @@ const legalEs: MessageSection['legal'] = {
     },
     {
       title: 'Terceros',
-      body: 'Stripe (cobros), MailerSend (email), Meta WhatsApp Cloud API (mensajería), OpenAI (asistente y redacción del digest; solo se comparte la conversación y tus preferencias deportivas), TheSportsDB (calendarios), Google Analytics y Meta Pixel (medición).',
+      body: 'Stripe (cobros), MailerSend (email), Meta WhatsApp Cloud API (mensajería), OpenAI (asistente, redacción del digest y búsqueda de calendarios en la web; solo se comparte la conversación y tus preferencias deportivas), Google Analytics y Meta Pixel (medición).',
     },
     {
       title: 'Retención y derechos',
@@ -855,7 +855,7 @@ const legalEs: MessageSection['legal'] = {
   disclaimerSections: [
     {
       title: 'De dónde salen los datos',
-      body: 'Los calendarios provienen de TheSportsDB y se actualizan periódicamente. Las horas se convierten a la zona horaria guardada en tu cuenta.',
+      body: 'Los calendarios se recopilan desde los sitios oficiales de ligas, equipos y canales mediante búsqueda web asistida por IA, se guardan en caché y se actualizan varias veces al día. Las horas se convierten a la zona horaria guardada en tu cuenta.',
     },
     {
       title: 'Las cosas cambian',
@@ -929,7 +929,7 @@ const legalPt: MessageSection['legal'] = {
     },
     {
       title: 'Terceiros',
-      body: 'Stripe (cobrança), MailerSend (email), Meta WhatsApp Cloud API (mensagens), OpenAI (assistente e texto do digest; apenas a conversa e suas preferências esportivas são compartilhadas), TheSportsDB (calendários), Google Analytics e Meta Pixel (medição).',
+      body: 'Stripe (cobrança), MailerSend (email), Meta WhatsApp Cloud API (mensagens), OpenAI (assistente, texto do digest e busca de calendários na web; apenas a conversa e suas preferências esportivas são compartilhadas), Google Analytics e Meta Pixel (medição).',
     },
     {
       title: 'Retenção e direitos',
@@ -943,7 +943,7 @@ const legalPt: MessageSection['legal'] = {
   disclaimerSections: [
     {
       title: 'De onde vêm os dados',
-      body: 'Os calendários vêm do TheSportsDB e são atualizados periodicamente. Os horários são convertidos para o fuso salvo na sua conta.',
+      body: 'Os calendários são coletados dos sites oficiais de ligas, times e emissoras com busca na web assistida por IA, armazenados em cache e atualizados várias vezes ao dia. Os horários são convertidos para o fuso salvo na sua conta.',
     },
     {
       title: 'As coisas mudam',
@@ -1009,7 +1009,7 @@ const en: MessageSection = {
     operationsOffice: 'Operations office',
     contact: 'Contact',
     tagline: 'Your sports events radar.',
-    dataSource: 'Schedules powered by TheSportsDB. Times shown in your time zone.',
+    dataSource: 'Schedules verified from official sources with AI web search. Times shown in your time zone.',
   },
   home: {
     badge: 'Sports events radar',
@@ -1099,7 +1099,7 @@ const en: MessageSection = {
       {
         question: 'Where does the schedule data come from?',
         answer:
-          'From TheSportsDB, refreshed several times a day. Times are converted to the time zone saved on your account. Postponements and late changes can happen, so always confirm with the official broadcaster.',
+          'Scout reads the official league, team and broadcaster websites with AI-assisted web search, stores the fixtures in a cache and refreshes them several times a day. Times are converted to the time zone saved on your account. Postponements and late changes can happen, so always confirm with the official broadcaster.',
       },
       {
         question: 'How does the free trial work?',
@@ -1374,15 +1374,15 @@ const en: MessageSection = {
     openBillingError: 'Unable to open the billing portal right now.',
     sportsSync: {
       title: 'Sports events sync',
-      subtitle: 'Cache of upcoming events pulled from TheSportsDB for every followed league, team and sport.',
+      subtitle: 'Cache of upcoming events collected with OpenAI web search for every followed league, team and sport.',
       runButton: 'Sync stale targets',
       forceButton: 'Force full sync',
       running: 'Syncing...',
       eventCount: 'Cached events',
       upcomingCount: 'Upcoming events',
       lastFetched: 'Last fetch',
-      freeKeyWarning:
-        'Using the free TheSportsDB key: results are truncated to a few rows per query. Set SPORTSDB_API_KEY with a Premium key for complete schedules.',
+      providerNote:
+        'Provider: OpenAI {model} with web search. Each league, team or sport is one search covering the next {days} days and is cached for {hours} hours.',
       summary: 'Targets {targets} · fetched {fetched} · skipped {skipped} · failed {failed} · upserted {events}',
       statesTitle: 'Sync targets',
       loadError: 'Unable to load sync status.',
@@ -1476,7 +1476,7 @@ const es: MessageSection = {
     operationsOffice: 'Oficina operativa',
     contact: 'Contacto',
     tagline: 'Tu radar de eventos deportivos.',
-    dataSource: 'Calendarios provistos por TheSportsDB. Horarios en tu zona horaria.',
+    dataSource: 'Calendarios verificados en fuentes oficiales con búsqueda web por IA. Horarios en tu zona horaria.',
   },
   home: {
     badge: 'Radar de eventos deportivos',
@@ -1566,7 +1566,7 @@ const es: MessageSection = {
       {
         question: '¿De dónde salen los calendarios?',
         answer:
-          'De TheSportsDB, actualizados varias veces al día. Los horarios se convierten a la zona horaria guardada en tu cuenta. Puede haber postergaciones y cambios de último minuto, así que confirma siempre con el canal oficial.',
+          'Scout lee los sitios oficiales de ligas, equipos y canales con búsqueda web asistida por IA, guarda los partidos en caché y los actualiza varias veces al día. Los horarios se convierten a la zona horaria guardada en tu cuenta. Puede haber postergaciones y cambios de último minuto, así que confirma siempre con el canal oficial.',
       },
       {
         question: '¿Cómo funciona la prueba gratis?',
@@ -1841,15 +1841,15 @@ const es: MessageSection = {
     openBillingError: 'No pudimos abrir el portal de cobros en este momento.',
     sportsSync: {
       title: 'Sync de eventos deportivos',
-      subtitle: 'Caché de próximos eventos traídos desde TheSportsDB para cada liga, equipo y deporte seguido.',
+      subtitle: 'Caché de próximos eventos recopilados con búsqueda web de OpenAI para cada liga, equipo y deporte seguido.',
       runButton: 'Sincronizar pendientes',
       forceButton: 'Forzar sync completo',
       running: 'Sincronizando...',
       eventCount: 'Eventos en caché',
       upcomingCount: 'Próximos eventos',
       lastFetched: 'Última descarga',
-      freeKeyWarning:
-        'Estás usando la key gratuita de TheSportsDB: los resultados se truncan a pocas filas por consulta. Configura SPORTSDB_API_KEY con una key Premium para calendarios completos.',
+      providerNote:
+        'Proveedor: OpenAI {model} con búsqueda web. Cada liga, equipo o deporte es una búsqueda que cubre los próximos {days} días y se cachea {hours} horas.',
       summary: 'Objetivos {targets} · descargados {fetched} · omitidos {skipped} · fallidos {failed} · guardados {events}',
       statesTitle: 'Objetivos de sync',
       loadError: 'No pudimos cargar el estado del sync.',
@@ -1943,7 +1943,7 @@ const pt: MessageSection = {
     operationsOffice: 'Escritório operacional',
     contact: 'Contato',
     tagline: 'Seu radar de eventos esportivos.',
-    dataSource: 'Calendários fornecidos por TheSportsDB. Horários no seu fuso.',
+    dataSource: 'Calendários verificados em fontes oficiais com busca web por IA. Horários no seu fuso.',
   },
   home: {
     badge: 'Radar de eventos esportivos',
@@ -2033,7 +2033,7 @@ const pt: MessageSection = {
       {
         question: 'De onde vêm os calendários?',
         answer:
-          'Do TheSportsDB, atualizados várias vezes ao dia. Os horários são convertidos para o fuso salvo na sua conta. Adiamentos e mudanças de última hora acontecem, então confirme sempre com a emissora oficial.',
+          'O Scout lê os sites oficiais de ligas, times e emissoras com busca na web assistida por IA, guarda os jogos em cache e atualiza várias vezes ao dia. Os horários são convertidos para o fuso salvo na sua conta. Adiamentos e mudanças de última hora acontecem, então confirme sempre com a emissora oficial.',
       },
       {
         question: 'Como funciona o teste grátis?',
@@ -2308,15 +2308,15 @@ const pt: MessageSection = {
     openBillingError: 'Não foi possível abrir o portal de cobrança agora.',
     sportsSync: {
       title: 'Sync de eventos esportivos',
-      subtitle: 'Cache de próximos eventos obtidos do TheSportsDB para cada liga, time e esporte acompanhado.',
+      subtitle: 'Cache de próximos eventos coletados com busca web da OpenAI para cada liga, time e esporte acompanhado.',
       runButton: 'Sincronizar pendentes',
       forceButton: 'Forçar sync completo',
       running: 'Sincronizando...',
       eventCount: 'Eventos em cache',
       upcomingCount: 'Próximos eventos',
       lastFetched: 'Última busca',
-      freeKeyWarning:
-        'Usando a chave gratuita do TheSportsDB: os resultados são truncados a poucas linhas por consulta. Configure SPORTSDB_API_KEY com uma chave Premium para calendários completos.',
+      providerNote:
+        'Provedor: OpenAI {model} com busca web. Cada liga, time ou esporte é uma busca que cobre os próximos {days} dias e fica em cache por {hours} horas.',
       summary: 'Alvos {targets} · buscados {fetched} · pulados {skipped} · falhos {failed} · gravados {events}',
       statesTitle: 'Alvos de sync',
       loadError: 'Não foi possível carregar o status do sync.',

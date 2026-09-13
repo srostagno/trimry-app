@@ -28,7 +28,7 @@ Anonymous visitors can complete steps 1–2 of `/activate`; the draft is stored 
 - `components/sports-preferences-editor.tsx` — `SportPicker`, `TeamSearch`, `LeaguePicker`, `RhythmPicker`, `PreferencesSummary` and the composed `SportsPreferencesEditor`.
 - `components/upcoming-events-feed.tsx` — renders an `UpcomingFeed` grouped by local day with team/league badges.
 - `components/dashboard/admin-send-campaigns.tsx` — legacy dark admin tooling, scoped by `.tr-admin-surface`.
-- `components/dashboard/admin-sports-sync.tsx` — TheSportsDB cache status and manual sync.
+- `components/dashboard/admin-sports-sync.tsx` — events cache status (OpenAI web search provider) and manual sync.
 
 ## Environment variables
 

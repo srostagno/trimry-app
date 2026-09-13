@@ -91,8 +91,14 @@ export function AdminSportsSync() {
         </div>
       </div>
 
-      {status?.usingFreeKey ? (
-        <p className="tr-alert mt-5 border-amber-200 bg-amber-50 text-amber-800">{copy.freeKeyWarning}</p>
+      {status ? (
+        <p className="tr-alert-info mt-5">
+          {interpolate(copy.providerNote, {
+            model: status.model,
+            days: status.fetchWindowDays,
+            hours: status.ttlHours,
+          })}
+        </p>
       ) : null}
 
       {error ? <p className="tr-alert-error mt-5">{error}</p> : null}
@@ -127,7 +133,7 @@ export function AdminSportsSync() {
               <dd className="mt-1 text-sm font-bold text-trimry-ink">
                 {formatDate(status.lastFetchedAt, locale)}
               </dd>
-              <dd className="tr-meta text-xs">TTL {status.ttlHours}h · {status.provider}</dd>
+              <dd className="tr-meta text-xs">TTL {status.ttlHours}h · {status.provider} / {status.model}</dd>
             </div>
           </dl>
 

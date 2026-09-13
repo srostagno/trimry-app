@@ -379,7 +379,8 @@ export async function sendAdminSportsDigestTemplateTest(
 
 export type SportsSyncStatus = {
   provider: string
-  usingFreeKey: boolean
+  model: string
+  fetchWindowDays: number
   ttlHours: number
   eventCount: number
   upcomingCount: number

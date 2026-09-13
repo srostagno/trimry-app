@@ -275,7 +275,9 @@ export async function searchTeams(query: string, sport?: SportKey | null) {
 export async function fetchEventsPreview(input: {
   sport?: SportKey
   leagueId?: string
+  leagueName?: string
   teamId?: string
+  teamName?: string
   days?: number
   language: LanguageCode
   timeZone?: string
@@ -290,8 +292,16 @@ export async function fetchEventsPreview(input: {
     params.set('leagueId', input.leagueId)
   }
 
+  if (input.leagueName) {
+    params.set('leagueName', input.leagueName)
+  }
+
   if (input.teamId) {
     params.set('teamId', input.teamId)
+  }
+
+  if (input.teamName) {
+    params.set('teamName', input.teamName)
   }
 
   if (input.days) {

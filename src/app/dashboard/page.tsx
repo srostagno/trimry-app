@@ -1,608 +1,267 @@
 'use client'
 
+import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { AdminSendCampaigns } from '@/components/dashboard/admin-send-campaigns'
-import { AdminPredictionCalendar } from '@/components/dashboard/admin-prediction-calendar'
-import { DateOfBirthPicker } from '@/components/date-of-birth-picker'
+import { AdminSportsSync } from '@/components/dashboard/admin-sports-sync'
 import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
-import { TimeZoneSelect } from '@/components/time-zone-select'
 import { useLanguage } from '@/components/language-provider'
+import { SCOUT_PREFERENCES_UPDATED_EVENT } from '@/components/scout-chat-widget'
+import { SportsPreferencesEditor } from '@/components/sports-preferences-editor'
+import { TimeZoneSelect } from '@/components/time-zone-select'
+import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
+import { trackEvent } from '@/lib/analytics'
 import { apiFetch, readApiError } from '@/lib/api-client'
+import { BillingSessionError, createBillingSession } from '@/lib/billing'
+import { interpolate, languageToIntlLocale } from '@/lib/i18n'
+import { DEFAULT_WEEKLY_DELIVERY_HOUR, formatNextDelivery } from '@/lib/schedule'
 import {
-  trackEvent,
-  trackEventOnce,
-  trackMetaStandardEventOnce,
-} from '@/lib/analytics'
-import { createBillingSession } from '@/lib/billing'
-import { interpolate } from '@/lib/i18n'
+  emptyPreferences,
+  fetchMemberUpcomingEvents,
+  hasAnyPreferences,
+  MAX_LOOKAHEAD_DAYS,
+  preferencesFromSerialized,
+  saveSportsPreferences,
+  type MemberUpcomingFeed,
+  type SportsPreferences,
+} from '@/lib/sports'
 import {
-  fetchMemberPredictionMonth,
-  type MemberPredictionDay,
-  type MemberPredictionMonth,
-  type MemberPredictionTone,
-} from '@/lib/member-predictions'
-import { buildPersonalSignProfile } from '@/lib/personal-signs'
-import {
-  DEFAULT_WEEKLY_DELIVERY_HOUR,
-  formatDeliveryHourLabel,
-  formatNextDelivery,
-} from '@/lib/schedule'
-import {
-  type DeliveryPreference,
-  type ManifestationWishHistoryEntry,
+  fetchAccountSnapshot,
+  getStartFlowDestination,
   requiresWhatsappDelivery,
+  type AccountSnapshot,
+  type DeliveryPreference,
 } from '@/lib/start-flow'
 
-type Subscription = {
-  id: string
-  status: 'pending_checkout' | 'active' | 'past_due' | 'paused' | 'canceled'
-  deliveryPreference: DeliveryPreference
-  deliveryHourLocal: number
-  timeZone: string
-  whatsappNumber: string
-  monthlyPriceUsd: number
-  currency: string
-  cadence: string
-  nextMessageAt: string
-  planId: string
-  canManageBilling: boolean
-  trialSource: 'internal' | 'stripe' | null
-  internalTrialStartedAt: string | null
-  internalTrialEndsAt: string | null
-  internalTrialEndedAt: string | null
-  internalTrialEndNotificationSentAt: string | null
-  internalTrialEndNotificationAttemptCount: number
-  internalTrialEndNotificationNextAt: string | null
-  stripeTrialStartedAt: string | null
-  stripeTrialEndsAt: string | null
-  updatedAt: string
+type DashboardTab = 'agenda' | 'preferences' | 'delivery' | 'account' | 'sends' | 'sportsSync'
+
+const TAB_ORDER: DashboardTab[] = ['agenda', 'preferences', 'delivery', 'account']
+const ADMIN_TABS: DashboardTab[] = ['sends', 'sportsSync']
+
+function isDashboardTab(value: string | null): value is DashboardTab {
+  return value !== null && [...TAB_ORDER, ...ADMIN_TABS].includes(value as DashboardTab)
 }
 
-type MeResponse = {
-  user: {
-    id: string
-    email: string
-    firstName: string
-    lastName: string
-    fullName: string
-    birthDate: string | null
-    manifestationWish: string | null
-    manifestationWishHistory: ManifestationWishHistoryEntry[]
-    locale: string
-    timeZone: string
-    admin: boolean
-  }
-  subscription: Subscription | null
-}
-
-const localeByLanguage = {
-  en: 'en-US',
-  es: 'es-CL',
-  pt: 'pt-BR',
-} as const
-
-function getWishAccountCopy(language: keyof typeof localeByLanguage) {
-  if (language === 'es') {
-    return {
-      title: 'Deseo de manifestación',
-      body:
-        'Luck Guru usa este deseo como contexto prioritario para asesorarte, conectar tus señales y ayudarte a elegir mejores días para actuar.',
-      label: 'Tu deseo activo',
-      placeholder: 'Ej: quiero atraer una oportunidad profesional importante',
-      hint:
-        'Puedes cambiarlo cuando quieras. Guardamos un historial para que tu proceso de manifestación tenga continuidad.',
-      historyTitle: 'Historial de deseos',
-      historyEmpty: 'Aún no tienes ediciones de deseo guardadas.',
-      previousLabel: 'Antes',
-      nextLabel: 'Ahora',
-      currentBadge: 'Foco actual',
-      sourceLabels: {
-        onboarding: 'Onboarding',
-        account: 'Cuenta',
-        admin: 'Admin',
-        system: 'Sistema',
-      },
-    }
-  }
-
-  if (language === 'pt') {
-    return {
-      title: 'Pedido de manifestação',
-      body:
-        'Luck Guru usa esse pedido como contexto prioritário para orientar você, conectar seus sinais e ajudar a escolher melhores dias para agir.',
-      label: 'Seu pedido ativo',
-      placeholder: 'Ex: quero atrair uma oportunidade profissional importante',
-      hint:
-        'Você pode mudar quando quiser. Salvamos um histórico para dar continuidade ao seu processo de manifestação.',
-      historyTitle: 'Histórico de pedidos',
-      historyEmpty: 'Ainda não há edições de pedido salvas.',
-      previousLabel: 'Antes',
-      nextLabel: 'Agora',
-      currentBadge: 'Foco atual',
-      sourceLabels: {
-        onboarding: 'Onboarding',
-        account: 'Conta',
-        admin: 'Admin',
-        system: 'Sistema',
-      },
-    }
-  }
-
-  return {
-    title: 'Manifestation wish',
-    body:
-      'Luck Guru uses this wish as priority context to advise you, connect your signals, and help you choose better days to act.',
-    label: 'Your active wish',
-    placeholder: 'Example: I want to attract an important career opportunity',
-    hint:
-      'You can change it anytime. We keep a history so your manifestation process has continuity.',
-    historyTitle: 'Wish history',
-    historyEmpty: 'No wish edits saved yet.',
-    previousLabel: 'Before',
-    nextLabel: 'Now',
-    currentBadge: 'Current focus',
-    sourceLabels: {
-      onboarding: 'Onboarding',
-      account: 'Account',
-      admin: 'Admin',
-      system: 'System',
-    },
-  }
-}
-
-const projectionActivityOrder = ['haircut', 'shave', 'nails', 'release'] as const
-
-function createUtcDate(year: number, month: number, day: number) {
-  return new Date(Date.UTC(year, month, day, 12))
-}
-
-function normalizeUtcDate(date: Date) {
-  return createUtcDate(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-  )
-}
-
-function startOfMonth(date: Date) {
-  return createUtcDate(date.getUTCFullYear(), date.getUTCMonth(), 1)
-}
-
-function addMonths(date: Date, offset: number) {
-  return createUtcDate(date.getUTCFullYear(), date.getUTCMonth() + offset, 1)
-}
-
-function toMonthKey(date: Date) {
-  const year = date.getUTCFullYear()
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-  return `${year}-${month}`
-}
-
-function toDayKey(isoDate: string) {
-  return isoDate.slice(0, 10)
+function wait(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms)
+  })
 }
 
 export default function DashboardPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { language, messages } = useLanguage()
+  const copy = messages.dashboard
+  const intlLocale = languageToIntlLocale(language)
+  const billingSuccess = searchParams.get('billing') === 'success'
+  const requestedTab = searchParams.get('tab')
+
+  const [account, setAccount] = useState<AccountSnapshot | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [data, setData] = useState<MeResponse | null>(null)
-  const [deliveryPreference, setDeliveryPreference] =
-    useState<DeliveryPreference>('none')
-  const [deliveryHourLocal, setDeliveryHourLocal] = useState(
-    DEFAULT_WEEKLY_DELIVERY_HOUR,
+  const [loadError, setLoadError] = useState('')
+  const [activeTab, setActiveTab] = useState<DashboardTab>(
+    isDashboardTab(requestedTab) ? requestedTab : 'agenda',
   )
+
+  const [feed, setFeed] = useState<MemberUpcomingFeed | null>(null)
+  const [feedLoading, setFeedLoading] = useState(false)
+  const [feedError, setFeedError] = useState('')
+  const [lookaheadDays, setLookaheadDays] = useState<number | null>(null)
+
+  const [preferencesDraft, setPreferencesDraft] = useState<SportsPreferences>(emptyPreferences)
+  const [preferencesSaving, setPreferencesSaving] = useState(false)
+  const [preferencesMessage, setPreferencesMessage] = useState('')
+  const [preferencesError, setPreferencesError] = useState('')
+
+  const [deliveryPreference, setDeliveryPreference] = useState<DeliveryPreference>('email')
+  const [deliveryHourLocal, setDeliveryHourLocal] = useState(DEFAULT_WEEKLY_DELIVERY_HOUR)
   const [whatsappNumber, setWhatsappNumber] = useState('')
   const [whatsappConsentAccepted, setWhatsappConsentAccepted] = useState(false)
-  const [busyAction, setBusyAction] = useState<string | null>(null)
+  const [deliveryBusy, setDeliveryBusy] = useState<string | null>(null)
+  const [deliveryMessage, setDeliveryMessage] = useState('')
+  const [deliveryError, setDeliveryError] = useState('')
+
   const [profileFirstName, setProfileFirstName] = useState('')
   const [profileLastName, setProfileLastName] = useState('')
-  const [profileBirthDate, setProfileBirthDate] = useState('')
-  const [profileManifestationWish, setProfileManifestationWish] = useState('')
   const [profileTimeZone, setProfileTimeZone] = useState('UTC')
   const [profileBusy, setProfileBusy] = useState(false)
+  const [profileMessage, setProfileMessage] = useState('')
   const [profileError, setProfileError] = useState('')
-  const [profileSuccess, setProfileSuccess] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
-  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordBusy, setPasswordBusy] = useState(false)
+  const [passwordMessage, setPasswordMessage] = useState('')
   const [passwordError, setPasswordError] = useState('')
-  const [passwordSuccess, setPasswordSuccess] = useState('')
-  const [subscriptionSuccess, setSubscriptionSuccess] = useState('')
+  const [logoutBusy, setLogoutBusy] = useState(false)
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [deleteError, setDeleteError] = useState('')
-  const [billingBusy, setBillingBusy] = useState(false)
-  const [logoutBusy, setLogoutBusy] = useState(false)
-  const [activeTab, setActiveTab] = useState<
-    'account' | 'prediction-calendar' | 'sends' | 'onboarding'
-  >('account')
-  const [projectionMonth, setProjectionMonth] = useState(() =>
-    startOfMonth(new Date()),
-  )
-  const [projectionCalendar, setProjectionCalendar] =
-    useState<MemberPredictionMonth | null>(null)
-  const [projectionLoading, setProjectionLoading] = useState(false)
-  const [projectionError, setProjectionError] = useState('')
-  const [selectedProjectionDateKey, setSelectedProjectionDateKey] = useState(() =>
-    toDayKey(normalizeUtcDate(new Date()).toISOString()),
-  )
-  const selectedProjectionDateKeyRef = useRef(selectedProjectionDateKey)
-  const billingSuccess = searchParams.get('billing') === 'success'
-  const deliveryLabel = (preference: DeliveryPreference) => {
-    if (preference === 'none') {
-      return messages.deliveryChannels.noneTitle
+
+  const subscription = account?.subscription ?? null
+  const isAdmin = Boolean(account?.user.admin)
+  const hasPreferences = hasAnyPreferences(account?.user.sportsPreferences)
+  const subscriptionActive =
+    subscription?.status === 'active' || subscription?.status === 'past_due' || subscription?.status === 'paused'
+
+  const applySnapshot = useCallback((snapshot: AccountSnapshot) => {
+    setAccount(snapshot)
+    setPreferencesDraft(preferencesFromSerialized(snapshot.user.sportsPreferences))
+    setProfileFirstName(snapshot.user.firstName ?? '')
+    setProfileLastName(snapshot.user.lastName ?? '')
+    setProfileTimeZone(snapshot.user.timeZone || 'UTC')
+
+    if (snapshot.subscription) {
+      setDeliveryPreference(snapshot.subscription.deliveryPreference ?? 'email')
+      setDeliveryHourLocal(snapshot.subscription.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR)
+      setWhatsappNumber(snapshot.subscription.whatsappNumber?.trim() ?? '')
+      setWhatsappConsentAccepted(Boolean(snapshot.subscription.whatsappNumber?.trim()))
     }
+  }, [])
 
-    if (preference === 'both') {
-      return messages.deliveryChannels.bothTitle
-    }
-
-    return preference === 'email'
-      ? messages.deliveryChannels.emailTitle
-      : messages.deliveryChannels.whatsappTitle
-  }
-
-  const statusLabel = useMemo(
-    () => ({
-      pending_checkout: messages.dashboard.paymentPending,
-      active: messages.statuses.active,
-      past_due: messages.dashboard.paymentIssue,
-      paused: messages.statuses.paused,
-      canceled: messages.statuses.canceled,
-    }),
-    [messages.dashboard.paymentIssue, messages.dashboard.paymentPending, messages.statuses],
-  )
-  const projectionLocale = localeByLanguage[language] ?? 'en-US'
-
-  const loadData = async () => {
-    setLoading(true)
-    setError('')
-
+  const loadAccount = useCallback(async () => {
     try {
-      const response = await apiFetch('/me', { cache: 'no-store' })
-      const payload = (await response.json()) as MeResponse | { message?: string }
+      let snapshot = await fetchAccountSnapshot()
 
-      if (!response.ok) {
-        setData(null)
-        setError((payload as { message?: string }).message ?? messages.dashboard.noData)
-        return
+      if (!snapshot) {
+        router.replace('/account/login?redirect=/dashboard')
+        return null
       }
 
-      const typedPayload = payload as MeResponse
-      setData(typedPayload)
-      setDeliveryPreference(typedPayload.subscription?.deliveryPreference ?? 'none')
-      setDeliveryHourLocal(
-        typedPayload.subscription?.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR,
-      )
-      setWhatsappNumber(typedPayload.subscription?.whatsappNumber ?? '')
-      setWhatsappConsentAccepted(Boolean(typedPayload.subscription?.whatsappNumber))
-      setProfileFirstName(typedPayload.user.firstName)
-      setProfileLastName(typedPayload.user.lastName)
-      setProfileBirthDate(typedPayload.user.birthDate ?? '')
-      setProfileManifestationWish(typedPayload.user.manifestationWish ?? '')
-      setProfileTimeZone(typedPayload.user.timeZone || 'UTC')
+      if (billingSuccess && snapshot.subscription?.status === 'pending_checkout') {
+        for (let attempt = 0; attempt < 6; attempt += 1) {
+          await wait(900)
+          const refreshed = await fetchAccountSnapshot()
+
+          if (refreshed?.subscription && refreshed.subscription.status !== 'pending_checkout') {
+            snapshot = refreshed
+            break
+          }
+        }
+      }
+
+      applySnapshot(snapshot)
+      setLoadError('')
+      return snapshot
     } catch {
-      setError(messages.notifications.error)
+      setLoadError(copy.noData)
+      return null
     } finally {
       setLoading(false)
     }
-  }
+  }, [applySnapshot, billingSuccess, copy.noData, router])
+
+  const loadFeed = useCallback(
+    async (options: { refresh?: boolean; days?: number | null } = {}) => {
+      setFeedLoading(true)
+      setFeedError('')
+
+      try {
+        const payload = await fetchMemberUpcomingEvents({
+          language,
+          days: options.days ?? lookaheadDays ?? undefined,
+          refresh: options.refresh,
+        })
+        setFeed(payload)
+      } catch (error) {
+        setFeedError(error instanceof Error ? error.message : messages.agenda.loadError)
+      } finally {
+        setFeedLoading(false)
+      }
+    },
+    [language, lookaheadDays, messages.agenda.loadError],
+  )
 
   useEffect(() => {
-    loadData()
+    void loadAccount().then((snapshot) => {
+      if (snapshot && hasAnyPreferences(snapshot.user.sportsPreferences)) {
+        void loadFeed()
+      }
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    if (!billingSuccess || !data?.subscription) {
-      return
+    const handler = () => {
+      void loadAccount().then((snapshot) => {
+        if (snapshot) {
+          void loadFeed({ refresh: false })
+        }
+      })
     }
 
-    trackEventOnce(
-      `subscription-started-${data.subscription.id}-${data.subscription.updatedAt}`,
-      'subscription_started',
-      {
-        user_id: data.user.id,
-        plan_id: data.subscription.planId,
-        currency: data.subscription.currency,
-        value: data.subscription.monthlyPriceUsd,
-        delivery_preference: data.subscription.deliveryPreference,
-      },
-    )
-    trackEventOnce(
-      `subscription-purchase-${data.subscription.id}-${data.subscription.updatedAt}`,
-      'purchase',
-      {
-        transaction_id: data.subscription.id,
-        affiliation: 'Trimry',
-        currency: data.subscription.currency,
-        value: data.subscription.monthlyPriceUsd,
-        user_id: data.user.id,
-        plan_id: data.subscription.planId,
-        delivery_preference: data.subscription.deliveryPreference,
-        items: [
-          {
-            item_id: data.subscription.planId,
-            item_name: 'Trimry subscription',
-            item_category: 'subscription',
-            price: data.subscription.monthlyPriceUsd,
-            quantity: 1,
-          },
-        ],
-      },
-    )
-    trackEventOnce(
-      `subscription-completed-${data.subscription.id}-${data.subscription.updatedAt}`,
-      'subscription_completed',
-      {
-        transaction_id: data.subscription.id,
-        affiliation: 'Trimry',
-        currency: data.subscription.currency,
-        value: data.subscription.monthlyPriceUsd,
-        user_id: data.user.id,
-        plan_id: data.subscription.planId,
-        delivery_preference: data.subscription.deliveryPreference,
-      },
-    )
-    trackMetaStandardEventOnce(
-      `subscription-started-${data.subscription.id}-${data.subscription.updatedAt}`,
-      'Subscribe',
-      {
-        content_name: 'Trimry subscription',
-        content_category: 'subscription',
-        currency: data.subscription.currency,
-        value: data.subscription.monthlyPriceUsd,
-        predicted_ltv: data.subscription.monthlyPriceUsd * 12,
-        subscription_id: data.subscription.id,
-        plan_id: data.subscription.planId,
-        delivery_preference: data.subscription.deliveryPreference,
-      },
-    )
-  }, [billingSuccess, data?.subscription, data?.user.id])
+    window.addEventListener(SCOUT_PREFERENCES_UPDATED_EVENT, handler)
+    return () => window.removeEventListener(SCOUT_PREFERENCES_UPDATED_EVENT, handler)
+  }, [loadAccount, loadFeed])
 
   useEffect(() => {
-    if (!data?.user.admin) {
-      setActiveTab('account')
-      return
+    if (isDashboardTab(requestedTab) && requestedTab !== activeTab) {
+      setActiveTab(requestedTab)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestedTab])
 
-    setActiveTab(
-      searchParams.get('tab') === 'prediction-calendar'
-        ? 'prediction-calendar'
-        : searchParams.get('tab') === 'sends'
-          ? 'sends'
-          : searchParams.get('tab') === 'onboarding'
-            ? 'onboarding'
-          : 'account',
-    )
-  }, [data?.user.admin, searchParams])
-
-  const setDashboardTab = (
-    nextTab: 'account' | 'prediction-calendar' | 'sends' | 'onboarding',
-  ) => {
-    setActiveTab(nextTab)
-
+  const selectTab = (tab: DashboardTab) => {
+    setActiveTab(tab)
     const params = new URLSearchParams(searchParams.toString())
 
-    if (nextTab === 'prediction-calendar') {
-      params.set('tab', 'prediction-calendar')
-    } else if (nextTab === 'sends') {
-      params.set('tab', 'sends')
-    } else if (nextTab === 'onboarding') {
-      params.set('tab', 'onboarding')
-    } else {
+    if (tab === 'agenda') {
       params.delete('tab')
+    } else {
+      params.set('tab', tab)
     }
 
+    params.delete('billing')
     const query = params.toString()
     router.replace(query ? `/dashboard?${query}` : '/dashboard', { scroll: false })
   }
 
-  const goToProjectionMonth = (offset: number) => {
-    setProjectionMonth((currentMonth) => addMonths(currentMonth, offset))
-    setProjectionError('')
+  const savePreferences = async () => {
+    setPreferencesSaving(true)
+    setPreferencesMessage('')
+    setPreferencesError('')
+
+    try {
+      await saveSportsPreferences(preferencesDraft)
+      trackEvent('preferences_saved', {
+        source: 'dashboard',
+        sports: preferencesDraft.sports,
+        teams: preferencesDraft.teams.length,
+        leagues: preferencesDraft.leagues.length,
+        frequency: preferencesDraft.frequency,
+      })
+      setPreferencesMessage(copy.preferencesSaved)
+      await loadAccount()
+      setLookaheadDays(null)
+      await loadFeed({ days: preferencesDraft.lookaheadDays })
+    } catch (error) {
+      setPreferencesError(error instanceof Error ? error.message : copy.preferencesSaveError)
+    } finally {
+      setPreferencesSaving(false)
+    }
   }
 
-  const goToCurrentProjectionMonth = () => {
-    const today = normalizeUtcDate(new Date())
-    setProjectionMonth(startOfMonth(today))
-    setSelectedProjectionDateKey(toDayKey(today.toISOString()))
-    setProjectionError('')
-  }
-
-  const openProjectionUnlockFlow = async () => {
-    if (!data?.subscription) {
-      router.push('/activate')
-      return
-    }
-
-    if (data.subscription.status === 'pending_checkout') {
-      router.push('/checkout/start')
-      return
-    }
-
-    if (data.subscription.status === 'canceled') {
-      await reactivateSubscription()
-      return
-    }
-
-    if (data.subscription.status === 'paused' && data.subscription.canManageBilling) {
-      await openBillingPortal()
-      return
-    }
-
-    router.push('/account/delivery?edit=1')
-  }
-
-  useEffect(() => {
-    selectedProjectionDateKeyRef.current = selectedProjectionDateKey
-  }, [selectedProjectionDateKey])
-
-  useEffect(() => {
-    if (!data) {
-      setProjectionCalendar(null)
-      setProjectionError('')
-      return
-    }
-
-    let canceled = false
-
-    const loadProjectionCalendar = async () => {
-      setProjectionLoading(true)
-      setProjectionError('')
-
-      try {
-        const nextCalendar = await fetchMemberPredictionMonth(
-          toMonthKey(projectionMonth),
-          projectionLocale,
-        )
-
-        if (canceled) {
-          return
-        }
-
-        setProjectionCalendar(nextCalendar)
-
-        const nextSelectedDay =
-          nextCalendar.currentMonthDays.find(
-            (day) => toDayKey(day.date) === selectedProjectionDateKeyRef.current,
-          ) ??
-          nextCalendar.currentMonthDays.find((day) => day.isToday) ??
-          nextCalendar.currentMonthDays[0] ??
-          null
-
-        if (nextSelectedDay) {
-          setSelectedProjectionDateKey(toDayKey(nextSelectedDay.date))
-        }
-      } catch (calendarError) {
-        if (canceled) {
-          return
-        }
-
-        setProjectionError(
-          calendarError instanceof Error
-            ? calendarError.message
-            : messages.dashboard.projectionCalendar.loadError,
-        )
-      } finally {
-        if (!canceled) {
-          setProjectionLoading(false)
-        }
-      }
-    }
-
-    void loadProjectionCalendar()
-
-    return () => {
-      canceled = true
-    }
-  }, [
-    data,
-    messages.dashboard.projectionCalendar.loadError,
-    projectionLocale,
-    projectionMonth,
-  ])
-
-  const selectedProjectionDay = useMemo(() => {
-    if (!projectionCalendar) {
-      return null
-    }
-
-    return (
-      projectionCalendar.currentMonthDays.find(
-        (day) => toDayKey(day.date) === selectedProjectionDateKey,
-      ) ??
-      projectionCalendar.currentMonthDays[0] ??
-      null
-    )
-  }, [projectionCalendar, selectedProjectionDateKey])
-
-  const projectionStatus = data?.subscription?.status ?? null
-  const projectionUnlockBusy =
-    busyAction === 'reactivate-subscription' || billingBusy
-  const projectionHasFullAccess =
-    projectionCalendar?.hasWeekAccess ??
-    (projectionStatus === 'active' || projectionStatus === 'past_due')
-  const projectionUnlockButtonLabel =
-    projectionStatus === 'pending_checkout'
-      ? messages.checkout.resumeButton
-      : projectionStatus === 'canceled'
-        ? messages.dashboard.reactivateButton
-        : projectionStatus === 'paused'
-          ? messages.dashboard.manageBillingButton
-          : messages.dashboard.subscribeButton
-  const projectionToneClass = (tone: MemberPredictionTone) =>
-    tone === 'good'
-      ? 'oracle-tone-badge oracle-tone-badge-good'
-      : tone === 'bad'
-        ? 'oracle-tone-badge oracle-tone-badge-bad'
-        : 'oracle-tone-badge oracle-tone-badge-rare'
-  const projectionToneLabel = (tone: MemberPredictionTone) =>
-    tone === 'good'
-      ? messages.dashboard.predictionCalendar.goodTone
-      : tone === 'bad'
-        ? messages.dashboard.predictionCalendar.badTone
-        : messages.dashboard.predictionCalendar.rareTone
-  const projectionActivityLabel = (
-    activity: (typeof projectionActivityOrder)[number],
-  ) =>
-    activity === 'haircut'
-      ? messages.dashboard.predictionCalendar.haircut
-      : activity === 'shave'
-        ? messages.dashboard.predictionCalendar.shave
-        : activity === 'nails'
-          ? messages.dashboard.predictionCalendar.nails
-          : messages.dashboard.predictionCalendar.release
-  const projectionSelectedDayLabelFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(projectionLocale, {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-        timeZone: 'UTC',
-      }),
-    [projectionLocale],
-  )
-  const profileSigns = useMemo(
-    () => buildPersonalSignProfile(profileBirthDate, language),
-    [language, profileBirthDate],
-  )
-  const wishAccountCopy = useMemo(
-    () => getWishAccountCopy(language),
-    [language],
-  )
-
-  const runAction = async (
-    action: 'subscribe' | 'update-delivery',
-    event?: FormEvent,
-  ) => {
-    if (event) {
-      event.preventDefault()
-    }
-
-    setBusyAction(action)
-    setError('')
-    setSubscriptionSuccess('')
+  const saveDelivery = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setDeliveryMessage('')
+    setDeliveryError('')
 
     if (requiresWhatsappDelivery(deliveryPreference) && !whatsappConsentAccepted) {
-      setError(messages.dashboard.whatsappConsentError)
-      setBusyAction(null)
+      setDeliveryError(copy.whatsappConsentError)
       return
     }
+
+    setDeliveryBusy('save')
 
     try {
       const response = await apiFetch('/subscription', {
         method: 'POST',
         body: JSON.stringify({
-          action,
+          action: 'update-delivery',
           deliveryPreference,
           deliveryHourLocal,
           whatsappNumber,
@@ -613,82 +272,121 @@ export default function DashboardPage() {
       })
 
       if (!response.ok) {
-        setError(await readApiError(response, messages.notifications.error))
+        setDeliveryError(await readApiError(response, messages.delivery.saveError))
         return
       }
 
-      trackEvent('delivery_preferences_saved', {
-        entry_point: action === 'subscribe' ? 'dashboard_subscribe' : 'dashboard_manage',
-        user_id: data?.user.id,
+      trackEvent('delivery_settings_saved', {
+        entry_point: 'dashboard',
         delivery_preference: deliveryPreference,
         delivery_hour_local: deliveryHourLocal,
-        requires_whatsapp: requiresWhatsappDelivery(deliveryPreference),
-        destination: 'dashboard',
       })
-
-      if (action === 'subscribe') {
-        await loadData()
-        return
-      }
-
-      await loadData()
+      setDeliveryMessage(messages.delivery.success)
+      await loadAccount()
     } catch {
-      setError(messages.notifications.error)
+      setDeliveryError(messages.delivery.saveError)
     } finally {
-      setBusyAction(null)
+      setDeliveryBusy(null)
     }
-  }
-
-  const saveDeliverySettingsForReactivation = async () => {
-    const response = await apiFetch('/subscription', {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'update-delivery',
-        deliveryPreference,
-        deliveryHourLocal,
-        whatsappNumber,
-      }),
-    })
-
-    if (!response.ok) {
-      setError(await readApiError(response, messages.notifications.error))
-      return false
-    }
-
-    return true
   }
 
   const openBillingPortal = async () => {
-    setBillingBusy(true)
-    setError('')
+    setDeliveryBusy('portal')
+    setDeliveryError('')
 
     try {
-      const portalUrl = await createBillingSession(
-        '/billing/portal-session',
-        messages.dashboard.openBillingError,
+      const url = await createBillingSession('/billing/portal-session', copy.openBillingError)
+      window.location.assign(url)
+    } catch (error) {
+      setDeliveryError(
+        error instanceof BillingSessionError || error instanceof Error
+          ? error.message
+          : copy.openBillingError,
       )
+      setDeliveryBusy(null)
+    }
+  }
 
-      trackEvent('billing_portal_opened', {
-        subscription_status: data?.subscription?.status ?? 'unknown',
+  const cancelSubscription = async () => {
+    if (!window.confirm(copy.cancelConfirm)) {
+      return
+    }
+
+    setDeliveryBusy('cancel')
+    setDeliveryError('')
+    setDeliveryMessage('')
+
+    try {
+      const response = await apiFetch('/billing/cancel-subscription', { method: 'POST' })
+
+      if (!response.ok) {
+        setDeliveryError(await readApiError(response, copy.cancelError))
+        return
+      }
+
+      trackEvent('subscription_cancelled', { source: 'dashboard' })
+      setDeliveryMessage(copy.cancelSuccess)
+      await loadAccount()
+    } catch {
+      setDeliveryError(copy.cancelError)
+    } finally {
+      setDeliveryBusy(null)
+    }
+  }
+
+  const reactivateSubscription = async () => {
+    setDeliveryBusy('reactivate')
+    setDeliveryError('')
+
+    try {
+      const response = await apiFetch('/billing/reactivate-subscription', { method: 'POST' })
+
+      if (!response.ok) {
+        setDeliveryError(await readApiError(response, copy.reactivateError))
+        return
+      }
+
+      trackEvent('subscription_reactivate_started', { source: 'dashboard' })
+      const snapshot = await fetchAccountSnapshot()
+      router.push(getStartFlowDestination(snapshot))
+      router.refresh()
+    } catch {
+      setDeliveryError(copy.reactivateError)
+    } finally {
+      setDeliveryBusy(null)
+    }
+  }
+
+  const sendSample = async () => {
+    setDeliveryBusy('sample')
+    setDeliveryError('')
+    setDeliveryMessage('')
+
+    try {
+      const response = await apiFetch('/subscription', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'send-sample', sampleChannel: 'email' }),
       })
 
-      window.location.assign(portalUrl)
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : messages.dashboard.openBillingError,
-      )
+      if (!response.ok) {
+        setDeliveryError(await readApiError(response, messages.notifications.error))
+        return
+      }
+
+      setDeliveryMessage(messages.notifications.success)
+      await loadAccount()
+    } catch {
+      setDeliveryError(messages.notifications.error)
     } finally {
-      setBillingBusy(false)
+      setDeliveryBusy(null)
     }
   }
 
   const saveProfile = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setProfileBusy(true)
+    setProfileMessage('')
     setProfileError('')
-    setProfileSuccess('')
 
     try {
       const response = await apiFetch('/users/me', {
@@ -696,8 +394,6 @@ export default function DashboardPage() {
         body: JSON.stringify({
           firstName: profileFirstName,
           lastName: profileLastName,
-          birthDate: profileBirthDate || null,
-          manifestationWish: profileManifestationWish.trim() || null,
           timeZone: profileTimeZone,
         }),
       })
@@ -707,11 +403,10 @@ export default function DashboardPage() {
         return
       }
 
-      trackEvent('profile_updated', {
-        updated_fields: 'profile,manifestation_wish',
-      })
-      setProfileSuccess(messages.notifications.success)
-      await loadData()
+      setProfileMessage(messages.notifications.success)
+      await loadAccount()
+      router.refresh()
+      void loadFeed({ refresh: false })
     } catch {
       setProfileError(messages.notifications.error)
     } finally {
@@ -721,151 +416,40 @@ export default function DashboardPage() {
 
   const savePassword = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setPasswordBusy(true)
+    setPasswordMessage('')
     setPasswordError('')
-    setPasswordSuccess('')
 
-    if (newPassword !== confirmNewPassword) {
-      setPasswordError(messages.dashboard.passwordMismatchError)
-      setPasswordBusy(false)
+    if (newPassword !== confirmPassword) {
+      setPasswordError(copy.passwordMismatchError)
       return
     }
 
-    if (currentPassword === newPassword) {
-      setPasswordError(messages.dashboard.passwordDifferentError)
-      setPasswordBusy(false)
+    if (currentPassword && currentPassword === newPassword) {
+      setPasswordError(copy.passwordDifferentError)
       return
     }
+
+    setPasswordBusy(true)
 
     try {
       const response = await apiFetch('/users/me/password', {
         method: 'PATCH',
-        body: JSON.stringify({
-          currentPassword,
-          newPassword,
-        }),
+        body: JSON.stringify({ currentPassword, newPassword }),
       })
 
       if (!response.ok) {
-        setPasswordError(
-          await readApiError(response, messages.dashboard.passwordSaveError),
-        )
+        setPasswordError(await readApiError(response, copy.passwordSaveError))
         return
       }
 
-      trackEvent('password_updated', {
-        source: 'dashboard',
-      })
+      setPasswordMessage(copy.passwordSuccess)
       setCurrentPassword('')
       setNewPassword('')
-      setConfirmNewPassword('')
-      setPasswordSuccess(messages.dashboard.passwordSuccess)
+      setConfirmPassword('')
     } catch {
-      setPasswordError(messages.dashboard.passwordSaveError)
+      setPasswordError(copy.passwordSaveError)
     } finally {
       setPasswordBusy(false)
-    }
-  }
-
-  const cancelSubscription = async () => {
-    const confirmed = window.confirm(messages.dashboard.cancelConfirm)
-
-    if (!confirmed) {
-      return
-    }
-
-    setBusyAction('cancel-subscription')
-    setError('')
-    setSubscriptionSuccess('')
-
-    try {
-      const response = await apiFetch('/billing/cancel-subscription', {
-        method: 'POST',
-      })
-
-      if (!response.ok) {
-        setError(await readApiError(response, messages.dashboard.cancelError))
-        return
-      }
-
-      trackEvent('subscription_canceled', {
-        plan_id: data?.subscription?.planId ?? 'unknown',
-      })
-      setSubscriptionSuccess(messages.dashboard.cancelSuccess)
-      await loadData()
-    } catch {
-      setError(messages.dashboard.cancelError)
-    } finally {
-      setBusyAction(null)
-    }
-  }
-
-  const reactivateSubscription = async () => {
-    setBusyAction('reactivate-subscription')
-    setError('')
-    setSubscriptionSuccess('')
-
-    try {
-      const settingsSaved = await saveDeliverySettingsForReactivation()
-
-      if (!settingsSaved) {
-        return
-      }
-
-      const response = await apiFetch('/billing/reactivate-subscription', {
-        method: 'POST',
-      })
-
-      if (!response.ok) {
-        setError(await readApiError(response, messages.dashboard.reactivateError))
-        return
-      }
-
-      trackEvent('subscription_reactivated', {
-        plan_id: data?.subscription?.planId ?? 'unknown',
-      })
-      router.push('/activate')
-      router.refresh()
-    } catch {
-      setError(messages.dashboard.reactivateError)
-    } finally {
-      setBusyAction(null)
-    }
-  }
-
-  const deleteAccount = async () => {
-    const confirmed = window.confirm(messages.dashboard.deleteConfirm)
-
-    if (!confirmed) {
-      return
-    }
-
-    setDeleteBusy(true)
-    setDeleteError('')
-
-    try {
-      const response = await apiFetch(
-        '/users/me',
-        {
-          method: 'DELETE',
-        },
-        { retryUnauthorized: false },
-      )
-
-      if (!response.ok) {
-        setDeleteError(await readApiError(response, messages.dashboard.deleteError))
-        return
-      }
-
-      trackEvent('account_deleted', {
-        source: 'dashboard',
-      })
-      router.push('/')
-      router.refresh()
-    } catch {
-      setDeleteError(messages.dashboard.deleteError)
-    } finally {
-      setDeleteBusy(false)
     }
   }
 
@@ -873,953 +457,556 @@ export default function DashboardPage() {
     setLogoutBusy(true)
 
     try {
-      // Clear API auth cookies (cross-subdomain) and best-effort clear legacy local session.
       await apiFetch('/auth/logout', { method: 'POST' }, { retryUnauthorized: false })
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
     } catch {
-      // Even when remote logout fails, still clear local session and continue navigation.
-      try {
-        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
-      } catch {
-        // Ignore secondary cleanup failures and continue.
-      }
+      // Clear the local session regardless of the remote result.
     } finally {
       router.replace('/')
       router.refresh()
       window.location.assign('/')
-      setLogoutBusy(false)
     }
   }
+
+  const deleteAccount = async () => {
+    if (!window.confirm(copy.deleteConfirm)) {
+      return
+    }
+
+    setDeleteBusy(true)
+    setDeleteError('')
+
+    try {
+      const response = await apiFetch('/users/me', { method: 'DELETE' })
+
+      if (!response.ok) {
+        setDeleteError(await readApiError(response, copy.deleteError))
+        return
+      }
+
+      trackEvent('account_deleted', { source: 'dashboard' })
+      window.location.assign('/')
+    } catch {
+      setDeleteError(copy.deleteError)
+    } finally {
+      setDeleteBusy(false)
+    }
+  }
+
+  const statusBadge = useMemo(() => {
+    if (!subscription) {
+      return { label: copy.noSubscription, className: 'tr-badge-slate' }
+    }
+
+    switch (subscription.status) {
+      case 'active':
+        return { label: messages.statuses.active, className: 'tr-badge-green' }
+      case 'paused':
+        return { label: messages.statuses.paused, className: 'tr-badge-amber' }
+      case 'past_due':
+        return { label: copy.paymentIssue, className: 'tr-badge-amber' }
+      case 'pending_checkout':
+        return { label: copy.paymentPending, className: 'tr-badge-amber' }
+      default:
+        return { label: messages.statuses.canceled, className: 'tr-badge-slate' }
+    }
+  }, [copy.noSubscription, copy.paymentIssue, copy.paymentPending, messages.statuses, subscription])
+
+  const deliveryLabel = (preference: DeliveryPreference) =>
+    preference === 'none'
+      ? messages.deliveryChannels.noneTitle
+      : preference === 'email'
+        ? messages.deliveryChannels.emailTitle
+        : preference === 'whatsapp'
+          ? messages.deliveryChannels.whatsappTitle
+          : messages.deliveryChannels.bothTitle
 
   if (loading) {
     return (
-      <section className="cosmic-shell cosmic-shell-copy rounded-3xl p-8">
-        {messages.dashboard.loading}
+      <section className="tr-shell mx-auto max-w-3xl p-8">
+        <p className="tr-copy">{copy.loading}</p>
       </section>
     )
   }
 
-  if (!data) {
+  if (!account) {
     return (
-      <section className="cosmic-shell cosmic-shell-copy rounded-3xl p-8">
-        <p>{error || messages.dashboard.noData}</p>
-        <Link
-          href="/account/login"
-          className="cosmic-button-primary mt-4 inline-flex rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
-        >
-          {messages.nav.login}
-        </Link>
+      <section className="tr-shell mx-auto max-w-3xl p-8">
+        <p className="tr-alert-error">{loadError || copy.noData}</p>
       </section>
     )
   }
 
-  const subscriptionDeliveryTimeZone =
-    data.subscription?.timeZone || data.user.timeZone || 'America/Santiago'
-  const wishHistory = [...(data.user.manifestationWishHistory ?? [])].sort(
-    (left, right) =>
-      new Date(right.changedAt).getTime() - new Date(left.changedAt).getTime(),
-  )
-  const wishHistoryDateFormatter = new Intl.DateTimeFormat(projectionLocale, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
-  const formatWishHistoryDate = (dateIso: string) => {
-    const date = new Date(dateIso)
-
-    if (Number.isNaN(date.getTime())) {
-      return dateIso
-    }
-
-    return wishHistoryDateFormatter.format(date)
-  }
-  const accountContent = (
-    <>
-      <section className="cosmic-shell rounded-[2rem] p-8">
-        <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.profileTitle}</h2>
-        <p className="cosmic-shell-copy mt-2">{messages.dashboard.profileSubtitle}</p>
-
-        <form className="mt-5 grid gap-4 sm:grid-cols-2" onSubmit={saveProfile}>
-          <label className="cosmic-field-label text-sm font-semibold">
-            {messages.auth.firstNameLabel}
-            <input
-              type="text"
-              value={profileFirstName}
-              onChange={(event) => setProfileFirstName(event.target.value)}
-              required
-              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-            />
-          </label>
-
-          <label className="cosmic-field-label text-sm font-semibold">
-            {messages.auth.lastNameLabel}
-            <input
-              type="text"
-              value={profileLastName}
-              onChange={(event) => setProfileLastName(event.target.value)}
-              required
-              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-            />
-          </label>
-
-          <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
-            {messages.auth.birthDateLabel}
-            <div className="mt-2">
-              <DateOfBirthPicker
-                idPrefix="profile-birth"
-                value={profileBirthDate}
-                onChange={setProfileBirthDate}
-                language={language}
-              />
-            </div>
-          </label>
-
-          {profileSigns ? (
-            <div className="sm:col-span-2 rounded-[1.35rem] border border-amber-200/24 bg-amber-200/10 p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-100/86">
-                {language === 'es'
-                  ? 'Tu código de fortuna'
-                  : language === 'pt'
-                    ? 'Seu código de fortuna'
-                    : 'Your fortune code'}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-slate-100/84">
-                {profileSigns.zodiac.name} · {profileSigns.chinese.name}
-              </p>
-            </div>
-          ) : null}
-
-          <div className="relative overflow-hidden rounded-[1.6rem] border border-cyan-100/20 bg-slate-950/38 p-5 sm:col-span-2">
-            <div className="pointer-events-none absolute -right-12 -top-14 h-36 w-36 rounded-full bg-cyan-300/14 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-16 left-8 h-32 w-32 rounded-full bg-amber-200/12 blur-3xl" />
-            <div className="relative grid gap-5 lg:grid-cols-[0.84fr_1.16fr]">
-              <div>
-                <span className="inline-flex rounded-full border border-amber-200/24 bg-amber-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
-                  {wishAccountCopy.currentBadge}
-                </span>
-                <h3 className="mt-3 text-2xl leading-tight text-slate-50">
-                  {wishAccountCopy.title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-100/78">
-                  {wishAccountCopy.body}
-                </p>
-              </div>
-
-              <div>
-                <label className="cosmic-field-label text-sm font-semibold">
-                  {wishAccountCopy.label}
-                  <textarea
-                    value={profileManifestationWish}
-                    onChange={(event) =>
-                      setProfileManifestationWish(event.target.value)
-                    }
-                    maxLength={240}
-                    rows={4}
-                    placeholder={wishAccountCopy.placeholder}
-                    className="cosmic-input mt-2 block min-h-[112px] w-full resize-y rounded-xl px-4 py-3"
-                  />
-                </label>
-                <p className="cosmic-shell-meta mt-2 text-xs">
-                  {wishAccountCopy.hint}
-                </p>
-              </div>
-            </div>
-
-            <div className="relative mt-5 rounded-2xl border border-cyan-100/14 bg-cyan-100/8 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/82">
-                  {wishAccountCopy.historyTitle}
-                </p>
-                <span className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300/70">
-                  {wishHistory.length}
-                </span>
-              </div>
-
-              {wishHistory.length > 0 ? (
-                <div className="mt-3 grid gap-3">
-                  {wishHistory.slice(0, 5).map((entry) => (
-                    <article
-                      key={entry.id}
-                      className="rounded-xl border border-slate-600/40 bg-slate-950/42 p-3"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300/70">
-                        <span>{formatWishHistoryDate(entry.changedAt)}</span>
-                        <span>
-                          {wishAccountCopy.sourceLabels[entry.source] ??
-                            entry.source}
-                        </span>
-                      </div>
-                      <div className="mt-3 grid gap-2 text-sm leading-6 text-slate-100/84 sm:grid-cols-2">
-                        <p>
-                          <span className="block text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
-                            {wishAccountCopy.previousLabel}
-                          </span>
-                          {entry.previousWish || '...'}
-                        </p>
-                        <p>
-                          <span className="block text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
-                            {wishAccountCopy.nextLabel}
-                          </span>
-                          {entry.nextWish || '...'}
-                        </p>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 text-sm leading-6 text-slate-100/74">
-                  {wishAccountCopy.historyEmpty}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
-            {messages.auth.timeZoneLabel}
-            <TimeZoneSelect
-              value={profileTimeZone}
-              onChange={setProfileTimeZone}
-              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-            />
-            <span className="cosmic-shell-meta mt-2 block text-xs">
-              {messages.dashboard.profileTimeZoneHint}
-            </span>
-          </label>
-
-          <div className="sm:col-span-2">
-            <button
-              type="submit"
-              disabled={profileBusy}
-              className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-70"
-            >
-              {profileBusy ? messages.common.saving : messages.dashboard.profileSave}
-            </button>
-          </div>
-        </form>
-
-        {profileError ? (
-          <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
-            {profileError}
-          </p>
-        ) : null}
-
-        {profileSuccess ? (
-          <p className="cosmic-success-box mt-4 rounded-xl px-4 py-3 text-sm">
-            {profileSuccess}
-          </p>
-        ) : null}
-      </section>
-
-      <section className="cosmic-shell rounded-[2rem] p-8">
-        <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.passwordTitle}</h2>
-        <p className="cosmic-shell-copy mt-2">{messages.dashboard.passwordSubtitle}</p>
-
-        <form className="mt-5 grid gap-4 sm:grid-cols-2" onSubmit={savePassword}>
-          <label className="cosmic-field-label text-sm font-semibold sm:col-span-2">
-            {messages.dashboard.currentPasswordLabel}
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(event) => setCurrentPassword(event.target.value)}
-              required
-              autoComplete="current-password"
-              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-            />
-          </label>
-
-          <label className="cosmic-field-label text-sm font-semibold">
-            {messages.dashboard.newPasswordLabel}
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(event) => setNewPassword(event.target.value)}
-              required
-              minLength={10}
-              autoComplete="new-password"
-              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-            />
-          </label>
-
-          <label className="cosmic-field-label text-sm font-semibold">
-            {messages.dashboard.confirmPasswordLabel}
-            <input
-              type="password"
-              value={confirmNewPassword}
-              onChange={(event) => setConfirmNewPassword(event.target.value)}
-              required
-              minLength={10}
-              autoComplete="new-password"
-              className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
-            />
-          </label>
-
-          <p className="cosmic-shell-meta text-xs sm:col-span-2">
-            {messages.auth.passwordHint}
-          </p>
-
-          <div className="sm:col-span-2">
-            <button
-              type="submit"
-              disabled={passwordBusy}
-              className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-70"
-            >
-              {passwordBusy ? messages.common.saving : messages.dashboard.passwordSave}
-            </button>
-          </div>
-        </form>
-
-        {passwordError ? (
-          <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
-            {passwordError}
-          </p>
-        ) : null}
-
-        {passwordSuccess ? (
-          <p className="cosmic-success-box mt-4 rounded-xl px-4 py-3 text-sm">
-            {passwordSuccess}
-          </p>
-        ) : null}
-      </section>
-
-      <section className="cosmic-shell rounded-[2rem] p-8">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl">
-            <h2 className="cosmic-shell-title text-2xl">
-              {messages.dashboard.projectionCalendar.title}
-            </h2>
-            <p className="cosmic-shell-copy mt-2">
-              {messages.dashboard.projectionCalendar.subtitle}
-            </p>
-            <p className="cosmic-shell-meta mt-3 text-xs">
-              {projectionHasFullAccess
-                ? messages.dashboard.projectionCalendar.fullAccessHint
-                : messages.dashboard.projectionCalendar.lockedAccessHint}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => goToProjectionMonth(-1)}
-              className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
-            >
-              {messages.common.previous}
-            </button>
-            <button
-              type="button"
-              onClick={goToCurrentProjectionMonth}
-              className="cosmic-tab-active rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
-            >
-              {messages.dashboard.predictionCalendar.today}
-            </button>
-            <button
-              type="button"
-              onClick={() => goToProjectionMonth(1)}
-              className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
-            >
-              {messages.common.next}
-            </button>
-          </div>
-        </div>
-
-        {projectionCalendar && !projectionHasFullAccess ? (
-          <div className="cosmic-info-box mt-5 flex flex-col gap-3 rounded-2xl p-4 text-sm text-slate-100/86 sm:flex-row sm:items-center sm:justify-between">
-            <span>{messages.dashboard.projectionCalendar.lockedAccessHint}</span>
-            <button
-              type="button"
-              onClick={() => {
-                void openProjectionUnlockFlow()
-              }}
-              disabled={projectionUnlockBusy}
-              className="cosmic-button-primary rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
-            >
-              {projectionUnlockButtonLabel}
-            </button>
-          </div>
-        ) : null}
-
-        {projectionError ? (
-          <p className="cosmic-error-box mt-5 rounded-xl px-4 py-3 text-sm">
-            {projectionError}
-          </p>
-        ) : null}
-
-        {projectionLoading && !projectionCalendar ? (
-          <p className="cosmic-shell-copy mt-5">{messages.common.loading}</p>
-        ) : null}
-
-        {projectionCalendar ? (
-          <>
-            <div className="mt-5">
-              <p className="cosmic-shell-title text-xl">{projectionCalendar.monthLabel}</p>
-            </div>
-
-            <div className="mt-4 overflow-x-auto">
-              <div className="grid min-w-[560px] grid-cols-7 gap-2">
-                {projectionCalendar.weekdayLabels.map((weekdayLabel) => (
-                  <p
-                    key={weekdayLabel}
-                    className="cosmic-shell-meta px-2 pb-1 text-center text-xs font-black uppercase tracking-[0.16em]"
-                  >
-                    {weekdayLabel}
-                  </p>
-                ))}
-
-                {projectionCalendar.weeks.flat().map((day) => {
-                  const dayKey = toDayKey(day.date)
-                  const isSelected = dayKey === selectedProjectionDateKey
-                  const dayTone = day.summary
-
-                  return (
-                    <button
-                      key={day.date}
-                      type="button"
-                      onClick={() => setSelectedProjectionDateKey(dayKey)}
-                      className={`relative min-h-[74px] rounded-xl border px-2 py-2 text-left transition ${
-                        isSelected ? 'ring-2 ring-cyan-200/65' : ''
-                      } ${
-                        day.inCurrentMonth
-                          ? 'opacity-100'
-                          : 'opacity-42'
-                      } ${
-                        day.isLocked
-                          ? 'border-slate-700/80 bg-slate-900/55'
-                          : 'border-cyan-200/18 bg-slate-900/36 hover:border-cyan-200/46'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-semibold text-slate-100">
-                          {day.dayOfMonth}
-                        </span>
-                        {day.isToday ? (
-                          <span className="cosmic-shell-meta text-[10px] uppercase tracking-[0.14em] text-cyan-100/75">
-                            {messages.dashboard.predictionCalendar.today}
-                          </span>
-                        ) : null}
-                      </div>
-
-                      {day.isLocked ? (
-                        <p className="cosmic-shell-meta mt-2 text-[10px] uppercase tracking-[0.14em] text-slate-300/72">
-                          {messages.dashboard.projectionCalendar.lockedDayBadge}
-                        </p>
-                      ) : dayTone ? (
-                        <span className={`${projectionToneClass(dayTone)} mt-2 scale-[0.78] origin-left`}>
-                          {projectionToneLabel(dayTone)}
-                        </span>
-                      ) : null}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {selectedProjectionDay ? (
-              <div className="mt-6 rounded-2xl border border-cyan-200/20 bg-slate-900/42 p-5">
-                <p className="cosmic-shell-meta text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
-                  {projectionSelectedDayLabelFormatter.format(
-                    new Date(selectedProjectionDay.date),
-                  )}
-                </p>
-
-                {selectedProjectionDay.isLocked ? (
-                  <>
-                    <h3 className="cosmic-shell-title mt-3 text-xl">
-                      {messages.dashboard.projectionCalendar.lockedDayTitle}
-                    </h3>
-                    <p className="cosmic-shell-copy mt-2">
-                      {messages.dashboard.projectionCalendar.lockedDaySubtitle}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void openProjectionUnlockFlow()
-                      }}
-                      disabled={projectionUnlockBusy}
-                      className="cosmic-button-primary mt-4 rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
-                    >
-                      {projectionUnlockButtonLabel}
-                    </button>
-                  </>
-                ) : selectedProjectionDay.summary ? (
-                  <>
-                    <span
-                      className={`${projectionToneClass(
-                        selectedProjectionDay.summary,
-                      )} mt-3`}
-                    >
-                      {projectionToneLabel(selectedProjectionDay.summary)}
-                    </span>
-                    <p className="cosmic-shell-copy mt-3">
-                      {selectedProjectionDay.notes}
-                    </p>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {projectionActivityOrder.map((activity) => {
-                        const tone = selectedProjectionDay.activities?.[activity]
-
-                        if (!tone) {
-                          return null
-                        }
-
-                        return (
-                          <span
-                            key={activity}
-                            className="cosmic-info-box rounded-full px-3 py-1 text-xs text-slate-100/92"
-                          >
-                            {projectionActivityLabel(activity)} · {projectionToneLabel(tone)}
-                          </span>
-                        )
-                      })}
-                    </div>
-                  </>
-                ) : null}
-              </div>
-            ) : null}
-          </>
-        ) : null}
-      </section>
-
-      <section className="cosmic-shell rounded-[2rem] p-8">
-        {!data.subscription ? (
-          <>
-            <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.noSubscription}</h2>
-            <p className="cosmic-shell-copy mt-2">{messages.dashboard.noSubscriptionSubtitle}</p>
-            <form className="mt-5 space-y-4" onSubmit={(event) => runAction('subscribe', event)}>
-              <DeliveryPreferenceSelector
-                value={deliveryPreference}
-                onChange={setDeliveryPreference}
-              />
-              <div>
-                <label
-                  htmlFor="subscription-delivery-hour"
-                  className="cosmic-field-label mb-3 block text-sm font-semibold"
-                >
-                  {messages.dashboard.mondayProjectionTime}
-                </label>
-                <DeliveryHourSelect
-                  id="subscription-delivery-hour"
-                  value={deliveryHourLocal}
-                  onChange={setDeliveryHourLocal}
-                  locale={language}
-                  className="cosmic-input block w-full rounded-xl px-4 py-3"
-                />
-                <p className="cosmic-shell-meta mt-2 text-xs">
-                  {interpolate(messages.dashboard.sentOnMondaysAt, {
-                    time: formatDeliveryHourLabel(deliveryHourLocal, language),
-                    zone: subscriptionDeliveryTimeZone,
-                  })}
-                </p>
-              </div>
-              {deliveryPreference === 'email' || deliveryPreference === 'both' ? (
-                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
-                    {messages.dashboard.emailDeliveryLabel}
-                  </p>
-                  <p className="mt-2 text-base text-slate-50">{data.user.email}</p>
-                </div>
-              ) : null}
-              {requiresWhatsappDelivery(deliveryPreference) ? (
-                <>
-                  <input
-                    type="tel"
-                    value={whatsappNumber}
-                    onChange={(event) => setWhatsappNumber(event.target.value)}
-                    placeholder="+14155550123"
-                    required
-                    className="cosmic-input w-full rounded-xl px-4 py-3"
-                  />
-                  <label className="cosmic-info-box flex items-start gap-3 rounded-2xl p-4 text-sm text-slate-100/88">
-                    <input
-                      type="checkbox"
-                      checked={whatsappConsentAccepted}
-                      onChange={(event) =>
-                        setWhatsappConsentAccepted(event.target.checked)
-                      }
-                      required
-                      className="mt-0.5 h-4 w-4 accent-cyan-300"
-                    />
-                    <span>
-                      <span className="block text-slate-50">
-                        {messages.dashboard.whatsappConsentLabel}
-                      </span>
-                      <span className="cosmic-shell-meta mt-1 block text-xs">
-                        {messages.dashboard.whatsappConsentHint}
-                      </span>
-                    </span>
-                  </label>
-                </>
-              ) : (
-                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/76">
-                  {messages.dashboard.whatsappOffSetup}
-                </div>
-              )}
-              <button
-                type="submit"
-                disabled={busyAction !== null}
-                className="cosmic-button-primary rounded-full px-6 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-70"
-              >
-                {messages.dashboard.subscribeButton}
-              </button>
-            </form>
-          </>
-        ) : data.subscription.status === 'pending_checkout' ? (
-          <>
-            <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.pendingTitle}</h2>
-            <p className="cosmic-shell-copy mt-2">{messages.dashboard.pendingSubtitle}</p>
-            <div className="mt-5 space-y-3 text-sm text-cyan-100/86">
-              <div className="cosmic-info-box rounded-2xl p-4">
-                {messages.dashboard.pendingDeliveryPreferenceLabel}:{' '}
-                {deliveryLabel(data.subscription.deliveryPreference)}
-              </div>
-              {data.subscription.deliveryPreference === 'email' ||
-              data.subscription.deliveryPreference === 'both' ? (
-                <div className="cosmic-info-box rounded-2xl p-4">
-                  {messages.dashboard.pendingEmailDeliveryLabel}: {data.user.email}
-                </div>
-              ) : null}
-              {data.subscription.deliveryPreference === 'none' ? null : (
-                <div className="cosmic-info-box rounded-2xl p-4">
-                  {messages.dashboard.pendingProjectionTimingLabel}:{' '}
-                  {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
-                  {subscriptionDeliveryTimeZone})
-                </div>
-              )}
-              {requiresWhatsappDelivery(data.subscription.deliveryPreference) ? (
-                <div className="cosmic-info-box rounded-2xl p-4">
-                  {messages.dashboard.pendingWhatsappLabel}: {data.subscription.whatsappNumber}
-                </div>
-              ) : null}
-            </div>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                href="/checkout/start"
-                className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
-              >
-                {messages.checkout.resumeButton}
-              </Link>
-            </div>
-          </>
-        ) : (
-          <>
-            <h2 className="cosmic-shell-title text-2xl">
-              {data.subscription.status === 'canceled'
-                ? messages.dashboard.canceledPlanTitle
-                : messages.dashboard.activePlanTitle}
-            </h2>
-            <p className="cosmic-shell-copy mt-2">
-              {messages.dashboard.status}:{' '}
-              <span className="font-bold text-slate-50">
-                {statusLabel[data.subscription.status]}
-              </span>
-            </p>
-            {data.subscription.status === 'canceled' ? (
-              <p className="cosmic-shell-copy mt-2">{messages.dashboard.canceledNote}</p>
-            ) : (
-              <p className="cosmic-shell-copy mt-2">{messages.dashboard.activeNote}</p>
-            )}
-            <p className="cosmic-shell-copy mt-1">
-              {messages.dashboard.deliveryPreferenceLabel}:{' '}
-              <span className="font-bold text-slate-50">
-                {deliveryLabel(data.subscription.deliveryPreference)}
-              </span>
-            </p>
-            {data.subscription.deliveryPreference === 'none' ? (
-              <p className="cosmic-shell-copy mt-1">
-                {messages.deliveryChannels.noneDescription}
-              </p>
-            ) : (
-              <>
-                <p className="cosmic-shell-copy mt-1">
-                  {data.subscription.status === 'canceled'
-                    ? messages.dashboard.nextMessageIfReactivated
-                    : messages.dashboard.nextMessage}
-                  :{' '}
-                  {formatNextDelivery(data.subscription.nextMessageAt, language, subscriptionDeliveryTimeZone)}
-                </p>
-                <p className="cosmic-shell-copy mt-1">
-                  {messages.dashboard.weeklyProjectionTimeLabel}:{' '}
-                  <span className="font-bold text-slate-50">
-                    {formatDeliveryHourLabel(data.subscription.deliveryHourLocal, language)} (
-                    {subscriptionDeliveryTimeZone})
-                  </span>
-                </p>
-              </>
-            )}
-
-            <form className="mt-5 space-y-4" onSubmit={(event) => runAction('update-delivery', event)}>
-              <DeliveryPreferenceSelector
-                value={deliveryPreference}
-                onChange={setDeliveryPreference}
-              />
-              <div>
-                <label
-                  htmlFor="active-delivery-hour"
-                  className="cosmic-field-label mb-3 block text-sm font-semibold"
-                >
-                  {messages.dashboard.mondayProjectionTime}
-                </label>
-                <DeliveryHourSelect
-                  id="active-delivery-hour"
-                  value={deliveryHourLocal}
-                  onChange={setDeliveryHourLocal}
-                  locale={language}
-                  className="cosmic-input block w-full rounded-xl px-4 py-3"
-                />
-                <p className="cosmic-shell-meta mt-2 text-xs">
-                  {interpolate(messages.dashboard.futureMessagesHint, {
-                    zone: subscriptionDeliveryTimeZone,
-                  })}
-                </p>
-              </div>
-              {deliveryPreference === 'email' || deliveryPreference === 'both' ? (
-                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/82">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100/76">
-                    {messages.dashboard.emailDeliveryLabel}
-                  </p>
-                  <p className="mt-2 text-base text-slate-50">{data.user.email}</p>
-                </div>
-              ) : null}
-              {requiresWhatsappDelivery(deliveryPreference) ? (
-                <>
-                  <input
-                    type="tel"
-                    value={whatsappNumber}
-                    onChange={(event) => setWhatsappNumber(event.target.value)}
-                    placeholder="+14155550123"
-                    required
-                    className="cosmic-input w-full rounded-xl px-4 py-3"
-                  />
-                  <label className="cosmic-info-box flex items-start gap-3 rounded-2xl p-4 text-sm text-slate-100/88">
-                    <input
-                      type="checkbox"
-                      checked={whatsappConsentAccepted}
-                      onChange={(event) =>
-                        setWhatsappConsentAccepted(event.target.checked)
-                      }
-                      required
-                      className="mt-0.5 h-4 w-4 accent-cyan-300"
-                    />
-                    <span>
-                      <span className="block text-slate-50">
-                        {messages.dashboard.whatsappConsentLabel}
-                      </span>
-                      <span className="cosmic-shell-meta mt-1 block text-xs">
-                        {messages.dashboard.whatsappConsentHint}
-                      </span>
-                    </span>
-                  </label>
-                </>
-              ) : (
-                <div className="cosmic-info-box rounded-2xl p-4 text-sm text-slate-100/76">
-                  {messages.dashboard.whatsappOffActive}
-                </div>
-              )}
-              <button
-                type="submit"
-                disabled={busyAction !== null}
-                className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-70"
-              >
-                {messages.dashboard.saveDeliverySettings}
-              </button>
-            </form>
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              {data.subscription.status === 'canceled' ? (
-                <button
-                  type="button"
-                  onClick={reactivateSubscription}
-                  disabled={busyAction !== null}
-                  className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
-                >
-                  {busyAction === 'reactivate-subscription'
-                    ? messages.dashboard.reactivateLoading
-                    : messages.dashboard.reactivateButton}
-                </button>
-              ) : data.subscription.status === 'active' ||
-                data.subscription.status === 'past_due' ? (
-                <button
-                  type="button"
-                  onClick={cancelSubscription}
-                  disabled={busyAction !== null}
-                  className="cosmic-danger-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
-                >
-                  {busyAction === 'cancel-subscription'
-                    ? messages.dashboard.cancelLoading
-                    : messages.dashboard.cancelButton}
-                </button>
-              ) : null}
-              {data.subscription.canManageBilling ? (
-                <button
-                  type="button"
-                  onClick={openBillingPortal}
-                  disabled={billingBusy}
-                  className="cosmic-outline-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
-                >
-                  {billingBusy
-                    ? messages.dashboard.manageBillingLoading
-                    : messages.dashboard.manageBillingButton}
-                </button>
-              ) : null}
-            </div>
-
-            <p className="cosmic-shell-meta mt-4 text-sm">
-              {data.subscription.status === 'canceled'
-                ? messages.dashboard.billingFootnoteCanceled
-                : messages.dashboard.billingFootnoteActive}
-            </p>
-          </>
-        )}
-
-        {subscriptionSuccess ? (
-          <p className="cosmic-success-box mt-4 rounded-xl px-4 py-3 text-sm">
-            {subscriptionSuccess}
-          </p>
-        ) : null}
-
-        {error ? (
-          <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
-            {error}
-          </p>
-        ) : null}
-      </section>
-    </>
-  )
-
-  const showDangerZone = !data.user.admin || activeTab === 'account'
-  const onboardingContent = (
-    <section className="cosmic-shell rounded-[2rem] p-8">
-      <h2 className="cosmic-shell-title text-2xl">{messages.dashboard.onboarding.title}</h2>
-      <p className="cosmic-shell-copy mt-2">{messages.dashboard.onboarding.subtitle}</p>
-      <div className="mt-5 flex flex-wrap gap-3">
-        <Link
-          href="/activate?preview=admin-onboarding"
-          className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em]"
-        >
-          {messages.dashboard.onboarding.cta}
-        </Link>
-      </div>
-      <p className="cosmic-shell-meta mt-3 text-xs">{messages.dashboard.onboarding.hint}</p>
-    </section>
-  )
+  const timeZone = subscription?.timeZone || account.user.timeZone || 'UTC'
+  const tabs: DashboardTab[] = isAdmin ? [...TAB_ORDER, ...ADMIN_TABS] : TAB_ORDER
 
   return (
-    <div className="space-y-8">
-      <section className="cosmic-shell rounded-[2rem] p-8">
-        <h1 className="cosmic-shell-title text-3xl">{messages.dashboard.title}</h1>
-        <p className="cosmic-shell-copy mt-2">{messages.dashboard.intro}</p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <p className="cosmic-shell-meta text-sm">
-            {data.user.fullName} · {data.user.email}
-          </p>
-          {data.user.admin ? (
-            <span className="inline-flex items-center rounded-full border border-cyan-200/38 bg-cyan-500/12 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-cyan-100">
-              {messages.dashboard.adminBadge}
+    <div className="space-y-6">
+      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="tr-eyebrow">{copy.title}</p>
+          <h1 className="mt-1 text-3xl">
+            {account.user.firstName ? `${account.user.firstName} 👋` : copy.title}
+          </h1>
+          <p className="tr-copy mt-1 text-sm">{copy.intro}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={clsx('tr-badge', statusBadge.className)}>{statusBadge.label}</span>
+          {isAdmin ? <span className="tr-badge tr-badge-blue">{copy.adminBadge}</span> : null}
+          {subscriptionActive && subscription ? (
+            <span className="tr-meta text-xs">
+              {copy.nextMessage}: {formatNextDelivery(subscription.nextMessageAt, intlLocale, timeZone)}
             </span>
           ) : null}
         </div>
+      </header>
 
-        {billingSuccess ? (
-          <p className="cosmic-success-box mt-5 rounded-2xl px-4 py-3 text-sm">
-            {messages.dashboard.billingSuccess}
-          </p>
-        ) : null}
-        {data.user.admin ? (
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => setDashboardTab('account')}
-              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
-                activeTab === 'account'
-                  ? 'cosmic-tab-active'
-                  : 'cosmic-tab'
-              }`}
-            >
-              {messages.dashboard.tabs.account}
-            </button>
-            <button
-              type="button"
-              onClick={() => setDashboardTab('prediction-calendar')}
-              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
-                activeTab === 'prediction-calendar'
-                  ? 'cosmic-tab-active-alt'
-                  : 'cosmic-tab'
-              }`}
-            >
-              {messages.dashboard.tabs.predictionCalendar}
-            </button>
-            <button
-              type="button"
-              onClick={() => setDashboardTab('sends')}
-              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
-                activeTab === 'sends' ? 'cosmic-tab-active' : 'cosmic-tab'
-              }`}
-            >
-              {messages.dashboard.tabs.sends}
-            </button>
-            <button
-              type="button"
-              onClick={() => setDashboardTab('onboarding')}
-              className={`rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] ${
-                activeTab === 'onboarding' ? 'cosmic-tab-active-alt' : 'cosmic-tab'
-              }`}
-            >
-              {messages.dashboard.tabs.onboarding}
-            </button>
-          </div>
-        ) : null}
-      </section>
+      {billingSuccess && subscriptionActive ? (
+        <p className="tr-alert-success">{copy.billingSuccess}</p>
+      ) : null}
 
-      {data.user.admin && activeTab === 'prediction-calendar' ? (
-        <AdminPredictionCalendar />
-      ) : data.user.admin && activeTab === 'sends' ? (
-        <AdminSendCampaigns />
-      ) : data.user.admin && activeTab === 'onboarding' ? (
-        onboardingContent
-      ) : (
-        accountContent
-      )}
-
-      <section className="cosmic-shell rounded-[2rem] p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="cosmic-shell-copy text-sm">{data.user.email}</p>
-            <p className="cosmic-shell-meta mt-1 text-xs font-semibold uppercase tracking-[0.18em]">
-              {messages.nav.dashboard}
-            </p>
-          </div>
+      <nav className="flex flex-wrap gap-1 rounded-full border border-trimry-line bg-white p-1">
+        {tabs.map((tab) => (
           <button
+            key={tab}
             type="button"
-            onClick={logout}
-            disabled={logoutBusy}
-            className="cosmic-danger-button self-start rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60 sm:self-auto"
+            onClick={() => selectTab(tab)}
+            className={clsx('tr-tab', activeTab === tab && 'tr-tab-active')}
           >
-            {logoutBusy ? messages.common.loading : messages.nav.logout}
+            {copy.tabs[tab]}
           </button>
-        </div>
-      </section>
+        ))}
+      </nav>
 
-      {showDangerZone ? (
-        <section className="cosmic-danger-shell rounded-[2rem] p-8">
-          <h2 className="text-2xl text-rose-100">{messages.dashboard.dangerTitle}</h2>
-          <p className="mt-2 max-w-2xl text-rose-100/82">
-            {messages.dashboard.dangerSubtitle}
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={deleteAccount}
-              disabled={deleteBusy}
-              className="cosmic-danger-button rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
-            >
-              {deleteBusy ? messages.dashboard.deleteLoading : messages.dashboard.deleteButton}
-            </button>
+      {activeTab === 'agenda' ? (
+        <section className="tr-shell p-6 sm:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="text-2xl">{messages.agenda.title}</h2>
+              <p className="tr-copy mt-1 text-sm">{messages.agenda.subtitle}</p>
+              <p className="tr-meta mt-2 text-xs">
+                {messages.agenda.lastDigestLabel}:{' '}
+                {account.lastDigest
+                  ? `${new Intl.DateTimeFormat(intlLocale, {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                      timeZone,
+                    }).format(new Date(account.lastDigest.sentAt))} · ${account.lastDigest.channel}`
+                  : messages.agenda.lastDigestNever}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="tr-meta flex items-center gap-2 text-xs">
+                {messages.agenda.lookahead}
+                <select
+                  value={lookaheadDays ?? feed?.lookaheadDays ?? preferencesDraft.lookaheadDays}
+                  onChange={(event) => {
+                    const days = Number.parseInt(event.target.value, 10)
+                    setLookaheadDays(days)
+                    void loadFeed({ days, refresh: false })
+                  }}
+                  className="rounded-full border border-trimry-line bg-white px-3 py-1.5 text-xs font-bold text-trimry-ink"
+                >
+                  {Array.from({ length: MAX_LOOKAHEAD_DAYS }, (_, index) => index + 1).map((days) => (
+                    <option key={days} value={days}>
+                      {days} {messages.agenda.days}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                onClick={() => void loadFeed({ refresh: true })}
+                disabled={feedLoading}
+                className="tr-btn-secondary tr-btn-sm"
+              >
+                {feedLoading ? messages.agenda.refreshing : messages.agenda.refresh}
+              </button>
+            </div>
           </div>
 
-          {deleteError ? (
-            <p className="cosmic-error-box mt-4 rounded-xl px-4 py-3 text-sm">
-              {deleteError}
-            </p>
+          <div className="mt-6">
+            {hasPreferences ? (
+              <UpcomingEventsFeed feed={feed} loading={feedLoading} error={feedError} showHighlights />
+            ) : (
+              <div className="tr-card-muted p-8 text-center">
+                <p className="tr-copy">{messages.agenda.emptyNoPreferences}</p>
+                <button type="button" onClick={() => selectTab('preferences')} className="tr-btn-primary mt-4">
+                  {messages.agenda.emptyCta}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {!subscriptionActive ? (
+            <div className="tr-gradient-panel mt-8 flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-lg font-extrabold">{copy.noSubscription}</p>
+                <p className="mt-1 text-sm text-white/90">{copy.noSubscriptionSubtitle}</p>
+              </div>
+              <Link
+                href={subscription?.status === 'pending_checkout' ? '/checkout/start' : '/activate?step=3'}
+                className="tr-btn shrink-0 bg-white text-trimry-ink hover:bg-white/90"
+              >
+                {copy.subscribeButton}
+              </Link>
+            </div>
           ) : null}
         </section>
       ) : null}
+
+      {activeTab === 'preferences' ? (
+        <section className="tr-shell p-6 sm:p-8">
+          <h2 className="text-2xl">{copy.preferencesTitle}</h2>
+          <p className="tr-copy mt-1 text-sm">{copy.preferencesSubtitle}</p>
+          <div className="mt-6">
+            <SportsPreferencesEditor value={preferencesDraft} onChange={setPreferencesDraft} />
+          </div>
+          {preferencesError ? <p className="tr-alert-error mt-6">{preferencesError}</p> : null}
+          {preferencesMessage ? <p className="tr-alert-success mt-6">{preferencesMessage}</p> : null}
+          <div className="mt-6 flex flex-wrap gap-3 border-t border-trimry-line pt-6">
+            <button
+              type="button"
+              onClick={() => void savePreferences()}
+              disabled={preferencesSaving || preferencesDraft.sports.length === 0}
+              className="tr-btn-primary"
+            >
+              {preferencesSaving ? messages.common.saving : messages.common.save}
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      {activeTab === 'delivery' ? (
+        <section className="space-y-6">
+          <div className="tr-shell p-6 sm:p-8">
+            {!subscription ? (
+              <>
+                <h2 className="text-2xl">{copy.noSubscription}</h2>
+                <p className="tr-copy mt-1 text-sm">{copy.noSubscriptionSubtitle}</p>
+                <Link href="/activate?step=3" className="tr-btn-primary mt-5">
+                  {copy.subscribeButton}
+                </Link>
+              </>
+            ) : subscription.status === 'pending_checkout' ? (
+              <>
+                <h2 className="text-2xl">{copy.pendingTitle}</h2>
+                <p className="tr-copy mt-1 text-sm">{copy.pendingSubtitle}</p>
+                <dl className="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div className="tr-card-muted p-4">
+                    <dt className="tr-eyebrow">{copy.pendingDeliveryPreferenceLabel}</dt>
+                    <dd className="mt-1 text-sm font-bold text-trimry-ink">
+                      {deliveryLabel(subscription.deliveryPreference)}
+                    </dd>
+                  </div>
+                  <div className="tr-card-muted p-4">
+                    <dt className="tr-eyebrow">{copy.pendingEmailDeliveryLabel}</dt>
+                    <dd className="mt-1 text-sm font-bold text-trimry-ink">{account.user.email}</dd>
+                  </div>
+                  <div className="tr-card-muted p-4">
+                    <dt className="tr-eyebrow">{copy.pendingTimingLabel}</dt>
+                    <dd className="mt-1 text-sm font-bold text-trimry-ink">
+                      {String(subscription.deliveryHourLocal).padStart(2, '0')}:00 · {timeZone}
+                    </dd>
+                  </div>
+                </dl>
+                <Link href="/checkout/start" className="tr-btn-primary mt-5">
+                  {copy.subscribeButton}
+                </Link>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-2xl">
+                      {subscription.status === 'canceled' ? copy.canceledPlanTitle : copy.activePlanTitle}
+                    </h2>
+                    <p className="tr-copy mt-1 text-sm">
+                      {subscription.status === 'canceled' ? copy.canceledNote : copy.activeNote}
+                    </p>
+                  </div>
+                  <span className={clsx('tr-badge', statusBadge.className)}>{statusBadge.label}</span>
+                </div>
+
+                <dl className="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div className="tr-card-muted p-4">
+                    <dt className="tr-eyebrow">{copy.deliveryPreferenceLabel}</dt>
+                    <dd className="mt-1 text-sm font-bold text-trimry-ink">
+                      {deliveryLabel(subscription.deliveryPreference)}
+                    </dd>
+                  </div>
+                  <div className="tr-card-muted p-4">
+                    <dt className="tr-eyebrow">
+                      {subscription.status === 'canceled' ? copy.nextMessageIfReactivated : copy.nextMessage}
+                    </dt>
+                    <dd className="mt-1 text-sm font-bold text-trimry-ink">
+                      {formatNextDelivery(subscription.nextMessageAt, intlLocale, timeZone)}
+                    </dd>
+                  </div>
+                  <div className="tr-card-muted p-4">
+                    <dt className="tr-eyebrow">{messages.onboarding.frequencyLabel}</dt>
+                    <dd className="mt-1 text-sm font-bold text-trimry-ink">
+                      {preferencesDraft.frequency === 'weekly'
+                        ? messages.onboarding.frequencyWeekly
+                        : messages.onboarding.frequencyDaily}
+                    </dd>
+                  </div>
+                </dl>
+
+                {subscription.status !== 'canceled' ? (
+                  <form className="mt-8 space-y-5" onSubmit={saveDelivery}>
+                    <div>
+                      <p className="tr-label mb-2">{copy.deliveryPreferenceLabel}</p>
+                      <DeliveryPreferenceSelector value={deliveryPreference} onChange={setDeliveryPreference} />
+                      {requiresWhatsappDelivery(deliveryPreference) ? (
+                        <p className="tr-alert-info mt-3 text-xs">
+                          {messages.deliveryChannels.whatsappPendingNote}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <label className="tr-label" htmlFor="dashboard-delivery-hour">
+                        {copy.deliveryHourLabel}
+                        <DeliveryHourSelect
+                          id="dashboard-delivery-hour"
+                          value={deliveryHourLocal}
+                          onChange={setDeliveryHourLocal}
+                          locale={language}
+                          className="tr-input mt-2"
+                        />
+                        <span className="tr-meta mt-2 block text-xs">
+                          {interpolate(copy.deliveryHourHint, { zone: timeZone })}
+                        </span>
+                      </label>
+                      {requiresWhatsappDelivery(deliveryPreference) ? (
+                        <label className="tr-label">
+                          {messages.delivery.whatsappNumberLabel}
+                          <input
+                            type="tel"
+                            value={whatsappNumber}
+                            onChange={(event) => setWhatsappNumber(event.target.value)}
+                            placeholder="+14155550123"
+                            required
+                            className="tr-input mt-2"
+                          />
+                        </label>
+                      ) : (
+                        <p className="tr-meta self-end text-sm">{copy.whatsappOffSetup}</p>
+                      )}
+                    </div>
+
+                    {requiresWhatsappDelivery(deliveryPreference) ? (
+                      <label className="tr-card-muted flex items-start gap-3 p-4 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={whatsappConsentAccepted}
+                          onChange={(event) => setWhatsappConsentAccepted(event.target.checked)}
+                          className="tr-checkbox mt-0.5"
+                        />
+                        <span>
+                          <span className="block font-semibold text-trimry-ink">{copy.whatsappConsentLabel}</span>
+                          <span className="tr-meta mt-1 block text-xs">{copy.whatsappConsentHint}</span>
+                        </span>
+                      </label>
+                    ) : null}
+
+                    {deliveryError ? <p className="tr-alert-error">{deliveryError}</p> : null}
+                    {deliveryMessage ? <p className="tr-alert-success">{deliveryMessage}</p> : null}
+
+                    <div className="flex flex-wrap gap-3">
+                      <button type="submit" disabled={deliveryBusy !== null} className="tr-btn-primary">
+                        {deliveryBusy === 'save' ? messages.common.saving : copy.saveDeliverySettings}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void sendSample()}
+                        disabled={deliveryBusy !== null || !hasPreferences}
+                        className="tr-btn-secondary"
+                      >
+                        {deliveryBusy === 'sample'
+                          ? messages.common.loading
+                          : `${messages.deliveryChannels.emailTitle} · sample`}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    {deliveryError ? <p className="tr-alert-error mt-6">{deliveryError}</p> : null}
+                    {deliveryMessage ? <p className="tr-alert-success mt-6">{deliveryMessage}</p> : null}
+                  </>
+                )}
+
+                <div className="mt-8 flex flex-wrap gap-3 border-t border-trimry-line pt-6">
+                  {subscription.status === 'canceled' ? (
+                    <button
+                      type="button"
+                      onClick={() => void reactivateSubscription()}
+                      disabled={deliveryBusy !== null}
+                      className="tr-btn-primary"
+                    >
+                      {deliveryBusy === 'reactivate' ? copy.reactivateLoading : copy.reactivateButton}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => void cancelSubscription()}
+                      disabled={deliveryBusy !== null}
+                      className="tr-btn-danger"
+                    >
+                      {deliveryBusy === 'cancel' ? copy.cancelLoading : copy.cancelButton}
+                    </button>
+                  )}
+                  {subscription.canManageBilling ? (
+                    <button
+                      type="button"
+                      onClick={() => void openBillingPortal()}
+                      disabled={deliveryBusy !== null}
+                      className="tr-btn-secondary"
+                    >
+                      {deliveryBusy === 'portal' ? copy.manageBillingLoading : copy.manageBillingButton}
+                    </button>
+                  ) : null}
+                </div>
+                <p className="tr-meta mt-3 text-xs">
+                  {subscription.status === 'canceled' ? copy.billingFootnoteCanceled : copy.billingFootnoteActive}
+                </p>
+              </>
+            )}
+          </div>
+        </section>
+      ) : null}
+
+      {activeTab === 'account' ? (
+        <section className="space-y-6">
+          <div className="tr-shell p-6 sm:p-8">
+            <h2 className="text-2xl">{copy.profileTitle}</h2>
+            <p className="tr-copy mt-1 text-sm">{copy.profileSubtitle}</p>
+            <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={saveProfile}>
+              <label className="tr-label">
+                {messages.auth.firstNameLabel}
+                <input
+                  type="text"
+                  value={profileFirstName}
+                  onChange={(event) => setProfileFirstName(event.target.value)}
+                  required
+                  className="tr-input mt-2"
+                />
+              </label>
+              <label className="tr-label">
+                {messages.auth.lastNameLabel}
+                <input
+                  type="text"
+                  value={profileLastName}
+                  onChange={(event) => setProfileLastName(event.target.value)}
+                  className="tr-input mt-2"
+                />
+              </label>
+              <label className="tr-label sm:col-span-2" htmlFor="profile-time-zone">
+                {messages.auth.timeZoneLabel}
+                <TimeZoneSelect
+                  id="profile-time-zone"
+                  value={profileTimeZone}
+                  onChange={setProfileTimeZone}
+                  className="tr-input mt-2"
+                />
+                <span className="tr-meta mt-2 block text-xs">{copy.profileTimeZoneHint}</span>
+              </label>
+              <div className="sm:col-span-2">
+                <p className="tr-meta text-xs">
+                  {messages.auth.emailLabel}: {account.user.email}
+                </p>
+              </div>
+              {profileError ? <p className="tr-alert-error sm:col-span-2">{profileError}</p> : null}
+              {profileMessage ? <p className="tr-alert-success sm:col-span-2">{profileMessage}</p> : null}
+              <div className="sm:col-span-2">
+                <button type="submit" disabled={profileBusy} className="tr-btn-primary">
+                  {profileBusy ? messages.common.saving : copy.profileSave}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="tr-shell p-6 sm:p-8">
+            <h2 className="text-2xl">{copy.passwordTitle}</h2>
+            <p className="tr-copy mt-1 text-sm">{copy.passwordSubtitle}</p>
+            <form className="mt-6 grid gap-4 sm:grid-cols-3" onSubmit={savePassword}>
+              <label className="tr-label">
+                {copy.currentPasswordLabel}
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(event) => setCurrentPassword(event.target.value)}
+                  autoComplete="current-password"
+                  className="tr-input mt-2"
+                />
+              </label>
+              <label className="tr-label">
+                {copy.newPasswordLabel}
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(event) => setNewPassword(event.target.value)}
+                  required
+                  autoComplete="new-password"
+                  className="tr-input mt-2"
+                />
+              </label>
+              <label className="tr-label">
+                {copy.confirmPasswordLabel}
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  required
+                  autoComplete="new-password"
+                  className="tr-input mt-2"
+                />
+              </label>
+              <p className="tr-meta text-xs sm:col-span-3">{messages.auth.passwordHint}</p>
+              {passwordError ? <p className="tr-alert-error sm:col-span-3">{passwordError}</p> : null}
+              {passwordMessage ? <p className="tr-alert-success sm:col-span-3">{passwordMessage}</p> : null}
+              <div className="sm:col-span-3">
+                <button type="submit" disabled={passwordBusy} className="tr-btn-secondary">
+                  {passwordBusy ? messages.common.saving : copy.passwordSave}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="tr-shell flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-trimry-ink">{account.user.email}</p>
+              <p className="tr-meta text-xs">{messages.nav.dashboard}</p>
+            </div>
+            <button type="button" onClick={() => void logout()} disabled={logoutBusy} className="tr-btn-secondary">
+              {logoutBusy ? messages.common.loading : messages.nav.logout}
+            </button>
+          </div>
+
+          <div className="rounded-3xl border border-rose-200 bg-rose-50/60 p-6 sm:p-8">
+            <h2 className="text-2xl text-rose-800">{copy.dangerTitle}</h2>
+            <p className="mt-1 text-sm text-rose-700">{copy.dangerSubtitle}</p>
+            <button
+              type="button"
+              onClick={() => void deleteAccount()}
+              disabled={deleteBusy}
+              className="tr-btn-danger mt-5"
+            >
+              {deleteBusy ? copy.deleteLoading : copy.deleteButton}
+            </button>
+            {deleteError ? <p className="tr-alert-error mt-4">{deleteError}</p> : null}
+          </div>
+        </section>
+      ) : null}
+
+      {activeTab === 'sends' && isAdmin ? (
+        <div className="tr-admin-surface">
+          <AdminSendCampaigns />
+        </div>
+      ) : null}
+
+      {activeTab === 'sportsSync' && isAdmin ? <AdminSportsSync /> : null}
     </div>
   )
 }

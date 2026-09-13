@@ -171,7 +171,7 @@ export default function CheckoutStartPage() {
               method: 'POST',
               body: JSON.stringify({
                 action: 'subscribe',
-                deliveryPreference: 'none',
+                deliveryPreference: 'email',
                 deliveryHourLocal: DEFAULT_WEEKLY_DELIVERY_HOUR,
               }),
             },
@@ -363,31 +363,24 @@ export default function CheckoutStartPage() {
 
   if (loading && !error && !account) {
     return (
-      <section className="cosmic-shell mx-auto max-w-3xl rounded-[2rem] p-8 text-slate-100">
-        <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
+      <section className="tr-shell mx-auto max-w-3xl p-8">
+        <p className="tr-badge tr-badge-blue">
           {checkoutCancelled ? messages.checkout.badgeCancelled : messages.checkout.badge}
         </p>
-        <h1 className="cosmic-shell-title mt-6 text-4xl">
-          {checkoutCancelled
-            ? messages.checkout.titleCancelled
-            : messages.checkout.title}
+        <h1 className="mt-5 text-3xl sm:text-4xl">
+          {checkoutCancelled ? messages.checkout.titleCancelled : messages.checkout.title}
         </h1>
-        <p className="cosmic-shell-copy mt-4 text-lg">{recoveryCopy}</p>
+        <p className="tr-copy mt-4 text-lg">{recoveryCopy}</p>
         {!checkoutCancelled ? (
           <>
-            <ul className="mt-6 grid gap-3 text-sm leading-6 text-slate-100/82">
+            <ul className="mt-6 grid gap-3 text-sm leading-6">
               {messages.checkout.trialHighlights.map((highlight) => (
-                <li
-                  key={highlight}
-                  className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 px-4 py-3"
-                >
+                <li key={highlight} className="tr-card-muted px-4 py-3 text-trimry-slate">
                   {highlight}
                 </li>
               ))}
             </ul>
-            <p className="mt-4 rounded-2xl border border-emerald-200/18 bg-emerald-300/10 px-4 py-3 text-sm leading-6 text-emerald-50">
-              {messages.checkout.unsubscribeHelp}
-            </p>
+            <p className="tr-alert-success mt-4">{messages.checkout.unsubscribeHelp}</p>
           </>
         ) : null}
       </section>
@@ -395,19 +388,17 @@ export default function CheckoutStartPage() {
   }
 
   return (
-    <section className="cosmic-shell mx-auto max-w-3xl rounded-[2rem] p-8 text-slate-100">
-      <p className="cosmic-badge inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.24em] text-cyan-100">
+    <section className="tr-shell mx-auto max-w-3xl p-8">
+      <p className="tr-badge tr-badge-blue">
         {checkoutCancelled ? messages.checkout.badgeCancelled : messages.checkout.badge}
       </p>
-      <h1 className="cosmic-shell-title mt-6 text-4xl">
-        {checkoutCancelled
-          ? messages.checkout.titleCancelled
-          : messages.checkout.title}
+      <h1 className="mt-5 text-3xl sm:text-4xl">
+        {checkoutCancelled ? messages.checkout.titleCancelled : messages.checkout.title}
       </h1>
-      <p className="cosmic-shell-copy mt-4 text-lg">{recoveryCopy}</p>
+      <p className="tr-copy mt-4 text-lg">{recoveryCopy}</p>
 
       {error ? (
-        <div className="cosmic-error-box mt-6 rounded-3xl p-5">
+        <div className="tr-alert-error mt-6 rounded-3xl p-5">
           <p>{error}</p>
           <div className="mt-4 flex flex-wrap gap-3">
             <button
@@ -418,46 +409,32 @@ export default function CheckoutStartPage() {
                 })
                 window.location.reload()
               }}
-              className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.14em]"
+              className="tr-btn-primary tr-btn-sm"
             >
               {messages.common.tryAgain}
             </button>
-            <Link
-              href="/dashboard"
-              className="cosmic-outline-button rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.14em]"
-            >
+            <Link href="/dashboard" className="tr-btn-secondary tr-btn-sm">
               {messages.common.backToDashboard}
             </Link>
           </div>
         </div>
       ) : checkoutCancelled ? (
-        <div className="cosmic-info-box mt-6 rounded-3xl p-5">
-          <p className="text-base font-semibold text-slate-50">
-            {messages.checkout.resumeTitle}
-          </p>
-          <p className="mt-3 text-sm leading-6 text-slate-100/82">
-            {messages.checkout.resumeSubtitle}
-          </p>
-          <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-100/82">
+        <div className="tr-card-muted mt-6 p-5">
+          <p className="text-base font-bold text-trimry-ink">{messages.checkout.resumeTitle}</p>
+          <p className="tr-copy mt-2 text-sm leading-6">{messages.checkout.resumeSubtitle}</p>
+          <ul className="mt-4 grid gap-3 text-sm leading-6">
             {messages.checkout.trialHighlights.map((highlight) => (
-              <li
-                key={highlight}
-                className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 px-4 py-3"
-              >
+              <li key={highlight} className="tr-card px-4 py-3 text-trimry-slate">
                 {highlight}
               </li>
             ))}
           </ul>
-          <p className="mt-4 rounded-2xl border border-emerald-200/18 bg-emerald-300/10 px-4 py-3 text-sm leading-6 text-emerald-50">
-            {messages.checkout.unsubscribeHelp}
-          </p>
+          <p className="tr-alert-success mt-4">{messages.checkout.unsubscribeHelp}</p>
           {account?.subscription ? (
-            <div className="mt-4 grid gap-3 text-sm text-slate-100/80 sm:grid-cols-2">
-              <div className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-100/72">
-                  {messages.checkout.deliveryLabel}
-                </p>
-                <p className="mt-2 text-slate-50">
+            <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+              <div className="tr-card p-4">
+                <p className="tr-eyebrow">{messages.checkout.deliveryLabel}</p>
+                <p className="mt-2 font-semibold text-trimry-ink">
                   {account.subscription.deliveryPreference === 'none'
                     ? messages.deliveryChannels.noneTitle
                     : account.subscription.deliveryPreference === 'email'
@@ -467,20 +444,12 @@ export default function CheckoutStartPage() {
                         : messages.deliveryChannels.bothTitle}
                 </p>
               </div>
-              <div className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-100/72">
-                  {messages.checkout.timingLabel}
-                </p>
-                <p className="mt-2 text-slate-50">
-                  {interpolate(messages.deliveryOnboarding.mondayTimeHint, {
-                    time: formatDeliveryHourLabel(
-                      account.subscription.deliveryHourLocal,
-                      language,
-                    ),
-                    zone:
-                      account.subscription.timeZone ||
-                      account.user.timeZone ||
-                      'America/Santiago',
+              <div className="tr-card p-4">
+                <p className="tr-eyebrow">{messages.checkout.timingLabel}</p>
+                <p className="mt-2 font-semibold text-trimry-ink">
+                  {formatDeliveryHourLabel(account.subscription.deliveryHourLocal, language)} ·{' '}
+                  {interpolate(messages.onboarding.hourHint, {
+                    zone: account.subscription.timeZone || account.user.timeZone || 'UTC',
                   })}
                 </p>
               </div>
@@ -499,37 +468,27 @@ export default function CheckoutStartPage() {
                   user_id: account?.user.id,
                 })
               }}
-              className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.14em]"
+              className="tr-btn-primary"
             >
               {messages.checkout.resumeButton}
             </Link>
-            <Link
-              href="/dashboard"
-              className="cosmic-outline-button rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.14em]"
-            >
+            <Link href="/dashboard" className="tr-btn-secondary">
               {messages.common.backToDashboard}
             </Link>
           </div>
-          <p className="mt-4 text-sm text-slate-100/68">
-            {messages.checkout.resumeHint}
-          </p>
+          <p className="tr-meta mt-4 text-sm">{messages.checkout.resumeHint}</p>
         </div>
       ) : (
-        <div className="cosmic-info-box cosmic-shell-copy mt-6 rounded-3xl p-5">
+        <div className="tr-card-muted mt-6 p-5 text-trimry-slate">
           <p>{messages.checkout.helper}</p>
-          <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-100/82">
+          <ul className="mt-4 grid gap-3 text-sm leading-6">
             {messages.checkout.trialHighlights.map((highlight) => (
-              <li
-                key={highlight}
-                className="rounded-2xl border border-cyan-200/16 bg-slate-950/35 px-4 py-3"
-              >
+              <li key={highlight} className="tr-card px-4 py-3">
                 {highlight}
               </li>
             ))}
           </ul>
-          <p className="mt-4 rounded-2xl border border-emerald-200/18 bg-emerald-300/10 px-4 py-3 text-sm leading-6 text-emerald-50">
-            {messages.checkout.unsubscribeHelp}
-          </p>
+          <p className="tr-alert-success mt-4">{messages.checkout.unsubscribeHelp}</p>
         </div>
       )}
     </section>

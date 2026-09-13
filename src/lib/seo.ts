@@ -40,42 +40,27 @@ function resolveSiteUrl() {
 export const SITE_URL = resolveSiteUrl()
 export const IS_INDEXING_ALLOWED = resolveIndexingAllowed(SITE_URL)
 export const SITE_NAME = COMPANY.brandName
-export const SITE_SLOGAN = 'Your Luck Guide'
+export const SITE_SLOGAN = 'Never miss a game again'
 export const SITE_TITLE = `${SITE_SLOGAN} | ${SITE_NAME}`
 export const SITE_DESCRIPTION =
-  'Trimry is Your Luck Guide: a personalized luck calendar shaped by your symbols, timing patterns, and manifestation wish.'
+  'Trimry is your sports events radar: pick the sports, leagues and teams you follow and get a personal agenda of upcoming matches, races and fights by email and WhatsApp.'
 export const SITE_KEYWORDS = [
-  'good & bad days to cut your hair',
-  'good and bad days to cut your hair',
-  'good and bad days to have a haircut',
-  'good and bad days to cut your hair nails and more',
-  'best day to cut hair and nails',
-  'bad day to cut hair',
-  'lucky haircut days',
-  'lucky nail cutting days',
-  'hair and nails timing calendar',
-  'haircut timing',
-  'nail cutting timing',
-  'daily fortune forecast',
-  'ritual release guidance',
-  'Tibetan calendar timing',
-  'daily luck forecast',
-  'personal luck calendar',
-  'manifestation calendar',
-  'grooming timing guidance',
-  'lucky days calendar',
+  'sports events notifications',
+  'match reminders',
+  'fixtures alerts',
+  'sports schedule email',
+  'sports agenda whatsapp',
+  'football fixtures alerts',
+  'nba schedule notifications',
+  'f1 race reminders',
+  'ufc fight alerts',
+  'personalized sports calendar',
+  'never miss a game',
 ] as const
 export const SITE_LOCALE = 'en_US'
 export const METADATA_BASE = new URL(SITE_URL)
 export const SOCIAL_IMAGE_PATH = '/opengraph-image'
 export const TWITTER_IMAGE_PATH = '/twitter-image'
-export const BLOG_PATH = '/blog'
-export const GOOD_BAD_GUIDE_PATH = '/good-and-bad-days-to-cut-your-hair-nails-and-more'
-export const MANIFEST_LUCK_GUIDE_PATH = '/how-to-manifest-luck'
-export const POSITIVE_AFFIRMATIONS_GUIDE_PATH = '/positive-affirmations-for-success-and-luck'
-export const LAW_OF_ATTRACTION_GUIDE_PATH = '/law-of-attraction-for-beginners'
-export const LUCKY_NUMBERS_GUIDE_PATH = '/lucky-numbers-by-birthday'
-export const GOOD_LUCK_RITUALS_GUIDE_PATH = '/good-luck-rituals-for-positive-energy'
 
 const englishMessages = getMessages(DEFAULT_LANGUAGE)
 const rootCanonicalUrl = absoluteUrl('/')
@@ -181,7 +166,7 @@ export function createPageMetadata({
           url: absoluteUrl(SOCIAL_IMAGE_PATH),
           width: 1200,
           height: 630,
-          alt: 'Good and bad days to cut your hair, nails, and more with Trimry',
+          alt: 'Trimry, your sports events radar',
         },
       ],
     },
@@ -226,7 +211,7 @@ export const rootMetadata: Metadata = {
   applicationName: SITE_NAME,
   manifest: '/manifest.webmanifest',
   keywords: [...SITE_KEYWORDS],
-  category: 'Lifestyle',
+  category: 'Sports',
   creator: COMPANY.legalName,
   publisher: COMPANY.legalName,
   authors: [{ name: COMPANY.legalName, url: SITE_URL }],
@@ -249,7 +234,7 @@ export const rootMetadata: Metadata = {
         url: absoluteUrl(SOCIAL_IMAGE_PATH),
         width: 1200,
         height: 630,
-        alt: 'Good and bad days to cut your hair, nails, and more with Trimry',
+        alt: 'Trimry, your sports events radar',
       },
     ],
   },
@@ -260,11 +245,6 @@ export const rootMetadata: Metadata = {
     images: [absoluteUrl(TWITTER_IMAGE_PATH)],
   },
   robots: robotsDirectives(rootShouldNoIndex),
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
-  },
   verification: {
     other: {
       'facebook-domain-verification': 'c6u5evblmks2uyl105g7ph2e2yankn',
@@ -281,14 +261,14 @@ export const sitewideJsonLd = [
     alternateName: SITE_NAME,
     slogan: SITE_SLOGAN,
     url: SITE_URL,
-    logo: absoluteUrl('/logo.png'),
+    logo: absoluteUrl('/brand/trimry-icon-512.png'),
     email: COMPANY.supportEmail,
     contactPoint: [
       {
         '@type': 'ContactPoint',
         contactType: 'customer support',
         email: COMPANY.supportEmail,
-        availableLanguage: ['en', 'es'],
+        availableLanguage: ['en', 'es', 'pt'],
       },
     ],
     address: {
@@ -306,7 +286,7 @@ export const sitewideJsonLd = [
     name: SITE_NAME,
     url: SITE_URL,
     description: SITE_DESCRIPTION,
-    inLanguage: ['en', 'es'],
+    inLanguage: ['en', 'es', 'pt'],
     publisher: {
       '@id': absoluteUrl('/#organization'),
     },
@@ -321,7 +301,7 @@ export const homePageJsonLd = [
     name: buildTitle(),
     url: absoluteUrl('/'),
     description: SITE_DESCRIPTION,
-    inLanguage: ['en', 'es'],
+    inLanguage: ['en', 'es', 'pt'],
     isPartOf: {
       '@id': absoluteUrl('/#website'),
     },
@@ -335,7 +315,7 @@ export const homePageJsonLd = [
     '@id': absoluteUrl('/#service'),
     name: SUBSCRIPTION_PLAN.name,
     description: SITE_DESCRIPTION,
-    serviceType: 'Good and bad days to cut your hair, nails, and more',
+    serviceType: 'Personalized sports events notifications by email and WhatsApp',
     areaServed: 'Worldwide',
     provider: {
       '@id': absoluteUrl('/#organization'),
@@ -345,40 +325,14 @@ export const homePageJsonLd = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     '@id': absoluteUrl('/#faq'),
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: englishMessages.faq.q1,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: englishMessages.faq.a1,
-        },
+    mainEntity: englishMessages.faq.items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
       },
-      {
-        '@type': 'Question',
-        name: englishMessages.faq.q2,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: englishMessages.faq.a2,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: englishMessages.faq.q3,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: englishMessages.faq.a3,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: englishMessages.faq.q4,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: englishMessages.faq.a4,
-        },
-      },
-    ],
+    })),
   },
 ]
 

@@ -5,7 +5,7 @@ import { Logo } from '@/components/Logo'
 export function BrandLogo() {
   return (
     <Link href="/" className="inline-flex items-center" aria-label="Trimry home">
-      <Logo className="h-14 w-auto" priority />
+      <Logo size={40} priority />
     </Link>
   )
 }

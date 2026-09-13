@@ -86,13 +86,13 @@ export function GoogleAnalytics() {
   const consentBanner =
     consent === 'unknown' ? (
       <div className="fixed inset-x-3 bottom-3 z-[100] sm:inset-x-6">
-        <div className="cosmic-shell mx-auto max-w-4xl rounded-2xl p-4 sm:p-5">
-          <p className="text-sm font-bold text-slate-50">{messages.cookieConsent.title}</p>
-          <p className="mt-2 text-sm text-slate-100/84">{messages.cookieConsent.description}</p>
+        <div className="tr-shell mx-auto max-w-3xl p-4 sm:p-5">
+          <p className="text-sm font-extrabold text-trimry-ink">{messages.cookieConsent.title}</p>
+          <p className="mt-1.5 text-sm text-trimry-slate">{messages.cookieConsent.description}</p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <button
               type="button"
-              className="cosmic-button-primary rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
+              className="tr-btn-primary tr-btn-sm"
               onClick={() => {
                 setAnalyticsConsentInDocument('granted')
                 setConsent('granted')
@@ -102,7 +102,7 @@ export function GoogleAnalytics() {
             </button>
             <button
               type="button"
-              className="cosmic-outline-button rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.14em]"
+              className="tr-btn-secondary tr-btn-sm"
               onClick={() => {
                 setAnalyticsConsentInDocument('denied')
                 setConsent('denied')
@@ -110,7 +110,7 @@ export function GoogleAnalytics() {
             >
               {messages.cookieConsent.decline}
             </button>
-            <Link href="/legal/privacy" className="cosmic-link text-xs">
+            <Link href="/legal/privacy" className="tr-link text-xs">
               {messages.cookieConsent.learnMore}
             </Link>
           </div>
@@ -131,10 +131,7 @@ export function GoogleAnalytics() {
             src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
             strategy="afterInteractive"
           />
-          <Script
-            id="google-analytics"
-            strategy="afterInteractive"
-          >
+          <Script id="google-analytics" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}

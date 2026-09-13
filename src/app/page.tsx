@@ -3,16 +3,16 @@ import { HomePageClient } from '@/components/home-page-client'
 import { createPageMetadata, homePageJsonLd } from '@/lib/seo'
 
 export const metadata = createPageMetadata({
-  title: 'Your Luck Guide',
+  title: 'Personalized sports events alerts',
   description:
-    'Trimry unlocks a personalized luck calendar shaped by your symbols, timing patterns, and manifestation wish.',
+    'Pick the sports, leagues and teams you follow and get a personal agenda of upcoming matches, races and fights by email and WhatsApp, in your time zone.',
   keywords: [
-    'lucky days',
-    'luck timing',
-    'daily luck ritual',
-    'daily luck projection',
-    'personal luck calendar',
-    'fortune timing guidance',
+    'sports agenda',
+    'match notifications',
+    'game reminders',
+    'premier league fixtures alerts',
+    'champions league schedule',
+    'nba nfl mlb nhl schedule alerts',
   ],
   path: '/',
 })

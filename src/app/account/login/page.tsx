@@ -26,10 +26,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [linkError, setLinkError] = useState('')
   const [linkSuccess, setLinkSuccess] = useState('')
-  const requestedRedirectPath = resolveSafeRedirectPath(
-    searchParams.get('redirect'),
-    '',
-  )
+  const requestedRedirectPath = resolveSafeRedirectPath(searchParams.get('redirect'), '')
   const loginLinkToken = searchParams.get('login_link')?.trim() ?? ''
   const consumedTokenRef = useRef<string | null>(null)
   const registerHref = requestedRedirectPath
@@ -63,10 +60,14 @@ export default function LoginPage() {
     setLinkSuccess('')
 
     try {
-      const response = await apiFetch('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password, locale: language }),
-      }, { retryUnauthorized: false })
+      const response = await apiFetch(
+        '/auth/login',
+        {
+          method: 'POST',
+          body: JSON.stringify({ email, password, locale: language }),
+        },
+        { retryUnauthorized: false },
+      )
 
       if (!response.ok) {
         setError(await readApiError(response, messages.notifications.error))
@@ -74,10 +75,7 @@ export default function LoginPage() {
       }
 
       const payload = (await response.json()) as {
-        user?: {
-          id?: string
-          locale?: string
-        }
+        user?: { id?: string; locale?: string }
       }
       const nextLocale = payload.user?.locale
 
@@ -90,13 +88,9 @@ export default function LoginPage() {
         language: nextLocale ?? language,
         user_id: payload.user?.id,
       })
-      trackMetaCustomEvent('Login', {
-        method: 'email',
-        language: nextLocale ?? language,
-      })
+      trackMetaCustomEvent('Login', { method: 'email', language: nextLocale ?? language })
 
       const destination = await resolvePostLoginDestination()
-
       router.push(destination)
       router.refresh()
     } catch {
@@ -131,14 +125,8 @@ export default function LoginPage() {
         return
       }
 
-      trackEvent('login_link_requested', {
-        method: 'email_link',
-        language,
-      })
-      trackMetaCustomEvent('LoginLinkRequested', {
-        method: 'email_link',
-        language,
-      })
+      trackEvent('login_link_requested', { method: 'email_link', language })
+      trackMetaCustomEvent('LoginLinkRequested', { method: 'email_link', language })
       setLinkSuccess(messages.auth.loginWithLinkSent)
     } catch {
       setLinkError(messages.notifications.error)
@@ -175,10 +163,7 @@ export default function LoginPage() {
         }
 
         const payload = (await response.json()) as {
-          user?: {
-            id?: string
-            locale?: string
-          }
+          user?: { id?: string; locale?: string }
           redirectPath?: string | null
         }
         const nextLocale = payload.user?.locale
@@ -192,10 +177,7 @@ export default function LoginPage() {
           language: nextLocale ?? language,
           user_id: payload.user?.id,
         })
-        trackMetaCustomEvent('Login', {
-          method: 'email_link',
-          language: nextLocale ?? language,
-        })
+        trackMetaCustomEvent('Login', { method: 'email_link', language: nextLocale ?? language })
 
         const destination = await resolvePostLoginDestination(payload.redirectPath)
         router.push(destination)
@@ -212,76 +194,56 @@ export default function LoginPage() {
     language,
     loginLinkToken,
     messages.auth.loginWithLinkInvalid,
-    requestedRedirectPath,
     resolvePostLoginDestination,
     router,
     setLanguage,
   ])
 
   return (
-    <section className="cosmic-shell mx-auto max-w-xl rounded-[2rem] p-8">
-      <h1 className="cosmic-shell-title text-3xl">{messages.auth.loginTitle}</h1>
-      <p className="cosmic-shell-copy mt-2">{messages.auth.loginSubtitle}</p>
-      <p className="cosmic-shell-copy mt-3 text-sm">{messages.auth.loginWithLinkHint}</p>
+    <section className="tr-shell mx-auto max-w-md p-8">
+      <h1 className="text-3xl">{messages.auth.loginTitle}</h1>
+      <p className="tr-copy mt-2">{messages.auth.loginSubtitle}</p>
 
       {consumingLink ? (
-        <p className="cosmic-info-box mt-4 rounded-xl px-4 py-3 text-sm text-cyan-50">
-          {messages.auth.loginWithLinkConsuming}
-        </p>
+        <p className="tr-alert-info mt-4">{messages.auth.loginWithLinkConsuming}</p>
       ) : null}
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-        <label className="cosmic-field-label block text-sm font-semibold">
+        <label className="tr-label">
           {messages.auth.emailLabel}
           <input
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required
-            className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+            autoComplete="email"
+            className="tr-input mt-2"
           />
         </label>
 
-        <label className="cosmic-field-label block text-sm font-semibold">
+        <label className="tr-label">
           {messages.auth.passwordLabel}
           <input
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
-            className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
+            autoComplete="current-password"
+            className="tr-input mt-2"
           />
         </label>
 
-        {error ? (
-          <p className="cosmic-error-box rounded-xl px-4 py-3 text-sm">
-            {error}
-          </p>
-        ) : null}
+        {error ? <p className="tr-alert-error">{error}</p> : null}
+        {linkError ? <p className="tr-alert-error">{linkError}</p> : null}
+        {linkSuccess ? <p className="tr-alert-success">{linkSuccess}</p> : null}
 
-        {linkError ? (
-          <p className="cosmic-error-box rounded-xl px-4 py-3 text-sm">
-            {linkError}
-          </p>
-        ) : null}
-
-        {linkSuccess ? (
-          <p className="cosmic-success-box rounded-xl px-4 py-3 text-sm">
-            {linkSuccess}
-          </p>
-        ) : null}
-
-        <button
-          type="submit"
-          disabled={loading || consumingLink}
-          className="cosmic-button-primary w-full rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] disabled:opacity-70"
-        >
+        <button type="submit" disabled={loading || consumingLink} className="tr-btn-primary w-full">
           {loading ? messages.common.loading : messages.auth.loginButton}
         </button>
 
         <div className="relative py-1">
-          <span className="block h-px w-full bg-cyan-100/16" />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-100/16 bg-slate-950/92 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
+          <span className="block h-px w-full bg-trimry-line" />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-[10px] font-black uppercase tracking-[0.16em] text-trimry-muted">
             {messages.auth.loginWithLinkDivider}
           </span>
         </div>
@@ -289,21 +251,18 @@ export default function LoginPage() {
         <button
           type="button"
           disabled={sendingLink || consumingLink || loading || email.trim().length === 0}
-          onClick={() => {
-            void requestLoginLink()
-          }}
-          className="cosmic-button-secondary w-full rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-cyan-50 disabled:opacity-70"
+          onClick={() => void requestLoginLink()}
+          className="tr-btn-secondary w-full"
         >
-          {sendingLink
-            ? messages.auth.loginWithLinkSending
-            : messages.auth.loginWithLinkButton}
+          {sendingLink ? messages.auth.loginWithLinkSending : messages.auth.loginWithLinkButton}
         </button>
+        <p className="tr-meta text-xs">{messages.auth.loginWithLinkHint}</p>
       </form>
 
-      <p className="cosmic-shell-meta mt-5 text-sm">
+      <p className="tr-meta mt-6 text-sm">
         {messages.auth.needAccount}{' '}
-        <Link href={registerHref} className="cosmic-link font-bold">
-          {messages.auth.registerButton}
+        <Link href={registerHref} className="tr-link">
+          {messages.nav.register}
         </Link>
       </p>
     </section>

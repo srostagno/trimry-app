@@ -3,13 +3,13 @@ import { DisclaimerPageClient } from '@/components/legal/disclaimer-page-client'
 import { createLegalPageJsonLd, createPageMetadata } from '@/lib/seo'
 
 const description =
-  'Read the Trimry ritual disclaimer about cultural interpretation, no guarantee of outcomes, and personal responsibility.'
+  'Read the Trimry data and accuracy notice: where sports schedules come from, why fixtures can change, and why Trimry never provides betting advice.'
 
 export const metadata = createPageMetadata({
-  title: 'Ritual Disclaimer',
+  title: 'Data & Accuracy Notice',
   description,
   path: '/legal/disclaimer',
-  keywords: ['trimry disclaimer', 'ritual disclaimer', 'fortune content disclaimer'],
+  keywords: ['trimry disclaimer', 'sports schedule accuracy', 'fixture changes notice'],
 })
 
 export default function DisclaimerPage() {
@@ -17,7 +17,7 @@ export default function DisclaimerPage() {
     <>
       <JsonLd
         data={createLegalPageJsonLd({
-          title: 'Ritual Disclaimer',
+          title: 'Data & Accuracy Notice',
           description,
           path: '/legal/disclaimer',
         })}

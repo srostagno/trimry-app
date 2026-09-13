@@ -1,474 +1,294 @@
 'use client'
 
+import { Disclosure } from '@headlessui/react'
+import clsx from 'clsx'
 import Image from 'next/image'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
 
-import { StartFlowButton } from '@/components/start-flow-button'
 import { useLanguage } from '@/components/language-provider'
+import { openScoutChat } from '@/components/scout-chat-widget'
+import { useSportsCatalog } from '@/components/sports-preferences-editor'
+import { StartFlowButton } from '@/components/start-flow-button'
+import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import { trackEvent } from '@/lib/analytics'
+import { detectBrowserTimeZone } from '@/lib/schedule'
+import { fetchEventsPreview, type SportKey, type UpcomingFeed } from '@/lib/sports'
 
-type OracleTone = 'good' | 'bad' | 'rare'
-const LANDING_LAST_VISIT_KEY = 'trimry:landing-last-visit'
+const PREVIEW_SPORTS: SportKey[] = [
+  'soccer',
+  'basketball',
+  'american_football',
+  'motorsport',
+  'fighting',
+  'tennis',
+]
 
-function toneClasses(tone: OracleTone) {
-  return tone === 'good'
-    ? 'oracle-tone-badge oracle-tone-badge-good'
-    : tone === 'bad'
-      ? 'oracle-tone-badge oracle-tone-badge-bad'
-      : 'oracle-tone-badge oracle-tone-badge-rare'
-}
+function LivePreview() {
+  const { language, messages } = useLanguage()
+  const { catalog } = useSportsCatalog()
+  const [sport, setSport] = useState<SportKey>('soccer')
+  const [feed, setFeed] = useState<UpcomingFeed | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [timeZone, setTimeZone] = useState('UTC')
 
-function toDayKey(date: Date) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
+  useEffect(() => {
+    setTimeZone(detectBrowserTimeZone())
+  }, [])
 
-function calculateDayDiff(from: string, to: string) {
-  const fromDate = new Date(`${from}T00:00:00`)
-  const toDate = new Date(`${to}T00:00:00`)
+  useEffect(() => {
+    let cancelled = false
 
-  if (Number.isNaN(fromDate.getTime()) || Number.isNaN(toDate.getTime())) {
-    return 0
-  }
+    setLoading(true)
+    setError('')
 
-  const msPerDay = 24 * 60 * 60 * 1000
-  return Math.round((toDate.getTime() - fromDate.getTime()) / msPerDay)
+    fetchEventsPreview({ sport, days: 7, language, timeZone })
+      .then((payload) => {
+        if (!cancelled) {
+          setFeed(payload)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setError(messages.home.previewError)
+          setFeed(null)
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [language, messages.home.previewError, sport, timeZone])
+
+  const chips = useMemo(
+    () =>
+      PREVIEW_SPORTS.map((key) => {
+        const entry = catalog.find((item) => item.key === key)
+        return { key, label: entry?.label ?? key, emoji: entry?.emoji ?? '🏟️' }
+      }),
+    [catalog],
+  )
+
+  return (
+    <div className="tr-shell p-5 sm:p-6">
+      <div className="flex flex-wrap gap-2">
+        {chips.map((chip) => (
+          <button
+            key={chip.key}
+            type="button"
+            onClick={() => {
+              setSport(chip.key)
+              trackEvent('home_preview_sport_selected', { sport: chip.key })
+            }}
+            className={clsx('tr-chip text-xs', chip.key === sport && 'tr-chip-active')}
+          >
+            <span aria-hidden="true">{chip.emoji}</span>
+            {chip.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-5">
+        <UpcomingEventsFeed
+          feed={feed}
+          loading={loading}
+          error={error}
+          emptyMessage={messages.home.previewEmpty}
+          compact
+          maxEventsPerDay={4}
+        />
+      </div>
+    </div>
+  )
 }
 
 export function HomePageClient() {
-  const { language, messages } = useLanguage()
-  const startNowCopy =
-    language === 'es'
-      ? {
-          label: 'Empieza ahora',
-          title: 'Empieza a tener más suerte ahora haciendo clic en el botón.',
-          loadingLabel: 'Abriendo...',
-        }
-      : language === 'pt'
-        ? {
-            label: 'Comece agora',
-            title: 'Comece a ter mais sorte agora clicando no botão.',
-            loadingLabel: 'Abrindo...',
-          }
-        : {
-            label: 'Start Now',
-            title: 'Start being luckier now by clicking the above button.',
-            loadingLabel: 'Opening...',
-          }
-
-  const rotatingPredictions = useMemo(() => messages.home.predictions, [messages.home.predictions])
-  const teaserRef = useRef<HTMLElement | null>(null)
-  const trackedScrollHalfRef = useRef(false)
-  const trackedTeaserViewRef = useRef(false)
-
-  const [activePredictionIndex, setActivePredictionIndex] = useState(0)
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setActivePredictionIndex((current) => (current + 1) % rotatingPredictions.length)
-    }, 10000)
-
-    return () => window.clearInterval(interval)
-  }, [rotatingPredictions.length])
-
-  useEffect(() => {
-    trackEvent('landing_page_view', {
-      language,
-      page: 'home',
-    })
-
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    const todayKey = toDayKey(new Date())
-    const previousVisit = window.localStorage.getItem(LANDING_LAST_VISIT_KEY)
-
-    if (previousVisit) {
-      const dayDiff = calculateDayDiff(previousVisit, todayKey)
-
-      if (dayDiff >= 1) {
-        trackEvent('return_next_day', {
-          language,
-          day_diff: dayDiff,
-        })
-      }
-    }
-
-    window.localStorage.setItem(LANDING_LAST_VISIT_KEY, todayKey)
-  }, [language])
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (trackedScrollHalfRef.current) {
-        return
-      }
-
-      const documentHeight = document.documentElement.scrollHeight
-      const progress = (window.scrollY + window.innerHeight) / documentHeight
-
-      if (progress >= 0.5) {
-        trackedScrollHalfRef.current = true
-        trackEvent('scroll_50', { language })
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    handleScroll()
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [language])
-
-  useEffect(() => {
-    const element = teaserRef.current
-
-    if (!element || trackedTeaserViewRef.current) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0]
-
-        if (!entry || !entry.isIntersecting || trackedTeaserViewRef.current) {
-          return
-        }
-
-        trackedTeaserViewRef.current = true
-        trackEvent('teaser_view', {
-          language,
-          placement: 'home_post_hero',
-        })
-        observer.disconnect()
-      },
-      {
-        threshold: 0.35,
-      },
-    )
-
-    observer.observe(element)
-
-    return () => observer.disconnect()
-  }, [language])
-
-  const goToPreviousPrediction = () => {
-    setActivePredictionIndex((current) =>
-      current === 0 ? rotatingPredictions.length - 1 : current - 1,
-    )
-  }
-
-  const goToNextPrediction = () => {
-    setActivePredictionIndex((current) => (current + 1) % rotatingPredictions.length)
-  }
-
-  const activePrediction = rotatingPredictions[activePredictionIndex]
-  const toneLabel =
-    activePrediction.tone === 'good'
-      ? messages.weekly.good.toUpperCase()
-      : activePrediction.tone === 'bad'
-        ? messages.weekly.bad.toUpperCase()
-        : messages.weekly.rare.toUpperCase()
-  const toneGlyph =
-    activePrediction.tone === 'good'
-      ? '↑'
-      : activePrediction.tone === 'bad'
-        ? '!'
-        : '✦'
-  const luckScoreByPrediction = [78, 83, 76, 69, 88, 81, 84, 66, 90]
-  const luckScore = luckScoreByPrediction[activePredictionIndex % luckScoreByPrediction.length]
-  const heroCopy =
-    language === 'es'
-      ? {
-          title: 'Manifiesta mejor suerte',
-          subtitle:
-            'Descubre el ritmo oculto de tus símbolos y abre una planificación personalizada para tomar mejores decisiones.',
-          primary: 'Empezar ahora',
-        }
-      : language === 'pt'
-        ? {
-            title: 'Manifeste mais sorte',
-            subtitle:
-              'Descubra o ritmo oculto dos seus símbolos e abra um planejamento personalizado para tomar melhores decisões.',
-            primary: 'Comece agora',
-          }
-        : {
-            title: 'Manifest Better Luck',
-            subtitle:
-              'Discover the hidden rhythm of your symbols and open a personalized plan for making better-timed decisions.',
-            primary: 'Start Now',
-          }
-  const teaserCopy =
-    language === 'es'
-      ? {
-          badge: 'Lectura instantánea',
-          title: 'Abre la señal de hoy y deja que Trimry ordene tu suerte.',
-          line1: 'Tu guía cruza timing ritual, zodíaco, calendario chino y señales de abundancia.',
-          line2: 'Empieza el flujo y revela cómo se están alineando tus símbolos personales.',
-          cta: 'Empezar ahora',
-        }
-      : language === 'pt'
-        ? {
-            badge: 'Leitura instantânea',
-            title: 'Abra o sinal de hoje e deixe a Trimry organizar sua sorte.',
-            line1: 'Seu guia combina timing ritual, zodíaco, calendário chinês e sinais de abundância.',
-            line2: 'Comece o fluxo e revele como seus símbolos pessoais estão se alinhando.',
-            cta: 'Comece agora',
-          }
-      : {
-          badge: 'Instant reading',
-          title: 'Open today’s signal and let Trimry organize your luck.',
-          line1: 'Your guide blends ritual timing, zodiac, Chinese calendar, and abundance signals.',
-          line2: 'Start the flow and reveal how your personal symbols are aligning.',
-          cta: 'Start Now',
-        }
+  const { messages } = useLanguage()
 
   return (
-    <div className="space-y-12 pb-12">
-      <section className="luck-glow cosmic-panel pulse-soft relative overflow-hidden rounded-[2.2rem] p-6 sm:p-10">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(90,243,220,0.24),transparent_33%),radial-gradient(circle_at_86%_0%,rgba(117,173,255,0.26),transparent_34%),radial-gradient(circle_at_70%_82%,rgba(247,221,145,0.14),transparent_32%)]" />
-        <div className="relative z-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <p className="cosmic-badge slide-up inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.22em] text-cyan-100">
-              {language === 'es'
-                ? 'Guía de suerte'
-                : language === 'pt'
-                  ? 'Guia de sorte'
-                  : 'Your Luck Guide'}
-            </p>
-            <h1 className="slide-up-delay mt-5 max-w-4xl text-4xl leading-[1.04] text-slate-50 sm:text-6xl lg:text-7xl">
-              {heroCopy.title}
+    <div className="space-y-20 pb-8">
+      <section className="tr-hero px-6 py-12 sm:px-10 sm:py-16 lg:px-14">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="tr-fade-up">
+            <p className="tr-badge tr-badge-blue">{messages.home.badge}</p>
+            <h1 className="mt-5 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
+              {messages.home.title}{' '}
+              <span className="tr-gradient-text">{messages.home.titleHighlight}</span>
             </h1>
-            <p className="slide-up mt-5 text-base text-slate-100/88 sm:text-lg">
-              {heroCopy.subtitle}
-            </p>
-            <div className="slide-up mt-7 flex flex-wrap gap-3">
-              <StartFlowButton
-                analyticsLocation="home_hero_primary"
-                className="cosmic-button-primary rounded-full px-6 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
-                title={startNowCopy.title}
-                loadingLabel={startNowCopy.loadingLabel}
-              >
-                {startNowCopy.label}
+            <p className="tr-copy mt-5 max-w-xl text-lg">{messages.home.subtitle}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <StartFlowButton className="tr-btn-primary px-7" analyticsLocation="hero">
+                {messages.home.primaryCta}
               </StartFlowButton>
+              <Link href="#how-it-works" className="tr-btn-secondary">
+                {messages.home.secondaryCta}
+              </Link>
             </div>
+            <p className="tr-meta mt-4 text-xs">{messages.home.trustLine}</p>
           </div>
 
-          <aside className="guru-aura cosmic-card relative min-h-[26rem] overflow-hidden rounded-3xl sm:min-h-[29rem] lg:min-h-[31rem]">
-            <div className="guru-crystal-pulse absolute inset-0">
+          <div className="tr-fade-up-delay relative">
+            <div className="tr-float absolute -left-6 -top-8 hidden lg:block">
               <Image
-                src="/luck-guru-card.webp"
-                alt="Luck Guru"
-                fill
+                src="/brand/trimry-icon-rounded-256.png"
+                alt=""
+                width={88}
+                height={88}
                 priority
-                sizes="(min-width: 1024px) 34vw, (min-width: 640px) 42vw, 96vw"
-                className="object-cover object-center"
+                className="h-22 w-22 rounded-3xl shadow-glow"
               />
-              <span className="guru-eye-glow pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_52%_24%,rgba(250,236,184,0.34),transparent_28%),linear-gradient(180deg,rgba(3,9,23,0.08)_16%,rgba(3,9,23,0.58)_72%,rgba(3,9,23,0.86)_100%)]" />
             </div>
-
-            <div className="relative z-10 flex h-full flex-col justify-end p-5 sm:p-6">
-              <div className="rounded-2xl border border-cyan-100/26 bg-slate-950/42 p-4 backdrop-blur-sm">
-                <p className="text-xs font-bold uppercase tracking-[0.17em] text-cyan-100/84">
-                  {language === 'es'
-                    ? 'Calendario personal'
-                    : language === 'pt'
-                      ? 'Calendário pessoal'
-                      : 'Personal calendar'}
-                </p>
-                <p className="mt-2 text-sm text-slate-100/90">
-                  {language === 'es'
-                    ? 'Revela tus símbolos, pide un deseo y descubre cuándo conviene avanzar.'
-                    : language === 'pt'
-                      ? 'Revele seus símbolos, faça um pedido e descubra quando avançar.'
-                    : 'Reveal your symbols, make a wish, and discover when to move.'}
-                </p>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section
-        ref={teaserRef}
-        id="daily-oracle"
-        className="cosmic-card relative overflow-hidden rounded-[2rem] p-5 sm:p-6"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_30%,rgba(247,223,161,0.17),transparent_28%),radial-gradient(circle_at_90%_10%,rgba(121,242,255,0.12),transparent_28%),linear-gradient(135deg,rgba(17,23,61,0.22),transparent)]" />
-        <div className="relative z-10 grid items-start gap-6 lg:grid-cols-[1fr_auto]">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-amber-100/82">
-              {teaserCopy.badge}
-            </p>
-            <h2 className="mt-2 text-3xl leading-tight text-slate-50 sm:text-4xl">
-              {teaserCopy.title}
-            </h2>
-            <p className="mt-3 max-w-3xl text-slate-100/84">{teaserCopy.line1}</p>
-            <p className="mt-2 max-w-3xl text-slate-100/84">{teaserCopy.line2}</p>
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <span className="text-2xl text-slate-50 sm:text-3xl">
-                {language === 'es'
-                  ? 'Podría ser...'
-                  : language === 'pt'
-                    ? 'Pode ser...'
-                    : 'Could be...'}
-              </span>
-              <span className={toneClasses(activePrediction.tone)}>
-                <span aria-hidden="true" className="oracle-tone-badge-icon">
-                  {toneGlyph}
-                </span>
-                {toneLabel}
-              </span>
-              <span className="rounded-full border border-amber-200/32 bg-amber-200/12 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-amber-50">
-                {language === 'es'
-                  ? `Suerte hoy: ${luckScore}/100`
-                  : language === 'pt'
-                    ? `Sorte hoje: ${luckScore}/100`
-                  : `Luck score today: ${luckScore}/100`}
-              </span>
-            </div>
-            <p key={activePredictionIndex} className="mt-4 max-w-3xl text-lg text-slate-100/90 slide-up">
-              {activePrediction.text}
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={goToPreviousPrediction}
-                className="rounded-full border border-cyan-200/30 bg-cyan-200/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-cyan-100"
-              >
-                {messages.common.previous}
-              </button>
-              <button
-                type="button"
-                onClick={goToNextPrediction}
-                className="rounded-full border border-cyan-200/30 bg-cyan-200/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-cyan-100"
-              >
-                {messages.common.next}
-              </button>
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <StartFlowButton
-                analyticsLocation="home_teaser_primary"
-                className="cosmic-button-primary inline-flex rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
-                title={startNowCopy.title}
-                loadingLabel={startNowCopy.loadingLabel}
-              >
-                {startNowCopy.label}
-              </StartFlowButton>
-            </div>
-          </div>
-          <div className="grid gap-2 text-xs uppercase tracking-[0.16em] text-cyan-100/78 sm:min-w-[13rem]">
-            <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es'
-                ? 'Símbolos personales'
-                : language === 'pt'
-                  ? 'Símbolos pessoais'
-                  : 'Personal symbols'}
-            </span>
-            <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es'
-                ? 'Timing tibetano'
-                : language === 'pt'
-                  ? 'Timing tibetano'
-                  : 'Tibetan timing'}
-            </span>
-            <span className="rounded-2xl border border-cyan-100/18 bg-cyan-100/8 px-3 py-3 text-center">
-              {language === 'es'
-                ? 'Vista de calendario'
-                : language === 'pt'
-                  ? 'Vista de calendário'
-                  : 'Calendar view'}
-            </span>
+            <p className="tr-eyebrow mb-3">{messages.home.previewEyebrow}</p>
+            <h2 className="text-2xl">{messages.home.previewTitle}</h2>
+            <p className="tr-meta mt-1 mb-4">{messages.home.previewSubtitle}</p>
+            <LivePreview />
           </div>
         </div>
       </section>
 
-      <section id="how-it-works" className="grid gap-4 md:grid-cols-3">
-        {[
-          {
-            title: messages.story.card1Title,
-            text: messages.story.card1Text,
-            symbol: '☉',
-          },
-          {
-            title: messages.story.card2Title,
-            text: messages.story.card2Text,
-            symbol: '✶',
-          },
-          {
-            title: messages.story.card3Title,
-            text: messages.story.card3Text,
-            symbol: '☽',
-          },
-        ].map((card, index) => (
-          <article
-            key={card.title}
-            className="cosmic-card relative overflow-hidden rounded-3xl p-5 slide-up"
-            style={{ animationDelay: `${index * 90}ms` }}
-          >
-            <span className="absolute right-4 top-3 text-3xl text-cyan-100/55">{card.symbol}</span>
-            <h2 className="text-xl text-slate-50">{card.title}</h2>
-            <p className="mt-2 text-sm text-slate-100/84">{card.text}</p>
-          </article>
-        ))}
+      <section id="how-it-works" className="scroll-mt-24">
+        <p className="tr-eyebrow">{messages.home.stepsEyebrow}</p>
+        <h2 className="mt-2 text-3xl sm:text-4xl">{messages.home.stepsTitle}</h2>
+        <ol className="mt-8 grid gap-4 md:grid-cols-3">
+          {messages.home.steps.map((step, index) => (
+            <li key={step.title} className="tr-card p-6">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand-gradient text-sm font-black text-white">
+                {index + 1}
+              </span>
+              <h3 className="mt-4 text-lg">{step.title}</h3>
+              <p className="tr-copy mt-2 text-sm leading-6">{step.text}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
-      <section id="pricing" className="cosmic-panel relative overflow-hidden rounded-[2rem] p-8 sm:p-10">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full border border-cyan-200/20" />
-        <h2 className="text-3xl text-slate-50 sm:text-5xl">{messages.pricing.title}</h2>
-        <p className="mt-3 text-slate-100/84">{messages.pricing.subtitle}</p>
-        <div className="cosmic-card mt-6 max-w-xl rounded-3xl p-6">
-          <h3 className="text-2xl text-slate-50">{messages.pricing.planTitle}</h3>
-          <p className="mt-2 text-lg font-bold text-cyan-100">{messages.pricing.billing}</p>
-          <ul className="mt-5 space-y-2 text-slate-100/88">
-            <li>{messages.pricing.include1}</li>
-            <li>{messages.pricing.include2}</li>
-            <li>{messages.pricing.include3}</li>
-          </ul>
-          <StartFlowButton
-            analyticsLocation="home_pricing"
-            className="cosmic-button-primary mt-6 inline-flex rounded-full px-5 py-3 text-sm font-black uppercase tracking-[0.15em] transition"
-            title={startNowCopy.title}
-            loadingLabel={startNowCopy.loadingLabel}
-          >
-            {startNowCopy.label}
-          </StartFlowButton>
-        </div>
-      </section>
-
-      <section id="faq">
-        <h2 className="text-3xl text-slate-50 sm:text-5xl">{messages.faq.title}</h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2">
-          {[
-            { q: messages.faq.q1, a: messages.faq.a1 },
-            { q: messages.faq.q2, a: messages.faq.a2 },
-            { q: messages.faq.q3, a: messages.faq.a3 },
-            { q: messages.faq.q4, a: messages.faq.a4 },
-          ].map((faq) => (
-            <article key={faq.q} className="cosmic-card rounded-2xl p-5">
-              <h3 className="text-lg text-slate-50">{faq.q}</h3>
-              <p className="mt-2 text-slate-100/82">{faq.a}</p>
-            </article>
+      <section id="sports" className="scroll-mt-24">
+        <p className="tr-eyebrow">{messages.home.channelsEyebrow}</p>
+        <h2 className="mt-2 text-3xl sm:text-4xl">{messages.home.channelsTitle}</h2>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {messages.home.channels.map((channel, index) => (
+            <div key={channel.title} className="tr-card-muted p-6">
+              <span className="text-2xl" aria-hidden="true">
+                {index === 0 ? '✉️' : index === 1 ? '💬' : '📱'}
+              </span>
+              <h3 className="mt-3 text-lg">{channel.title}</h3>
+              <p className="tr-copy mt-2 text-sm leading-6">{channel.text}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      <section className="luck-glow cosmic-cta relative overflow-hidden rounded-[2rem] border border-cyan-200/28 p-8 text-center sm:p-12">
-        <span className="twinkle absolute left-8 top-6 text-xl text-cyan-100">✶</span>
-        <span className="twinkle-delay absolute bottom-8 right-10 text-xl text-amber-100">✦</span>
-        <h2 className="text-3xl text-slate-50 sm:text-6xl">{messages.cta.title}</h2>
-        <p className="mx-auto mt-4 max-w-2xl text-slate-100/88">{messages.cta.subtitle}</p>
-        <StartFlowButton
-          analyticsLocation="home_final_cta"
-          className="cosmic-button-primary mt-8 inline-flex rounded-full px-8 py-3 text-sm font-black uppercase tracking-[0.17em] transition"
-          title={startNowCopy.title}
-          loadingLabel={startNowCopy.loadingLabel}
-        >
-          {startNowCopy.label}
-        </StartFlowButton>
+      <section className="tr-gradient-panel px-6 py-10 sm:px-10 sm:py-14">
+        <div className="grid items-center gap-8 lg:grid-cols-[1fr_0.9fr]">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-white/80">
+              {messages.home.scoutEyebrow}
+            </p>
+            <h2 className="mt-2 text-3xl text-white sm:text-4xl">{messages.home.scoutTitle}</h2>
+            <p className="mt-4 max-w-xl text-base leading-7 text-white/90">{messages.home.scoutText}</p>
+            <button
+              type="button"
+              onClick={() => {
+                trackEvent('scout_cta_click', { cta_location: 'home_scout_section' })
+                openScoutChat()
+              }}
+              className="tr-btn mt-6 bg-white text-trimry-ink hover:bg-white/90"
+            >
+              {messages.home.scoutCta}
+            </button>
+          </div>
+          <ul className="space-y-3">
+            {messages.home.scoutBullets.map((bullet, index) => (
+              <li
+                key={bullet}
+                className={clsx(
+                  'max-w-sm rounded-2xl px-4 py-3 text-sm font-semibold shadow-card',
+                  index % 2 === 0
+                    ? 'ml-auto rounded-tr-md bg-trimry-ink text-white'
+                    : 'rounded-tl-md bg-white text-trimry-ink',
+                )}
+              >
+                {bullet}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section id="pricing" className="scroll-mt-24">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div>
+            <p className="tr-eyebrow">{messages.pricing.eyebrow}</p>
+            <h2 className="mt-2 text-3xl sm:text-4xl">{messages.pricing.title}</h2>
+            <p className="tr-copy mt-3 max-w-md">{messages.pricing.subtitle}</p>
+          </div>
+          <div className="tr-shell p-6 sm:p-8">
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <h3 className="text-xl">{messages.pricing.planTitle}</h3>
+              <p className="text-2xl font-extrabold text-trimry-ink">{messages.pricing.billing}</p>
+            </div>
+            <p className="tr-meta mt-1">{messages.pricing.trialNote}</p>
+            <ul className="mt-5 space-y-2.5">
+              {messages.pricing.includes.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-trimry-slate">
+                  <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-trimry-green/15 text-[11px] font-black text-emerald-700">
+                    ✓
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <StartFlowButton className="tr-btn-primary mt-6 w-full" analyticsLocation="pricing">
+              {messages.pricing.cta}
+            </StartFlowButton>
+            <p className="tr-meta mt-3 text-xs">{messages.pricing.cancelNote}</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="scroll-mt-24">
+        <h2 className="text-3xl sm:text-4xl">{messages.faq.title}</h2>
+        <div className="mt-6 divide-y divide-trimry-line rounded-3xl border border-trimry-line bg-white">
+          {messages.faq.items.map((item) => (
+            <Disclosure key={item.question} as="div" className="px-5 py-4">
+              {({ open }) => (
+                <>
+                  <Disclosure.Button className="flex w-full items-center justify-between gap-4 text-left">
+                    <span className="text-base font-bold text-trimry-ink">{item.question}</span>
+                    <span
+                      className={clsx(
+                        'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-trimry-surface text-trimry-blue transition',
+                        open && 'rotate-45',
+                      )}
+                      aria-hidden="true"
+                    >
+                      +
+                    </span>
+                  </Disclosure.Button>
+                  <Disclosure.Panel className="tr-copy mt-3 text-sm leading-6">
+                    {item.answer}
+                  </Disclosure.Panel>
+                </>
+              )}
+            </Disclosure>
+          ))}
+        </div>
+      </section>
+
+      <section className="tr-hero px-6 py-12 text-center sm:px-10">
+        <h2 className="text-3xl sm:text-4xl">{messages.home.finalTitle}</h2>
+        <p className="tr-copy mt-3">{messages.home.finalSubtitle}</p>
+        <div className="mt-6 flex justify-center">
+          <StartFlowButton className="tr-btn-primary px-8" analyticsLocation="footer_cta">
+            {messages.home.primaryCta}
+          </StartFlowButton>
+        </div>
       </section>
     </div>
   )

@@ -310,8 +310,8 @@ export async function triggerAdminWelcomeFlowTest(fallbackMessage: string) {
     subscriptionId: string
     greetingsTemplateSent: boolean
     greetingsTemplateError: string | null
-    whatsappProjectionSent: boolean
-    emailProjectionSent: boolean
+    whatsappDigestSent: boolean
+    emailDigestSent: boolean
   }
 }
 
@@ -341,21 +341,24 @@ export async function revertInternalTrialFromAdmin(
   }
 }
 
-export async function sendAdminDailyProjectionTemplateTest(
+export async function sendAdminSportsDigestTemplateTest(
   payload: {
     recipient: string
-    externalTemplateName: string
-    languageCode: string
+    externalTemplateName?: string
+    languageCode?: string
   },
   fallbackMessage: string,
 ) {
-  const response = await apiFetch(
-    '/admin/send-daily-projection-template-test',
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    },
-  )
+  const response = await apiFetch('/admin/send-sports-digest-template-test', {
+    method: 'POST',
+    body: JSON.stringify({
+      recipient: payload.recipient,
+      ...(payload.externalTemplateName?.trim()
+        ? { externalTemplateName: payload.externalTemplateName.trim() }
+        : {}),
+      ...(payload.languageCode?.trim() ? { languageCode: payload.languageCode.trim() } : {}),
+    }),
+  })
 
   if (!response.ok) {
     throw new Error(await readApiError(response, fallbackMessage))
@@ -366,11 +369,67 @@ export async function sendAdminDailyProjectionTemplateTest(
     providerMessageId: string | null
     templateName: string
     languageCode: string
-    requestedLanguageCode: string
+    requestedLanguageCode: string | null
     preferredLanguageCode: string
     dayKey: string
-    usedFallbackBirthDate: boolean
+    eventCount: number
     variableValues: Record<string, string>
+  }
+}
+
+export type SportsSyncStatus = {
+  provider: string
+  usingFreeKey: boolean
+  ttlHours: number
+  eventCount: number
+  upcomingCount: number
+  lastFetchedAt: string | null
+  states: Array<{
+    id: string
+    kind: 'league' | 'team' | 'sport_day'
+    label: string
+    lastFetchedAt: string | null
+    lastSucceededAt: string | null
+    lastError: string | null
+    lastEventCount: number
+  }>
+}
+
+export type SportsSyncSummary = {
+  startedAt: string
+  completedAt: string
+  targets: number
+  fetched: number
+  skipped: number
+  failed: number
+  eventsUpserted: number
+  errors: Array<{ target: string; message: string }>
+}
+
+export async function fetchAdminSportsSyncStatus(fallbackMessage: string) {
+  const response = await apiFetch('/admin/sports/sync', { cache: 'no-store' })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as { ok: true; status: SportsSyncStatus }
+}
+
+export async function runAdminSportsSync(fallbackMessage: string, force = false) {
+  const response = await apiFetch('/admin/sports/sync', {
+    method: 'POST',
+    body: JSON.stringify({ force }),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, fallbackMessage))
+  }
+
+  return (await response.json()) as {
+    ok: true
+    summary: SportsSyncSummary
+    status: SportsSyncStatus
   }
 }
 

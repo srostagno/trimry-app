@@ -1,5 +1,6 @@
 import { apiFetch } from '@/lib/api-client'
-import type { ActivityTone } from '@/lib/fortune'
+import type { SerializedSportsPreferences } from '@/lib/sports'
+import { hasAnyPreferences } from '@/lib/sports'
 
 export type SubscriptionStatus =
   | 'pending_checkout'
@@ -9,32 +10,6 @@ export type SubscriptionStatus =
   | 'canceled'
 
 export type DeliveryPreference = 'none' | 'email' | 'whatsapp' | 'both'
-
-export type ManifestationWishHistoryEntry = {
-  id: string
-  previousWish: string | null
-  nextWish: string | null
-  changedAt: string
-  source: 'onboarding' | 'account' | 'admin' | 'system'
-}
-
-export type WeeklyFortuneDay = {
-  date: string
-  weekday: string
-  summary: ActivityTone
-  notes: string
-  notesByLanguage: {
-    en: string
-    es: string
-    pt: string
-  }
-  activities: {
-    haircut: ActivityTone
-    shave: ActivityTone
-    nails: ActivityTone
-    release: ActivityTone
-  }
-}
 
 export function requiresWhatsappDelivery(preference: DeliveryPreference) {
   return preference === 'whatsapp' || preference === 'both'
@@ -47,12 +22,10 @@ export type AccountSnapshot = {
     firstName: string
     lastName: string
     fullName: string
-    birthDate: string | null
-    manifestationWish: string | null
-    manifestationWishHistory: ManifestationWishHistoryEntry[]
     locale: string
     timeZone: string
     admin: boolean
+    sportsPreferences: SerializedSportsPreferences | null
     activationFunnel: {
       currentStep: number
       maxStepReached: number
@@ -91,7 +64,12 @@ export type AccountSnapshot = {
     createdAt: string
     updatedAt: string
   } | null
-  weeklyFortune?: WeeklyFortuneDay[]
+  lastDigest: {
+    kind: 'daily' | 'weekly' | 'sample' | 'welcome'
+    channel: 'email' | 'whatsapp'
+    sentAt: string
+    eventCount: number
+  } | null
 }
 
 export async function fetchAccountSnapshot() {
@@ -112,10 +90,7 @@ export async function fetchAccountSnapshot() {
   return (await response.json()) as AccountSnapshot
 }
 
-export async function saveActivationFunnelStep(
-  step: number,
-  totalSteps?: number,
-) {
+export async function saveActivationFunnelStep(step: number, totalSteps?: number) {
   const response = await apiFetch(
     '/me/activation-funnel',
     {
@@ -160,14 +135,18 @@ export function resolveSafeRedirectPath(
 
 export function getStartFlowDestination(account: AccountSnapshot | null) {
   if (!account) {
-    return '/account/register'
-  }
-
-  if (!account.subscription) {
     return '/activate'
   }
 
-  if (account.subscription?.status === 'pending_checkout') {
+  if (!hasAnyPreferences(account.user.sportsPreferences)) {
+    return '/activate'
+  }
+
+  if (!account.subscription) {
+    return '/activate?step=3'
+  }
+
+  if (account.subscription.status === 'pending_checkout') {
     return '/checkout/start'
   }
 

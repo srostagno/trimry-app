@@ -10,7 +10,7 @@ import {
   fetchAdminWeeklyDispatchJobs,
   revertInternalTrialFromAdmin,
   runAdminSendCampaignAction,
-  sendAdminDailyProjectionTemplateTest,
+  sendAdminSportsDigestTemplateTest,
   startAdminWeeklyDispatch,
   saveAdminSendSettings,
   triggerAdminWelcomeFlowTest,
@@ -34,7 +34,7 @@ const localeByLanguage = {
 
 const PLACEHOLDER_REGEX = /{{\s*([a-zA-Z0-9_]+)\s*}}/g
 const TRIMRY_WEBSITE_URL = 'https://trimry.com'
-const TRIMRY_LOGO_URL = `${TRIMRY_WEBSITE_URL}/logo-horizontal.png`
+const TRIMRY_LOGO_URL = `${TRIMRY_WEBSITE_URL}/brand/trimry-icon-192.png`
 const FULL_HTML_DOCUMENT_REGEX = /<\s*(?:!doctype\s+html|html[\s>])/i
 
 function dispatchItemHasFailure(item: WeeklyDispatchJobResultItem) {
@@ -215,153 +215,129 @@ function ensureFullHtmlDocument(input: {
 function createWeeklyEmailPreset(
   language: keyof typeof localeByLanguage,
 ): WeeklyEmailPreset {
-  if (language === 'en') {
-    const subjectTemplate = 'Your Trimry weekly ritual summary: {{week_label}}'
-    const htmlBody = `
-<p style="margin:0 0 16px 0;">Hi {{first_name}},</p>
-<p style="margin:0 0 16px 0;">Here is your weekly ritual outlook with good, challenging, and rare timing for haircut, shave, nails, and release.</p>
-<h2 style="margin:22px 0 10px 0;font-size:20px;line-height:1.3;color:#0f172a;">Week {{week_label}}</h2>
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px 0;border-collapse:collapse;">
-  <tr>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Good days</td>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{good_days}}</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Challenging days</td>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{bad_days}}</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Rare days</td>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{rare_days}}</td>
-  </tr>
-</table>
-<p style="margin:0 0 8px 0;"><strong>Haircut:</strong> {{haircut_summary}}</p>
-<p style="margin:0 0 8px 0;"><strong>Shave:</strong> {{shave_summary}}</p>
-<p style="margin:0 0 8px 0;"><strong>Nails:</strong> {{nails_summary}}</p>
-<p style="margin:0 0 16px 0;"><strong>Release:</strong> {{release_summary}}</p>
-<p style="margin:0 0 18px 0;"><strong>Weekly tip:</strong> {{weekly_tip}}</p>
-<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:18px 0 0 0;">
-  <tr>
-    <td style="border-radius:999px;background:#0f766e;">
-      <a href="${TRIMRY_WEBSITE_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Open trimry.com</a>
-    </td>
-  </tr>
-</table>`
-    const textTemplate = `Hi {{first_name}},
+  const copy =
+    language === 'es'
+      ? {
+          subject: 'Tu agenda deportiva Trimry: {{period_label}}',
+          greeting: 'Hola {{first_name}},',
+          intro:
+            'Esta es tu agenda con los próximos partidos, carreras y peleas de los equipos y ligas que sigues.',
+          heading: 'Agenda {{period_label}}',
+          highlights: 'Destacados',
+          agenda: 'Agenda completa',
+          tip: 'Tip',
+          cta: 'Abrir mi agenda',
+          footer: 'Horarios en tu zona horaria. Cambia equipos, ritmo o canal desde tu panel.',
+        }
+      : language === 'pt'
+        ? {
+            subject: 'Sua agenda esportiva Trimry: {{period_label}}',
+            greeting: 'Olá {{first_name}},',
+            intro:
+              'Esta é sua agenda com os próximos jogos, corridas e lutas dos times e ligas que você acompanha.',
+            heading: 'Agenda {{period_label}}',
+            highlights: 'Destaques',
+            agenda: 'Agenda completa',
+            tip: 'Dica',
+            cta: 'Abrir minha agenda',
+            footer: 'Horários no seu fuso. Mude times, ritmo ou canal pelo painel.',
+          }
+        : {
+            subject: 'Your Trimry sports agenda: {{period_label}}',
+            greeting: 'Hi {{first_name}},',
+            intro:
+              'Here is your agenda with the upcoming matches, races and fights from the teams and leagues you follow.',
+            heading: 'Agenda {{period_label}}',
+            highlights: 'Highlights',
+            agenda: 'Full agenda',
+            tip: 'Tip',
+            cta: 'Open my agenda',
+            footer: 'Times in your time zone. Change teams, rhythm or channel from your dashboard.',
+          }
 
-Weekly Trimry ritual summary for {{week_label}}
-- Good days: {{good_days}}
-- Challenging days: {{bad_days}}
-- Rare days: {{rare_days}}
-
-Haircut: {{haircut_summary}}
-Shave: {{shave_summary}}
-Nails: {{nails_summary}}
-Release: {{release_summary}}
-
-Weekly tip: {{weekly_tip}}
-
-View your full outlook on ${TRIMRY_WEBSITE_URL}`
-
-    return {
-      templateName: 'Trimry Weekly Ritual Email',
-      templateDescription:
-        'Weekly summary with good, challenging, and rare ritual days.',
-      subjectTemplate,
-      htmlTemplate: ensureFullHtmlDocument({
-        language: 'en',
-        subject: subjectTemplate,
-        htmlBody,
-        preheader: 'Weekly timing for haircut, shave, nails, and release.',
-      }),
-      textTemplate,
-      variableDefaults: {
-        first_name: 'there',
-        week_label: 'Apr 6 - Apr 12',
-        good_days: 'Monday, Thursday',
-        bad_days: 'Tuesday',
-        rare_days: 'Saturday',
-        haircut_summary: 'Wednesday afternoon and Friday morning feel aligned.',
-        shave_summary: 'Use caution Tuesday night.',
-        nails_summary: 'Thursday morning has smoother momentum.',
-        release_summary: 'Sunday before 20:00 is best for symbolic release.',
-        weekly_tip: 'Keep rituals simple and consistent for better momentum.',
-      },
-    }
-  }
-
-  const subjectTemplate = 'Tu resumen semanal Trimry: {{week_label}}'
   const htmlBody = `
-<p style="margin:0 0 16px 0;">Hola {{first_name}},</p>
-<p style="margin:0 0 16px 0;">Este es tu resumen semanal con días buenos, malos y raros para corte, afeitado, uñas y liberación.</p>
-<h2 style="margin:22px 0 10px 0;font-size:20px;line-height:1.3;color:#0f172a;">Semana {{week_label}}</h2>
+<p style="margin:0 0 16px 0;">${copy.greeting}</p>
+<p style="margin:0 0 16px 0;">${copy.intro}</p>
+<h2 style="margin:22px 0 10px 0;font-size:20px;line-height:1.3;color:#0b1220;">${copy.heading}</h2>
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px 0;border-collapse:collapse;">
   <tr>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Días buenos</td>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{good_days}}</td>
+    <td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:700;background:#f5f8fc;">${copy.highlights}</td>
+    <td style="padding:10px 12px;border:1px solid #e2e8f0;">{{highlights}}</td>
   </tr>
   <tr>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Días malos</td>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{bad_days}}</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;font-weight:700;background:#f8fafc;">Días raros</td>
-    <td style="padding:10px 12px;border:1px solid #dbe3ed;">{{rare_days}}</td>
+    <td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:700;background:#f5f8fc;">${copy.agenda}</td>
+    <td style="padding:10px 12px;border:1px solid #e2e8f0;">{{agenda}}</td>
   </tr>
 </table>
-<p style="margin:0 0 8px 0;"><strong>Corte:</strong> {{haircut_summary}}</p>
-<p style="margin:0 0 8px 0;"><strong>Afeitado:</strong> {{shave_summary}}</p>
-<p style="margin:0 0 8px 0;"><strong>Uñas:</strong> {{nails_summary}}</p>
-<p style="margin:0 0 16px 0;"><strong>Liberación:</strong> {{release_summary}}</p>
-<p style="margin:0 0 18px 0;"><strong>Tip semanal:</strong> {{weekly_tip}}</p>
+<p style="margin:0 0 18px 0;"><strong>${copy.tip}:</strong> {{tip}}</p>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:18px 0 0 0;">
   <tr>
-    <td style="border-radius:999px;background:#0f766e;">
-      <a href="${TRIMRY_WEBSITE_URL}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Ir a trimry.com</a>
+    <td style="border-radius:999px;background:linear-gradient(135deg,#2b2fb8,#2f7bff 38%,#35d2e5 72%,#2fc56c);">
+      <a href="${TRIMRY_WEBSITE_URL}/dashboard" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">${copy.cta}</a>
     </td>
   </tr>
-</table>`
-  const textTemplate = `Hola {{first_name}},
+</table>
+<p style="margin:18px 0 0 0;font-size:12px;color:#64748b;">${copy.footer}</p>`
+  const textTemplate = `${copy.greeting}
 
-Resumen semanal Trimry para {{week_label}}
-- Días buenos: {{good_days}}
-- Días malos: {{bad_days}}
-- Días raros: {{rare_days}}
+${copy.intro}
 
-Corte: {{haircut_summary}}
-Afeitado: {{shave_summary}}
-Uñas: {{nails_summary}}
-Liberación: {{release_summary}}
+${copy.heading}
+${copy.highlights}: {{highlights}}
+${copy.agenda}: {{agenda}}
 
-Tip semanal: {{weekly_tip}}
+${copy.tip}: {{tip}}
 
-Revisa tu detalle completo en ${TRIMRY_WEBSITE_URL}`
+${copy.cta}: ${TRIMRY_WEBSITE_URL}/dashboard
+${copy.footer}`
 
   return {
-    templateName: 'Resumen Semanal Trimry',
+    templateName:
+      language === 'es'
+        ? 'Agenda deportiva Trimry'
+        : language === 'pt'
+          ? 'Agenda esportiva Trimry'
+          : 'Trimry sports agenda',
     templateDescription:
-      'Resumen semanal con días buenos, malos y raros para rituales.',
-    subjectTemplate,
+      language === 'es'
+        ? 'Email con destacados, agenda completa y tip. Variables: first_name, period_label, highlights, agenda, tip.'
+        : language === 'pt'
+          ? 'Email com destaques, agenda completa e dica. Variáveis: first_name, period_label, highlights, agenda, tip.'
+          : 'Email with highlights, full agenda and a tip. Variables: first_name, period_label, highlights, agenda, tip.',
+    subjectTemplate: copy.subject,
     htmlTemplate: ensureFullHtmlDocument({
-      language: 'es',
-      subject: subjectTemplate,
+      language,
+      subject: copy.subject,
       htmlBody,
-      preheader: 'Resumen semanal de corte, afeitado, uñas y liberación.',
+      preheader: copy.intro,
     }),
     textTemplate,
     variableDefaults: {
-      first_name: 'amigo',
-      week_label: '6 al 12 de abril',
-      good_days: 'Lunes y jueves',
-      bad_days: 'Martes',
-      rare_days: 'Sábado',
-      haircut_summary:
-        'Miércoles por la tarde y viernes temprano se ven alineados.',
-      shave_summary: 'Conviene evitar martes por la noche.',
-      nails_summary: 'Jueves en la mañana trae mejor fluidez.',
-      release_summary: 'Domingo antes de las 20:00 favorece cerrar ciclos.',
-      weekly_tip:
-        'Mantén rituales simples y consistentes para sostener el impulso.',
+      first_name: language === 'es' ? 'Silvio' : language === 'pt' ? 'Silvio' : 'Alex',
+      period_label:
+        language === 'es'
+          ? 'de esta semana'
+          : language === 'pt'
+            ? 'desta semana'
+            : 'this week',
+      highlights:
+        language === 'es'
+          ? 'Sáb 21:00 Real Madrid vs Barcelona (La Liga) · Dom 15:30 Lakers vs Celtics (NBA)'
+          : language === 'pt'
+            ? 'Sáb 21:00 Real Madrid x Barcelona (La Liga) · Dom 15:30 Lakers x Celtics (NBA)'
+            : 'Sat 21:00 Real Madrid vs Barcelona (La Liga) · Sun 15:30 Lakers vs Celtics (NBA)',
+      agenda:
+        language === 'es'
+          ? 'Lun: Arsenal vs Chelsea 21:00 · Mié: Champions League, 4 partidos · Dom: GP de Monza 15:00'
+          : language === 'pt'
+            ? 'Seg: Arsenal x Chelsea 21:00 · Qua: Champions League, 4 jogos · Dom: GP de Monza 15:00'
+            : 'Mon: Arsenal vs Chelsea 21:00 · Wed: Champions League, 4 matches · Sun: Monza GP 15:00',
+      tip:
+        language === 'es'
+          ? 'Responde "agenda" a Scout en WhatsApp para ver lo de hoy.'
+          : language === 'pt'
+            ? 'Responda "agenda" ao Scout no WhatsApp para ver o de hoje.'
+            : 'Reply "agenda" to Scout on WhatsApp to see today\'s events.',
     },
   }
 }
@@ -486,12 +462,9 @@ export function AdminSendCampaigns() {
   const [templateDescription, setTemplateDescription] = useState('')
   const [campaignName, setCampaignName] = useState('')
   const [testRecipient, setTestRecipient] = useState('')
-  const [dailyProjectionTestRecipient, setDailyProjectionTestRecipient] =
-    useState('')
-  const [dailyProjectionTemplateName, setDailyProjectionTemplateName] =
-    useState('daily_projection_1')
-  const [dailyProjectionTemplateLanguage, setDailyProjectionTemplateLanguage] =
-    useState('en')
+  const [digestTestRecipient, setDigestTestRecipient] = useState('')
+  const [digestTemplateName, setDigestTemplateName] = useState('')
+  const [digestTemplateLanguage, setDigestTemplateLanguage] = useState('')
   const [revertInternalTrialEmail, setRevertInternalTrialEmail] = useState('')
   const [weeklyDispatchJob, setWeeklyDispatchJob] =
     useState<WeeklyDispatchJob | null>(null)
@@ -1088,8 +1061,8 @@ export function AdminSendCampaigns() {
     deliveryAutomation?.lastRunMessage ??
     (deliveryAutomation?.enabled
       ? language === 'es'
-        ? 'El próximo cron enviará las proyecciones pendientes.'
-        : 'The next cron run will send due projections.'
+        ? 'El próximo cron enviará los digests pendientes.'
+        : 'The next cron run will send due digests.'
       : language === 'es'
         ? 'El cron queda bloqueado mientras el proceso esté pausado.'
         : 'Cron calls are blocked while automation is paused.')
@@ -1129,18 +1102,18 @@ export function AdminSendCampaigns() {
         language === 'es'
           ? `Flujo de bienvenida ejecutado para la suscripción ${response.subscriptionId}. Greetings: ${
               response.greetingsTemplateSent ? 'enviado' : 'falló'
-            }. WhatsApp diario: ${
-              response.whatsappProjectionSent ? 'enviado' : 'omitido'
-            }. Email: ${response.emailProjectionSent ? 'enviado' : 'omitido'}.${
+            }. Digest WhatsApp: ${
+              response.whatsappDigestSent ? 'enviado' : 'omitido'
+            }. Email: ${response.emailDigestSent ? 'enviado' : 'omitido'}.${
               response.greetingsTemplateError
                 ? ` Error greetings: ${response.greetingsTemplateError}`
                 : ''
             }`
           : `Welcome flow triggered for subscription ${response.subscriptionId}. Greetings: ${
               response.greetingsTemplateSent ? 'sent' : 'failed'
-            }. Daily WhatsApp: ${
-              response.whatsappProjectionSent ? 'sent' : 'skipped'
-            }. Email: ${response.emailProjectionSent ? 'sent' : 'skipped'}.${
+            }. WhatsApp digest: ${
+              response.whatsappDigestSent ? 'sent' : 'skipped'
+            }. Email: ${response.emailDigestSent ? 'sent' : 'skipped'}.${
               response.greetingsTemplateError
                 ? ` Greetings error: ${response.greetingsTemplateError}`
                 : ''
@@ -1198,30 +1171,26 @@ export function AdminSendCampaigns() {
     }
   }
 
-  const runDailyProjectionTemplateTest = async () => {
-    setBusyAction('daily-template-test')
+  const runDigestTemplateTest = async () => {
+    setBusyAction('digest-template-test')
     setError('')
     setSuccess('')
 
     try {
-      const dailyProjectionTestFallback =
+      const digestTestFallback =
         language === 'es'
-          ? 'No se pudo enviar el test de WhatsApp diario.'
-          : 'Unable to send the daily WhatsApp test.'
-      const response = await sendAdminDailyProjectionTemplateTest(
+          ? 'No se pudo enviar el test del digest por WhatsApp.'
+          : 'Unable to send the WhatsApp digest test.'
+      const response = await sendAdminSportsDigestTemplateTest(
         {
-          recipient: dailyProjectionTestRecipient,
-          externalTemplateName: dailyProjectionTemplateName,
-          languageCode: dailyProjectionTemplateLanguage,
+          recipient: digestTestRecipient,
+          externalTemplateName: digestTemplateName,
+          languageCode: digestTemplateLanguage,
         },
-        dailyProjectionTestFallback,
+        digestTestFallback,
       )
-      const fallbackBirthDateHint = response.usedFallbackBirthDate
-        ? language === 'es'
-          ? ' Se usó fecha de nacimiento de ejemplo porque tu cuenta admin no tiene una guardada.'
-          : ' A sample birth date was used because your admin account has no saved birth date.'
-        : ''
       const languageHint =
+        response.requestedLanguageCode &&
         response.requestedLanguageCode !== response.languageCode
           ? language === 'es'
             ? ` Idioma usado: ${response.languageCode}.`
@@ -1229,12 +1198,12 @@ export function AdminSendCampaigns() {
           : ''
       const successMessage =
         language === 'es'
-          ? `Template diario enviado como test para ${response.dayKey}. Meta message id: ${
+          ? `Template ${response.templateName} enviado como test para ${response.dayKey} con ${response.eventCount} eventos. Meta message id: ${
               response.providerMessageId ?? 'pendiente'
-            }.${languageHint}${fallbackBirthDateHint}`
-          : `Daily template test sent for ${response.dayKey}. Meta message id: ${
+            }.${languageHint}`
+          : `Template ${response.templateName} test sent for ${response.dayKey} with ${response.eventCount} events. Meta message id: ${
               response.providerMessageId ?? 'pending'
-            }.${languageHint}${fallbackBirthDateHint}`
+            }.${languageHint}`
 
       setSuccess(successMessage)
     } catch (nextError) {
@@ -1491,8 +1460,8 @@ export function AdminSendCampaigns() {
           </h3>
           <p className="cosmic-shell-meta mt-2 text-sm">
             {language === 'es'
-              ? 'Dispara desde tu cuenta admin el flujo completo: template greetings de WhatsApp, proyección diaria por WhatsApp y correo de bienvenida con proyección.'
-              : 'Trigger the full welcome flow from your admin account: WhatsApp greetings template, daily WhatsApp projection, and welcome projection email.'}
+              ? 'Dispara desde tu cuenta admin el flujo completo: template greetings de WhatsApp, digest de bienvenida por WhatsApp y correo de bienvenida con tu agenda.'
+              : 'Trigger the full welcome flow from your admin account: WhatsApp greetings template, WhatsApp welcome digest, and welcome email with your agenda.'}
           </p>
           <button
             type="button"
@@ -1558,27 +1527,27 @@ export function AdminSendCampaigns() {
                 {language === 'es' ? 'Template aprobado' : 'Approved template'}
               </p>
               <h3 className="mt-2 text-xl font-semibold text-slate-50">
-                Trimry Daily Projections
+                Trimry Sports Digest
               </h3>
               <p className="cosmic-shell-meta mt-2 text-sm">
                 {language === 'es'
-                  ? 'Envía un test real por WhatsApp Cloud API usando los parámetros aprobados: señal diaria, zodíaco, calendario chino, sutra haircut timing y Luck Guru.'
-                  : 'Send a real WhatsApp Cloud API test with the approved parameters: daily signal, zodiac, Chinese calendar, sutra haircut timing, and Luck Guru.'}
+                  ? 'Envía un test real por WhatsApp Cloud API con la agenda deportiva de tu cuenta admin. Variables: {{1}} nombre, {{2}} periodo, {{3}} titular, {{4}} resumen, {{5}} cantidad de eventos.'
+                  : 'Send a real WhatsApp Cloud API test with the sports agenda of your admin account. Variables: {{1}} first name, {{2}} period, {{3}} headline, {{4}} summary, {{5}} event count.'}
               </p>
             </div>
             <button
               type="button"
-              onClick={() => void runDailyProjectionTemplateTest()}
+              onClick={() => void runDigestTemplateTest()}
               disabled={busyAction !== null}
               className="cosmic-button-primary rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.14em] disabled:opacity-60"
             >
-              {busyAction === 'daily-template-test'
+              {busyAction === 'digest-template-test'
                 ? language === 'es'
                   ? 'Enviando test'
                   : 'Sending test'
                 : language === 'es'
-                  ? 'Enviar test diario'
-                  : 'Send daily test'}
+                  ? 'Enviar test del digest'
+                  : 'Send digest test'}
             </button>
           </div>
 
@@ -1589,10 +1558,8 @@ export function AdminSendCampaigns() {
                 : 'WhatsApp test recipient'}
               <input
                 type="tel"
-                value={dailyProjectionTestRecipient}
-                onChange={(event) =>
-                  setDailyProjectionTestRecipient(event.target.value)
-                }
+                value={digestTestRecipient}
+                onChange={(event) => setDigestTestRecipient(event.target.value)}
                 placeholder={
                   language === 'es'
                     ? messages.dashboard.sendCampaigns
@@ -1606,9 +1573,12 @@ export function AdminSendCampaigns() {
               {messages.dashboard.sendCampaigns.externalTemplateNameLabel}
               <input
                 type="text"
-                value={dailyProjectionTemplateName}
-                onChange={(event) =>
-                  setDailyProjectionTemplateName(event.target.value)
+                value={digestTemplateName}
+                onChange={(event) => setDigestTemplateName(event.target.value)}
+                placeholder={
+                  language === 'es'
+                    ? 'Vacío = WHATSAPP_SPORTS_DIGEST_TEMPLATE_NAME'
+                    : 'Empty = WHATSAPP_SPORTS_DIGEST_TEMPLATE_NAME'
                 }
                 className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
               />
@@ -1617,10 +1587,9 @@ export function AdminSendCampaigns() {
               {messages.dashboard.sendCampaigns.whatsappLanguageLabel}
               <input
                 type="text"
-                value={dailyProjectionTemplateLanguage}
-                onChange={(event) =>
-                  setDailyProjectionTemplateLanguage(event.target.value)
-                }
+                value={digestTemplateLanguage}
+                onChange={(event) => setDigestTemplateLanguage(event.target.value)}
+                placeholder="en"
                 className="cosmic-input mt-2 block w-full rounded-xl px-4 py-3"
               />
             </label>
@@ -1628,8 +1597,8 @@ export function AdminSendCampaigns() {
 
           <p className="cosmic-shell-meta mt-3 text-xs">
             {language === 'es'
-              ? 'El default usa daily_projection_1 en en, igual que el curl validado. Si WhatsApp Manager muestra otro idioma exacto, cámbialo aquí antes del test.'
-              : 'The default uses daily_projection_1 in en, matching the validated curl. If WhatsApp Manager shows a different exact language, change it here before testing.'}
+              ? 'Si dejas el nombre vacío se usa WHATSAPP_SPORTS_DIGEST_TEMPLATE_NAME del API. Mientras Meta no apruebe la plantilla, los digests por WhatsApp quedan marcados como template_pending y solo sale el email.'
+              : 'Leave the name empty to use WHATSAPP_SPORTS_DIGEST_TEMPLATE_NAME from the API. Until Meta approves the template, WhatsApp digests are marked template_pending and only the email goes out.'}
           </p>
         </div>
 
@@ -1648,8 +1617,8 @@ export function AdminSendCampaigns() {
               </h3>
               <p className="cosmic-shell-meta mt-2 text-sm">
                 {language === 'es'
-                  ? 'Controla si el cron de producción puede enviar proyecciones a suscripciones activas. Si está pausado, el endpoint responde sin enviar mensajes.'
-                  : 'Controls whether the production cron can send projections to active subscriptions. When paused, the endpoint returns without sending messages.'}
+                  ? 'Controla si el cron de producción puede enviar digests a suscripciones activas. Si está pausado, el endpoint responde sin enviar mensajes.'
+                  : 'Controls whether the production cron can send digests to active subscriptions. When paused, the endpoint returns without sending messages.'}
               </p>
             </div>
 
@@ -1728,8 +1697,8 @@ export function AdminSendCampaigns() {
               </p>
               <h3 className="mt-2 text-xl font-semibold text-slate-50">
                 {language === 'es'
-                  ? 'Enviar la proyección diaria a todos los suscriptores activos'
-                  : 'Send the daily projection to all active subscribers'}
+                  ? 'Enviar el digest a todos los suscriptores con entrega pendiente'
+                  : 'Send the digest to every subscriber with a due delivery'}
               </h3>
               <p className="cosmic-shell-meta mt-2 text-sm">
                 {language === 'es'
@@ -1748,8 +1717,8 @@ export function AdminSendCampaigns() {
                   ? 'Iniciando'
                   : 'Starting'
                 : language === 'es'
-                  ? 'Enviar proyección diaria'
-                  : 'Send daily projection'}
+                  ? 'Enviar digest'
+                  : 'Send digest'}
             </button>
           </div>
         </div>
@@ -2719,8 +2688,8 @@ export function AdminSendCampaigns() {
                     className="mt-2 text-2xl font-semibold text-slate-50"
                   >
                     {language === 'es'
-                      ? 'Enviando proyección diaria'
-                      : 'Sending daily projection'}
+                      ? 'Enviando digest'
+                      : 'Sending digest'}
                   </h3>
                 </div>
                 <button

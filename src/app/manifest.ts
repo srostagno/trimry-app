@@ -9,17 +9,22 @@ export default function manifest(): MetadataRoute.Manifest {
     description: SITE_DESCRIPTION,
     start_url: '/',
     display: 'standalone',
-    background_color: '#06111d',
-    theme_color: '#0d2445',
+    background_color: '#ffffff',
+    theme_color: '#2f7bff',
     icons: [
       {
-        src: '/logo.png',
-        sizes: '1458x1458',
+        src: '/brand/trimry-icon-192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        src: '/brand/trimry-icon-512.png',
+        sizes: '512x512',
         type: 'image/png',
       },
       {
         src: '/favicon.ico',
-        sizes: '100x100',
+        sizes: '16x16 32x32 48x48 64x64',
         type: 'image/x-icon',
       },
     ],

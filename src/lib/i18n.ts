@@ -7,39 +7,12 @@ export const LANGUAGE_OPTIONS = [
 export type LanguageCode = (typeof LANGUAGE_OPTIONS)[number]['code']
 
 const SPANISH_SPEAKING_COUNTRY_CODES = new Set([
-  'AR',
-  'BO',
-  'CL',
-  'CO',
-  'CR',
-  'CU',
-  'DO',
-  'EC',
-  'ES',
-  'GQ',
-  'GT',
-  'HN',
-  'MX',
-  'NI',
-  'PA',
-  'PE',
-  'PR',
-  'PY',
-  'SV',
-  'UY',
-  'VE',
+  'AR', 'BO', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'ES', 'GQ', 'GT', 'HN', 'MX',
+  'NI', 'PA', 'PE', 'PR', 'PY', 'SV', 'UY', 'VE',
 ])
 
 const PORTUGUESE_SPEAKING_COUNTRY_CODES = new Set([
-  'AO',
-  'BR',
-  'CV',
-  'GW',
-  'MO',
-  'MZ',
-  'PT',
-  'ST',
-  'TL',
+  'AO', 'BR', 'CV', 'GW', 'MO', 'MZ', 'PT', 'ST', 'TL',
 ])
 
 type LegalSection = {
@@ -53,30 +26,33 @@ export type MessageSection = {
     saving: string
     previous: string
     next: string
+    back: string
     cancel: string
     continue: string
     backToLogin: string
     backToDashboard: string
     tryAgain: string
     returnHome: string
+    save: string
+    remove: string
+    search: string
+    close: string
   }
   languageSwitcher: {
     label: string
   }
   nav: {
     home: string
-    blog: string
-    guide: string
     howItWorks: string
+    sports: string
     pricing: string
     faq: string
-    legal: string
     login: string
     register: string
     dashboard: string
     profile: string
-    admin: string
     logout: string
+    startFree: string
   }
   footer: {
     rightsReserved: string
@@ -84,77 +60,52 @@ export type MessageSection = {
     registeredOffice: string
     operationsOffice: string
     contact: string
-  }
-  hero: {
-    badge: string
-    title: string
-    subtitle: string
-    primary: string
-    secondary: string
+    tagline: string
+    dataSource: string
   }
   home: {
-    releaseBadge: string
-    releaseText: string
-    releaseChannels: string
-    releaseImageAlt: string
-    beliefBadge: string
-    beliefTitle: string
-    beliefSubtitle: string
-    teaserEyebrow: string
-    couldBe: string
-    teaserNote: string
-    teaserButton: string
-    seoGuideBadge: string
-    seoGuideTitle: string
-    seoGuideSubtitle: string
-    seoGuideButton: string
-    predictions: Array<{
-      tone: 'good' | 'bad' | 'rare'
-      text: string
-    }>
-  }
-  story: {
+    badge: string
     title: string
+    titleHighlight: string
     subtitle: string
-    card1Title: string
-    card1Text: string
-    card2Title: string
-    card2Text: string
-    card3Title: string
-    card3Text: string
+    primaryCta: string
+    secondaryCta: string
+    trustLine: string
+    previewEyebrow: string
+    previewTitle: string
+    previewSubtitle: string
+    previewEmpty: string
+    previewLoading: string
+    previewError: string
+    previewTimeZoneNote: string
+    stepsEyebrow: string
+    stepsTitle: string
+    steps: Array<{ title: string; text: string }>
+    channelsEyebrow: string
+    channelsTitle: string
+    channels: Array<{ title: string; text: string }>
+    scoutEyebrow: string
+    scoutTitle: string
+    scoutText: string
+    scoutBullets: string[]
+    scoutCta: string
+    finalTitle: string
+    finalSubtitle: string
   }
   pricing: {
+    eyebrow: string
     title: string
     subtitle: string
     planTitle: string
     billing: string
-    include1: string
-    include2: string
-    include3: string
+    trialNote: string
+    includes: string[]
     cta: string
-  }
-  weekly: {
-    title: string
-    subtitle: string
-    good: string
-    bad: string
-    rare: string
+    cancelNote: string
   }
   faq: {
     title: string
-    q1: string
-    a1: string
-    q2: string
-    a2: string
-    q3: string
-    a3: string
-    q4: string
-    a4: string
-  }
-  cta: {
-    title: string
-    subtitle: string
-    button: string
+    items: Array<{ question: string; answer: string }>
   }
   auth: {
     registerTitle: string
@@ -170,10 +121,10 @@ export type MessageSection = {
     loginWithLinkDivider: string
     firstNameLabel: string
     lastNameLabel: string
-    birthDateLabel: string
     timeZoneLabel: string
     timeZoneHint: string
     emailLabel: string
+    emailHint: string
     passwordLabel: string
     whatsappLabel: string
     passwordHint: string
@@ -181,6 +132,69 @@ export type MessageSection = {
     loginButton: string
     needAccount: string
     alreadyHaveAccount: string
+    invalidEmail: string
+    termsNotice: string
+  }
+  onboarding: {
+    title: string
+    stepLabel: string
+    steps: [string, string, string, string]
+    sportsTitle: string
+    sportsSubtitle: string
+    sportsEmpty: string
+    teamsTitle: string
+    teamsSubtitle: string
+    teamsSearchLabel: string
+    teamsSearchPlaceholder: string
+    teamsSearching: string
+    teamsNoResults: string
+    teamsFollowing: string
+    leaguesTitle: string
+    leaguesHint: string
+    leaguesLoading: string
+    leaguesFilterPlaceholder: string
+    featuredLabel: string
+    followedLabel: string
+    followLabel: string
+    unfollowLabel: string
+    skipTeamsHint: string
+    accountTitle: string
+    accountSubtitle: string
+    accountExistingHint: string
+    deliveryTitle: string
+    deliverySubtitle: string
+    frequencyLabel: string
+    frequencyDaily: string
+    frequencyDailyHint: string
+    frequencyWeekly: string
+    frequencyWeeklyHint: string
+    lookaheadLabel: string
+    lookaheadHint: string
+    lookaheadDays: string
+    channelLabel: string
+    hourLabel: string
+    hourHint: string
+    whatsappNumberLabel: string
+    whatsappConsentLabel: string
+    whatsappConsentHint: string
+    whatsappConsentError: string
+    reviewTitle: string
+    reviewSubtitle: string
+    reviewSports: string
+    reviewLeagues: string
+    reviewTeams: string
+    reviewFrequency: string
+    reviewChannel: string
+    reviewTiming: string
+    reviewPreviewTitle: string
+    reviewPreviewEmpty: string
+    startTrialCta: string
+    startTrialHint: string
+    savePreferencesCta: string
+    saving: string
+    saveError: string
+    registerError: string
+    previewEyebrow: string
   }
   deliveryChannels: {
     noneTitle: string
@@ -191,81 +205,34 @@ export type MessageSection = {
     emailDescription: string
     whatsappTitle: string
     whatsappDescription: string
+    whatsappPendingNote: string
   }
-  deliveryOnboarding: {
-    loading: string
-    loadError: string
-    prepBadge: string
-    prepTitle: string
-    prepSubtitle: string
-    preparationSteps: string[]
-    editBadge: string
-    createBadge: string
-    editTitle: string
-    createTitle: string
-    editSubtitle: string
-    createSubtitle: string
-    activationChecklist: string[]
-    dashboardChecklist: string[]
-    setupTitle: string
-    setupSubtitle: string
-    channelLabel: string
-    mondayTimeLabel: string
-    mondayTimeHint: string
-    emailDeliveryLabel: string
-    whatsappOffHint: string
-    whatsappConsentLabel: string
-    whatsappConsentHint: string
-    submitContinue: string
-    submitSave: string
-    saveError: string
-    whatsappConsentError: string
-  }
-  activate: {
-    loading: string
-    loadError: string
-    unavailable: string
+  delivery: {
     badge: string
     title: string
     subtitle: string
-    cards: string[]
-    primaryButton: string
-    secondaryButton: string
-    snapshotTitle: string
-    deliveryPreferenceLabel: string
-    emailDeliveryLabel: string
-    projectionTimingLabel: string
-    whatsappDeliveryLabel: string
-    billingLabel: string
-    billingValue: string
-    unsubscribeTitle: string
-    unsubscribeText: string
-    sampleTitle: string
-    sampleText: string
-    sampleChannelLabel: string
-    sampleEmailOption: string
-    sampleWhatsappOption: string
-    sampleBothOption: string
-    sampleEmailButton: string
-    sampleWhatsappButton: string
-    sampleBothButton: string
-    sampleWhatsappNumberLabel: string
-    sampleWhatsappPlaceholder: string
-    sampleWhatsappConsentLabel: string
-    sampleAlreadySent: string
-    sampleSuccess: string
-    sampleEmailUnavailable: string
-    sampleWhatsappConsentError: string
-    previewBadge: string
-    previewTitle: string
-    previewLabel: string
-    previewDayLabel: string
-    emailFirstTitle: string
-    whyItWorksLabel: string
-    whyItWorksText: string
-    carouselBadge: string
-    carouselTitle: string
-    carouselSubtitle: string
+    emailLabel: string
+    channelLabel: string
+    scheduleLabel: string
+    consentLabel: string
+    consentHint: string
+    saveButton: string
+    savingButton: string
+    backButton: string
+    confirmBadge: string
+    confirmTitle: string
+    confirmSubtitle: string
+    confirmBackButton: string
+    success: string
+    help: string
+    editMode: string
+    whatsappNumberLabel: string
+    whatsappOptional: string
+    loadError: string
+    consentError: string
+    saveError: string
+    loading: string
+    redirecting: string
   }
   checkout: {
     badge: string
@@ -285,6 +252,29 @@ export type MessageSection = {
     unsubscribeHelp: string
     trialHighlights: string[]
   }
+  agenda: {
+    title: string
+    subtitle: string
+    refresh: string
+    refreshing: string
+    empty: string
+    emptyNoPreferences: string
+    emptyCta: string
+    today: string
+    tomorrow: string
+    timeTbc: string
+    followedTeam: string
+    followedLeague: string
+    sportWide: string
+    lookahead: string
+    days: string
+    timeZoneNote: string
+    highlightsTitle: string
+    countLabel: string
+    lastDigestLabel: string
+    lastDigestNever: string
+    loadError: string
+  }
   dashboard: {
     title: string
     intro: string
@@ -292,21 +282,22 @@ export type MessageSection = {
     loading: string
     noData: string
     tabs: {
+      agenda: string
+      preferences: string
+      delivery: string
       account: string
-      predictionCalendar: string
       sends: string
-      onboarding: string
+      sportsSync: string
     }
-    onboarding: {
-      title: string
-      subtitle: string
-      cta: string
-      hint: string
-    }
+    preferencesTitle: string
+    preferencesSubtitle: string
+    preferencesSaved: string
+    preferencesSaveError: string
     status: string
     nextMessage: string
     subscribeButton: string
     noSubscription: string
+    noSubscriptionSubtitle: string
     paymentPending: string
     paymentIssue: string
     billingSuccess: string
@@ -314,16 +305,6 @@ export type MessageSection = {
     profileSubtitle: string
     profileSave: string
     profileTimeZoneHint: string
-    projectionCalendar: {
-      title: string
-      subtitle: string
-      fullAccessHint: string
-      lockedAccessHint: string
-      loadError: string
-      lockedDayBadge: string
-      lockedDayTitle: string
-      lockedDaySubtitle: string
-    }
     passwordTitle: string
     passwordSubtitle: string
     currentPasswordLabel: string
@@ -340,9 +321,8 @@ export type MessageSection = {
     deleteLoading: string
     deleteConfirm: string
     deleteError: string
-    noSubscriptionSubtitle: string
-    mondayProjectionTime: string
-    sentOnMondaysAt: string
+    deliveryHourLabel: string
+    deliveryHourHint: string
     emailDeliveryLabel: string
     whatsappOffSetup: string
     whatsappConsentLabel: string
@@ -352,19 +332,14 @@ export type MessageSection = {
     pendingSubtitle: string
     pendingDeliveryPreferenceLabel: string
     pendingEmailDeliveryLabel: string
-    pendingProjectionTimingLabel: string
+    pendingTimingLabel: string
     pendingWhatsappLabel: string
-    continueActivation: string
-    changeDeliverySettings: string
     activePlanTitle: string
     canceledPlanTitle: string
     canceledNote: string
     activeNote: string
     deliveryPreferenceLabel: string
     nextMessageIfReactivated: string
-    weeklyProjectionTimeLabel: string
-    futureMessagesHint: string
-    whatsappOffActive: string
     saveDeliverySettings: string
     reactivateButton: string
     reactivateLoading: string
@@ -379,95 +354,18 @@ export type MessageSection = {
     cancelError: string
     reactivateError: string
     openBillingError: string
-    saveDeliveryError: string
-    predictionCalendar: {
+    sportsSync: {
       title: string
       subtitle: string
-      monthSummary: string
-      daysInMonth: string
-      goodDays: string
-      badDays: string
-      rareDays: string
-      customDays: string
-      customDaysText: string
-      selectedDay: string
-      jumpToCurrentMonth: string
-      today: string
-      goodTone: string
-      badTone: string
-      rareTone: string
-      goodSummaryText: string
-      badSummaryText: string
-      rareSummaryText: string
-      alignedActivities: string
-      cautionActivities: string
-      haircut: string
-      shave: string
-      nails: string
-      release: string
-      none: string
-      summaryLabel: string
-      notesLabel: string
-      notesEnglishLabel: string
-      notesSpanishLabel: string
-      notesPortugueseLabel: string
-      notesHint: string
-      goodOption: string
-      badOption: string
-      rareOption: string
-      importFromImage: string
-      importFromImageBusy: string
-      importFromImageHint: string
-      importFromImageConfirm: string
-      importFromImageSuccess: string
-      importFromImageError: string
-      weekImagePromptLabel: string
-      weekImagePromptHint: string
-      selectedWeekLabel: string
-      imagesInSelectedWeek: string
-      weekSelectorLabel: string
-      weekDaysToGenerateLabel: string
-      selectedDaysCountLabel: string
-      selectAllWeekDays: string
-      clearSelectedWeekDays: string
-      weekHtmlGeneratorLabel: string
-      weekHtmlGeneratorHint: string
-      generateWeekHtml: string
-      generateWeekHtmlBusy: string
-      generateWeekHtmlConfirm: string
-      generateWeekHtmlSuccess: string
-      generateWeekHtmlError: string
-      copyWeekHtml: string
-      copyWeekHtmlSuccess: string
-      copyWeekHtmlError: string
-      weekHtmlPreviewLabel: string
-      weekHtmlSubjectLabel: string
-      weekHtmlPreviewTextLabel: string
-      weekHtmlCodeLabel: string
-      generateWeekImages: string
-      generateWeekImagesBusy: string
-      generateWeekImagesConfirm: string
-      generateWeekImagesSuccess: string
-      generateWeekImagesError: string
-      generateSelectedDays: string
-      generateSelectedDaysBusy: string
-      generateSelectedDaysConfirm: string
-      generateSelectedDaysSuccess: string
-      generateSelectedDaysError: string
-      generateSelectedDayImage: string
-      generateSelectedDayImageBusy: string
-      generateSelectedDayImageConfirm: string
-      generateSelectedDayImageSuccess: string
-      generateSelectedDayImageError: string
-      dayImageBadge: string
-      dayImagePreviewLabel: string
-      saveDay: string
-      resetDay: string
-      resetConfirm: string
-      overrideBadge: string
-      generatedBadge: string
-      saveSuccess: string
-      saveError: string
+      runButton: string
+      forceButton: string
+      running: string
+      eventCount: string
+      upcomingCount: string
+      lastFetched: string
+      freeKeyWarning: string
+      summary: string
+      statesTitle: string
       loadError: string
     }
     sendCampaigns: {
@@ -557,6 +455,29 @@ export type MessageSection = {
       sendFailed: string
     }
   }
+  scout: {
+    name: string
+    launcherLabel: string
+    launcherSubLabel: string
+    title: string
+    introAnonymous: string
+    introAccount: string
+    introActive: string
+    prompts: string[]
+    placeholder: string
+    send: string
+    typing: string
+    issue: string
+    memorySaved: string
+    temporaryMemory: string
+    alertsActive: string
+    alertsInactive: string
+    createAccount: string
+    activateAlerts: string
+    openDashboard: string
+    whatsappCta: string
+    preferencesUpdated: string
+  }
   statuses: {
     active: string
     paused: string
@@ -584,14 +505,6 @@ export type MessageSection = {
     success: string
     error: string
   }
-  carousel: {
-    proofLabel: string
-    whyTitle: string
-    whyText: string
-    effectTitle: string
-    effectText: string
-    sequenceLabel: string
-  }
   notFound: {
     title: string
     description: string
@@ -599,36 +512,495 @@ export type MessageSection = {
   }
 }
 
-const englishMessages: MessageSection = {
+const sendCampaignsEn: MessageSection['dashboard']['sendCampaigns'] = {
+  settingsTitle: 'Provider settings',
+  settingsSubtitle:
+    'Store WhatsApp Cloud API and MailerSend credentials in MongoDB. Secret values stay blank in the form unless you want to replace them.',
+  settingsWhatsappTitle: 'WhatsApp settings',
+  settingsMailersendTitle: 'MailerSend settings',
+  settingsStored: 'Stored',
+  settingsMissing: 'Missing',
+  settingsSave: 'Save settings',
+  settingsSaved: 'Provider settings saved.',
+  title: 'Admin sends',
+  subtitle:
+    'Create WhatsApp and email campaigns for active subscribers, run a testing delivery first, then send the live campaign from the dashboard.',
+  templateEditorTitle: 'Send setup',
+  templateEditorSubtitle:
+    'For email you can save the content here. For WhatsApp you do not edit the Meta template here: you only save its exact Meta name, language, and the `key: content` values you want to reuse in testing and sending.',
+  templateSave: 'Save setup',
+  templateSaveBusy: 'Saving setup',
+  templateSaved: 'Setup saved.',
+  createNew: 'New campaign',
+  currentDraft: 'Current setup',
+  nameLabel: 'Internal reference name',
+  whatsappReferenceNameLabel: 'Internal reference name (optional)',
+  campaignNameLabel: 'Campaign name',
+  templateDescriptionLabel: 'Template description',
+  channelLabel: 'Channel',
+  channelWhatsapp: 'WhatsApp',
+  channelEmail: 'Email',
+  audienceTitle: 'Audience',
+  audienceHint:
+    'Live sends target active subscribers who currently have this delivery channel enabled.',
+  eligibleRecipients: 'Eligible recipients right now: {count}',
+  variableValuesTitle: 'Testing data and variables',
+  variableValuesSubtitle:
+    'Each template variable appears here. For WhatsApp, the saved content from each section is loaded here first, and you can adjust it before testing or sending.',
+  noVariables: 'This template has no dynamic variables.',
+  testingLabel: 'Testing recipient',
+  testingPlaceholderWhatsapp: '+14155550123',
+  testingPlaceholderEmail: 'test@example.com',
+  testingHintWhatsapp: 'WhatsApp testing sends the configured template directly to one number.',
+  testingHintEmail:
+    'Email testing sends the current subject and body to one address through MailerSend.',
+  saveDraft: 'Save draft',
+  saveDraftBusy: 'Saving draft',
+  sendTest: 'Send testing',
+  sendTestBusy: 'Sending test',
+  sendCampaign: 'Send campaign',
+  sendCampaignBusy: 'Sending campaign',
+  externalTemplateNameLabel: 'Exact Meta template name (not ID)',
+  externalTemplateNameHint:
+    'WhatsApp Cloud API sends by template name and language code, not by a template ID.',
+  whatsappLanguageLabel: 'Template language',
+  headerTextLabel: 'Header variables',
+  bodyTextLabel: 'Body variables',
+  whatsappSectionHint: 'Store each entry as key and default content.',
+  whatsappButtonHint:
+    'Store the dynamic button variable key and the sample content you want to test.',
+  buttonsTitle: 'Dynamic buttons',
+  addVariable: 'Add variable',
+  addButton: 'Add button',
+  removeVariable: 'Remove variable',
+  removeButton: 'Remove button',
+  variableKeyLabel: 'Key',
+  variableContentLabel: 'Content',
+  emailSubjectLabel: 'Email subject',
+  emailHtmlLabel: 'HTML body',
+  emailTextLabel: 'Plain text body',
+  emailTemplateGeneratorTitle: 'Email template generator',
+  emailTemplateGeneratorHint:
+    'Generate a professional Trimry email with logo, inbox-friendly structure, and a CTA to trimry.com.',
+  emailGenerateTemplate: 'Generate template',
+  emailTemplateGenerated: 'Email template generated.',
+  historyTitle: 'Campaign history',
+  historySubtitle:
+    'Every saved or sent campaign stays here so you can inspect metrics and the variable values used for the send.',
+  emptyState: 'No campaigns yet.',
+  metricsRecipients: 'Recipients',
+  metricsAccepted: 'Accepted',
+  metricsFailed: 'Failed',
+  sentAt: 'Sent at',
+  updatedAt: 'Updated at',
+  lastTestedAt: 'Last test',
+  lastTestRecipient: 'Test recipient',
+  notSentYet: 'Not sent yet',
+  neverTested: 'Never tested',
+  draftStatus: 'Draft',
+  sentStatus: 'Sent',
+  partiallySentStatus: 'Partially sent',
+  failedStatus: 'Failed',
+  loadError: 'Unable to load the admin sends workspace right now.',
+  saveSuccess: 'Campaign draft saved.',
+  testSuccess: 'Testing delivery processed.',
+  sendSuccess: 'Campaign sent successfully.',
+  sendPartial: 'Campaign finished with partial delivery failures.',
+  sendFailed: 'Campaign send failed.',
+}
+
+const sendCampaignsEs: MessageSection['dashboard']['sendCampaigns'] = {
+  settingsTitle: 'Settings de proveedores',
+  settingsSubtitle:
+    'Guarda en MongoDB las credenciales de WhatsApp Cloud API y MailerSend. Los secretos quedan vacíos en el formulario salvo que quieras reemplazarlos.',
+  settingsWhatsappTitle: 'Settings de WhatsApp',
+  settingsMailersendTitle: 'Settings de MailerSend',
+  settingsStored: 'Guardado',
+  settingsMissing: 'Falta',
+  settingsSave: 'Guardar settings',
+  settingsSaved: 'Settings guardados.',
+  title: 'Envíos admin',
+  subtitle:
+    'Crea campañas de WhatsApp y mailing para suscriptores activos, prueba primero un envío de testing y luego lanza la campaña real desde el dashboard.',
+  templateEditorTitle: 'Configuración de envío',
+  templateEditorSubtitle:
+    'Para mailing puedes guardar el contenido aquí. Para WhatsApp no editas el template de Meta acá: solo guardas su nombre exacto en Meta, el idioma y los valores `key: content` que quieres reutilizar al probar y enviar.',
+  templateSave: 'Guardar configuración',
+  templateSaveBusy: 'Guardando configuración',
+  templateSaved: 'Configuración guardada.',
+  createNew: 'Nueva campaña',
+  currentDraft: 'Configuración actual',
+  nameLabel: 'Nombre interno de referencia',
+  whatsappReferenceNameLabel: 'Nombre interno de referencia (opcional)',
+  campaignNameLabel: 'Nombre de la campaña',
+  templateDescriptionLabel: 'Descripción del template',
+  channelLabel: 'Canal',
+  channelWhatsapp: 'WhatsApp',
+  channelEmail: 'Mailing',
+  audienceTitle: 'Audiencia',
+  audienceHint:
+    'Los envíos reales apuntan a suscriptores activos que hoy tienen este canal habilitado.',
+  eligibleRecipients: 'Destinatarios elegibles ahora: {count}',
+  variableValuesTitle: 'Datos de testing y variables',
+  variableValuesSubtitle:
+    'Cada variable del template aparece aquí. En WhatsApp, el content guardado en cada sección se carga primero y luego lo puedes ajustar antes de probar o enviar.',
+  noVariables: 'Este template no tiene variables dinámicas.',
+  testingLabel: 'Destino de testing',
+  testingPlaceholderWhatsapp: '+56912345678',
+  testingPlaceholderEmail: 'test@ejemplo.com',
+  testingHintWhatsapp: 'El testing de WhatsApp envía la plantilla configurada directo a un número.',
+  testingHintEmail:
+    'El testing de mailing envía el asunto y contenido actual a una sola casilla por MailerSend.',
+  saveDraft: 'Guardar borrador',
+  saveDraftBusy: 'Guardando borrador',
+  sendTest: 'Enviar testing',
+  sendTestBusy: 'Enviando testing',
+  sendCampaign: 'Enviar campaña',
+  sendCampaignBusy: 'Enviando campaña',
+  externalTemplateNameLabel: 'Nombre exacto del template en Meta (no ID)',
+  externalTemplateNameHint:
+    'WhatsApp Cloud API envía usando el nombre del template y el código de idioma, no un template ID.',
+  whatsappLanguageLabel: 'Idioma de plantilla',
+  headerTextLabel: 'Variables del header',
+  bodyTextLabel: 'Variables del body',
+  whatsappSectionHint: 'Guarda cada fila como key y contenido por defecto.',
+  whatsappButtonHint:
+    'Guarda la key del botón dinámico y el content de ejemplo que quieres usar en testing.',
+  buttonsTitle: 'Botones dinámicos',
+  addVariable: 'Agregar variable',
+  addButton: 'Agregar botón',
+  removeVariable: 'Eliminar variable',
+  removeButton: 'Eliminar botón',
+  variableKeyLabel: 'Key',
+  variableContentLabel: 'Content',
+  emailSubjectLabel: 'Asunto del email',
+  emailHtmlLabel: 'Cuerpo HTML',
+  emailTextLabel: 'Cuerpo texto plano',
+  emailTemplateGeneratorTitle: 'Generador de plantilla email',
+  emailTemplateGeneratorHint:
+    'Genera un email profesional de Trimry con logo, estructura amigable para inbox y CTA a trimry.com.',
+  emailGenerateTemplate: 'Generar plantilla',
+  emailTemplateGenerated: 'Plantilla generada.',
+  historyTitle: 'Historial de campañas',
+  historySubtitle:
+    'Cada campaña guardada o enviada queda aquí para revisar métricas y los valores variables usados en el envío.',
+  emptyState: 'Aún no hay campañas.',
+  metricsRecipients: 'Destinatarios',
+  metricsAccepted: 'Aceptados',
+  metricsFailed: 'Fallidos',
+  sentAt: 'Enviada el',
+  updatedAt: 'Actualizada el',
+  lastTestedAt: 'Último test',
+  lastTestRecipient: 'Destino de test',
+  notSentYet: 'Todavía no enviada',
+  neverTested: 'Nunca probada',
+  draftStatus: 'Borrador',
+  sentStatus: 'Enviada',
+  partiallySentStatus: 'Envío parcial',
+  failedStatus: 'Fallida',
+  loadError: 'No pudimos cargar el espacio admin de envíos en este momento.',
+  saveSuccess: 'Borrador guardado.',
+  testSuccess: 'El envío de testing fue procesado.',
+  sendSuccess: 'La campaña fue enviada correctamente.',
+  sendPartial: 'La campaña terminó con fallas parciales de entrega.',
+  sendFailed: 'El envío de la campaña falló.',
+}
+
+const legalEn: MessageSection['legal'] = {
+  terms: 'Terms of Service',
+  privacy: 'Privacy Policy',
+  disclaimer: 'Data & accuracy notice',
+  dataDeletion: 'Data deletion',
+  englishNotice: 'The legally binding version of this document is the English version.',
+  termsSections: [
+    {
+      title: '1. Service',
+      body: 'Trimry provides a personalized agenda of upcoming sports events (matches, races, fights and tournaments) based on the sports, leagues and teams you choose, delivered through the website, email and WhatsApp, plus a conversational assistant ("Scout").',
+    },
+    {
+      title: '2. Subscription and billing',
+      body: 'Alerts by email and WhatsApp require a paid subscription processed by Stripe. Prices are shown before checkout and billed on a recurring basis until canceled. New subscriptions may include a free trial; if you do not cancel before it ends, the subscription renews automatically at the listed price.',
+    },
+    {
+      title: '3. Cancel anytime',
+      body: 'You can cancel from the dashboard, from the Stripe billing portal, by replying STOP on WhatsApp or by emailing support@trimry.com. Cancellation stops future charges; the current period stays active until its end date.',
+    },
+    {
+      title: '4. Account responsibilities',
+      body: 'Keep your credentials safe and your contact details accurate. You are responsible for activity performed with your account and for having the right to receive messages at the phone number you provide.',
+    },
+    {
+      title: '5. Service limitations',
+      body: 'Fixtures, times and venues come from third-party sports data providers and can change without notice (postponements, TV rescheduling, time zone edge cases). Trimry does not guarantee completeness or accuracy and is not liable for missed events, broadcasting availability or decisions taken based on the agenda.',
+    },
+    {
+      title: '6. Acceptable use',
+      body: 'Do not abuse the service, scrape the data, resell alerts or use the assistant for unlawful purposes. We may suspend accounts that breach these terms.',
+    },
+    {
+      title: '7. Changes',
+      body: 'We may update these terms as the service evolves. Continued use after an update means you accept the new terms.',
+    },
+  ],
+  privacySections: [
+    {
+      title: 'Data we collect',
+      body: 'Account data (name, email, optional WhatsApp number, time zone, language), the sports, leagues and teams you follow, delivery preferences, subscription status, and the messages you exchange with Scout on the web or WhatsApp.',
+    },
+    {
+      title: 'How we use it',
+      body: 'To build and deliver your personalized agenda, operate the assistant, process billing, prevent abuse and improve the product. Chat memory summaries help the assistant remember your preferences; they never include payment data.',
+    },
+    {
+      title: 'Third parties',
+      body: 'Stripe (billing), MailerSend (email), Meta WhatsApp Cloud API (messaging), OpenAI (assistant and digest copy generation, only the conversation and your sports preferences are shared), TheSportsDB (schedules), Google Analytics and Meta Pixel (measurement).',
+    },
+    {
+      title: 'Retention and rights',
+      body: 'Data is kept while your account is active and for the legal retention period afterwards. You can export, correct or delete your data from the dashboard or by emailing support@trimry.com.',
+    },
+    {
+      title: 'Cookies',
+      body: 'We use essential cookies for authentication and, with your consent, analytics cookies for measurement.',
+    },
+  ],
+  disclaimerSections: [
+    {
+      title: 'Where the data comes from',
+      body: 'Schedules come from TheSportsDB and are refreshed periodically. Kickoff times are converted to the time zone saved on your account.',
+    },
+    {
+      title: 'Things can change',
+      body: 'Postponements, weather, broadcaster changes and late reschedules happen. Always confirm with the official competition or broadcaster before travelling or paying for access.',
+    },
+    {
+      title: 'No betting advice',
+      body: 'Trimry does not provide odds, predictions or betting recommendations. Scout only reports scheduled events from tracked sources.',
+    },
+  ],
+  dataDeletionSections: [
+    {
+      title: 'Delete from the dashboard',
+      body: 'Open Dashboard → Account → Danger zone and confirm "Delete account". This cancels any Stripe subscription, revokes sessions, removes your sports preferences and anonymizes your email.',
+    },
+    {
+      title: 'Request by email',
+      body: 'Write to support@trimry.com from the email registered on your account. We process deletion requests within 30 days.',
+    },
+    {
+      title: 'What may be retained',
+      body: 'Billing records required by law and anonymized delivery logs may be retained for the legally required period.',
+    },
+  ],
+}
+
+const legalEs: MessageSection['legal'] = {
+  terms: 'Términos del servicio',
+  privacy: 'Política de privacidad',
+  disclaimer: 'Aviso de datos y precisión',
+  dataDeletion: 'Eliminación de datos',
+  englishNotice: 'La versión legalmente vinculante de este documento es la versión en inglés.',
+  termsSections: [
+    {
+      title: '1. Servicio',
+      body: 'Trimry entrega una agenda personalizada de eventos deportivos (partidos, carreras, peleas y torneos) según los deportes, ligas y equipos que eliges, a través del sitio web, email y WhatsApp, además de un asistente conversacional ("Scout").',
+    },
+    {
+      title: '2. Suscripción y cobros',
+      body: 'Las alertas por email y WhatsApp requieren una suscripción de pago procesada por Stripe. Los precios se muestran antes del checkout y se cobran de forma recurrente hasta que canceles. Las nuevas suscripciones pueden incluir un periodo de prueba gratis; si no cancelas antes de que termine, se renueva automáticamente al precio indicado.',
+    },
+    {
+      title: '3. Cancela cuando quieras',
+      body: 'Puedes cancelar desde el panel, desde el portal de facturación de Stripe, respondiendo STOP por WhatsApp o escribiendo a support@trimry.com. La cancelación detiene los cobros futuros; el periodo actual sigue activo hasta su fecha de fin.',
+    },
+    {
+      title: '4. Responsabilidades de la cuenta',
+      body: 'Mantén tus credenciales seguras y tus datos de contacto actualizados. Eres responsable de la actividad realizada con tu cuenta y de tener derecho a recibir mensajes en el número que indicas.',
+    },
+    {
+      title: '5. Limitaciones del servicio',
+      body: 'Los horarios, fechas y sedes provienen de proveedores de datos deportivos externos y pueden cambiar sin aviso (postergaciones, cambios de TV, casos límite de zona horaria). Trimry no garantiza completitud ni exactitud y no es responsable por eventos perdidos, disponibilidad de transmisiones o decisiones tomadas en base a la agenda.',
+    },
+    {
+      title: '6. Uso aceptable',
+      body: 'No abuses del servicio, no extraigas los datos, no revendas alertas ni uses el asistente para fines ilícitos. Podemos suspender cuentas que incumplan estos términos.',
+    },
+    {
+      title: '7. Cambios',
+      body: 'Podemos actualizar estos términos a medida que el servicio evoluciona. Seguir usándolo tras una actualización implica aceptar los nuevos términos.',
+    },
+  ],
+  privacySections: [
+    {
+      title: 'Datos que recopilamos',
+      body: 'Datos de cuenta (nombre, email, número de WhatsApp opcional, zona horaria, idioma), los deportes, ligas y equipos que sigues, preferencias de entrega, estado de suscripción y los mensajes que intercambias con Scout en la web o WhatsApp.',
+    },
+    {
+      title: 'Cómo los usamos',
+      body: 'Para construir y entregar tu agenda personalizada, operar el asistente, procesar cobros, prevenir abusos y mejorar el producto. Los resúmenes de memoria del chat ayudan al asistente a recordar tus preferencias; nunca incluyen datos de pago.',
+    },
+    {
+      title: 'Terceros',
+      body: 'Stripe (cobros), MailerSend (email), Meta WhatsApp Cloud API (mensajería), OpenAI (asistente y redacción del digest; solo se comparte la conversación y tus preferencias deportivas), TheSportsDB (calendarios), Google Analytics y Meta Pixel (medición).',
+    },
+    {
+      title: 'Retención y derechos',
+      body: 'Los datos se conservan mientras tu cuenta esté activa y durante el periodo legal posterior. Puedes exportar, corregir o eliminar tus datos desde el panel o escribiendo a support@trimry.com.',
+    },
+    {
+      title: 'Cookies',
+      body: 'Usamos cookies esenciales para autenticación y, con tu consentimiento, cookies de analítica para medición.',
+    },
+  ],
+  disclaimerSections: [
+    {
+      title: 'De dónde salen los datos',
+      body: 'Los calendarios provienen de TheSportsDB y se actualizan periódicamente. Las horas se convierten a la zona horaria guardada en tu cuenta.',
+    },
+    {
+      title: 'Las cosas cambian',
+      body: 'Hay postergaciones, clima, cambios de transmisión y reprogramaciones de último minuto. Confirma siempre con la competición o el canal oficial antes de viajar o pagar por un acceso.',
+    },
+    {
+      title: 'Sin consejos de apuestas',
+      body: 'Trimry no entrega cuotas, pronósticos ni recomendaciones de apuestas. Scout solo informa eventos programados desde fuentes rastreadas.',
+    },
+  ],
+  dataDeletionSections: [
+    {
+      title: 'Eliminar desde el panel',
+      body: 'Abre Panel → Cuenta → Zona de peligro y confirma "Eliminar cuenta". Esto cancela cualquier suscripción de Stripe, revoca sesiones, borra tus preferencias deportivas y anonimiza tu email.',
+    },
+    {
+      title: 'Solicitar por email',
+      body: 'Escribe a support@trimry.com desde el email registrado en tu cuenta. Procesamos las solicitudes de eliminación en un plazo de 30 días.',
+    },
+    {
+      title: 'Qué puede conservarse',
+      body: 'Los registros de facturación exigidos por ley y los logs de entrega anonimizados pueden conservarse durante el periodo legal requerido.',
+    },
+  ],
+}
+
+const legalPt: MessageSection['legal'] = {
+  terms: 'Termos de serviço',
+  privacy: 'Política de privacidade',
+  disclaimer: 'Aviso de dados e precisão',
+  dataDeletion: 'Exclusão de dados',
+  englishNotice: 'A versão legalmente vinculante deste documento é a versão em inglês.',
+  termsSections: [
+    {
+      title: '1. Serviço',
+      body: 'A Trimry entrega uma agenda personalizada de eventos esportivos (jogos, corridas, lutas e torneios) com base nos esportes, ligas e times que você escolhe, pelo site, email e WhatsApp, além de um assistente conversacional ("Scout").',
+    },
+    {
+      title: '2. Assinatura e cobrança',
+      body: 'Alertas por email e WhatsApp exigem uma assinatura paga processada pela Stripe. Os preços aparecem antes do checkout e são cobrados de forma recorrente até o cancelamento. Novas assinaturas podem incluir um período de teste gratuito; se você não cancelar antes do fim, a assinatura renova automaticamente pelo preço indicado.',
+    },
+    {
+      title: '3. Cancele quando quiser',
+      body: 'Você pode cancelar pelo painel, pelo portal de cobrança da Stripe, respondendo STOP no WhatsApp ou escrevendo para support@trimry.com. O cancelamento interrompe cobranças futuras; o período atual continua ativo até a data de término.',
+    },
+    {
+      title: '4. Responsabilidades da conta',
+      body: 'Mantenha suas credenciais seguras e seus dados de contato corretos. Você é responsável pela atividade realizada com sua conta e por ter o direito de receber mensagens no número informado.',
+    },
+    {
+      title: '5. Limitações do serviço',
+      body: 'Horários, datas e locais vêm de provedores externos de dados esportivos e podem mudar sem aviso (adiamentos, mudanças de TV, casos de fuso horário). A Trimry não garante completude ou exatidão e não se responsabiliza por eventos perdidos, disponibilidade de transmissão ou decisões tomadas com base na agenda.',
+    },
+    {
+      title: '6. Uso aceitável',
+      body: 'Não abuse do serviço, não extraia os dados, não revenda alertas nem use o assistente para fins ilícitos. Podemos suspender contas que violem estes termos.',
+    },
+    {
+      title: '7. Alterações',
+      body: 'Podemos atualizar estes termos conforme o serviço evolui. Continuar usando após uma atualização significa aceitar os novos termos.',
+    },
+  ],
+  privacySections: [
+    {
+      title: 'Dados que coletamos',
+      body: 'Dados da conta (nome, email, número de WhatsApp opcional, fuso horário, idioma), os esportes, ligas e times que você acompanha, preferências de entrega, status da assinatura e as mensagens trocadas com o Scout na web ou no WhatsApp.',
+    },
+    {
+      title: 'Como usamos',
+      body: 'Para montar e entregar sua agenda personalizada, operar o assistente, processar cobranças, prevenir abusos e melhorar o produto. Resumos de memória do chat ajudam o assistente a lembrar suas preferências; nunca incluem dados de pagamento.',
+    },
+    {
+      title: 'Terceiros',
+      body: 'Stripe (cobrança), MailerSend (email), Meta WhatsApp Cloud API (mensagens), OpenAI (assistente e texto do digest; apenas a conversa e suas preferências esportivas são compartilhadas), TheSportsDB (calendários), Google Analytics e Meta Pixel (medição).',
+    },
+    {
+      title: 'Retenção e direitos',
+      body: 'Os dados são mantidos enquanto sua conta estiver ativa e pelo período legal posterior. Você pode exportar, corrigir ou excluir seus dados pelo painel ou escrevendo para support@trimry.com.',
+    },
+    {
+      title: 'Cookies',
+      body: 'Usamos cookies essenciais para autenticação e, com seu consentimento, cookies de analytics para medição.',
+    },
+  ],
+  disclaimerSections: [
+    {
+      title: 'De onde vêm os dados',
+      body: 'Os calendários vêm do TheSportsDB e são atualizados periodicamente. Os horários são convertidos para o fuso salvo na sua conta.',
+    },
+    {
+      title: 'As coisas mudam',
+      body: 'Adiamentos, clima, mudanças de transmissão e remarcações de última hora acontecem. Confirme sempre com a competição ou emissora oficial antes de viajar ou pagar por acesso.',
+    },
+    {
+      title: 'Sem dicas de apostas',
+      body: 'A Trimry não fornece odds, previsões nem recomendações de apostas. O Scout só informa eventos agendados a partir de fontes rastreadas.',
+    },
+  ],
+  dataDeletionSections: [
+    {
+      title: 'Excluir pelo painel',
+      body: 'Abra Painel → Conta → Zona de perigo e confirme "Excluir conta". Isso cancela qualquer assinatura Stripe, revoga sessões, remove suas preferências esportivas e anonimiza seu email.',
+    },
+    {
+      title: 'Solicitar por email',
+      body: 'Escreva para support@trimry.com a partir do email registrado na sua conta. Processamos pedidos de exclusão em até 30 dias.',
+    },
+    {
+      title: 'O que pode ser mantido',
+      body: 'Registros de cobrança exigidos por lei e logs de entrega anonimizados podem ser mantidos pelo período legal necessário.',
+    },
+  ],
+}
+
+const en: MessageSection = {
   common: {
     loading: 'Loading...',
     saving: 'Saving...',
     previous: 'Previous',
     next: 'Next',
+    back: 'Back',
     cancel: 'Cancel',
     continue: 'Continue',
     backToLogin: 'Back to login',
     backToDashboard: 'Back to dashboard',
     tryAgain: 'Try again',
     returnHome: 'Return home',
+    save: 'Save',
+    remove: 'Remove',
+    search: 'Search',
+    close: 'Close',
   },
-  languageSwitcher: {
-    label: 'Lang',
-  },
+  languageSwitcher: { label: 'Lang' },
   nav: {
     home: 'Home',
-    blog: 'Blog',
-    guide: 'Guide',
     howItWorks: 'How it works',
-    pricing: 'Plan',
+    sports: 'Sports',
+    pricing: 'Pricing',
     faq: 'FAQ',
-    legal: 'Legal',
     login: 'Log in',
     register: 'Create account',
     dashboard: 'Dashboard',
-    profile: 'Profile',
-    admin: 'Admin',
+    profile: 'My account',
     logout: 'Log out',
+    startFree: 'Start free',
   },
   footer: {
     rightsReserved: 'All rights reserved.',
@@ -636,781 +1008,416 @@ const englishMessages: MessageSection = {
     registeredOffice: 'Registered office',
     operationsOffice: 'Operations office',
     contact: 'Contact',
-  },
-  hero: {
-    badge: 'Your Luck Guide',
-    title: 'Manifest Better Luck',
-    subtitle:
-      'Daily signals, rituals, and timing insights designed to help you align with opportunity.',
-    primary: 'Reveal Today’s Luck',
-    secondary: 'Start Now',
+    tagline: 'Your sports events radar.',
+    dataSource: 'Schedules powered by TheSportsDB. Times shown in your time zone.',
   },
   home: {
-    releaseBadge: 'Release has timing',
-    releaseText:
-      'A cut can be cosmetic. At the right moment, it feels like a clean break with doubt, heaviness, and stale energy.',
-    releaseChannels: 'Choose daily delivery by email, WhatsApp, or both.',
-    releaseImageAlt:
-      'A person cutting their hair while bright energy spills from the cut like a ritual release.',
-    beliefBadge: 'Belief engine',
-    beliefTitle: 'Feeling lucky changes how you enter the room.',
-    beliefSubtitle:
-      'The Trimry thesis is simple: when you believe timing is on your side, you notice opportunities faster, act with more optimism, and make better momentum visible.',
-    teaserEyebrow: 'Daily cosmic teaser',
-    couldBe: 'Could be...',
-    teaserNote:
-      'Start the flow to reveal your symbols and open your personal calendar preview.',
-    teaserButton: 'Reveal my real forecast',
-    seoGuideBadge: 'SEO guide',
-    seoGuideTitle: 'Need the full guide on good and bad haircut and nail days?',
-    seoGuideSubtitle:
-      'Read our English guide built around the query “Good and Bad Days to Cut your Hair, Nails and more” with practical weekly timing rules.',
-    seoGuideButton: 'Read the full guide',
-    predictions: [
+    badge: 'Sports events radar',
+    title: 'Never miss a game',
+    titleHighlight: 'again.',
+    subtitle:
+      'Pick the sports, leagues and teams you follow. Trimry sends you a personal agenda of upcoming matches, races and fights by email and WhatsApp, in your time zone.',
+    primaryCta: 'Build my agenda',
+    secondaryCta: 'See how it works',
+    trustLine: '7-day free trial · Cancel anytime · Soccer, NBA, NFL, F1, UFC and more',
+    previewEyebrow: 'Live preview',
+    previewTitle: 'What is coming up this week',
+    previewSubtitle: 'Pick a sport to see the real upcoming events Trimry tracks right now.',
+    previewEmpty: 'No events cached for this sport yet. Try another one or come back in a few minutes.',
+    previewLoading: 'Loading upcoming events...',
+    previewError: 'Unable to load the preview right now.',
+    previewTimeZoneNote: 'Times shown in',
+    stepsEyebrow: 'How it works',
+    stepsTitle: 'Three steps, then it runs on its own',
+    steps: [
       {
-        tone: 'good',
-        text: 'good fortune expands around you. A money-related message or useful opportunity could arrive.',
+        title: 'Choose what you follow',
+        text: 'Sports, leagues and teams. From the Premier League to the NBA, F1, UFC or your local club.',
       },
       {
-        tone: 'good',
-        text: 'love energy opens. You could meet someone magnetic or receive an unexpected romantic signal.',
+        title: 'Pick channel and rhythm',
+        text: 'Daily or weekly agenda by email, WhatsApp or both, at the hour you prefer.',
       },
       {
-        tone: 'bad',
-        text: 'misunderstandings may grow fast today. Avoid emotional decisions and risky spending.',
-      },
-      {
-        tone: 'bad',
-        text: 'plans can stall and support may feel distant. Stay practical and postpone major commitments.',
-      },
-      {
-        tone: 'rare',
-        text: 'rare wildcard day: a strange coincidence could bring a gift, lead, or sudden invitation.',
-      },
-      {
-        tone: 'rare',
-        text: 'karmic crossing: old love or old business could return asking for closure.',
-      },
-      {
-        tone: 'good',
-        text: 'prosperity window: an overdue payment, discount, or helpful ally could appear unexpectedly.',
-      },
-      {
-        tone: 'bad',
-        text: 'energy feels heavy and reactive. Protect your peace and avoid arguments about money or relationships.',
-      },
-      {
-        tone: 'rare',
-        text: 'unusual magnetism surrounds you. Someone influential may share confidential advice or a hidden opportunity.',
+        title: 'Get your agenda',
+        text: 'Every upcoming event, sorted by day, in your time zone. Ask Scout when in doubt.',
       },
     ],
-  },
-  story: {
-    title: 'Your personal timing guide for what may lie ahead.',
-    subtitle:
-      'Trimry reads your zodiac, Chinese symbol, and ancient timing patterns to help you plan with more intention.',
-    card1Title: 'Personal symbols',
-    card1Text:
-      'Your birth date opens a zodiac and Chinese symbol layer that shapes the calendar around you.',
-    card2Title: 'Timing windows',
-    card2Text:
-      'See when the pattern invites action, patience, release, or a cleaner decision.',
-    card3Title: 'Calendar preview',
-    card3Text:
-      'Open a focused view of the coming days and unlock the full planning layer when you are ready.',
+    channelsEyebrow: 'Delivery',
+    channelsTitle: 'Wherever you check first',
+    channels: [
+      {
+        title: 'Email digest',
+        text: 'A clean, scannable agenda for today and the days ahead. Team matches highlighted first.',
+      },
+      {
+        title: 'WhatsApp',
+        text: 'The same agenda as a message, plus Scout replying to "what is on tonight?".',
+      },
+      {
+        title: 'Web dashboard',
+        text: 'Your live agenda, preferences and delivery settings, always available.',
+      },
+    ],
+    scoutEyebrow: 'Meet Scout',
+    scoutTitle: 'An assistant that knows your teams',
+    scoutText:
+      'Scout searches teams and leagues for you, follows them with one message and answers with real fixtures from the tracked schedules. No made-up games.',
+    scoutBullets: [
+      '"Follow Real Madrid and the Lakers"',
+      '"What is on this weekend?"',
+      '"Switch me to a weekly digest on Mondays"',
+    ],
+    scoutCta: 'Chat with Scout',
+    finalTitle: 'Your agenda, delivered.',
+    finalSubtitle: 'Set it up in two minutes. Try it free for 7 days.',
   },
   pricing: {
-    title: 'Unlock your personalized luck calendar',
-    subtitle:
-      'Begin when you are ready to reveal the next days and plan around the rhythm of your symbols.',
-    planTitle: 'Personal luck calendar',
-    billing:
-      'Trial starts in Stripe, then continue for {billingInline}. Cancel anytime.',
-    include1: 'A rolling 7-day calendar with Good, Bad, and Rare fortune signals',
-    include2: 'Personalized guidance shaped by your symbols and wish',
-    include3:
-      'Manifestation cues for money, relationships, energy, and personal timing',
+    eyebrow: 'Pricing',
+    title: 'One simple plan',
+    subtitle: 'Everything included. Start with a free trial and cancel anytime.',
+    planTitle: 'Trimry Sports Alerts',
+    billing: '{billingInline}',
+    trialNote: '{trialPeriodDays}-day free trial, then {billingCompact}.',
+    includes: [
+      'Unlimited sports, leagues and teams',
+      'Daily or weekly agenda by email and WhatsApp',
+      'Scout assistant on the web and WhatsApp',
+      'Kickoff times in your time zone',
+    ],
     cta: 'Start free trial',
-  },
-  weekly: {
-    title: 'Today’s cosmic prediction',
-    subtitle:
-      'A rotating teaser about fortune, love, money, and luck. Subscribe to unlock the full calendar view.',
-    good: 'Good',
-    bad: 'Bad',
-    rare: 'Rare',
+    cancelNote: 'Cancel from the dashboard, the Stripe portal or by replying STOP on WhatsApp.',
   },
   faq: {
     title: 'Frequently asked questions',
-    q1: 'Is this a medical or scientific recommendation?',
-    a1: 'No. Trimry is a cultural and ritual timing service for personal routines.',
-    q2: 'When do I receive the message?',
-    a2: 'Subscribers unlock a rolling 7-day calendar and can review the next signals from the dashboard.',
-    q3: 'How do I manage billing?',
-    a3: 'From your dashboard, where you can cancel anytime, reactivate later, and still open the secure Stripe billing portal for payment methods and invoices.',
-    q4: 'Which timezone is used?',
-    a4: 'We use the IANA time zone saved in your account and you can change both time zone and daily delivery hour from your dashboard.',
-  },
-  cta: {
-    title: 'Stay aligned with luck every day.',
-    subtitle:
-      'Create your Trimry account, reveal your symbols, and keep your personal calendar close.',
-    button: 'Open my account',
+    items: [
+      {
+        question: 'Which sports and leagues are supported?',
+        answer:
+          'Soccer, basketball, American football, baseball, ice hockey, tennis, motorsport, MMA and boxing, rugby, golf, cycling and cricket. Featured leagues include the Premier League, La Liga, Serie A, Bundesliga, Ligue 1, Champions League, MLS, Liga MX, Brasileirão, NBA, NFL, MLB, NHL, Formula 1, MotoGP and UFC, and you can search any team or competition in the catalog.',
+      },
+      {
+        question: 'Where does the schedule data come from?',
+        answer:
+          'From TheSportsDB, refreshed several times a day. Times are converted to the time zone saved on your account. Postponements and late changes can happen, so always confirm with the official broadcaster.',
+      },
+      {
+        question: 'How does the free trial work?',
+        answer:
+          'Start checkout with Stripe and get 7 days of alerts at no cost. Cancel before the trial ends and you will not be charged.',
+      },
+      {
+        question: 'Can I cancel or change channels later?',
+        answer:
+          'Yes. Change sports, teams, frequency, hour and channel from the dashboard anytime. Cancel from the dashboard, the Stripe billing portal or by replying STOP on WhatsApp.',
+      },
+    ],
   },
   auth: {
-    registerTitle: 'Start in 10 seconds',
-    registerSubtitle:
-      'Enter your name, birth date, and contact so Trimry can open your personal luck code.',
+    registerTitle: 'Create your account',
+    registerSubtitle: 'Your name and email are enough. Your teams and delivery settings come next.',
     loginTitle: 'Welcome back',
-    loginSubtitle: 'Sign in to manage your daily luck delivery.',
-    loginWithLinkHint:
-      'Prefer passwordless access? We can email you a secure sign-in link.',
+    loginSubtitle: 'Sign in to manage your agenda and alerts.',
+    loginWithLinkHint: 'Prefer passwordless access? We can email you a secure sign-in link.',
     loginWithLinkButton: 'Email me a sign-in link',
     loginWithLinkSending: 'Sending sign-in link...',
     loginWithLinkSent:
       'If this email has an account, we sent a secure sign-in link. Check inbox and spam.',
     loginWithLinkConsuming: 'Validating your secure sign-in link...',
-    loginWithLinkInvalid:
-      'This sign-in link is invalid or expired. Request a new one.',
+    loginWithLinkInvalid: 'This sign-in link is invalid or expired. Request a new one.',
     loginWithLinkDivider: 'or',
     firstNameLabel: 'First name',
     lastNameLabel: 'Last name',
-    birthDateLabel: 'Date of birth',
     timeZoneLabel: 'Time zone',
-    timeZoneHint:
-      'We use this to schedule your daily projection at the right local time.',
+    timeZoneHint: 'We use it to show kickoff times and schedule your digest at the right local hour.',
     emailLabel: 'Email address',
+    emailHint: 'We use this email for your account and for the email digest.',
     passwordLabel: 'Password',
     whatsappLabel: 'WhatsApp number',
-    passwordHint:
-      'Minimum 10 characters, including uppercase, lowercase, and number.',
+    passwordHint: 'Minimum 10 characters, including uppercase, lowercase, and number.',
     registerButton: 'Continue',
     loginButton: 'Log in',
     needAccount: 'Need an account?',
     alreadyHaveAccount: 'Already have an account?',
+    invalidEmail: 'Enter a valid email.',
+    termsNotice: 'By continuing you accept the Terms of Service and Privacy Policy.',
+  },
+  onboarding: {
+    title: 'Set up your agenda',
+    stepLabel: 'Step {step} of {total}',
+    steps: ['Sports', 'Teams & leagues', 'Delivery', 'Review'],
+    sportsTitle: 'Which sports do you follow?',
+    sportsSubtitle: 'Pick as many as you like. You can refine leagues and teams in the next step.',
+    sportsEmpty: 'Pick at least one sport to continue.',
+    teamsTitle: 'Teams and leagues',
+    teamsSubtitle:
+      'Follow specific teams for match-by-match alerts and leagues for the full fixture list. Skip this to get the featured leagues of each sport.',
+    teamsSearchLabel: 'Search a team',
+    teamsSearchPlaceholder: 'Real Madrid, Lakers, Ferrari, Flamengo...',
+    teamsSearching: 'Searching...',
+    teamsNoResults: 'No teams found. Try another spelling or the official name.',
+    teamsFollowing: 'Teams you follow',
+    leaguesTitle: 'Leagues',
+    leaguesHint: 'Featured leagues appear first. Search the catalog for more.',
+    leaguesLoading: 'Loading leagues...',
+    leaguesFilterPlaceholder: 'Filter leagues...',
+    featuredLabel: 'Featured',
+    followedLabel: 'Following',
+    followLabel: 'Follow',
+    unfollowLabel: 'Unfollow',
+    skipTeamsHint: 'No teams or leagues selected: you will receive the featured leagues of your sports.',
+    accountTitle: 'Create your account',
+    accountSubtitle: 'Save your selection and choose how to receive the agenda.',
+    accountExistingHint: 'Already have an account?',
+    deliveryTitle: 'How do you want the agenda?',
+    deliverySubtitle: 'Choose the rhythm, the channel and the hour. You can change it anytime.',
+    frequencyLabel: 'Rhythm',
+    frequencyDaily: 'Daily',
+    frequencyDailyHint: 'Every day: today plus the next two days.',
+    frequencyWeekly: 'Weekly',
+    frequencyWeeklyHint: 'Every Monday: the full week ahead.',
+    lookaheadLabel: 'Dashboard lookahead',
+    lookaheadHint: 'How many days your web agenda shows.',
+    lookaheadDays: '{count} days',
+    channelLabel: 'Channel',
+    hourLabel: 'Delivery hour',
+    hourHint: 'Local time in {zone}.',
+    whatsappNumberLabel: 'WhatsApp number',
+    whatsappConsentLabel: 'I agree to receive Trimry sports alerts on WhatsApp.',
+    whatsappConsentHint: 'Required only if you choose WhatsApp delivery. Reply STOP anytime.',
+    whatsappConsentError: 'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
+    reviewTitle: 'Review and start',
+    reviewSubtitle: 'Here is your setup and a real preview of the next events on your radar.',
+    reviewSports: 'Sports',
+    reviewLeagues: 'Leagues',
+    reviewTeams: 'Teams',
+    reviewFrequency: 'Rhythm',
+    reviewChannel: 'Channel',
+    reviewTiming: 'Delivery',
+    reviewPreviewTitle: 'Next on your radar',
+    reviewPreviewEmpty: 'No events cached yet for this selection. Your agenda fills in as schedules are published.',
+    startTrialCta: 'Start 7-day free trial',
+    startTrialHint: 'Secure Stripe checkout. Cancel anytime.',
+    savePreferencesCta: 'Save preferences',
+    saving: 'Saving...',
+    saveError: 'Unable to save your preferences right now.',
+    registerError: 'Unable to create your account right now.',
+    previewEyebrow: 'Preview',
   },
   deliveryChannels: {
-    noneTitle: 'No reminders',
-    noneDescription: 'Use Trimry as your luck calendar first. Add email or WhatsApp later if you want nudges.',
+    noneTitle: 'Web only',
+    noneDescription: 'Use the dashboard and Scout without email or WhatsApp digests.',
     bothTitle: 'Email + WhatsApp',
-    bothDescription: 'Email first, with WhatsApp as an optional second channel.',
-    emailTitle: 'Email only',
-    emailDescription: 'The simplest default for most users.',
-    whatsappTitle: 'WhatsApp only',
-    whatsappDescription: 'Phone-first delivery when you prefer it.',
+    bothDescription: 'The email digest plus the same agenda as a WhatsApp message.',
+    emailTitle: 'Email',
+    emailDescription: 'A clean digest in your inbox. The simplest default.',
+    whatsappTitle: 'WhatsApp',
+    whatsappDescription: 'The agenda as a message, plus Scout on WhatsApp.',
+    whatsappPendingNote:
+      'WhatsApp digests start as soon as our Meta message template is approved. Email works today.',
   },
-  deliveryOnboarding: {
-    loading: 'Loading your onboarding flow...',
-    loadError: 'Unable to load your account right now.',
-    prepBadge: 'Fortune ignition',
-    prepTitle: 'Getting your fortune ready...',
-    prepSubtitle:
-      'We are binding your chosen delivery channel to your daily luck cadence and preparing your subscription activation step.',
-    preparationSteps: [
-      'Choosing your delivery ritual',
-      'Binding your release timing',
-      'Charging daily abundance',
-      'Preparing your activation gate',
-    ],
-    editBadge: 'Delivery settings',
-    createBadge: 'Onboarding step 1',
-    editTitle: 'Update where Trimry should deliver your daily projection',
-    createTitle: 'How should Trimry deliver your daily projection?',
-    editSubtitle:
-      'Change your delivery preference anytime. Use email, WhatsApp, or keep both channels active.',
-    createSubtitle:
-      'Email is the default. Add WhatsApp only if you want phone delivery too.',
-    activationChecklist: [
-      'Choose email first, then add WhatsApp only if you want it.',
-      'Your activation page opens before Stripe.',
-      'You can change delivery later from the dashboard.',
-    ],
-    dashboardChecklist: [
-      'Choose your delivery preference.',
-      'Add WhatsApp only if you want it enabled.',
-      'You return to your dashboard.',
-    ],
-    setupTitle: 'Delivery setup',
-    setupSubtitle:
-      'Email goes to your inbox. WhatsApp stays optional unless you turn it on.',
-    channelLabel: 'Delivery channel',
-    mondayTimeLabel: 'Daily projection time',
-    mondayTimeHint: 'Scheduled every day at {time} in {zone}.',
-    emailDeliveryLabel: 'Email delivery',
-    whatsappOffHint:
-      'WhatsApp is off by default. Turn it on only if you want phone delivery too.',
-    whatsappConsentLabel:
-      'I consent to receive Trimry subscription messages on WhatsApp at this number.',
-    whatsappConsentHint:
-      'You can opt out anytime by replying STOP in WhatsApp or by disabling WhatsApp delivery in your dashboard.',
-    submitContinue: 'Continue to activation',
-    submitSave: 'Save delivery settings',
-    saveError: 'Unable to save your delivery settings right now.',
-    whatsappConsentError:
-      'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
-  },
-  activate: {
-    loading: 'Loading your activation step...',
-    loadError: 'Unable to load your activation step right now.',
-    unavailable: 'Unable to continue right now.',
-    badge: '{trialPeriodDays}-day free trial',
-    title:
-      'Start your daily luck guide free for {trialPeriodDays} days.',
-    subtitle:
-      'No charge today. Trimry gives you a daily signal designed to focus intention, strengthen belief, and help you move through the day feeling luckier and more open to real fortune.',
-    cards: [
-      '{trialPeriodDays} days free in Stripe checkout.',
-      'Daily manifestation cues for money, relationships, energy, and release.',
-      'Monthly timing calendar to help you choose better moments.',
-    ],
-    primaryButton: 'Start {trialPeriodDays} days free',
-    secondaryButton: 'Change delivery settings',
-    snapshotTitle: 'Your activation snapshot',
-    deliveryPreferenceLabel: 'Delivery preference',
-    emailDeliveryLabel: 'Email delivery',
-    projectionTimingLabel: 'Projection timing',
-    whatsappDeliveryLabel: 'WhatsApp delivery',
-    billingLabel: 'Today',
-    billingValue:
-      'Free for {trialPeriodDays} days in Stripe. After that, continue for {billingInline}.',
-    unsubscribeTitle: 'Easy to unsubscribe',
-    unsubscribeText:
-      'If Trimry is not for you, cancellation is simple: message Luck Guru, cancel from the web dashboard, or ask us by email.',
-    sampleTitle: 'Try one real daily projection',
-    sampleText:
-      'Send yourself one sample before subscribing. Use it as a manifestation habit: read the signal, set an intention, and notice how fortune starts shaping your posture.',
-    sampleChannelLabel: 'Send it by',
-    sampleEmailOption: 'Email',
-    sampleWhatsappOption: 'WhatsApp',
-    sampleBothOption: 'Both',
-    sampleEmailButton: 'Send email sample',
-    sampleWhatsappButton: 'Send WhatsApp sample',
-    sampleBothButton: 'Send both',
-    sampleWhatsappNumberLabel: 'WhatsApp number',
-    sampleWhatsappPlaceholder: '+14155550123',
-    sampleWhatsappConsentLabel:
-      'I consent to receive this Trimry sample and subscription messages on WhatsApp.',
-    sampleAlreadySent: 'Your one-time sample was already sent.',
-    sampleSuccess:
-      'Sample sent. If this rhythm feels useful, continue with Stripe to receive Trimry every day.',
-    sampleEmailUnavailable:
-      'This account does not have a regular email address for sample delivery.',
-    sampleWhatsappConsentError:
-      'Confirm WhatsApp consent before sending the sample.',
-    previewBadge: 'Trial preview',
-    previewTitle: 'What unlocks during your trial',
-    previewLabel: 'Preview',
-    previewDayLabel: 'Daily signal',
-    emailFirstTitle: 'Email-first delivery',
-    whyItWorksLabel: 'Why it works',
-    whyItWorksText:
-      'Manifestation works best when belief becomes a daily posture. Trimry turns that belief into a simple rhythm: notice the signal, set your intention, and act as if luck is already moving with you.',
-    carouselBadge: 'Momentum psychology',
-    carouselTitle: 'Luck gets stronger when your mind starts moving with it.',
-    carouselSubtitle:
-      'These voices all point at the same mechanism: belief changes posture, posture changes action, and action changes what feels possible.',
+  delivery: {
+    badge: 'Delivery settings',
+    title: 'How should Trimry deliver your agenda?',
+    subtitle: 'Email is the default. Add WhatsApp whenever you want the agenda as a message.',
+    emailLabel: 'Delivery email',
+    channelLabel: 'Channel',
+    scheduleLabel: 'Delivery hour',
+    consentLabel: 'I agree to receive Trimry sports alerts on WhatsApp.',
+    consentHint: 'Required only if you choose WhatsApp delivery.',
+    saveButton: 'Save settings',
+    savingButton: 'Saving...',
+    backButton: 'Back to dashboard',
+    confirmBadge: 'Delivery confirmation',
+    confirmTitle: 'Confirm where you want your agenda',
+    confirmSubtitle:
+      'Your subscription is ready. Before entering the dashboard, confirm whether Trimry should reach you by email, WhatsApp, or both.',
+    confirmBackButton: 'Go to dashboard',
+    success: 'Delivery settings updated.',
+    help: 'Changes apply to future deliveries only.',
+    editMode: 'Edit mode',
+    whatsappNumberLabel: 'WhatsApp number',
+    whatsappOptional: 'WhatsApp remains optional unless you turn it on.',
+    loadError: 'Unable to load delivery settings.',
+    consentError: 'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
+    saveError: 'Unable to save delivery settings.',
+    loading: 'Loading delivery settings...',
+    redirecting: 'Redirecting...',
   },
   checkout: {
     badge: 'Stripe subscription',
     badgeCancelled: 'Checkout paused',
     title: 'Opening your Trimry subscription...',
     titleCancelled: 'Your subscription is waiting',
-    subtitle:
-      'Stripe securely confirms your payment method so your daily luck guide can continue.',
+    subtitle: 'Stripe securely confirms your payment method so your alerts can start.',
     subtitleCancelled:
-      'Nothing was lost. Your settings are still saved, and you can subscribe whenever you are ready.',
+      'Nothing was lost. Your teams and settings are still saved, and you can subscribe whenever you are ready.',
     openError: 'Unable to open Stripe checkout right now.',
-    resumeTitle: 'Subscribe to Trimry',
-    resumeSubtitle:
-      'Your daily guidance is still waiting. Continue to Stripe and confirm your subscription.',
+    resumeTitle: 'Start your alerts',
+    resumeSubtitle: 'Your agenda is ready. Continue to Stripe and confirm your subscription.',
     resumeButton: 'Subscribe with Stripe',
     resumeHint: 'Secure Stripe checkout. Cancel anytime.',
     deliveryLabel: 'Delivery channel',
-    timingLabel: 'Daily timing',
+    timingLabel: 'Delivery hour',
     helper:
       'We are creating secure Stripe checkout for your subscription. If nothing happens, wait a second or reload this page.',
     unsubscribeHelp:
-      'Unsubscribing is easy: message Luck Guru, cancel from the web dashboard, or ask us by email.',
+      'Unsubscribing is easy: cancel from the dashboard, the Stripe portal, or reply STOP on WhatsApp.',
     trialHighlights: [
-      'Daily fortune signal delivered by email, WhatsApp, or both.',
-      'Manifestation rhythm for belief, action, and opportunity.',
-      'Weekly luck calendar unlocked with your subscription.',
+      'Personal agenda of upcoming events by email, WhatsApp, or both.',
+      'Unlimited sports, leagues and teams, updated several times a day.',
+      'Scout assistant on the web and WhatsApp.',
     ],
   },
+  agenda: {
+    title: 'Your agenda',
+    subtitle: 'Every upcoming event from the teams and leagues you follow, in your time zone.',
+    refresh: 'Refresh',
+    refreshing: 'Refreshing...',
+    empty: 'Nothing scheduled in this window. Widen the lookahead or follow more teams.',
+    emptyNoPreferences: 'Pick your sports, leagues and teams to fill your agenda.',
+    emptyCta: 'Set up preferences',
+    today: 'Today',
+    tomorrow: 'Tomorrow',
+    timeTbc: 'Time TBC',
+    followedTeam: 'Your team',
+    followedLeague: 'Your league',
+    sportWide: 'Featured',
+    lookahead: 'Lookahead',
+    days: 'days',
+    timeZoneNote: 'Times in {zone}',
+    highlightsTitle: 'Highlights',
+    countLabel: '{count} events',
+    lastDigestLabel: 'Last digest sent',
+    lastDigestNever: 'No digest sent yet',
+    loadError: 'Unable to load your agenda right now.',
+  },
   dashboard: {
-    title: 'Your subscription dashboard',
-    intro: 'Manage your delivery channels and daily Trimry plan.',
-    adminBadge: 'Admin account',
-    loading: 'Loading your account...',
-    noData: 'Sign in to access your dashboard.',
+    title: 'Dashboard',
+    intro: 'Your agenda, preferences and delivery settings.',
+    adminBadge: 'Admin',
+    loading: 'Loading your dashboard...',
+    noData: 'We could not load your account.',
     tabs: {
+      agenda: 'Agenda',
+      preferences: 'Teams & leagues',
+      delivery: 'Delivery & billing',
       account: 'Account',
-      predictionCalendar: 'Prediction calendar',
-      sends: 'Sends',
-      onboarding: 'Onboarding',
+      sends: 'Admin sends',
+      sportsSync: 'Sports sync',
     },
-    onboarding: {
-      title: 'Admin onboarding lab',
-      subtitle:
-        'Use this section to open and test the onboarding flow as an admin account without leaving your dashboard.',
-      cta: 'Open onboarding flow',
-      hint: 'This opens /activate in admin testing mode.',
-    },
+    preferencesTitle: 'Teams, leagues and rhythm',
+    preferencesSubtitle: 'Everything you change here updates your next digest and your agenda.',
+    preferencesSaved: 'Preferences saved. Your agenda is refreshing.',
+    preferencesSaveError: 'Unable to save your preferences right now.',
     status: 'Status',
-    nextMessage: 'Next daily message',
-    subscribeButton: 'Activate subscription',
-    noSubscription: 'You do not have an active subscription yet.',
+    nextMessage: 'Next digest',
+    subscribeButton: 'Start alerts',
+    noSubscription: 'Alerts are not active yet',
+    noSubscriptionSubtitle:
+      'Choose your channel and hour, then start the free trial to receive your agenda by email or WhatsApp.',
     paymentPending: 'Payment pending',
     paymentIssue: 'Payment issue',
-    billingSuccess:
-      'Stripe reported a successful checkout. We are syncing your subscription now.',
-    profileTitle: 'Account profile',
-    profileSubtitle:
-      'Update your identity details and the time zone used for your daily projection.',
+    billingSuccess: 'Your subscription is active. Your first agenda is on its way.',
+    profileTitle: 'Profile',
+    profileSubtitle: 'Name and time zone used across your agenda and digests.',
     profileSave: 'Save profile',
-    profileTimeZoneHint: 'Daily delivery is calculated from this IANA time zone.',
-    projectionCalendar: {
-      title: 'Projection calendar',
-      subtitle:
-        'Plan around your next 7 luck days. Subscribers unlock the current week, not the whole month ahead.',
-      fullAccessHint:
-        'Luck week unlocked. Review the next 7 days and plan your moves with better timing.',
-      lockedAccessHint:
-        'Only today is unlocked on this account. Activate your subscription to reveal the full luck week.',
-      loadError: 'Unable to load your projection calendar right now.',
-      lockedDayBadge: 'Locked',
-      lockedDayTitle: 'Day locked',
-      lockedDaySubtitle:
-        'Activate your subscription to reveal this day inside your 7-day luck plan.',
-    },
-    passwordTitle: 'Security',
-    passwordSubtitle:
-      'Change your password whenever needed. You must confirm your current password first.',
+    profileTimeZoneHint: 'Changing the time zone updates kickoff times and your delivery hour.',
+    passwordTitle: 'Password',
+    passwordSubtitle: 'Set or change the password for your account.',
     currentPasswordLabel: 'Current password',
     newPasswordLabel: 'New password',
     confirmPasswordLabel: 'Confirm new password',
     passwordSave: 'Update password',
-    passwordSuccess: 'Password updated successfully.',
-    passwordMismatchError: 'New password and confirmation do not match.',
-    passwordDifferentError:
-      'New password must be different from your current password.',
-    passwordSaveError: 'Unable to update your password right now.',
+    passwordSuccess: 'Password updated.',
+    passwordMismatchError: 'The new passwords do not match.',
+    passwordDifferentError: 'The new password must be different from the current one.',
+    passwordSaveError: 'Unable to update the password right now.',
     dangerTitle: 'Danger zone',
-    dangerSubtitle:
-      'Delete your account and sign out immediately. We keep a soft-deleted record for audit purposes, but your login email is anonymized and your active delivery channels are stopped.',
+    dangerSubtitle: 'Deleting your account cancels billing and removes your preferences permanently.',
     deleteButton: 'Delete account',
     deleteLoading: 'Deleting...',
-    deleteConfirm:
-      'Delete your account? This will sign you out immediately and stop your current delivery channels.',
-    deleteError: 'Unable to delete your account right now.',
-    noSubscriptionSubtitle:
-      '{billingCompact} · unlock your 7-day luck calendar. Reminders are optional.',
-    mondayProjectionTime: 'Optional reminder time',
-    sentOnMondaysAt: 'If reminders are enabled, they send every day at {time} in {zone}.',
+    deleteConfirm: 'Delete your Trimry account and cancel any subscription? This cannot be undone.',
+    deleteError: 'Unable to delete the account right now.',
+    deliveryHourLabel: 'Delivery hour',
+    deliveryHourHint: 'Local time in {zone}.',
     emailDeliveryLabel: 'Email delivery',
-    whatsappOffSetup:
-      'WhatsApp is off. You can use Trimry only as a calendar, or enable reminders later.',
-    whatsappConsentLabel:
-      'I consent to receive Trimry subscription messages on WhatsApp at this number.',
-    whatsappConsentHint:
-      'You can opt out anytime by replying STOP in WhatsApp or by disabling WhatsApp delivery here.',
-    whatsappConsentError:
-      'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
-    pendingTitle: 'Activate your Trimry subscription',
-    pendingSubtitle:
-      'Your delivery preference is already saved. Before payment, we take you through a short activation step that frames the daily guidance and then opens secure Stripe checkout.',
-    pendingDeliveryPreferenceLabel: 'Delivery preference',
-    pendingEmailDeliveryLabel: 'Email delivery',
-    pendingProjectionTimingLabel: 'Projection timing',
-    pendingWhatsappLabel: 'WhatsApp delivery',
-    continueActivation: 'Continue activation',
-    changeDeliverySettings: 'Change delivery settings',
-    activePlanTitle: 'Trimry Luck Calendar',
-    canceledPlanTitle: 'Your Trimry subscription is canceled',
-    canceledNote:
-      'You can reactivate anytime from this account. Your delivery channels and daily timing are still saved below.',
-    activeNote:
-      'Cancel anytime from this dashboard. If you return later, you can reactivate from the same account.',
-    deliveryPreferenceLabel: 'Delivery preference',
-    nextMessageIfReactivated: 'If reactivated today, your next message would be',
-    weeklyProjectionTimeLabel: 'Optional reminder time',
-    futureMessagesHint: 'If reminders are enabled, future messages follow this hour in {zone}.',
-    whatsappOffActive:
-      'WhatsApp is off. Your calendar still works; turn WhatsApp on only if you want phone reminders.',
-    saveDeliverySettings: 'Save reminder settings',
-    reactivateButton: 'Reactivate subscription',
-    reactivateLoading: 'Preparing reactivation...',
+    whatsappOffSetup: 'WhatsApp is off. Choose WhatsApp or both to add your number.',
+    whatsappConsentLabel: 'I agree to receive Trimry sports alerts on WhatsApp.',
+    whatsappConsentHint: 'Reply STOP anytime to opt out.',
+    whatsappConsentError: 'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
+    pendingTitle: 'Finish activating your alerts',
+    pendingSubtitle: 'Your settings are saved. Complete the Stripe checkout to start the trial.',
+    pendingDeliveryPreferenceLabel: 'Channel',
+    pendingEmailDeliveryLabel: 'Email',
+    pendingTimingLabel: 'Delivery hour',
+    pendingWhatsappLabel: 'WhatsApp',
+    activePlanTitle: 'Alerts active',
+    canceledPlanTitle: 'Alerts canceled',
+    canceledNote: 'Your preferences are saved. Reactivate whenever you want the digests back.',
+    activeNote: 'Your agenda goes out on schedule. Change the channel or hour below.',
+    deliveryPreferenceLabel: 'Channel',
+    nextMessageIfReactivated: 'Next digest if reactivated',
+    saveDeliverySettings: 'Save delivery settings',
+    reactivateButton: 'Reactivate alerts',
+    reactivateLoading: 'Reactivating...',
     cancelButton: 'Cancel subscription',
     cancelLoading: 'Canceling...',
-    manageBillingButton: 'Manage billing in Stripe',
-    manageBillingLoading: 'Opening Stripe...',
-    billingFootnoteCanceled:
-      'You can reactivate from this account at any time. Stripe Billing remains available for invoices and historical billing records.',
-    billingFootnoteActive:
-      'Payment method changes and invoice history still live in Stripe Billing, but you can now cancel directly from this dashboard whenever you want.',
-    cancelConfirm:
-      'Cancel your subscription now? You will stop future billing immediately and can reactivate later from this account.',
-    cancelSuccess:
-      'Your subscription is canceled. Your delivery settings stay saved here, and you can reactivate anytime.',
-    cancelError: 'Unable to cancel your subscription right now.',
-    reactivateError: 'Unable to reactivate your subscription right now.',
-    openBillingError: 'Unable to open Stripe billing right now.',
-    saveDeliveryError: 'Unable to save your delivery settings.',
-    predictionCalendar: {
-      title: 'Admin prediction calendar',
-      subtitle:
-        'Review the monthly ritual pattern before it goes live. Use the same Good, Bad, and Rare signal system seen on the home experience.',
-      monthSummary: 'Month summary',
-      daysInMonth: 'days in this month',
-      goodDays: 'Good days',
-      badDays: 'Bad days',
-      rareDays: 'Rare days',
-      customDays: 'Custom days',
-      customDaysText: 'days manually overridden in this month',
-      selectedDay: 'Selected day',
-      jumpToCurrentMonth: 'Current month',
-      today: 'Today',
-      goodTone: 'Good',
-      badTone: 'Bad',
-      rareTone: 'Rare',
-      goodSummaryText:
-        'Momentum favors visible changes and fortunate timing.',
-      badSummaryText:
-        'Friction, delay, or awkward timing is more likely here.',
-      rareSummaryText:
-        'The unusual pattern. Expect coincidence, novelty, or a strange opening.',
-      alignedActivities: 'Aligned activities',
-      cautionActivities: 'Use caution',
-      haircut: 'Haircut',
-      shave: 'Shave',
-      nails: 'Nails',
-      release: 'Release',
-      none: 'None',
-      summaryLabel: 'Prediction',
-      notesLabel: 'Prediction note',
-      notesEnglishLabel: 'Note (English)',
-      notesSpanishLabel: 'Note (Spanish)',
-      notesPortugueseLabel: 'Note (Portuguese)',
-      notesHint:
-        'All notes are required and will be used according to the active language.',
-      goodOption: 'Good',
-      badOption: 'Bad',
-      rareOption: 'Rare',
-      importFromImage: 'Fill month from image',
-      importFromImageBusy: 'Generating from image',
-      importFromImageHint:
-        'Upload a reference calendar image and ChatGPT will generate fresh Good, Bad, and Rare notes in English and Spanish for this month.',
-      importFromImageConfirm:
-        'Replace the visible month with a new image-based prediction import?',
-      importFromImageSuccess: 'Prediction month imported from image.',
-      importFromImageError:
-        'Unable to generate a prediction month from that image right now.',
-      weekImagePromptLabel: 'Weekly image prompt',
-      weekImagePromptHint:
-        'You can edit placeholders like {date}, {weekday}, {summary}, {noteEn}, {noteEs}, {localizedDate}, and {weekContext}.',
-      selectedWeekLabel: 'Selected week',
-      imagesInSelectedWeek: 'Generated images in this week',
-      weekSelectorLabel: 'Week to edit',
-      weekDaysToGenerateLabel: 'Days to generate',
-      selectedDaysCountLabel: 'Selected days',
-      selectAllWeekDays: 'Select full week',
-      clearSelectedWeekDays: 'Clear selection',
-      weekHtmlGeneratorLabel: 'Weekly email HTML builder',
-      weekHtmlGeneratorHint:
-        'Build a ready-to-send email HTML with one selected day per row, then preview it before sending.',
-      generateWeekHtml: 'Generate email HTML',
-      generateWeekHtmlBusy: 'Generating email HTML',
-      generateWeekHtmlConfirm:
-        'Generate an email-ready weekly HTML using the selected days?',
-      generateWeekHtmlSuccess: 'Weekly email HTML generated.',
-      generateWeekHtmlError:
-        'Unable to generate weekly email HTML right now.',
-      copyWeekHtml: 'Copy HTML',
-      copyWeekHtmlSuccess: 'Weekly email HTML copied.',
-      copyWeekHtmlError: 'Unable to copy HTML right now.',
-      weekHtmlPreviewLabel: 'Email preview',
-      weekHtmlSubjectLabel: 'Email subject',
-      weekHtmlPreviewTextLabel: 'Preview text',
-      weekHtmlCodeLabel: 'Email HTML source',
-      generateWeekImages: 'Generate week images',
-      generateWeekImagesBusy: 'Generating week images',
-      generateWeekImagesConfirm:
-        'Generate and save one image for each day in the selected week?',
-      generateWeekImagesSuccess:
-        'Week images generated and saved for each day.',
-      generateWeekImagesError:
-        'Unable to generate week images right now.',
-      generateSelectedDays: 'Generate selected days',
-      generateSelectedDaysBusy: 'Generating selected days',
-      generateSelectedDaysConfirm:
-        'Generate and save images for the selected days?',
-      generateSelectedDaysSuccess:
-        'Selected day images generated and saved.',
-      generateSelectedDaysError:
-        'Unable to generate images for the selected days right now.',
-      generateSelectedDayImage: 'Generate selected day image',
-      generateSelectedDayImageBusy: 'Generating selected day image',
-      generateSelectedDayImageConfirm:
-        'Generate and save an image for the selected day only?',
-      generateSelectedDayImageSuccess:
-        'Selected day image generated and saved.',
-      generateSelectedDayImageError:
-        'Unable to generate the selected day image right now.',
-      dayImageBadge: 'Image ready',
-      dayImagePreviewLabel: 'Saved day image',
-      saveDay: 'Save day',
-      resetDay: 'Reset override',
-      resetConfirm: 'Reset this day back to the generated Trimry pattern?',
-      overrideBadge: 'Custom override',
-      generatedBadge: 'Generated pattern',
-      saveSuccess: 'Prediction saved.',
-      saveError: 'Unable to save this prediction right now.',
-      loadError: 'Unable to load the admin prediction calendar right now.',
+    manageBillingButton: 'Manage billing',
+    manageBillingLoading: 'Opening billing...',
+    billingFootnoteCanceled: 'Reactivating opens a new Stripe checkout.',
+    billingFootnoteActive: 'Invoices, payment method and cancellation are managed in the Stripe portal.',
+    cancelConfirm: 'Cancel your Trimry subscription? Alerts stop at the end of the current period.',
+    cancelSuccess: 'Subscription canceled.',
+    cancelError: 'Unable to cancel right now.',
+    reactivateError: 'Unable to reactivate right now.',
+    openBillingError: 'Unable to open the billing portal right now.',
+    sportsSync: {
+      title: 'Sports events sync',
+      subtitle: 'Cache of upcoming events pulled from TheSportsDB for every followed league, team and sport.',
+      runButton: 'Sync stale targets',
+      forceButton: 'Force full sync',
+      running: 'Syncing...',
+      eventCount: 'Cached events',
+      upcomingCount: 'Upcoming events',
+      lastFetched: 'Last fetch',
+      freeKeyWarning:
+        'Using the free TheSportsDB key: results are truncated to a few rows per query. Set SPORTSDB_API_KEY with a Premium key for complete schedules.',
+      summary: 'Targets {targets} · fetched {fetched} · skipped {skipped} · failed {failed} · upserted {events}',
+      statesTitle: 'Sync targets',
+      loadError: 'Unable to load sync status.',
     },
-    sendCampaigns: {
-      settingsTitle: 'Provider settings',
-      settingsSubtitle:
-        'Store WhatsApp Cloud API and MailerSend credentials in MongoDB. Secret values stay blank in the form unless you want to replace them.',
-      settingsWhatsappTitle: 'WhatsApp settings',
-      settingsMailersendTitle: 'MailerSend settings',
-      settingsStored: 'Stored',
-      settingsMissing: 'Missing',
-      settingsSave: 'Save settings',
-      settingsSaved: 'Provider settings saved.',
-      title: 'Admin sends',
-      subtitle:
-        'Create WhatsApp and email campaigns for active subscribers, run a testing delivery first, then send the live campaign from the dashboard.',
-      templateEditorTitle: 'Send setup',
-      templateEditorSubtitle:
-        'For email you can save the content here. For WhatsApp you do not edit the Meta template here: you only save its exact Meta name, language, and the `key: content` values you want to reuse in testing and sending.',
-      templateSave: 'Save setup',
-      templateSaveBusy: 'Saving setup',
-      templateSaved: 'Setup saved.',
-      createNew: 'New campaign',
-      currentDraft: 'Current setup',
-      nameLabel: 'Internal reference name',
-      whatsappReferenceNameLabel: 'Internal reference name (optional)',
-      campaignNameLabel: 'Campaign name',
-      templateDescriptionLabel: 'Template description',
-      channelLabel: 'Channel',
-      channelWhatsapp: 'WhatsApp',
-      channelEmail: 'Email',
-      audienceTitle: 'Audience',
-      audienceHint:
-        'Live sends target active subscribers who currently have this delivery channel enabled.',
-      eligibleRecipients: 'Eligible recipients right now: {count}',
-      variableValuesTitle: 'Testing data and variables',
-      variableValuesSubtitle:
-        'Each template variable appears here. For WhatsApp, the saved content from each section is loaded here first, and you can adjust it before testing or sending.',
-      noVariables: 'This template has no dynamic variables.',
-      testingLabel: 'Testing recipient',
-      testingPlaceholderWhatsapp: '+14155550123',
-      testingPlaceholderEmail: 'test@example.com',
-      testingHintWhatsapp:
-        'WhatsApp testing sends the configured template directly to one number.',
-      testingHintEmail:
-        'Email testing sends the current subject and body to one address through MailerSend.',
-      saveDraft: 'Save draft',
-      saveDraftBusy: 'Saving draft',
-      sendTest: 'Send testing',
-      sendTestBusy: 'Sending test',
-      sendCampaign: 'Send campaign',
-      sendCampaignBusy: 'Sending campaign',
-      externalTemplateNameLabel: 'Exact Meta template name (not ID)',
-      externalTemplateNameHint:
-        'WhatsApp Cloud API sends by template name and language code, not by a template ID.',
-      whatsappLanguageLabel: 'Template language',
-      headerTextLabel: 'Header variables',
-      bodyTextLabel: 'Body variables',
-      whatsappSectionHint: 'Store each entry as key and default content.',
-      whatsappButtonHint:
-        'Store the dynamic button variable key and the sample content you want to test.',
-      buttonsTitle: 'Dynamic buttons',
-      addVariable: 'Add variable',
-      addButton: 'Add button',
-      removeVariable: 'Remove variable',
-      removeButton: 'Remove button',
-      variableKeyLabel: 'Key',
-      variableContentLabel: 'Content',
-      emailSubjectLabel: 'Email subject',
-      emailHtmlLabel: 'HTML body',
-      emailTextLabel: 'Plain text body',
-      emailTemplateGeneratorTitle: 'Email template generator',
-      emailTemplateGeneratorHint:
-        'Generate a professional weekly Trimry email with logo, inbox-friendly structure, and a CTA to trimry.com.',
-      emailGenerateTemplate: 'Generate weekly template',
-      emailTemplateGenerated: 'Weekly email template generated.',
-      historyTitle: 'Campaign history',
-      historySubtitle:
-        'Every saved or sent campaign stays here so you can inspect metrics and the variable values used for the send.',
-      emptyState: 'No campaigns yet.',
-      metricsRecipients: 'Recipients',
-      metricsAccepted: 'Accepted',
-      metricsFailed: 'Failed',
-      sentAt: 'Sent at',
-      updatedAt: 'Updated at',
-      lastTestedAt: 'Last test',
-      lastTestRecipient: 'Test recipient',
-      notSentYet: 'Not sent yet',
-      neverTested: 'Never tested',
-      draftStatus: 'Draft',
-      sentStatus: 'Sent',
-      partiallySentStatus: 'Partially sent',
-      failedStatus: 'Failed',
-      loadError: 'Unable to load the admin sends workspace right now.',
-      saveSuccess: 'Campaign draft saved.',
-      testSuccess: 'Testing delivery processed.',
-      sendSuccess: 'Campaign sent successfully.',
-      sendPartial: 'Campaign finished with partial delivery failures.',
-      sendFailed: 'Campaign send failed.',
-    },
+    sendCampaigns: sendCampaignsEn,
   },
-  statuses: {
-    active: 'Active',
-    paused: 'Paused',
-    canceled: 'Canceled',
+  scout: {
+    name: 'Scout',
+    launcherLabel: 'Chat with Scout',
+    launcherSubLabel: 'Your sports assistant',
+    title: 'Ask about any game',
+    introAnonymous:
+      '⚽ Hi, I am Scout. Tell me a team or league and I will show you what is coming up. Create an account so I remember your teams.',
+    introAccount:
+      '⚽ Hi, I am Scout. I can add teams, change your rhythm and tell you what is on. Alerts by email and WhatsApp start with your subscription.',
+    introActive:
+      '⚽ Hi, I am Scout. Your alerts are active. Ask me what is on today, add a team or change your delivery settings.',
+    prompts: ['What is on this weekend?', 'Follow Real Madrid', 'Switch me to weekly'],
+    placeholder: 'Ask Scout...',
+    send: 'Send',
+    typing: 'Scout is checking the schedules',
+    issue:
+      'I hit a temporary issue in the web channel. Try again in a few seconds or continue on WhatsApp.',
+    memorySaved: 'Memory saved to your account',
+    temporaryMemory: 'Temporary memory',
+    alertsActive: 'Alerts active',
+    alertsInactive: 'Alerts not active',
+    createAccount: 'Create account',
+    activateAlerts: 'Activate alerts',
+    openDashboard: 'Open dashboard',
+    whatsappCta: 'Continue on WhatsApp',
+    preferencesUpdated: 'Preferences updated',
   },
-  legal: {
-    terms: 'Terms of Service',
-    privacy: 'Privacy Policy',
-    disclaimer: 'Ritual Disclaimer',
-    dataDeletion: 'Data Deletion Instructions',
-    englishNotice:
-      'Legal master text is maintained in English. Localized interface labels are provided for convenience.',
-    termsSections: [
-      {
-          title: '1. Service description',
-          body:
-          'Trimry provides weekly timing guidance for fortune, grooming, energy, relationships, money, and symbolic release routines. Subscribers can view a rolling 7-day luck calendar on the web. Email and WhatsApp reminders are optional.',
-      },
-      {
-        title: '2. Subscription and billing',
-        body:
-          'The Trimry plan is billed at {billingLegal}. It includes access to a rolling 7-day luck calendar. Email and WhatsApp reminders are optional and depend on the channel selected in your dashboard. You can cancel your subscription at any time from your account dashboard. If you decide to come back later, you can reactivate from the same account by starting a new Stripe checkout. Billing details, payment methods, invoices, and historical billing records remain available through the Stripe-hosted billing tools linked from your dashboard.',
-      },
-      {
-        title: '3. WhatsApp consent and contact rules',
-        body:
-          'You must only provide phone numbers for recipients who have consented to receive your requested Trimry subscription communications. If you enable WhatsApp delivery, you authorize Trimry to send subscription and service-related WhatsApp messages to that number. You can opt out at any time by replying STOP (or equivalent command) in WhatsApp or by disabling WhatsApp delivery from your account settings.',
-      },
-      {
-        title: '4. Account security',
-        body:
-          'You must keep your login credentials confidential. You are responsible for all actions performed through your account.',
-      },
-      {
-        title: '5. Acceptable use',
-        body:
-          'You agree not to misuse the service, attempt unauthorized access, or use Trimry for unlawful activity.',
-      },
-      {
-        title: '6. Service providers',
-        body:
-          'Trimry relies on third-party providers to operate the service, including payment processing (Stripe), WhatsApp delivery infrastructure (Meta/WhatsApp), cloud hosting, and database infrastructure. Provider availability, policy controls, and technical limits may affect delivery outcomes.',
-      },
-      {
-        title: '7. No professional advice',
-        body:
-          'Trimry provides cultural and ritual timing content only. It is not medical, legal, or financial advice.',
-      },
-      {
-        title: '8. Company information',
-        body:
-          'Trimry Limited, company number 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181. Contact: support@trimry.com.',
-      },
-    ],
-    privacySections: [
-      {
-        title: '1. Data we collect',
-        body:
-          'We collect account and subscription data needed to operate Trimry, including name, email address, password hash, locale, time zone, optional birth date, delivery preferences, and WhatsApp number when enabled. We also process operational security and delivery metadata such as session/IP and user-agent records, message delivery status metadata, and billing identifiers from Stripe.',
-      },
-      {
-        title: '2. How we use data',
-        body:
-          'We use data to authenticate accounts, secure sessions, manage subscriptions, send daily content, personalize zodiac and Chinese calendar summaries, process billing and account operations, handle support, and monitor service reliability and fraud/security risks.',
-      },
-      {
-        title: '3. WhatsApp communications and consent',
-        body:
-          'We send WhatsApp messages only when WhatsApp delivery is enabled with your consent. You can withdraw WhatsApp consent by replying STOP (or equivalent command) or by disabling WhatsApp delivery in your account. We record consent and opt-out events for compliance and abuse prevention.',
-      },
-      {
-        title: '4. Data sharing',
-        body:
-          'We do not sell personal data. We share data only with processors required to operate the service, such as Meta/WhatsApp (message transport and status), Stripe (billing), and infrastructure providers for hosting and database operations.',
-      },
-      {
-        title: '5. Cookies and analytics',
-        body:
-          'We use essential cookies for authentication and session continuity. We also use Meta ad measurement and analytics tools to attribute campaign traffic and improve performance. The website prompt is informational/visual and does not disable measurement.',
-      },
-      {
-        title: '6. International transfers',
-        body:
-          'Because our providers operate globally, your data may be processed outside your country of residence. We use provider contractual and technical safeguards appropriate to service operations.',
-      },
-      {
-        title: '7. Retention',
-        body:
-          'We keep personal data only as long as needed for service operation, legal obligations, fraud/security handling, billing/audit records, and dispute resolution. Retention periods vary by data type and legal requirement.',
-      },
-      {
-        title: '8. User rights',
-        body:
-          'You may request account access, corrections, or deletion by contacting support@trimry.com. You can also delete your account from your dashboard. Some records may be retained where required by law or for legitimate security/audit needs.',
-      },
-      {
-        title: '9. Data storage',
-        body:
-          'Account data is stored in MongoDB infrastructure configured by Trimry. Session cookies are HTTP-only and signed for security.',
-      },
-      {
-        title: '10. Company contact',
-        body:
-          'Trimry Limited, company number 752517. Registered office: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Operations office: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181.',
-      },
-    ],
-    disclaimerSections: [
-      {
-        title: 'Cultural content',
-        body:
-          'Trimry timing guidance is based on cultural interpretation and ritual tradition. It is intended for personal reflection and routine planning.',
-      },
-      {
-        title: 'No guarantee of outcomes',
-        body:
-          'Trimry does not guarantee luck, financial outcomes, health outcomes, or any specific result from following guidance.',
-      },
-      {
-        title: 'Personal responsibility',
-        body:
-          'You remain fully responsible for personal grooming, health decisions, and any action taken based on service content.',
-      },
-    ],
-    dataDeletionSections: [
-      {
-        title: '1. Delete from your Trimry dashboard',
-        body:
-          'Sign in to your Trimry account, open your dashboard settings, and use the account deletion option. This is the fastest way to request deletion of your user account data.',
-      },
-      {
-        title: '2. Delete by email request',
-        body:
-          'If you cannot access your account, email support@trimry.com from your registered address with subject "Data Deletion Request". We may request account verification before processing.',
-      },
-      {
-        title: '3. What is deleted and what may be retained',
-        body:
-          'When a deletion request is completed, account profile data, delivery preferences, and active subscription delivery settings are removed or anonymized according to system design. Limited records may be retained when required for legal compliance, billing audit trails, security/fraud prevention, or dispute resolution.',
-      },
-      {
-        title: '4. Processing timeline',
-        body:
-          'We process deletion requests as soon as reasonably possible after verification. If a provider-managed record exists (for example payment invoices in Stripe), retention may follow that provider legal obligations.',
-      },
-    ],
-  },
+  statuses: { active: 'Active', paused: 'Paused', canceled: 'Canceled' },
+  legal: legalEn,
   cookieConsent: {
     title: 'Cookies and analytics',
     description:
@@ -1423,16 +1430,6 @@ const englishMessages: MessageSection = {
     success: 'Saved successfully.',
     error: 'Something went wrong. Please try again.',
   },
-  carousel: {
-    proofLabel: 'Rotating proof of mindset',
-    whyTitle: 'Why this matters',
-    whyText:
-      'When people feel favored by timing, they carry more confidence, notice more openings, and move with less hesitation.',
-    effectTitle: 'Trimry effect',
-    effectText:
-      'The daily message is designed to sharpen attention, reinforce optimism, and turn ritual into momentum you can actually feel.',
-    sequenceLabel: 'Quote sequence',
-  },
   notFound: {
     title: 'Page not found',
     description: 'The page you requested is not available.',
@@ -1440,36 +1437,37 @@ const englishMessages: MessageSection = {
   },
 }
 
-const spanishMessages: MessageSection = {
+const es: MessageSection = {
   common: {
     loading: 'Cargando...',
     saving: 'Guardando...',
     previous: 'Anterior',
     next: 'Siguiente',
+    back: 'Atrás',
     cancel: 'Cancelar',
     continue: 'Continuar',
     backToLogin: 'Volver al inicio de sesión',
     backToDashboard: 'Volver al panel',
     tryAgain: 'Intentar de nuevo',
     returnHome: 'Volver al inicio',
+    save: 'Guardar',
+    remove: 'Quitar',
+    search: 'Buscar',
+    close: 'Cerrar',
   },
-  languageSwitcher: {
-    label: 'Idioma',
-  },
+  languageSwitcher: { label: 'Idioma' },
   nav: {
     home: 'Inicio',
-    blog: 'Blog',
-    guide: 'Guía',
     howItWorks: 'Cómo funciona',
-    pricing: 'Plan',
-    faq: 'FAQ',
-    legal: 'Legal',
+    sports: 'Deportes',
+    pricing: 'Precio',
+    faq: 'Preguntas',
     login: 'Ingresar',
     register: 'Crear cuenta',
     dashboard: 'Panel',
-    profile: 'Perfil',
-    admin: 'Admin',
-    logout: 'Salir',
+    profile: 'Mi cuenta',
+    logout: 'Cerrar sesión',
+    startFree: 'Empezar gratis',
   },
   footer: {
     rightsReserved: 'Todos los derechos reservados.',
@@ -1477,782 +1475,416 @@ const spanishMessages: MessageSection = {
     registeredOffice: 'Oficina registrada',
     operationsOffice: 'Oficina operativa',
     contact: 'Contacto',
-  },
-  hero: {
-    badge: 'Your Luck Guide',
-    title: 'Manifiesta mejor suerte',
-    subtitle:
-      'Señales diarias, rituales y momentos clave diseñados para ayudarte a alinearte con la oportunidad.',
-    primary: 'Revela la suerte de hoy',
-    secondary: 'Empezar ahora',
+    tagline: 'Tu radar de eventos deportivos.',
+    dataSource: 'Calendarios provistos por TheSportsDB. Horarios en tu zona horaria.',
   },
   home: {
-    releaseBadge: 'Soltar también tiene su momento',
-    releaseText:
-      'Un corte puede ser cosmético. En el momento correcto, se siente como un corte limpio con la duda, el peso y la energía estancada.',
-    releaseChannels: 'Elige recibirlo todos los días por email, WhatsApp o ambos.',
-    releaseImageAlt:
-      'Una persona cortándose el pelo mientras surge una energía luminosa del corte, como una liberación ritual.',
-    beliefBadge: 'Motor de la creencia',
-    beliefTitle: 'Sentirse con suerte cambia la forma en que entras a la sala.',
-    beliefSubtitle:
-      'La tesis de Trimry es simple: cuando sientes que el momento está a tu favor, detectas oportunidades más rápido, actúas con más optimismo y haces visible un mejor impulso.',
-    teaserEyebrow: 'Avance cósmico diario',
-    couldBe: 'Podría ser...',
-    teaserNote:
-      'Empieza el flujo para revelar tus símbolos y abrir tu vista personal de calendario.',
-    teaserButton: 'Revelar mi pronóstico real',
-    seoGuideBadge: 'Guía SEO',
-    seoGuideTitle: '¿Quieres la guía completa de días buenos y malos?',
-    seoGuideSubtitle:
-      'Lee nuestra guía en inglés creada para la búsqueda “Good and Bad Days to Cut your Hair, Nails and more” con reglas prácticas por semana.',
-    seoGuideButton: 'Leer guía completa',
-    predictions: [
+    badge: 'Radar de eventos deportivos',
+    title: 'No te pierdas ningún partido',
+    titleHighlight: 'nunca más.',
+    subtitle:
+      'Elige los deportes, ligas y equipos que sigues. Trimry te envía una agenda personal con los próximos partidos, carreras y peleas por email y WhatsApp, en tu zona horaria.',
+    primaryCta: 'Armar mi agenda',
+    secondaryCta: 'Ver cómo funciona',
+    trustLine: '7 días gratis · Cancela cuando quieras · Fútbol, NBA, NFL, F1, UFC y más',
+    previewEyebrow: 'Vista en vivo',
+    previewTitle: 'Lo que viene esta semana',
+    previewSubtitle: 'Elige un deporte para ver los eventos reales que Trimry sigue ahora mismo.',
+    previewEmpty: 'Aún no hay eventos en caché para este deporte. Prueba otro o vuelve en unos minutos.',
+    previewLoading: 'Cargando próximos eventos...',
+    previewError: 'No pudimos cargar la vista previa en este momento.',
+    previewTimeZoneNote: 'Horarios en',
+    stepsEyebrow: 'Cómo funciona',
+    stepsTitle: 'Tres pasos y después corre solo',
+    steps: [
       {
-        tone: 'good',
-        text: 'La buena fortuna se expande a tu alrededor. Podría llegar un mensaje relacionado con dinero o una oportunidad útil.',
+        title: 'Elige lo que sigues',
+        text: 'Deportes, ligas y equipos. Desde la Premier League hasta la NBA, F1, UFC o tu club local.',
       },
       {
-        tone: 'good',
-        text: 'La energía del amor se abre. Podrías conocer a alguien magnético o recibir una señal romántica inesperada.',
+        title: 'Canal y ritmo',
+        text: 'Agenda diaria o semanal por email, WhatsApp o ambos, a la hora que prefieras.',
       },
       {
-        tone: 'bad',
-        text: 'Los malentendidos pueden crecer rápido hoy. Evita decisiones emocionales y gastos riesgosos.',
-      },
-      {
-        tone: 'bad',
-        text: 'Los planes pueden estancarse y el apoyo sentirse lejano. Mantenlo práctico y posterga compromisos grandes.',
-      },
-      {
-        tone: 'rare',
-        text: 'Día comodín raro: una coincidencia extraña podría traer un regalo, un dato o una invitación repentina.',
-      },
-      {
-        tone: 'rare',
-        text: 'Cruce kármico: un amor o un asunto antiguo podría volver pidiendo cierre.',
-      },
-      {
-        tone: 'good',
-        text: 'Ventana de prosperidad: podría aparecer de forma inesperada un pago atrasado, un descuento o un aliado útil.',
-      },
-      {
-        tone: 'bad',
-        text: 'La energía se siente pesada y reactiva. Protege tu paz y evita discusiones sobre dinero o relaciones.',
-      },
-      {
-        tone: 'rare',
-        text: 'Te rodea un magnetismo inusual. Alguien influyente podría compartir un consejo confidencial o una oportunidad oculta.',
+        title: 'Recibe tu agenda',
+        text: 'Cada evento que viene, ordenado por día, en tu zona horaria. Pregúntale a Scout si tienes dudas.',
       },
     ],
-  },
-  story: {
-    title: 'Tu guía personal de timing para lo que podría venir.',
-    subtitle:
-      'Trimry lee tu zodíaco, símbolo chino y patrones antiguos de timing para ayudarte a planificar con más intención.',
-    card1Title: 'Símbolos personales',
-    card1Text:
-      'Tu fecha de nacimiento abre una capa zodiacal y china que da forma al calendario alrededor de ti.',
-    card2Title: 'Ventanas de timing',
-    card2Text:
-      'Ve cuándo el patrón invita a actuar, esperar, soltar o tomar una decisión más limpia.',
-    card3Title: 'Vista de calendario',
-    card3Text:
-      'Abre una vista enfocada de los próximos días y desbloquea la capa completa cuando estés listo.',
+    channelsEyebrow: 'Entrega',
+    channelsTitle: 'Donde mires primero',
+    channels: [
+      {
+        title: 'Digest por email',
+        text: 'Una agenda limpia y fácil de escanear para hoy y los próximos días. Tus equipos primero.',
+      },
+      {
+        title: 'WhatsApp',
+        text: 'La misma agenda como mensaje, más Scout respondiendo "¿qué hay hoy?".',
+      },
+      {
+        title: 'Panel web',
+        text: 'Tu agenda en vivo, preferencias y ajustes de entrega, siempre disponibles.',
+      },
+    ],
+    scoutEyebrow: 'Conoce a Scout',
+    scoutTitle: 'Un asistente que conoce tus equipos',
+    scoutText:
+      'Scout busca equipos y ligas por ti, los sigue con un solo mensaje y responde con partidos reales de los calendarios rastreados. Sin inventar nada.',
+    scoutBullets: [
+      '"Sigue a Real Madrid y a los Lakers"',
+      '"¿Qué hay este fin de semana?"',
+      '"Cámbiame a resumen semanal los lunes"',
+    ],
+    scoutCta: 'Hablar con Scout',
+    finalTitle: 'Tu agenda, entregada.',
+    finalSubtitle: 'Configúrala en dos minutos. Pruébala gratis 7 días.',
   },
   pricing: {
-    title: 'Desbloquea tu calendario personalizado de suerte',
-    subtitle:
-      'Empieza cuando estés listo para revelar los próximos días y planificar según el ritmo de tus símbolos.',
-    planTitle: 'Calendario personal de suerte',
-    billing:
-      'El trial empieza en Stripe; luego continúas por {billingInline}. Cancela cuando quieras.',
-    include1: 'Calendario rodante de 7 días con señales Buenas, Malas y Raras',
-    include2: 'Guía personalizada según tus símbolos y tu deseo',
-    include3: 'Señales de manifestación para dinero, relaciones, energía y timing personal',
-    cta: 'Comenzar gratis',
-  },
-  weekly: {
-    title: 'Predicción cósmica de hoy',
-    subtitle:
-      'Un avance rotativo sobre fortuna, amor, dinero y suerte. Suscríbete para desbloquear la vista completa del calendario.',
-    good: 'Bueno',
-    bad: 'Malo',
-    rare: 'Raro',
+    eyebrow: 'Precio',
+    title: 'Un plan simple',
+    subtitle: 'Todo incluido. Empieza con una prueba gratis y cancela cuando quieras.',
+    planTitle: 'Trimry Sports Alerts',
+    billing: '{billingInline}',
+    trialNote: '{trialPeriodDays} días gratis, luego {billingCompact}.',
+    includes: [
+      'Deportes, ligas y equipos ilimitados',
+      'Agenda diaria o semanal por email y WhatsApp',
+      'Asistente Scout en la web y WhatsApp',
+      'Horarios en tu zona horaria',
+    ],
+    cta: 'Empezar prueba gratis',
+    cancelNote: 'Cancela desde el panel, el portal de Stripe o respondiendo STOP en WhatsApp.',
   },
   faq: {
     title: 'Preguntas frecuentes',
-    q1: '¿Es una recomendación médica o científica?',
-    a1: 'No. Trimry es un servicio cultural y ritual de timing para rutinas personales.',
-    q2: '¿Cuándo recibo el mensaje?',
-    a2: 'Los suscriptores desbloquean un calendario rodante de 7 días y pueden revisar las próximas señales desde el panel.',
-    q3: '¿Cómo administro el cobro?',
-    a3: 'Desde tu panel, donde puedes cancelar cuando quieras, reactivar después y también abrir el portal seguro de Stripe para métodos de pago y facturas.',
-    q4: '¿Qué zona horaria se usa?',
-    a4: 'Usamos la zona horaria IANA guardada en tu cuenta y puedes cambiar tanto la zona horaria como la hora diaria de entrega desde tu panel.',
-  },
-  cta: {
-    title: 'Mantente alineado con la suerte todos los días.',
-    subtitle:
-      'Crea tu cuenta Trimry, revela tus símbolos y mantén cerca tu calendario personal.',
-    button: 'Abrir mi cuenta',
+    items: [
+      {
+        question: '¿Qué deportes y ligas están disponibles?',
+        answer:
+          'Fútbol, básquetbol, fútbol americano, béisbol, hockey sobre hielo, tenis, automovilismo, MMA y boxeo, rugby, golf, ciclismo y críquet. Entre las ligas destacadas están Premier League, La Liga, Serie A, Bundesliga, Ligue 1, Champions League, MLS, Liga MX, Brasileirão, NBA, NFL, MLB, NHL, Fórmula 1, MotoGP y UFC, y puedes buscar cualquier equipo o competición del catálogo.',
+      },
+      {
+        question: '¿De dónde salen los calendarios?',
+        answer:
+          'De TheSportsDB, actualizados varias veces al día. Los horarios se convierten a la zona horaria guardada en tu cuenta. Puede haber postergaciones y cambios de último minuto, así que confirma siempre con el canal oficial.',
+      },
+      {
+        question: '¿Cómo funciona la prueba gratis?',
+        answer:
+          'Inicia el checkout con Stripe y recibe 7 días de alertas sin costo. Cancela antes de que termine la prueba y no se te cobrará.',
+      },
+      {
+        question: '¿Puedo cancelar o cambiar de canal después?',
+        answer:
+          'Sí. Cambia deportes, equipos, ritmo, hora y canal desde el panel cuando quieras. Cancela desde el panel, el portal de Stripe o respondiendo STOP en WhatsApp.',
+      },
+    ],
   },
   auth: {
-    registerTitle: 'Empieza en 10 segundos',
-    registerSubtitle:
-      'Ingresa tu nombre, fecha de nacimiento y contacto para abrir tu código personal de suerte.',
+    registerTitle: 'Crea tu cuenta',
+    registerSubtitle: 'Con tu nombre y email basta. Tus equipos y ajustes de entrega vienen después.',
     loginTitle: 'Bienvenido de vuelta',
-    loginSubtitle: 'Ingresa para administrar tu entrega diaria de suerte.',
-    loginWithLinkHint:
-      '¿Prefieres entrar sin contraseña? Te enviamos un link seguro por correo.',
+    loginSubtitle: 'Ingresa para administrar tu agenda y tus alertas.',
+    loginWithLinkHint: '¿Prefieres entrar sin contraseña? Te enviamos un link seguro por correo.',
     loginWithLinkButton: 'Enviarme link de ingreso',
     loginWithLinkSending: 'Enviando link de ingreso...',
     loginWithLinkSent:
       'Si este correo tiene una cuenta, enviamos un link seguro de ingreso. Revisa bandeja y spam.',
     loginWithLinkConsuming: 'Validando tu link seguro de ingreso...',
-    loginWithLinkInvalid:
-      'Este link de ingreso es invalido o vencio. Solicita uno nuevo.',
+    loginWithLinkInvalid: 'Este link de ingreso es inválido o venció. Solicita uno nuevo.',
     loginWithLinkDivider: 'o',
     firstNameLabel: 'Nombre',
     lastNameLabel: 'Apellido',
-    birthDateLabel: 'Fecha de nacimiento',
     timeZoneLabel: 'Zona horaria',
-    timeZoneHint:
-      'Usamos esto para programar tu proyección diaria a la hora local correcta.',
+    timeZoneHint: 'La usamos para mostrar los horarios y programar tu digest a la hora local correcta.',
     emailLabel: 'Correo electrónico',
+    emailHint: 'Usamos este email para tu cuenta y para el digest por email.',
     passwordLabel: 'Contraseña',
     whatsappLabel: 'Número de WhatsApp',
-    passwordHint:
-      'Mínimo 10 caracteres, incluyendo mayúscula, minúscula y número.',
+    passwordHint: 'Mínimo 10 caracteres, incluyendo mayúscula, minúscula y número.',
     registerButton: 'Continuar',
     loginButton: 'Ingresar',
     needAccount: '¿Necesitas una cuenta?',
     alreadyHaveAccount: '¿Ya tienes una cuenta?',
+    invalidEmail: 'Ingresa un correo válido.',
+    termsNotice: 'Al continuar aceptas los Términos del servicio y la Política de privacidad.',
+  },
+  onboarding: {
+    title: 'Configura tu agenda',
+    stepLabel: 'Paso {step} de {total}',
+    steps: ['Deportes', 'Equipos y ligas', 'Entrega', 'Revisión'],
+    sportsTitle: '¿Qué deportes sigues?',
+    sportsSubtitle: 'Elige los que quieras. En el siguiente paso puedes afinar ligas y equipos.',
+    sportsEmpty: 'Elige al menos un deporte para continuar.',
+    teamsTitle: 'Equipos y ligas',
+    teamsSubtitle:
+      'Sigue equipos para alertas partido a partido y ligas para el calendario completo. Si lo saltas, recibes las ligas destacadas de cada deporte.',
+    teamsSearchLabel: 'Buscar un equipo',
+    teamsSearchPlaceholder: 'Real Madrid, Lakers, Ferrari, Colo-Colo...',
+    teamsSearching: 'Buscando...',
+    teamsNoResults: 'No encontramos equipos. Prueba otra escritura o el nombre oficial.',
+    teamsFollowing: 'Equipos que sigues',
+    leaguesTitle: 'Ligas',
+    leaguesHint: 'Las ligas destacadas aparecen primero. Busca en el catálogo para ver más.',
+    leaguesLoading: 'Cargando ligas...',
+    leaguesFilterPlaceholder: 'Filtrar ligas...',
+    featuredLabel: 'Destacada',
+    followedLabel: 'Siguiendo',
+    followLabel: 'Seguir',
+    unfollowLabel: 'Dejar de seguir',
+    skipTeamsHint: 'Sin equipos ni ligas seleccionados: recibirás las ligas destacadas de tus deportes.',
+    accountTitle: 'Crea tu cuenta',
+    accountSubtitle: 'Guarda tu selección y elige cómo recibir la agenda.',
+    accountExistingHint: '¿Ya tienes una cuenta?',
+    deliveryTitle: '¿Cómo quieres la agenda?',
+    deliverySubtitle: 'Elige el ritmo, el canal y la hora. Puedes cambiarlo cuando quieras.',
+    frequencyLabel: 'Ritmo',
+    frequencyDaily: 'Diaria',
+    frequencyDailyHint: 'Cada día: hoy más los dos días siguientes.',
+    frequencyWeekly: 'Semanal',
+    frequencyWeeklyHint: 'Cada lunes: la semana completa.',
+    lookaheadLabel: 'Rango del panel',
+    lookaheadHint: 'Cuántos días muestra tu agenda web.',
+    lookaheadDays: '{count} días',
+    channelLabel: 'Canal',
+    hourLabel: 'Hora de entrega',
+    hourHint: 'Hora local en {zone}.',
+    whatsappNumberLabel: 'Número de WhatsApp',
+    whatsappConsentLabel: 'Acepto recibir alertas deportivas de Trimry por WhatsApp.',
+    whatsappConsentHint: 'Necesario solo si eliges WhatsApp. Responde STOP cuando quieras.',
+    whatsappConsentError: 'Confirma el consentimiento de WhatsApp antes de habilitar ese canal.',
+    reviewTitle: 'Revisa y empieza',
+    reviewSubtitle: 'Este es tu setup y una vista real de los próximos eventos en tu radar.',
+    reviewSports: 'Deportes',
+    reviewLeagues: 'Ligas',
+    reviewTeams: 'Equipos',
+    reviewFrequency: 'Ritmo',
+    reviewChannel: 'Canal',
+    reviewTiming: 'Entrega',
+    reviewPreviewTitle: 'Lo próximo en tu radar',
+    reviewPreviewEmpty: 'Aún no hay eventos en caché para esta selección. Tu agenda se completa a medida que se publican los calendarios.',
+    startTrialCta: 'Empezar 7 días gratis',
+    startTrialHint: 'Checkout seguro de Stripe. Cancela cuando quieras.',
+    savePreferencesCta: 'Guardar preferencias',
+    saving: 'Guardando...',
+    saveError: 'No pudimos guardar tus preferencias en este momento.',
+    registerError: 'No pudimos crear tu cuenta en este momento.',
+    previewEyebrow: 'Vista previa',
   },
   deliveryChannels: {
-    noneTitle: 'Sin recordatorios',
-    noneDescription: 'Usa Trimry primero como calendario de suerte. Activa email o WhatsApp después si quieres avisos.',
+    noneTitle: 'Solo web',
+    noneDescription: 'Usa el panel y Scout sin digests por email ni WhatsApp.',
     bothTitle: 'Email + WhatsApp',
-    bothDescription: 'Email primero, con WhatsApp como canal secundario opcional.',
-    emailTitle: 'Solo email',
-    emailDescription: 'La opción mas simple para la mayoria.',
-    whatsappTitle: 'Solo WhatsApp',
-    whatsappDescription: 'Entrega al telefono si prefieres usar WhatsApp.',
+    bothDescription: 'El digest por email más la misma agenda como mensaje de WhatsApp.',
+    emailTitle: 'Email',
+    emailDescription: 'Un digest limpio en tu bandeja. La opción más simple.',
+    whatsappTitle: 'WhatsApp',
+    whatsappDescription: 'La agenda como mensaje, más Scout en WhatsApp.',
+    whatsappPendingNote:
+      'Los digests por WhatsApp comienzan apenas Meta apruebe nuestra plantilla de mensaje. El email funciona hoy.',
   },
-  deliveryOnboarding: {
-    loading: 'Cargando tu onboarding...',
-    loadError: 'No pudimos cargar tu cuenta en este momento.',
-    prepBadge: 'Activación de fortuna',
-    prepTitle: 'Preparando tu fortuna...',
-    prepSubtitle:
-      'Estamos uniendo tu canal elegido con tu ritmo diario de suerte y preparando el paso de activación de tu suscripción.',
-    preparationSteps: [
-      'Eligiendo tu ritual de entrega',
-      'Ajustando tu momento de liberación',
-      'Cargando abundancia diaria',
-      'Preparando tu puerta de activación',
-    ],
-    editBadge: 'Ajustes de entrega',
-    createBadge: 'Paso 1',
-    editTitle: 'Actualiza dónde Trimry debe entregar tu proyección diaria',
-    createTitle: '¿Cómo quieres que Trimry entregue tu proyección diaria?',
-    editSubtitle:
-      'Cambia tu preferencia de entrega cuando quieras. Usa email, WhatsApp o mantén ambos canales activos.',
-    createSubtitle:
-      'Email es el canal por defecto. Agrega WhatsApp solo si quieres entrega al telefono tambien.',
-    activationChecklist: [
-      'Elige email primero y agrega WhatsApp solo si lo quieres.',
-      'Tu página de activación se abre antes de Stripe.',
-      'Puedes cambiar la entrega despues desde el dashboard.',
-    ],
-    dashboardChecklist: [
-      'Elige tu preferencia de entrega.',
-      'Agrega WhatsApp solo si quieres tenerlo activo.',
-      'Luego vuelves a tu panel.',
-    ],
-    setupTitle: 'Configuración de entrega',
-    setupSubtitle:
-      'El email llega a tu inbox. WhatsApp sigue siendo opcional salvo que lo actives.',
-    channelLabel: 'Canal de entrega',
-    mondayTimeLabel: 'Hora de la proyección diaria',
-    mondayTimeHint: 'Programado todos los días a las {time} en {zone}.',
-    emailDeliveryLabel: 'Entrega por email',
-    whatsappOffHint:
-      'WhatsApp está desactivado por defecto. Actívalo solo si también quieres entrega al teléfono.',
-    whatsappConsentLabel:
-      'Consiento recibir mensajes de suscripción de Trimry por WhatsApp en este número.',
-    whatsappConsentHint:
-      'Puedes salir cuando quieras respondiendo STOP en WhatsApp o desactivando WhatsApp desde tu panel.',
-    submitContinue: 'Continuar a la activación',
-    submitSave: 'Guardar ajustes de entrega',
-    saveError: 'No pudimos guardar tus ajustes de entrega en este momento.',
-    whatsappConsentError:
-      'Confirma el consentimiento de WhatsApp antes de habilitar la entrega por WhatsApp.',
-  },
-  activate: {
-    loading: 'Cargando tu paso de activación...',
-    loadError: 'No pudimos cargar tu activación en este momento.',
-    unavailable: 'No es posible continuar ahora.',
-    badge: '{trialPeriodDays} días gratis',
-    title:
-      'Empieza gratis tu guía diaria de suerte por {trialPeriodDays} días.',
-    subtitle:
-      'Hoy no pagas. Trimry te entrega una señal diaria diseñada para enfocar tu intención, fortalecer tu creencia y ayudarte a moverte sintiéndote más afortunado y abierto a fortuna real.',
-    cards: [
-      '{trialPeriodDays} días gratis en el checkout de Stripe.',
-      'Señales diarias de manifestación para dinero, relaciones, energía y liberación.',
-      'Calendario mensual para elegir mejores momentos.',
-    ],
-    primaryButton: 'Comenzar {trialPeriodDays} días gratis',
-    secondaryButton: 'Cambiar ajustes de entrega',
-    snapshotTitle: 'Tu resumen de activación',
-    deliveryPreferenceLabel: 'Preferencia de entrega',
-    emailDeliveryLabel: 'Entrega por email',
-    projectionTimingLabel: 'Horario de proyección',
-    whatsappDeliveryLabel: 'Entrega por WhatsApp',
-    billingLabel: 'Hoy',
-    billingValue:
-      'Gratis por {trialPeriodDays} días en Stripe. Después continúas por {billingInline}.',
-    unsubscribeTitle: 'Desuscribirte es fácil',
-    unsubscribeText:
-      'Si Trimry no es para ti, cancelar es simple: escríbele a Luck Guru, cancela desde el dashboard web o pídenoslo por email.',
-    sampleTitle: 'Prueba una proyección diaria real',
-    sampleText:
-      'Envíate una muestra antes de suscribirte. Úsala como hábito de manifestación: lee la señal, fija una intención y observa cómo la fortuna empieza a cambiar tu postura.',
-    sampleChannelLabel: 'Enviarla por',
-    sampleEmailOption: 'Email',
-    sampleWhatsappOption: 'WhatsApp',
-    sampleBothOption: 'Ambos',
-    sampleEmailButton: 'Enviar muestra por email',
-    sampleWhatsappButton: 'Enviar muestra por WhatsApp',
-    sampleBothButton: 'Enviar por ambos',
-    sampleWhatsappNumberLabel: 'Número de WhatsApp',
-    sampleWhatsappPlaceholder: '+56941163414',
-    sampleWhatsappConsentLabel:
-      'Consiento recibir esta muestra de Trimry y mensajes de suscripción por WhatsApp.',
-    sampleAlreadySent: 'Tu muestra única ya fue enviada.',
-    sampleSuccess:
-      'Muestra enviada. Si este ritmo te sirve, continúa con Stripe para recibir Trimry todos los días.',
-    sampleEmailUnavailable:
-      'Esta cuenta no tiene un email regular para enviar la muestra.',
-    sampleWhatsappConsentError:
-      'Confirma el consentimiento de WhatsApp antes de enviar la muestra.',
-    previewBadge: 'Vista del trial',
-    previewTitle: 'Lo que se desbloquea durante tu trial',
-    previewLabel: 'Vista previa',
-    previewDayLabel: 'Señal diaria',
-    emailFirstTitle: 'Entrega primero por email',
-    whyItWorksLabel: 'Por qué funciona',
-    whyItWorksText:
-      'La manifestación funciona mejor cuando la creencia se vuelve una postura diaria. Trimry convierte esa creencia en un ritmo simple: mirar la señal, fijar intención y actuar como si la suerte ya se estuviera moviendo contigo.',
-    carouselBadge: 'Psicología del impulso',
-    carouselTitle: 'La suerte se vuelve más fuerte cuando tu mente empieza a moverse con ella.',
-    carouselSubtitle:
-      'Todas estas voces apuntan al mismo mecanismo: la creencia cambia la postura, la postura cambia la acción y la acción cambia lo que se siente posible.',
+  delivery: {
+    badge: 'Ajustes de entrega',
+    title: '¿Cómo debería Trimry entregar tu agenda?',
+    subtitle: 'Email es el valor por defecto. Agrega WhatsApp cuando quieras la agenda como mensaje.',
+    emailLabel: 'Correo de entrega',
+    channelLabel: 'Canal',
+    scheduleLabel: 'Hora de entrega',
+    consentLabel: 'Acepto recibir alertas deportivas de Trimry por WhatsApp.',
+    consentHint: 'Necesario solo si eliges WhatsApp como canal.',
+    saveButton: 'Guardar ajustes',
+    savingButton: 'Guardando...',
+    backButton: 'Volver al panel',
+    confirmBadge: 'Confirmación de entrega',
+    confirmTitle: 'Confirma dónde quieres tu agenda',
+    confirmSubtitle:
+      'Tu suscripción ya quedó lista. Antes de entrar al panel, confirma si quieres recibir Trimry por email, WhatsApp o ambos.',
+    confirmBackButton: 'Ir al panel',
+    success: 'Ajustes de entrega actualizados.',
+    help: 'Los cambios se aplican solo a futuras entregas.',
+    editMode: 'Modo edición',
+    whatsappNumberLabel: 'Número de WhatsApp',
+    whatsappOptional: 'WhatsApp sigue siendo opcional salvo que lo actives.',
+    loadError: 'No pudimos cargar los ajustes de entrega.',
+    consentError: 'Confirma el consentimiento de WhatsApp antes de habilitar ese canal.',
+    saveError: 'No pudimos guardar los ajustes de entrega.',
+    loading: 'Cargando ajustes de entrega...',
+    redirecting: 'Redirigiendo...',
   },
   checkout: {
     badge: 'Suscripción Stripe',
     badgeCancelled: 'Checkout en pausa',
     title: 'Abriendo tu suscripción Trimry...',
     titleCancelled: 'Tu suscripción te espera',
-    subtitle:
-      'Stripe confirma tu método de pago de forma segura para que tu guía diaria de suerte continúe.',
+    subtitle: 'Stripe confirma tu método de pago de forma segura para que tus alertas comiencen.',
     subtitleCancelled:
-      'No se perdió nada. Tus ajustes siguen guardados y puedes suscribirte cuando quieras.',
+      'No se perdió nada. Tus equipos y ajustes siguen guardados y puedes suscribirte cuando quieras.',
     openError: 'No pudimos abrir el checkout de Stripe en este momento.',
-    resumeTitle: 'Suscribirte a Trimry',
-    resumeSubtitle:
-      'Tu guía diaria sigue esperando. Continúa a Stripe y confirma tu suscripción.',
+    resumeTitle: 'Activa tus alertas',
+    resumeSubtitle: 'Tu agenda está lista. Continúa a Stripe y confirma tu suscripción.',
     resumeButton: 'Suscribirme con Stripe',
     resumeHint: 'Checkout seguro de Stripe. Cancela cuando quieras.',
     deliveryLabel: 'Canal de entrega',
-    timingLabel: 'Horario diario',
+    timingLabel: 'Hora de entrega',
     helper:
       'Estamos creando el checkout seguro de Stripe para tu suscripción. Si no pasa nada, espera un segundo o recarga esta página.',
     unsubscribeHelp:
-      'Desuscribirte es fácil: escríbele a Luck Guru, cancela desde el dashboard web o pídenoslo por email.',
+      'Desuscribirte es fácil: cancela desde el panel, el portal de Stripe o responde STOP en WhatsApp.',
     trialHighlights: [
-      'Señal diaria de fortuna por email, WhatsApp o ambos.',
-      'Ritmo de manifestación para creencia, acción y oportunidad.',
-      'Calendario mensual completo desbloqueado con tu suscripción.',
+      'Agenda personal de próximos eventos por email, WhatsApp o ambos.',
+      'Deportes, ligas y equipos ilimitados, actualizados varias veces al día.',
+      'Asistente Scout en la web y WhatsApp.',
     ],
   },
+  agenda: {
+    title: 'Tu agenda',
+    subtitle: 'Cada evento que viene de los equipos y ligas que sigues, en tu zona horaria.',
+    refresh: 'Actualizar',
+    refreshing: 'Actualizando...',
+    empty: 'No hay nada programado en este rango. Amplía el rango o sigue más equipos.',
+    emptyNoPreferences: 'Elige tus deportes, ligas y equipos para llenar tu agenda.',
+    emptyCta: 'Configurar preferencias',
+    today: 'Hoy',
+    tomorrow: 'Mañana',
+    timeTbc: 'Hora por confirmar',
+    followedTeam: 'Tu equipo',
+    followedLeague: 'Tu liga',
+    sportWide: 'Destacado',
+    lookahead: 'Rango',
+    days: 'días',
+    timeZoneNote: 'Horarios en {zone}',
+    highlightsTitle: 'Destacados',
+    countLabel: '{count} eventos',
+    lastDigestLabel: 'Último digest enviado',
+    lastDigestNever: 'Aún no se envió ningún digest',
+    loadError: 'No pudimos cargar tu agenda en este momento.',
+  },
   dashboard: {
-    title: 'Tu panel de suscripción',
-    intro: 'Administra tus canales de entrega y tu plan diario de Trimry.',
-    adminBadge: 'Cuenta admin',
-    loading: 'Cargando tu cuenta...',
-    noData: 'Ingresa para acceder a tu panel.',
+    title: 'Panel',
+    intro: 'Tu agenda, preferencias y ajustes de entrega.',
+    adminBadge: 'Admin',
+    loading: 'Cargando tu panel...',
+    noData: 'No pudimos cargar tu cuenta.',
     tabs: {
+      agenda: 'Agenda',
+      preferences: 'Equipos y ligas',
+      delivery: 'Entrega y cobros',
       account: 'Cuenta',
-      predictionCalendar: 'Calendario',
-      sends: 'Envíos',
-      onboarding: 'Onboarding',
+      sends: 'Envíos admin',
+      sportsSync: 'Sync deportivo',
     },
-    onboarding: {
-      title: 'Laboratorio de onboarding admin',
-      subtitle:
-        'Usa esta sección para abrir y probar el flujo de onboarding como cuenta admin sin salir del dashboard.',
-      cta: 'Abrir flujo onboarding',
-      hint: 'Esto abre /activate en modo de prueba admin.',
-    },
+    preferencesTitle: 'Equipos, ligas y ritmo',
+    preferencesSubtitle: 'Todo lo que cambies aquí actualiza tu próximo digest y tu agenda.',
+    preferencesSaved: 'Preferencias guardadas. Tu agenda se está actualizando.',
+    preferencesSaveError: 'No pudimos guardar tus preferencias en este momento.',
     status: 'Estado',
-    nextMessage: 'Próximo mensaje diario',
-    subscribeButton: 'Activar suscripción',
-    noSubscription: 'Todavía no tienes una suscripción activa.',
+    nextMessage: 'Próximo digest',
+    subscribeButton: 'Activar alertas',
+    noSubscription: 'Las alertas aún no están activas',
+    noSubscriptionSubtitle:
+      'Elige tu canal y hora, luego inicia la prueba gratis para recibir tu agenda por email o WhatsApp.',
     paymentPending: 'Pago pendiente',
     paymentIssue: 'Problema de pago',
-    billingSuccess:
-      'Stripe reportó un checkout exitoso. Estamos sincronizando tu suscripción ahora.',
-    profileTitle: 'Perfil de cuenta',
-    profileSubtitle:
-      'Actualiza tus datos de identidad y la zona horaria usada para tu proyección diaria.',
+    billingSuccess: 'Tu suscripción está activa. Tu primera agenda va en camino.',
+    profileTitle: 'Perfil',
+    profileSubtitle: 'Nombre y zona horaria que usamos en tu agenda y tus digests.',
     profileSave: 'Guardar perfil',
-    profileTimeZoneHint: 'La entrega diaria se calcula desde esta zona horaria IANA.',
-    projectionCalendar: {
-      title: 'Calendario de proyección',
-      subtitle:
-        'Planifica tus próximos 7 días de suerte. Los suscriptores desbloquean la semana actual, no todo el mes por adelantado.',
-      fullAccessHint:
-        'Semana de suerte desbloqueada. Revisa los próximos 7 días y planifica tus movimientos con mejor timing.',
-      lockedAccessHint:
-        'En esta cuenta solo hoy está desbloqueado. Activa tu suscripción para revelar la semana completa.',
-      loadError: 'No pudimos cargar tu calendario de proyección en este momento.',
-      lockedDayBadge: 'Bloqueado',
-      lockedDayTitle: 'Día bloqueado',
-      lockedDaySubtitle:
-        'Activa tu suscripción para revelar este día dentro de tu plan de suerte de 7 días.',
-    },
-    passwordTitle: 'Seguridad',
-    passwordSubtitle:
-      'Cambia tu contraseña cuando lo necesites. Debes confirmar primero tu contraseña actual.',
+    profileTimeZoneHint: 'Cambiar la zona horaria actualiza los horarios y tu hora de entrega.',
+    passwordTitle: 'Contraseña',
+    passwordSubtitle: 'Define o cambia la contraseña de tu cuenta.',
     currentPasswordLabel: 'Contraseña actual',
     newPasswordLabel: 'Nueva contraseña',
     confirmPasswordLabel: 'Confirmar nueva contraseña',
     passwordSave: 'Actualizar contraseña',
-    passwordSuccess: 'Contraseña actualizada correctamente.',
-    passwordMismatchError:
-      'La nueva contraseña y su confirmación no coinciden.',
-    passwordDifferentError:
-      'La nueva contraseña debe ser distinta de la contraseña actual.',
-    passwordSaveError: 'No pudimos actualizar tu contraseña en este momento.',
-    dangerTitle: 'Zona de riesgo',
-    dangerSubtitle:
-      'Elimina tu cuenta y cierra sesión al instante. Conservamos un registro marcado como eliminado para auditoría, pero tu email de acceso se anonimiza y se detienen tus canales activos de entrega.',
+    passwordSuccess: 'Contraseña actualizada.',
+    passwordMismatchError: 'Las contraseñas nuevas no coinciden.',
+    passwordDifferentError: 'La nueva contraseña debe ser distinta a la actual.',
+    passwordSaveError: 'No pudimos actualizar la contraseña en este momento.',
+    dangerTitle: 'Zona de peligro',
+    dangerSubtitle: 'Eliminar tu cuenta cancela los cobros y borra tus preferencias de forma permanente.',
     deleteButton: 'Eliminar cuenta',
     deleteLoading: 'Eliminando...',
-    deleteConfirm:
-      '¿Eliminar tu cuenta? Esto cerrará tu sesión de inmediato y detendrá tus canales actuales de entrega.',
-    deleteError: 'No pudimos eliminar tu cuenta en este momento.',
-    noSubscriptionSubtitle:
-      '{billingCompact} · desbloquea tu calendario de suerte de 7 días. Los recordatorios son opcionales.',
-    mondayProjectionTime: 'Hora opcional de recordatorio',
-    sentOnMondaysAt: 'Si activas recordatorios, se envían todos los días a las {time} en {zone}.',
+    deleteConfirm: '¿Eliminar tu cuenta Trimry y cancelar cualquier suscripción? No se puede deshacer.',
+    deleteError: 'No pudimos eliminar la cuenta en este momento.',
+    deliveryHourLabel: 'Hora de entrega',
+    deliveryHourHint: 'Hora local en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
-    whatsappOffSetup:
-      'WhatsApp está apagado. Puedes usar Trimry solo como calendario o activar recordatorios después.',
-    whatsappConsentLabel:
-      'Consiento recibir mensajes de suscripción de Trimry por WhatsApp en este número.',
-    whatsappConsentHint:
-      'Puedes salir cuando quieras respondiendo STOP en WhatsApp o desactivando WhatsApp aquí.',
-    whatsappConsentError:
-      'Confirma el consentimiento de WhatsApp antes de habilitar la entrega por WhatsApp.',
-    pendingTitle: 'Activa tu suscripción Trimry',
-    pendingSubtitle:
-      'Tu preferencia de entrega ya está guardada. Antes del pago, te llevamos por un paso breve de activación que enmarca la guía diaria y luego abre el checkout seguro de Stripe.',
-    pendingDeliveryPreferenceLabel: 'Preferencia de entrega',
-    pendingEmailDeliveryLabel: 'Entrega por email',
-    pendingProjectionTimingLabel: 'Horario de proyección',
-    pendingWhatsappLabel: 'Entrega por WhatsApp',
-    continueActivation: 'Continuar activación',
-    changeDeliverySettings: 'Cambiar ajustes de entrega',
-    activePlanTitle: 'Calendario de suerte Trimry',
-    canceledPlanTitle: 'Tu suscripción Trimry está cancelada',
-    canceledNote:
-      'Puedes reactivarla cuando quieras desde esta cuenta. Tus canales de entrega y el horario diario siguen guardados abajo.',
-    activeNote:
-      'Cancela cuando quieras desde este panel. Si vuelves después, puedes reactivarla desde la misma cuenta.',
-    deliveryPreferenceLabel: 'Preferencia de entrega',
-    nextMessageIfReactivated: 'Si la reactivaras hoy, tu próximo mensaje sería',
-    weeklyProjectionTimeLabel: 'Hora opcional de recordatorio',
-    futureMessagesHint: 'Si activas recordatorios, los futuros mensajes seguirán este horario en {zone}.',
-    whatsappOffActive:
-      'WhatsApp está desactivado. Tu calendario sigue funcionando; actívalo solo si quieres recordatorios al teléfono.',
-    saveDeliverySettings: 'Guardar ajustes de recordatorio',
-    reactivateButton: 'Reactivar suscripción',
-    reactivateLoading: 'Preparando reactivación...',
+    whatsappOffSetup: 'WhatsApp está apagado. Elige WhatsApp o ambos para agregar tu número.',
+    whatsappConsentLabel: 'Acepto recibir alertas deportivas de Trimry por WhatsApp.',
+    whatsappConsentHint: 'Responde STOP cuando quieras para darte de baja.',
+    whatsappConsentError: 'Confirma el consentimiento de WhatsApp antes de habilitar ese canal.',
+    pendingTitle: 'Termina de activar tus alertas',
+    pendingSubtitle: 'Tus ajustes están guardados. Completa el checkout de Stripe para iniciar la prueba.',
+    pendingDeliveryPreferenceLabel: 'Canal',
+    pendingEmailDeliveryLabel: 'Email',
+    pendingTimingLabel: 'Hora de entrega',
+    pendingWhatsappLabel: 'WhatsApp',
+    activePlanTitle: 'Alertas activas',
+    canceledPlanTitle: 'Alertas canceladas',
+    canceledNote: 'Tus preferencias están guardadas. Reactiva cuando quieras volver a recibir los digests.',
+    activeNote: 'Tu agenda sale según lo programado. Cambia el canal o la hora abajo.',
+    deliveryPreferenceLabel: 'Canal',
+    nextMessageIfReactivated: 'Próximo digest si reactivas',
+    saveDeliverySettings: 'Guardar ajustes de entrega',
+    reactivateButton: 'Reactivar alertas',
+    reactivateLoading: 'Reactivando...',
     cancelButton: 'Cancelar suscripción',
     cancelLoading: 'Cancelando...',
-    manageBillingButton: 'Administrar cobro en Stripe',
-    manageBillingLoading: 'Abriendo Stripe...',
-    billingFootnoteCanceled:
-      'Puedes reactivar desde esta cuenta cuando quieras. Stripe Billing sigue disponible para facturas e historial de cobros.',
-    billingFootnoteActive:
-      'Los cambios de método de pago y el historial de facturas siguen disponibles en Stripe Billing, pero ahora también puedes cancelar directamente desde este panel cuando quieras.',
-    cancelConfirm:
-      '¿Cancelar tu suscripción ahora? Se detendrá el cobro futuro de inmediato y podrás reactivarla más adelante desde esta cuenta.',
-    cancelSuccess:
-      'Tu suscripción fue cancelada. Tus ajustes de entrega siguen guardados aquí y puedes reactivarla cuando quieras.',
-    cancelError: 'No pudimos cancelar tu suscripción en este momento.',
-    reactivateError: 'No pudimos reactivar tu suscripción en este momento.',
-    openBillingError: 'No pudimos abrir Stripe Billing en este momento.',
-    saveDeliveryError: 'No pudimos guardar tus ajustes de entrega.',
-    predictionCalendar: {
-      title: 'Calendario admin de predicción',
-      subtitle:
-        'Revisa el patrón ritual del mes antes de que salga. Usa el mismo sistema Bueno, Malo y Raro que aparece en el inicio.',
-      monthSummary: 'Resumen del mes',
-      daysInMonth: 'días de este mes',
-      goodDays: 'Días buenos',
-      badDays: 'Días malos',
-      rareDays: 'Días raros',
-      customDays: 'Días personalizados',
-      customDaysText: 'días ajustados manualmente en este mes',
-      selectedDay: 'Día seleccionado',
-      jumpToCurrentMonth: 'Mes actual',
-      today: 'Hoy',
-      goodTone: 'Bueno',
-      badTone: 'Malo',
-      rareTone: 'Raro',
-      goodSummaryText:
-        'El impulso favorece cambios visibles y un momento afortunado.',
-      badSummaryText:
-        'Aquí es más probable que haya fricción, retraso o un momento torcido.',
-      rareSummaryText:
-        'Un patrón inusual. Puede traer coincidencia, novedad o una apertura rara.',
-      alignedActivities: 'Actividades alineadas',
-      cautionActivities: 'Usar con cautela',
-      haircut: 'Corte',
-      shave: 'Afeitado',
-      nails: 'Uñas',
-      release: 'Liberación',
-      none: 'Ninguna',
-      summaryLabel: 'Predicción',
-      notesLabel: 'Nota de predicción',
-      notesEnglishLabel: 'Nota (inglés)',
-      notesSpanishLabel: 'Nota (español)',
-      notesPortugueseLabel: 'Nota (portugués)',
-      notesHint:
-        'Todas las notas son obligatorias y se usan según el idioma activo.',
-      goodOption: 'Bueno',
-      badOption: 'Malo',
-      rareOption: 'Raro',
-      importFromImage: 'Rellenar mes con imagen',
-      importFromImageBusy: 'Generando desde la imagen',
-      importFromImageHint:
-        'Sube una imagen de referencia del calendario y ChatGPT generará notas nuevas de Bueno, Malo y Raro en inglés y español para este mes.',
-      importFromImageConfirm:
-        '¿Reemplazar el mes visible con una nueva importación basada en la imagen?',
-      importFromImageSuccess: 'Mes de predicciones importado desde imagen.',
-      importFromImageError:
-        'No pudimos generar un mes de predicciones desde esa imagen en este momento.',
-      weekImagePromptLabel: 'Prompt semanal de imagen',
-      weekImagePromptHint:
-        'Puedes editar placeholders como {date}, {weekday}, {summary}, {noteEn}, {noteEs}, {localizedDate} y {weekContext}.',
-      selectedWeekLabel: 'Semana seleccionada',
-      imagesInSelectedWeek: 'Imágenes generadas en esta semana',
-      weekSelectorLabel: 'Semana a editar',
-      weekDaysToGenerateLabel: 'Días a generar',
-      selectedDaysCountLabel: 'Días seleccionados',
-      selectAllWeekDays: 'Seleccionar semana completa',
-      clearSelectedWeekDays: 'Limpiar selección',
-      weekHtmlGeneratorLabel: 'Generador HTML semanal para email',
-      weekHtmlGeneratorHint:
-        'Genera un HTML listo para correo con un día por fila y revísalo en preview antes de enviarlo.',
-      generateWeekHtml: 'Generar HTML de email',
-      generateWeekHtmlBusy: 'Generando HTML de email',
-      generateWeekHtmlConfirm:
-        '¿Generar un HTML semanal listo para email con los días seleccionados?',
-      generateWeekHtmlSuccess: 'HTML semanal de email generado.',
-      generateWeekHtmlError:
-        'No pudimos generar el HTML semanal de email en este momento.',
-      copyWeekHtml: 'Copiar HTML',
-      copyWeekHtmlSuccess: 'HTML semanal copiado.',
-      copyWeekHtmlError: 'No pudimos copiar el HTML en este momento.',
-      weekHtmlPreviewLabel: 'Vista previa del email',
-      weekHtmlSubjectLabel: 'Asunto del email',
-      weekHtmlPreviewTextLabel: 'Texto de preview',
-      weekHtmlCodeLabel: 'Código HTML del email',
-      generateWeekImages: 'Generar imágenes semana',
-      generateWeekImagesBusy: 'Generando imágenes semana',
-      generateWeekImagesConfirm:
-        '¿Generar y guardar una imagen por cada día de la semana seleccionada?',
-      generateWeekImagesSuccess:
-        'Imágenes de la semana generadas y guardadas por día.',
-      generateWeekImagesError:
-        'No pudimos generar imágenes para la semana en este momento.',
-      generateSelectedDays: 'Generar días seleccionados',
-      generateSelectedDaysBusy: 'Generando días seleccionados',
-      generateSelectedDaysConfirm:
-        '¿Generar y guardar imágenes para los días seleccionados?',
-      generateSelectedDaysSuccess:
-        'Imágenes de los días seleccionados generadas y guardadas.',
-      generateSelectedDaysError:
-        'No pudimos generar imágenes para los días seleccionados en este momento.',
-      generateSelectedDayImage: 'Generar imagen del día',
-      generateSelectedDayImageBusy: 'Generando imagen del día',
-      generateSelectedDayImageConfirm:
-        '¿Generar y guardar una imagen solo para el día seleccionado?',
-      generateSelectedDayImageSuccess:
-        'Imagen del día seleccionado generada y guardada.',
-      generateSelectedDayImageError:
-        'No pudimos generar la imagen del día seleccionado en este momento.',
-      dayImageBadge: 'Imagen lista',
-      dayImagePreviewLabel: 'Imagen guardada del día',
-      saveDay: 'Guardar día',
-      resetDay: 'Restablecer ajuste manual',
-      resetConfirm: '¿Restablecer este día al patrón generado de Trimry?',
-      overrideBadge: 'Ajuste manual',
-      generatedBadge: 'Patrón generado',
-      saveSuccess: 'Predicción guardada.',
-      saveError: 'No pudimos guardar esta predicción en este momento.',
-      loadError:
-        'No pudimos cargar el calendario admin de predicciones en este momento.',
+    manageBillingButton: 'Gestionar cobros',
+    manageBillingLoading: 'Abriendo cobros...',
+    billingFootnoteCanceled: 'Reactivar abre un nuevo checkout de Stripe.',
+    billingFootnoteActive: 'Facturas, método de pago y cancelación se gestionan en el portal de Stripe.',
+    cancelConfirm: '¿Cancelar tu suscripción Trimry? Las alertas se detienen al final del periodo actual.',
+    cancelSuccess: 'Suscripción cancelada.',
+    cancelError: 'No pudimos cancelar en este momento.',
+    reactivateError: 'No pudimos reactivar en este momento.',
+    openBillingError: 'No pudimos abrir el portal de cobros en este momento.',
+    sportsSync: {
+      title: 'Sync de eventos deportivos',
+      subtitle: 'Caché de próximos eventos traídos desde TheSportsDB para cada liga, equipo y deporte seguido.',
+      runButton: 'Sincronizar pendientes',
+      forceButton: 'Forzar sync completo',
+      running: 'Sincronizando...',
+      eventCount: 'Eventos en caché',
+      upcomingCount: 'Próximos eventos',
+      lastFetched: 'Última descarga',
+      freeKeyWarning:
+        'Estás usando la key gratuita de TheSportsDB: los resultados se truncan a pocas filas por consulta. Configura SPORTSDB_API_KEY con una key Premium para calendarios completos.',
+      summary: 'Objetivos {targets} · descargados {fetched} · omitidos {skipped} · fallidos {failed} · guardados {events}',
+      statesTitle: 'Objetivos de sync',
+      loadError: 'No pudimos cargar el estado del sync.',
     },
-    sendCampaigns: {
-      settingsTitle: 'Settings de proveedores',
-      settingsSubtitle:
-        'Guarda en MongoDB las credenciales de WhatsApp Cloud API y MailerSend. Los secretos quedan vacíos en el formulario salvo que quieras reemplazarlos.',
-      settingsWhatsappTitle: 'Settings de WhatsApp',
-      settingsMailersendTitle: 'Settings de MailerSend',
-      settingsStored: 'Guardado',
-      settingsMissing: 'Falta',
-      settingsSave: 'Guardar settings',
-      settingsSaved: 'Settings guardados.',
-      title: 'Envíos admin',
-      subtitle:
-        'Crea campañas de WhatsApp y mailing para suscriptores activos, prueba primero un envío de testing y luego lanza la campaña real desde el dashboard.',
-      templateEditorTitle: 'Configuración de envío',
-      templateEditorSubtitle:
-        'Para mailing puedes guardar el contenido aquí. Para WhatsApp no editas el template de Meta acá: solo guardas su nombre exacto en Meta, el idioma y los valores `key: content` que quieres reutilizar al probar y enviar.',
-      templateSave: 'Guardar configuración',
-      templateSaveBusy: 'Guardando configuración',
-      templateSaved: 'Configuración guardada.',
-      createNew: 'Nueva campaña',
-      currentDraft: 'Configuración actual',
-      nameLabel: 'Nombre interno de referencia',
-      whatsappReferenceNameLabel: 'Nombre interno de referencia (opcional)',
-      campaignNameLabel: 'Nombre de la campaña',
-      templateDescriptionLabel: 'Descripción del template',
-      channelLabel: 'Canal',
-      channelWhatsapp: 'WhatsApp',
-      channelEmail: 'Mailing',
-      audienceTitle: 'Audiencia',
-      audienceHint:
-        'Los envíos reales apuntan a suscriptores activos que hoy tienen este canal habilitado.',
-      eligibleRecipients: 'Destinatarios elegibles ahora: {count}',
-      variableValuesTitle: 'Datos de testing y variables',
-      variableValuesSubtitle:
-        'Cada variable del template aparece aquí. En WhatsApp, el content guardado en cada sección se carga primero y luego lo puedes ajustar antes de probar o enviar.',
-      noVariables: 'Este template no tiene variables dinámicas.',
-      testingLabel: 'Destino de testing',
-      testingPlaceholderWhatsapp: '+56912345678',
-      testingPlaceholderEmail: 'test@ejemplo.com',
-      testingHintWhatsapp:
-        'El testing de WhatsApp envía la plantilla configurada directo a un número.',
-      testingHintEmail:
-        'El testing de mailing envía el asunto y contenido actual a una sola casilla por MailerSend.',
-      saveDraft: 'Guardar borrador',
-      saveDraftBusy: 'Guardando borrador',
-      sendTest: 'Enviar testing',
-      sendTestBusy: 'Enviando testing',
-      sendCampaign: 'Enviar campaña',
-      sendCampaignBusy: 'Enviando campaña',
-      externalTemplateNameLabel: 'Nombre exacto del template en Meta (no ID)',
-      externalTemplateNameHint:
-        'WhatsApp Cloud API envía usando el nombre del template y el código de idioma, no un template ID.',
-      whatsappLanguageLabel: 'Idioma de plantilla',
-      headerTextLabel: 'Variables del header',
-      bodyTextLabel: 'Variables del body',
-      whatsappSectionHint: 'Guarda cada fila como key y contenido por defecto.',
-      whatsappButtonHint:
-        'Guarda la key del botón dinámico y el content de ejemplo que quieres usar en testing.',
-      buttonsTitle: 'Botones dinámicos',
-      addVariable: 'Agregar variable',
-      addButton: 'Agregar botón',
-      removeVariable: 'Eliminar variable',
-      removeButton: 'Eliminar botón',
-      variableKeyLabel: 'Key',
-      variableContentLabel: 'Content',
-      emailSubjectLabel: 'Asunto del email',
-      emailHtmlLabel: 'Cuerpo HTML',
-      emailTextLabel: 'Cuerpo texto plano',
-      emailTemplateGeneratorTitle: 'Generador de plantilla email',
-      emailTemplateGeneratorHint:
-        'Genera un email semanal profesional de Trimry con logo, estructura amigable para inbox y CTA a trimry.com.',
-      emailGenerateTemplate: 'Generar plantilla semanal',
-      emailTemplateGenerated: 'Plantilla semanal generada.',
-      historyTitle: 'Historial de campañas',
-      historySubtitle:
-        'Cada campaña guardada o enviada queda aquí para revisar métricas y los valores variables usados en el envío.',
-      emptyState: 'Aún no hay campañas.',
-      metricsRecipients: 'Destinatarios',
-      metricsAccepted: 'Aceptados',
-      metricsFailed: 'Fallidos',
-      sentAt: 'Enviada el',
-      updatedAt: 'Actualizada el',
-      lastTestedAt: 'Último test',
-      lastTestRecipient: 'Destino de test',
-      notSentYet: 'Todavía no enviada',
-      neverTested: 'Nunca probada',
-      draftStatus: 'Borrador',
-      sentStatus: 'Enviada',
-      partiallySentStatus: 'Envío parcial',
-      failedStatus: 'Fallida',
-      loadError: 'No pudimos cargar el espacio admin de envíos en este momento.',
-      saveSuccess: 'Borrador guardado.',
-      testSuccess: 'El envío de testing fue procesado.',
-      sendSuccess: 'La campaña fue enviada correctamente.',
-      sendPartial: 'La campaña terminó con fallas parciales de entrega.',
-      sendFailed: 'El envío de la campaña falló.',
-    },
+    sendCampaigns: sendCampaignsEs,
   },
-  statuses: {
-    active: 'Activa',
-    paused: 'Pausada',
-    canceled: 'Cancelada',
+  scout: {
+    name: 'Scout',
+    launcherLabel: 'Hablar con Scout',
+    launcherSubLabel: 'Tu asistente deportivo',
+    title: 'Pregunta por cualquier partido',
+    introAnonymous:
+      '⚽ Hola, soy Scout. Dime un equipo o liga y te muestro lo que viene. Crea una cuenta para que recuerde tus equipos.',
+    introAccount:
+      '⚽ Hola, soy Scout. Puedo agregar equipos, cambiar tu ritmo y contarte qué hay. Las alertas por email y WhatsApp arrancan con tu suscripción.',
+    introActive:
+      '⚽ Hola, soy Scout. Tus alertas están activas. Pregúntame qué hay hoy, agrega un equipo o cambia tus ajustes de entrega.',
+    prompts: ['¿Qué hay este fin de semana?', 'Sigue a Real Madrid', 'Cámbiame a semanal'],
+    placeholder: 'Pregúntale a Scout...',
+    send: 'Enviar',
+    typing: 'Scout está revisando los calendarios',
+    issue:
+      'Tuve un problema temporal en el canal web. Intenta de nuevo en unos segundos o sigue por WhatsApp.',
+    memorySaved: 'Memoria guardada en tu cuenta',
+    temporaryMemory: 'Memoria temporal',
+    alertsActive: 'Alertas activas',
+    alertsInactive: 'Alertas no activas',
+    createAccount: 'Crear cuenta',
+    activateAlerts: 'Activar alertas',
+    openDashboard: 'Abrir panel',
+    whatsappCta: 'Seguir por WhatsApp',
+    preferencesUpdated: 'Preferencias actualizadas',
   },
-  legal: {
-    terms: 'Términos del servicio',
-    privacy: 'Política de privacidad',
-    disclaimer: 'Descargo ritual',
-    dataDeletion: 'Instrucciones de eliminación de datos',
-    englishNotice:
-      'El texto legal maestro se mantiene en inglés. Esta traducción se ofrece por conveniencia.',
-    termsSections: [
-      {
-          title: '1. Descripción del servicio',
-          body:
-          'Trimry entrega orientación semanal de timing para fortuna, grooming, energía, relaciones, dinero y rutinas simbólicas de liberación. Los suscriptores pueden ver un calendario rodante de 7 días en la web. Email y WhatsApp son recordatorios opcionales.',
-      },
-      {
-        title: '2. Suscripción y cobro',
-        body:
-          'El plan Trimry se cobra a {billingLegal}. Incluye acceso a un calendario rodante de suerte de 7 días. Email y WhatsApp son recordatorios opcionales según el canal elegido en tu panel. Puedes cancelar tu suscripción en cualquier momento desde tu panel. Si decides volver más adelante, puedes reactivarla desde la misma cuenta iniciando un nuevo checkout de Stripe. Los detalles de cobro, métodos de pago, facturas e historial de facturación siguen disponibles a través de las herramientas de Stripe enlazadas desde tu panel.',
-      },
-      {
-        title: '3. Consentimiento y contacto por WhatsApp',
-        body:
-          'Solo debes proporcionar números de teléfono de destinatarios que hayan consentido recibir las comunicaciones de suscripción de Trimry que solicitaste. Si habilitas WhatsApp, autorizas a Trimry a enviar mensajes de suscripción y servicio a ese número. Puedes darte de baja en cualquier momento respondiendo STOP (u orden equivalente) en WhatsApp o desactivando WhatsApp desde tu cuenta.',
-      },
-      {
-        title: '4. Seguridad de la cuenta',
-        body:
-          'Debes mantener tus credenciales de acceso confidenciales. Eres responsable de todas las acciones realizadas a través de tu cuenta.',
-      },
-      {
-        title: '5. Uso aceptable',
-        body:
-          'Aceptas no hacer mal uso del servicio, no intentar accesos no autorizados y no usar Trimry para actividades ilegales.',
-      },
-      {
-        title: '6. Proveedores del servicio',
-        body:
-          'Trimry depende de proveedores externos para operar, incluyendo procesamiento de pagos (Stripe), infraestructura de entrega por WhatsApp (Meta/WhatsApp), hosting en la nube e infraestructura de base de datos. La disponibilidad del proveedor, controles de políticas y límites técnicos pueden afectar la entrega.',
-      },
-      {
-        title: '7. Sin asesoría profesional',
-        body:
-          'Trimry entrega contenido cultural y ritual únicamente. No constituye asesoría médica, legal ni financiera.',
-      },
-      {
-        title: '8. Información de la compañía',
-        body:
-          'Trimry Limited, número de compañía 752517. Oficina registrada: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Oficina operativa: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181. Contacto: support@trimry.com.',
-      },
-    ],
-    privacySections: [
-      {
-        title: '1. Datos que recopilamos',
-        body:
-          'Recopilamos datos de cuenta y suscripción necesarios para operar Trimry, incluyendo nombre, correo electrónico, hash de contraseña, idioma, zona horaria, fecha de nacimiento opcional, preferencias de entrega y número de WhatsApp cuando está habilitado. También procesamos metadatos operativos y de seguridad como registros de sesión/IP y user-agent, metadatos de estado de entrega y metadatos de facturación de Stripe.',
-      },
-      {
-        title: '2. Cómo usamos los datos',
-        body:
-          'Usamos los datos para autenticar cuentas, asegurar sesiones, administrar suscripciones, enviar contenido diario, personalizar resúmenes de zodíaco y calendario chino, procesar cobros y operaciones de cuenta, atender soporte y monitorear confiabilidad del servicio y riesgos de fraude/seguridad.',
-      },
-      {
-        title: '3. WhatsApp y consentimiento',
-        body:
-          'Enviamos mensajes por WhatsApp solo cuando habilitas ese canal con tu consentimiento. Puedes retirar ese consentimiento respondiendo STOP (u orden equivalente) o desactivando WhatsApp en tu cuenta. Registramos eventos de consentimiento y baja por cumplimiento y prevención de abuso.',
-      },
-      {
-        title: '4. Compartición de datos',
-        body:
-          'No vendemos datos personales. Solo compartimos datos con procesadores necesarios para operar el servicio, como Meta/WhatsApp (transporte y estados de mensajes), Stripe (facturación) y proveedores de infraestructura para hosting y base de datos.',
-      },
-      {
-        title: '5. Cookies y analítica',
-        body:
-          'Usamos cookies esenciales para autenticación y continuidad de sesión. También usamos herramientas de medición publicitaria y analítica para atribuir tráfico de campañas y mejorar rendimiento. El aviso del sitio es informativo/visual y no desactiva la medición.',
-      },
-      {
-        title: '6. Transferencias internacionales',
-        body:
-          'Como nuestros proveedores operan globalmente, tus datos pueden procesarse fuera de tu país de residencia. Aplicamos salvaguardas contractuales y técnicas apropiadas para la operación del servicio.',
-      },
-      {
-        title: '7. Retención',
-        body:
-          'Conservamos datos personales solo mientras sean necesarios para operar el servicio, cumplir obligaciones legales, gestionar seguridad/fraude, mantener registros de cobro/auditoría y resolver disputas. Los plazos varían según tipo de dato y exigencia legal.',
-      },
-      {
-        title: '8. Derechos del usuario',
-        body:
-          'Puedes solicitar acceso, corrección o eliminación escribiendo a support@trimry.com. También puedes eliminar tu cuenta desde el panel. Algunos registros pueden conservarse cuando lo exija la ley o por necesidades legítimas de seguridad/auditoría.',
-      },
-      {
-        title: '9. Almacenamiento de datos',
-        body:
-          'Los datos de la cuenta se almacenan en infraestructura MongoDB configurada por Trimry. Las cookies de sesión son HTTP-only y están firmadas por seguridad.',
-      },
-      {
-        title: '10. Contacto de la compañía',
-        body:
-          'Trimry Limited, número de compañía 752517. Oficina registrada: 71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland. Oficina operativa: Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181.',
-      },
-    ],
-    disclaimerSections: [
-      {
-        title: 'Contenido cultural',
-        body:
-          'La orientación de Trimry se basa en interpretación cultural y tradición ritual. Está pensada para la reflexión personal y la planificación de rutinas.',
-      },
-      {
-        title: 'Sin garantía de resultados',
-        body:
-          'Trimry no garantiza suerte, resultados financieros, resultados de salud ni ningún resultado específico por seguir esta orientación.',
-      },
-      {
-        title: 'Responsabilidad personal',
-        body:
-          'Sigues siendo plenamente responsable de tus decisiones de grooming, salud y cualquier acción tomada a partir del contenido del servicio.',
-      },
-    ],
-    dataDeletionSections: [
-      {
-        title: '1. Eliminar desde tu panel de Trimry',
-        body:
-          'Inicia sesión en tu cuenta Trimry, abre la configuración del panel y usa la opción de eliminación de cuenta. Es la forma más rápida de solicitar eliminación de datos de usuario.',
-      },
-      {
-        title: '2. Eliminar por solicitud por correo',
-        body:
-          'Si no puedes acceder a tu cuenta, escribe a support@trimry.com desde tu correo registrado con el asunto "Data Deletion Request". Podemos solicitar verificación de cuenta antes de procesar.',
-      },
-      {
-        title: '3. Qué se elimina y qué puede conservarse',
-        body:
-          'Cuando se completa una solicitud de eliminación, los datos de perfil, preferencias de entrega y configuraciones activas de suscripción se eliminan o anonimizan según el diseño del sistema. Algunos registros limitados pueden conservarse por cumplimiento legal, trazabilidad de facturación, prevención de fraude/seguridad o resolución de disputas.',
-      },
-      {
-        title: '4. Plazo de procesamiento',
-        body:
-          'Procesamos las solicitudes de eliminación lo antes posible una vez verificada la identidad. Si existen registros gestionados por proveedores (por ejemplo, facturas de Stripe), la retención puede seguir obligaciones legales del proveedor.',
-      },
-    ],
-  },
+  statuses: { active: 'Activa', paused: 'Pausada', canceled: 'Cancelada' },
+  legal: legalEs,
   cookieConsent: {
     title: 'Cookies y analítica',
     description:
@@ -2265,16 +1897,6 @@ const spanishMessages: MessageSection = {
     success: 'Guardado correctamente.',
     error: 'Algo salió mal. Inténtalo de nuevo.',
   },
-  carousel: {
-    proofLabel: 'Prueba rotativa de mentalidad',
-    whyTitle: 'Por qué importa',
-    whyText:
-      'Cuando una persona siente que el momento la favorece, carga más confianza, detecta más aperturas y se mueve con menos duda.',
-    effectTitle: 'Efecto Trimry',
-    effectText:
-      'El mensaje diario está diseñado para agudizar la atención, reforzar el optimismo y convertir el ritual en un impulso que realmente se siente.',
-    sequenceLabel: 'Secuencia de citas',
-  },
   notFound: {
     title: 'Página no encontrada',
     description: 'La página que solicitaste no está disponible.',
@@ -2282,75 +1904,37 @@ const spanishMessages: MessageSection = {
   },
 }
 
-type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends Array<unknown>
-    ? T[K]
-    : T[K] extends object
-      ? DeepPartial<T[K]>
-      : T[K]
-}
-
-function mergeMessages(
-  base: MessageSection,
-  overrides: DeepPartial<MessageSection>,
-): MessageSection {
-  const mergeValue = (baseValue: unknown, overrideValue: unknown): unknown => {
-    if (overrideValue === undefined) {
-      return baseValue
-    }
-
-    if (
-      Array.isArray(baseValue) ||
-      Array.isArray(overrideValue) ||
-      typeof baseValue !== 'object' ||
-      baseValue === null ||
-      typeof overrideValue !== 'object' ||
-      overrideValue === null
-    ) {
-      return overrideValue
-    }
-
-    return Object.fromEntries(
-      Object.entries(baseValue).map(([key, value]) => [
-        key,
-        mergeValue(value, (overrideValue as Record<string, unknown>)[key]),
-      ]),
-    )
-  }
-
-  return mergeValue(base, overrides) as MessageSection
-}
-
-const portugueseMessages = mergeMessages(englishMessages, {
+const pt: MessageSection = {
   common: {
     loading: 'Carregando...',
     saving: 'Salvando...',
     previous: 'Anterior',
     next: 'Próximo',
+    back: 'Voltar',
     cancel: 'Cancelar',
     continue: 'Continuar',
     backToLogin: 'Voltar ao login',
     backToDashboard: 'Voltar ao painel',
     tryAgain: 'Tentar novamente',
     returnHome: 'Voltar ao início',
+    save: 'Salvar',
+    remove: 'Remover',
+    search: 'Buscar',
+    close: 'Fechar',
   },
-  languageSwitcher: {
-    label: 'Idioma',
-  },
+  languageSwitcher: { label: 'Idioma' },
   nav: {
     home: 'Início',
-    blog: 'Blog',
-    guide: 'Guia',
     howItWorks: 'Como funciona',
-    pricing: 'Plano',
-    faq: 'FAQ',
-    legal: 'Legal',
+    sports: 'Esportes',
+    pricing: 'Preço',
+    faq: 'Perguntas',
     login: 'Entrar',
     register: 'Criar conta',
     dashboard: 'Painel',
-    profile: 'Perfil',
-    admin: 'Admin',
+    profile: 'Minha conta',
     logout: 'Sair',
+    startFree: 'Começar grátis',
   },
   footer: {
     rightsReserved: 'Todos os direitos reservados.',
@@ -2358,450 +1942,416 @@ const portugueseMessages = mergeMessages(englishMessages, {
     registeredOffice: 'Sede registrada',
     operationsOffice: 'Escritório operacional',
     contact: 'Contato',
-  },
-  hero: {
-    badge: 'Your Luck Guide',
-    title: 'Manifeste mais sorte',
-    subtitle:
-      'Sinais diários, rituais e insights de timing criados para ajudar você a se alinhar com a oportunidade.',
-    primary: 'Revele a sorte de hoje',
-    secondary: 'Começar agora',
+    tagline: 'Seu radar de eventos esportivos.',
+    dataSource: 'Calendários fornecidos por TheSportsDB. Horários no seu fuso.',
   },
   home: {
-    releaseBadge: 'Soltar também tem timing',
-    releaseText:
-      'Um corte pode ser cosmético. No momento certo, parece uma quebra limpa com a dúvida, o peso e a energia parada.',
-    releaseChannels:
-      'Escolha entrega diária por email, WhatsApp ou ambos.',
-    releaseImageAlt:
-      'Uma pessoa cortando o cabelo enquanto energia luminosa sai do corte como uma liberação ritual.',
-    beliefBadge: 'Motor da crença',
-    beliefTitle: 'Sentir-se com sorte muda como você entra no ambiente.',
-    beliefSubtitle:
-      'A tese da Trimry é simples: quando você sente que o timing está a seu favor, percebe oportunidades mais rápido, age com mais otimismo e torna o impulso visível.',
-    teaserEyebrow: 'Prévia cósmica diária',
-    couldBe: 'Pode ser...',
-    teaserNote:
-      'Comece o fluxo para revelar seus símbolos e abrir sua prévia pessoal do calendário.',
-    teaserButton: 'Revelar minha previsão real',
-    seoGuideBadge: 'Guia SEO',
-    seoGuideTitle: 'Quer o guia completo de dias bons e ruins?',
-    seoGuideSubtitle:
-      'Leia nosso guia em inglês sobre “Good and Bad Days to Cut your Hair, Nails and more” com regras semanais práticas.',
-    seoGuideButton: 'Ler guia completo',
-    predictions: [
+    badge: 'Radar de eventos esportivos',
+    title: 'Nunca mais perca um jogo',
+    titleHighlight: 'de novo.',
+    subtitle:
+      'Escolha os esportes, ligas e times que você acompanha. A Trimry envia uma agenda pessoal com os próximos jogos, corridas e lutas por email e WhatsApp, no seu fuso horário.',
+    primaryCta: 'Montar minha agenda',
+    secondaryCta: 'Ver como funciona',
+    trustLine: '7 dias grátis · Cancele quando quiser · Futebol, NBA, NFL, F1, UFC e mais',
+    previewEyebrow: 'Prévia ao vivo',
+    previewTitle: 'O que vem nesta semana',
+    previewSubtitle: 'Escolha um esporte para ver os eventos reais que a Trimry acompanha agora.',
+    previewEmpty: 'Ainda não há eventos em cache para este esporte. Tente outro ou volte em alguns minutos.',
+    previewLoading: 'Carregando próximos eventos...',
+    previewError: 'Não foi possível carregar a prévia agora.',
+    previewTimeZoneNote: 'Horários em',
+    stepsEyebrow: 'Como funciona',
+    stepsTitle: 'Três passos e depois roda sozinho',
+    steps: [
       {
-        tone: 'good',
-        text: 'A boa fortuna se expande ao seu redor. Uma mensagem sobre dinheiro ou uma oportunidade útil pode chegar.',
+        title: 'Escolha o que você acompanha',
+        text: 'Esportes, ligas e times. Da Premier League à NBA, F1, UFC ou seu clube local.',
       },
       {
-        tone: 'good',
-        text: 'A energia do amor se abre. Você pode conhecer alguém magnético ou receber um sinal romântico inesperado.',
+        title: 'Canal e ritmo',
+        text: 'Agenda diária ou semanal por email, WhatsApp ou ambos, no horário que preferir.',
       },
       {
-        tone: 'bad',
-        text: 'Mal-entendidos podem crescer rápido hoje. Evite decisões emocionais e gastos arriscados.',
-      },
-      {
-        tone: 'bad',
-        text: 'Planos podem travar e o apoio pode parecer distante. Seja prático e adie grandes compromissos.',
-      },
-      {
-        tone: 'rare',
-        text: 'Dia curinga raro: uma coincidência estranha pode trazer um presente, pista ou convite repentino.',
-      },
-      {
-        tone: 'rare',
-        text: 'Cruzamento kármico: um amor antigo ou assunto antigo pode voltar pedindo encerramento.',
-      },
-      {
-        tone: 'good',
-        text: 'Janela de prosperidade: um pagamento atrasado, desconto ou aliado útil pode aparecer inesperadamente.',
-      },
-      {
-        tone: 'bad',
-        text: 'A energia está pesada e reativa. Proteja sua paz e evite discussões sobre dinheiro ou relacionamentos.',
-      },
-      {
-        tone: 'rare',
-        text: 'Um magnetismo incomum cerca você. Alguém influente pode compartilhar um conselho confidencial ou uma oportunidade oculta.',
+        title: 'Receba sua agenda',
+        text: 'Cada evento que vem, ordenado por dia, no seu fuso. Pergunte ao Scout na dúvida.',
       },
     ],
-  },
-  story: {
-    title: 'Seu guia pessoal de timing para o que pode vir.',
-    subtitle:
-      'A Trimry lê seu zodíaco, símbolo chinês e padrões antigos de timing para ajudar você a planejar com mais intenção.',
-    card1Title: 'Símbolos pessoais',
-    card1Text:
-      'Sua data de nascimento abre uma camada zodiacal e chinesa que molda o calendário ao seu redor.',
-    card2Title: 'Janelas de timing',
-    card2Text:
-      'Veja quando o padrão convida ação, espera, liberação ou uma decisão mais limpa.',
-    card3Title: 'Vista de calendário',
-    card3Text:
-      'Abra uma visão focada dos próximos dias e desbloqueie a camada completa quando estiver pronto.',
+    channelsEyebrow: 'Entrega',
+    channelsTitle: 'Onde você olha primeiro',
+    channels: [
+      {
+        title: 'Digest por email',
+        text: 'Uma agenda limpa e fácil de ler para hoje e os próximos dias. Seus times primeiro.',
+      },
+      {
+        title: 'WhatsApp',
+        text: 'A mesma agenda como mensagem, mais o Scout respondendo "o que tem hoje?".',
+      },
+      {
+        title: 'Painel web',
+        text: 'Sua agenda ao vivo, preferências e configurações de entrega, sempre disponíveis.',
+      },
+    ],
+    scoutEyebrow: 'Conheça o Scout',
+    scoutTitle: 'Um assistente que conhece seus times',
+    scoutText:
+      'O Scout busca times e ligas por você, segue com uma única mensagem e responde com jogos reais dos calendários rastreados. Sem inventar nada.',
+    scoutBullets: [
+      '"Seguir Real Madrid e Lakers"',
+      '"O que tem neste fim de semana?"',
+      '"Muda para resumo semanal na segunda"',
+    ],
+    scoutCta: 'Falar com o Scout',
+    finalTitle: 'Sua agenda, entregue.',
+    finalSubtitle: 'Configure em dois minutos. Teste grátis por 7 dias.',
   },
   pricing: {
-    title: 'Desbloqueie seu calendário personalizado de sorte',
-    subtitle:
-      'Comece quando estiver pronto para revelar os próximos dias e planejar pelo ritmo dos seus símbolos.',
-    planTitle: 'Calendário pessoal de sorte',
-    billing:
-      'O trial começa na Stripe; depois continue por {billingInline}. Cancele quando quiser.',
-    include1:
-      'Calendário contínuo de 7 dias com sinais Bons, Ruins e Raros',
-    include2:
-      'Guia personalizada pelos seus símbolos e seu pedido',
-    include3:
-      'Sinais de manifestação para dinheiro, relacionamentos, energia e timing pessoal',
-    cta: 'Começar grátis',
-  },
-  weekly: {
-    title: 'Previsão cósmica de hoje',
-    subtitle:
-      'Uma prévia rotativa sobre fortuna, amor, dinheiro e sorte. Assine para desbloquear a vista completa do calendário.',
-    good: 'Bom',
-    bad: 'Ruim',
-    rare: 'Raro',
+    eyebrow: 'Preço',
+    title: 'Um plano simples',
+    subtitle: 'Tudo incluído. Comece com um teste grátis e cancele quando quiser.',
+    planTitle: 'Trimry Sports Alerts',
+    billing: '{billingInline}',
+    trialNote: '{trialPeriodDays} dias grátis, depois {billingCompact}.',
+    includes: [
+      'Esportes, ligas e times ilimitados',
+      'Agenda diária ou semanal por email e WhatsApp',
+      'Assistente Scout na web e no WhatsApp',
+      'Horários no seu fuso',
+    ],
+    cta: 'Começar teste grátis',
+    cancelNote: 'Cancele pelo painel, pelo portal Stripe ou respondendo STOP no WhatsApp.',
   },
   faq: {
     title: 'Perguntas frequentes',
-    q1: 'Isso é uma recomendação médica ou científica?',
-    a1: 'Não. A Trimry é um serviço cultural e ritual de timing para rotinas pessoais.',
-    q2: 'Quando recebo a mensagem?',
-    a2: 'Assinantes desbloqueiam um calendário contínuo de 7 dias e podem revisar os próximos sinais no painel.',
-    q3: 'Como gerencio a cobrança?',
-    a3: 'Pelo painel, onde você pode cancelar quando quiser, reativar depois e abrir o portal seguro da Stripe para métodos de pagamento e faturas.',
-    q4: 'Qual fuso horário é usado?',
-    a4: 'Usamos o fuso horário IANA salvo na sua conta. Você pode alterar o fuso e o horário diário de entrega no painel.',
-  },
-  cta: {
-    title: 'Mantenha-se alinhado com a sorte todos os dias.',
-    subtitle:
-      'Crie sua conta Trimry, revele seus símbolos e mantenha seu calendário pessoal por perto.',
-    button: 'Abrir minha conta',
+    items: [
+      {
+        question: 'Quais esportes e ligas estão disponíveis?',
+        answer:
+          'Futebol, basquete, futebol americano, beisebol, hóquei no gelo, tênis, automobilismo, MMA e boxe, rugby, golfe, ciclismo e críquete. Entre as ligas em destaque estão Premier League, La Liga, Serie A, Bundesliga, Ligue 1, Champions League, MLS, Liga MX, Brasileirão, NBA, NFL, MLB, NHL, Fórmula 1, MotoGP e UFC, e você pode buscar qualquer time ou competição no catálogo.',
+      },
+      {
+        question: 'De onde vêm os calendários?',
+        answer:
+          'Do TheSportsDB, atualizados várias vezes ao dia. Os horários são convertidos para o fuso salvo na sua conta. Adiamentos e mudanças de última hora acontecem, então confirme sempre com a emissora oficial.',
+      },
+      {
+        question: 'Como funciona o teste grátis?',
+        answer:
+          'Inicie o checkout com a Stripe e receba 7 dias de alertas sem custo. Cancele antes do fim do teste e nada será cobrado.',
+      },
+      {
+        question: 'Posso cancelar ou trocar de canal depois?',
+        answer:
+          'Sim. Mude esportes, times, ritmo, horário e canal pelo painel quando quiser. Cancele pelo painel, pelo portal Stripe ou respondendo STOP no WhatsApp.',
+      },
+    ],
   },
   auth: {
-    registerTitle: 'Comece em 10 segundos',
-    registerSubtitle:
-      'Informe seu nome, data de nascimento e contato para abrir seu código pessoal de sorte.',
+    registerTitle: 'Crie sua conta',
+    registerSubtitle: 'Seu nome e email bastam. Seus times e configurações de entrega vêm em seguida.',
     loginTitle: 'Bem-vindo de volta',
-    loginSubtitle: 'Entre para gerenciar sua entrega diária de sorte.',
-    loginWithLinkHint:
-      'Prefere entrar sem senha? Enviamos um link seguro por email.',
+    loginSubtitle: 'Entre para gerenciar sua agenda e seus alertas.',
+    loginWithLinkHint: 'Prefere entrar sem senha? Enviamos um link seguro por email.',
     loginWithLinkButton: 'Enviar link de acesso',
     loginWithLinkSending: 'Enviando link de acesso...',
     loginWithLinkSent:
       'Se este email tiver uma conta, enviamos um link seguro de acesso. Verifique caixa de entrada e spam.',
     loginWithLinkConsuming: 'Validando seu link seguro de acesso...',
-    loginWithLinkInvalid:
-      'Este link de acesso e invalido ou expirou. Solicite um novo.',
+    loginWithLinkInvalid: 'Este link de acesso é inválido ou expirou. Solicite um novo.',
     loginWithLinkDivider: 'ou',
     firstNameLabel: 'Nome',
     lastNameLabel: 'Sobrenome',
-    birthDateLabel: 'Data de nascimento',
     timeZoneLabel: 'Fuso horário',
-    timeZoneHint:
-      'Usamos isso para agendar sua projeção diária no horário local correto.',
+    timeZoneHint: 'Usamos para mostrar os horários e agendar seu digest na hora local certa.',
     emailLabel: 'Email',
+    emailHint: 'Usamos este email para sua conta e para o digest por email.',
     passwordLabel: 'Senha',
     whatsappLabel: 'Número de WhatsApp',
-    passwordHint:
-      'Mínimo de 10 caracteres, incluindo maiúscula, minúscula e número.',
+    passwordHint: 'Mínimo de 10 caracteres, incluindo maiúscula, minúscula e número.',
     registerButton: 'Continuar',
     loginButton: 'Entrar',
     needAccount: 'Precisa de uma conta?',
     alreadyHaveAccount: 'Já tem uma conta?',
+    invalidEmail: 'Digite um email válido.',
+    termsNotice: 'Ao continuar você aceita os Termos de serviço e a Política de privacidade.',
+  },
+  onboarding: {
+    title: 'Configure sua agenda',
+    stepLabel: 'Passo {step} de {total}',
+    steps: ['Esportes', 'Times e ligas', 'Entrega', 'Revisão'],
+    sportsTitle: 'Quais esportes você acompanha?',
+    sportsSubtitle: 'Escolha quantos quiser. No próximo passo você refina ligas e times.',
+    sportsEmpty: 'Escolha pelo menos um esporte para continuar.',
+    teamsTitle: 'Times e ligas',
+    teamsSubtitle:
+      'Siga times para alertas jogo a jogo e ligas para o calendário completo. Se pular, você recebe as ligas em destaque de cada esporte.',
+    teamsSearchLabel: 'Buscar um time',
+    teamsSearchPlaceholder: 'Real Madrid, Lakers, Ferrari, Flamengo...',
+    teamsSearching: 'Buscando...',
+    teamsNoResults: 'Nenhum time encontrado. Tente outra grafia ou o nome oficial.',
+    teamsFollowing: 'Times que você acompanha',
+    leaguesTitle: 'Ligas',
+    leaguesHint: 'As ligas em destaque aparecem primeiro. Busque no catálogo para ver mais.',
+    leaguesLoading: 'Carregando ligas...',
+    leaguesFilterPlaceholder: 'Filtrar ligas...',
+    featuredLabel: 'Destaque',
+    followedLabel: 'Seguindo',
+    followLabel: 'Seguir',
+    unfollowLabel: 'Deixar de seguir',
+    skipTeamsHint: 'Sem times ou ligas selecionados: você receberá as ligas em destaque dos seus esportes.',
+    accountTitle: 'Crie sua conta',
+    accountSubtitle: 'Salve sua seleção e escolha como receber a agenda.',
+    accountExistingHint: 'Já tem uma conta?',
+    deliveryTitle: 'Como você quer a agenda?',
+    deliverySubtitle: 'Escolha o ritmo, o canal e o horário. Você pode mudar quando quiser.',
+    frequencyLabel: 'Ritmo',
+    frequencyDaily: 'Diária',
+    frequencyDailyHint: 'Todo dia: hoje mais os dois dias seguintes.',
+    frequencyWeekly: 'Semanal',
+    frequencyWeeklyHint: 'Toda segunda: a semana completa.',
+    lookaheadLabel: 'Alcance do painel',
+    lookaheadHint: 'Quantos dias sua agenda web mostra.',
+    lookaheadDays: '{count} dias',
+    channelLabel: 'Canal',
+    hourLabel: 'Horário de entrega',
+    hourHint: 'Hora local em {zone}.',
+    whatsappNumberLabel: 'Número de WhatsApp',
+    whatsappConsentLabel: 'Aceito receber alertas esportivos da Trimry pelo WhatsApp.',
+    whatsappConsentHint: 'Necessário apenas se escolher WhatsApp. Responda STOP quando quiser.',
+    whatsappConsentError: 'Confirme o consentimento do WhatsApp antes de habilitar esse canal.',
+    reviewTitle: 'Revise e comece',
+    reviewSubtitle: 'Aqui está sua configuração e uma prévia real dos próximos eventos no seu radar.',
+    reviewSports: 'Esportes',
+    reviewLeagues: 'Ligas',
+    reviewTeams: 'Times',
+    reviewFrequency: 'Ritmo',
+    reviewChannel: 'Canal',
+    reviewTiming: 'Entrega',
+    reviewPreviewTitle: 'Próximos no seu radar',
+    reviewPreviewEmpty: 'Ainda não há eventos em cache para esta seleção. Sua agenda se completa conforme os calendários são publicados.',
+    startTrialCta: 'Começar 7 dias grátis',
+    startTrialHint: 'Checkout seguro da Stripe. Cancele quando quiser.',
+    savePreferencesCta: 'Salvar preferências',
+    saving: 'Salvando...',
+    saveError: 'Não foi possível salvar suas preferências agora.',
+    registerError: 'Não foi possível criar sua conta agora.',
+    previewEyebrow: 'Prévia',
   },
   deliveryChannels: {
-    noneTitle: 'Sem lembretes',
-    noneDescription: 'Use a Trimry primeiro como calendário de sorte. Ative email ou WhatsApp depois se quiser avisos.',
+    noneTitle: 'Somente web',
+    noneDescription: 'Use o painel e o Scout sem digests por email ou WhatsApp.',
     bothTitle: 'Email + WhatsApp',
-    bothDescription: 'Email primeiro, com WhatsApp como segundo canal opcional.',
-    emailTitle: 'Somente email',
-    emailDescription: 'A opção padrão mais simples para a maioria dos usuários.',
-    whatsappTitle: 'Somente WhatsApp',
-    whatsappDescription: 'Entrega no celular quando você preferir.',
+    bothDescription: 'O digest por email mais a mesma agenda como mensagem de WhatsApp.',
+    emailTitle: 'Email',
+    emailDescription: 'Um digest limpo na sua caixa de entrada. A opção mais simples.',
+    whatsappTitle: 'WhatsApp',
+    whatsappDescription: 'A agenda como mensagem, mais o Scout no WhatsApp.',
+    whatsappPendingNote:
+      'Os digests por WhatsApp começam assim que a Meta aprovar nosso template de mensagem. O email funciona hoje.',
   },
-  deliveryOnboarding: {
-    loading: 'Carregando seu onboarding...',
-    loadError: 'Não foi possível carregar sua conta agora.',
-    prepBadge: 'Ativação de fortuna',
-    prepTitle: 'Preparando sua fortuna...',
-    prepSubtitle:
-      'Estamos conectando seu canal escolhido ao seu ritmo diário de sorte e preparando a etapa de ativação da assinatura.',
-    preparationSteps: [
-      'Escolhendo seu ritual de entrega',
-      'Ajustando seu timing de liberação',
-      'Carregando abundância diária',
-      'Preparando sua porta de ativação',
-    ],
-    editBadge: 'Configurações de entrega',
-    createBadge: 'Etapa 1',
-    editTitle: 'Atualize onde a Trimry deve entregar sua projeção diária',
-    createTitle: 'Como a Trimry deve entregar sua projeção diária?',
-    editSubtitle:
-      'Altere sua preferência de entrega quando quiser. Use email, WhatsApp ou mantenha ambos os canais ativos.',
-    createSubtitle:
-      'Email é o padrão. Adicione WhatsApp apenas se também quiser entrega no celular.',
-    activationChecklist: [
-      'Escolha email primeiro e adicione WhatsApp somente se quiser.',
-      'Sua página de ativação abre antes da Stripe.',
-      'Você pode alterar a entrega depois no painel.',
-    ],
-    dashboardChecklist: [
-      'Escolha sua preferência de entrega.',
-      'Adicione WhatsApp somente se quiser ativá-lo.',
-      'Você volta para o painel.',
-    ],
-    setupTitle: 'Configuração de entrega',
-    setupSubtitle:
-      'O email chega à sua caixa de entrada. WhatsApp continua opcional até você ativar.',
-    channelLabel: 'Canal de entrega',
-    mondayTimeLabel: 'Horário da projeção diária',
-    mondayTimeHint: 'Agendado todos os dias às {time} em {zone}.',
-    emailDeliveryLabel: 'Entrega por email',
-    whatsappOffHint:
-      'WhatsApp fica desativado por padrão. Ative apenas se também quiser entrega no celular.',
-    whatsappConsentLabel:
-      'Concordo em receber mensagens de assinatura da Trimry por WhatsApp neste número.',
-    whatsappConsentHint:
-      'Você pode sair quando quiser respondendo STOP no WhatsApp ou desativando a entrega por WhatsApp no painel.',
-    submitContinue: 'Continuar para ativação',
-    submitSave: 'Salvar configurações de entrega',
-    saveError: 'Não foi possível salvar suas configurações de entrega agora.',
-    whatsappConsentError:
-      'Confirme o consentimento do WhatsApp antes de habilitar a entrega por WhatsApp.',
-  },
-  activate: {
-    loading: 'Carregando sua etapa de ativação...',
-    loadError: 'Não foi possível carregar sua ativação agora.',
-    unavailable: 'Não é possível continuar agora.',
-    badge: '{trialPeriodDays} dias grátis',
-    title:
-      'Comece seu guia diário de sorte grátis por {trialPeriodDays} dias.',
-    subtitle:
-      'Hoje não há cobrança. A Trimry entrega um sinal diário para focar sua intenção, fortalecer sua crença e ajudar você a se mover sentindo mais sorte e abertura para fortuna real.',
-    cards: [
-      '{trialPeriodDays} dias grátis no checkout da Stripe.',
-      'Sinais diários de manifestação para dinheiro, relacionamentos, energia e liberação.',
-      'Calendário mensal para escolher melhores momentos.',
-    ],
-    primaryButton: 'Começar {trialPeriodDays} dias grátis',
-    secondaryButton: 'Alterar entrega',
-    snapshotTitle: 'Seu resumo de ativação',
-    deliveryPreferenceLabel: 'Preferência de entrega',
-    emailDeliveryLabel: 'Entrega por email',
-    projectionTimingLabel: 'Horário da projeção',
-    whatsappDeliveryLabel: 'Entrega por WhatsApp',
-    billingLabel: 'Hoje',
-    billingValue:
-      'Grátis por {trialPeriodDays} dias na Stripe. Depois continue por {billingInline}.',
-    unsubscribeTitle: 'Cancelar é fácil',
-    unsubscribeText:
-      'Se a Trimry não for para você, cancelar é simples: fale com Luck Guru, cancele pelo painel web ou peça por email.',
-    sampleTitle: 'Teste uma projeção diária real',
-    sampleText:
-      'Envie uma amostra antes de assinar. Use como hábito de manifestação: leia o sinal, defina uma intenção e observe como a fortuna começa a mudar sua postura.',
-    sampleChannelLabel: 'Enviar por',
-    sampleEmailOption: 'Email',
-    sampleWhatsappOption: 'WhatsApp',
-    sampleBothOption: 'Ambos',
-    sampleEmailButton: 'Enviar amostra por email',
-    sampleWhatsappButton: 'Enviar amostra por WhatsApp',
-    sampleBothButton: 'Enviar por ambos',
-    sampleWhatsappNumberLabel: 'Número de WhatsApp',
-    sampleWhatsappPlaceholder: '+5511999999999',
-    sampleWhatsappConsentLabel:
-      'Concordo em receber esta amostra da Trimry e mensagens de assinatura por WhatsApp.',
-    sampleAlreadySent: 'Sua amostra única já foi enviada.',
-    sampleSuccess:
-      'Amostra enviada. Se esse ritmo for útil, continue com a Stripe para receber a Trimry todos os dias.',
-    sampleEmailUnavailable:
-      'Esta conta não tem um email regular para envio da amostra.',
-    sampleWhatsappConsentError:
-      'Confirme o consentimento do WhatsApp antes de enviar a amostra.',
-    previewBadge: 'Prévia do trial',
-    previewTitle: 'O que desbloqueia durante o trial',
-    previewLabel: 'Prévia',
-    previewDayLabel: 'Sinal diário',
-    emailFirstTitle: 'Entrega primeiro por email',
-    whyItWorksLabel: 'Por que funciona',
-    whyItWorksText:
-      'A manifestação funciona melhor quando a crença vira postura diária. A Trimry transforma essa crença em um ritmo simples: notar o sinal, definir intenção e agir como se a sorte já estivesse se movendo com você.',
-    carouselBadge: 'Psicologia do impulso',
-    carouselTitle:
-      'A sorte fica mais forte quando sua mente começa a se mover com ela.',
-    carouselSubtitle:
-      'Todas essas vozes apontam para o mesmo mecanismo: crença muda postura, postura muda ação e ação muda o que parece possível.',
+  delivery: {
+    badge: 'Ajustes de entrega',
+    title: 'Como a Trimry deve entregar sua agenda?',
+    subtitle: 'Email é o padrão. Adicione WhatsApp quando quiser a agenda como mensagem.',
+    emailLabel: 'Email de entrega',
+    channelLabel: 'Canal',
+    scheduleLabel: 'Horário de entrega',
+    consentLabel: 'Aceito receber alertas esportivos da Trimry pelo WhatsApp.',
+    consentHint: 'Necessário apenas se você escolher entrega por WhatsApp.',
+    saveButton: 'Salvar ajustes',
+    savingButton: 'Salvando...',
+    backButton: 'Voltar ao painel',
+    confirmBadge: 'Confirmação de entrega',
+    confirmTitle: 'Confirme onde quer sua agenda',
+    confirmSubtitle:
+      'Sua assinatura já está pronta. Antes de entrar no painel, confirme se quer receber a Trimry por email, WhatsApp ou ambos.',
+    confirmBackButton: 'Ir para o painel',
+    success: 'Ajustes de entrega atualizados.',
+    help: 'As mudanças valem apenas para entregas futuras.',
+    editMode: 'Modo edição',
+    whatsappNumberLabel: 'Número de WhatsApp',
+    whatsappOptional: 'WhatsApp continua opcional até você ativá-lo.',
+    loadError: 'Não foi possível carregar os ajustes de entrega.',
+    consentError: 'Confirme o consentimento do WhatsApp antes de habilitar esse canal.',
+    saveError: 'Não foi possível salvar os ajustes de entrega.',
+    loading: 'Carregando ajustes de entrega...',
+    redirecting: 'Redirecionando...',
   },
   checkout: {
     badge: 'Assinatura Stripe',
     badgeCancelled: 'Checkout pausado',
     title: 'Abrindo sua assinatura da Trimry...',
     titleCancelled: 'Sua assinatura está esperando',
-    subtitle:
-      'A Stripe confirma seu método de pagamento com segurança para seu guia diário de sorte continuar.',
+    subtitle: 'A Stripe confirma seu método de pagamento com segurança para seus alertas começarem.',
     subtitleCancelled:
-      'Nada foi perdido. Suas configurações continuam salvas e você pode assinar quando quiser.',
+      'Nada foi perdido. Seus times e configurações continuam salvos e você pode assinar quando quiser.',
     openError: 'Não foi possível abrir o checkout da Stripe agora.',
-    resumeTitle: 'Assinar a Trimry',
-    resumeSubtitle:
-      'Sua orientação diária continua esperando. Continue para a Stripe e confirme sua assinatura.',
+    resumeTitle: 'Ative seus alertas',
+    resumeSubtitle: 'Sua agenda está pronta. Continue para a Stripe e confirme sua assinatura.',
     resumeButton: 'Assinar com Stripe',
     resumeHint: 'Checkout seguro da Stripe. Cancele quando quiser.',
     deliveryLabel: 'Canal de entrega',
-    timingLabel: 'Horário diário',
+    timingLabel: 'Horário de entrega',
     helper:
       'Estamos criando o checkout seguro da Stripe para sua assinatura. Se nada acontecer, espere um segundo ou recarregue esta página.',
     unsubscribeHelp:
-      'Cancelar é fácil: fale com Luck Guru, cancele pelo painel web ou peça por email.',
+      'Cancelar é fácil: pelo painel, pelo portal Stripe ou respondendo STOP no WhatsApp.',
     trialHighlights: [
-      'Sinal diário de fortuna entregue por email, WhatsApp ou ambos.',
-      'Ritmo de manifestação para crença, ação e oportunidade.',
-      'Calendário mensal completo desbloqueado com sua assinatura.',
+      'Agenda pessoal de próximos eventos por email, WhatsApp ou ambos.',
+      'Esportes, ligas e times ilimitados, atualizados várias vezes ao dia.',
+      'Assistente Scout na web e no WhatsApp.',
     ],
   },
+  agenda: {
+    title: 'Sua agenda',
+    subtitle: 'Cada evento que vem dos times e ligas que você acompanha, no seu fuso.',
+    refresh: 'Atualizar',
+    refreshing: 'Atualizando...',
+    empty: 'Nada agendado neste período. Amplie o alcance ou siga mais times.',
+    emptyNoPreferences: 'Escolha seus esportes, ligas e times para preencher sua agenda.',
+    emptyCta: 'Configurar preferências',
+    today: 'Hoje',
+    tomorrow: 'Amanhã',
+    timeTbc: 'Horário a confirmar',
+    followedTeam: 'Seu time',
+    followedLeague: 'Sua liga',
+    sportWide: 'Destaque',
+    lookahead: 'Alcance',
+    days: 'dias',
+    timeZoneNote: 'Horários em {zone}',
+    highlightsTitle: 'Destaques',
+    countLabel: '{count} eventos',
+    lastDigestLabel: 'Último digest enviado',
+    lastDigestNever: 'Nenhum digest enviado ainda',
+    loadError: 'Não foi possível carregar sua agenda agora.',
+  },
   dashboard: {
-    title: 'Seu painel de assinatura',
-    intro: 'Gerencie seus canais de entrega e seu plano diário da Trimry.',
-    adminBadge: 'Conta admin',
-    loading: 'Carregando sua conta...',
-    noData: 'Entre para acessar seu painel.',
+    title: 'Painel',
+    intro: 'Sua agenda, preferências e configurações de entrega.',
+    adminBadge: 'Admin',
+    loading: 'Carregando seu painel...',
+    noData: 'Não foi possível carregar sua conta.',
     tabs: {
+      agenda: 'Agenda',
+      preferences: 'Times e ligas',
+      delivery: 'Entrega e cobrança',
       account: 'Conta',
-      predictionCalendar: 'Calendário',
-      sends: 'Envios',
-      onboarding: 'Onboarding',
+      sends: 'Envios admin',
+      sportsSync: 'Sync esportivo',
     },
-    onboarding: {
-      title: 'Laboratório de onboarding admin',
-      subtitle:
-        'Use esta seção para abrir e testar o fluxo de onboarding como conta admin sem sair do painel.',
-      cta: 'Abrir fluxo onboarding',
-      hint: 'Isso abre /activate no modo de teste admin.',
-    },
+    preferencesTitle: 'Times, ligas e ritmo',
+    preferencesSubtitle: 'Tudo o que você mudar aqui atualiza seu próximo digest e sua agenda.',
+    preferencesSaved: 'Preferências salvas. Sua agenda está sendo atualizada.',
+    preferencesSaveError: 'Não foi possível salvar suas preferências agora.',
     status: 'Status',
-    nextMessage: 'Próxima mensagem diária',
-    subscribeButton: 'Ativar assinatura',
-    noSubscription: 'Você ainda não tem uma assinatura ativa.',
+    nextMessage: 'Próximo digest',
+    subscribeButton: 'Ativar alertas',
+    noSubscription: 'Os alertas ainda não estão ativos',
+    noSubscriptionSubtitle:
+      'Escolha seu canal e horário e inicie o teste grátis para receber sua agenda por email ou WhatsApp.',
     paymentPending: 'Pagamento pendente',
     paymentIssue: 'Problema de pagamento',
-    billingSuccess:
-      'A Stripe reportou um checkout bem-sucedido. Estamos sincronizando sua assinatura agora.',
-    profileTitle: 'Perfil da conta',
-    profileSubtitle:
-      'Atualize seus dados e o fuso horário usado para sua projeção diária.',
+    billingSuccess: 'Sua assinatura está ativa. Sua primeira agenda está a caminho.',
+    profileTitle: 'Perfil',
+    profileSubtitle: 'Nome e fuso horário usados na sua agenda e nos digests.',
     profileSave: 'Salvar perfil',
-    profileTimeZoneHint:
-      'A entrega diária é calculada a partir deste fuso horário IANA.',
-    projectionCalendar: {
-      title: 'Calendário de projeção',
-      subtitle:
-        'Planeje seus próximos 7 dias de sorte. Assinantes desbloqueiam a semana atual, não o mês inteiro antecipado.',
-      fullAccessHint:
-        'Semana de sorte desbloqueada. Revise os próximos 7 dias e planeje seus movimentos com melhor timing.',
-      lockedAccessHint:
-        'Nesta conta, apenas hoje está desbloqueado. Ative sua assinatura para revelar a semana completa.',
-      loadError: 'Não foi possível carregar seu calendário de projeção agora.',
-      lockedDayBadge: 'Bloqueado',
-      lockedDayTitle: 'Dia bloqueado',
-      lockedDaySubtitle:
-        'Ative sua assinatura para revelar este dia dentro do seu plano de sorte de 7 dias.',
-    },
-    predictionCalendar: {
-      notesPortugueseLabel: 'Nota (português)',
-      notesHint:
-        'Todas as notas são obrigatórias e serão usadas conforme o idioma ativo.',
-    },
-    passwordTitle: 'Segurança',
-    passwordSubtitle:
-      'Altere sua senha quando precisar. Primeiro confirme sua senha atual.',
+    profileTimeZoneHint: 'Mudar o fuso atualiza os horários e seu horário de entrega.',
+    passwordTitle: 'Senha',
+    passwordSubtitle: 'Defina ou altere a senha da sua conta.',
     currentPasswordLabel: 'Senha atual',
     newPasswordLabel: 'Nova senha',
     confirmPasswordLabel: 'Confirmar nova senha',
     passwordSave: 'Atualizar senha',
-    passwordSuccess: 'Senha atualizada com sucesso.',
-    passwordMismatchError: 'A nova senha e a confirmação não coincidem.',
-    passwordDifferentError:
-      'A nova senha deve ser diferente da senha atual.',
-    passwordSaveError: 'Não foi possível atualizar sua senha agora.',
-    dangerTitle: 'Zona de risco',
-    dangerSubtitle:
-      'Exclua sua conta e saia imediatamente. Mantemos um registro marcado como excluído para auditoria, mas seu email de login é anonimizado e seus canais ativos são interrompidos.',
+    passwordSuccess: 'Senha atualizada.',
+    passwordMismatchError: 'As novas senhas não coincidem.',
+    passwordDifferentError: 'A nova senha deve ser diferente da atual.',
+    passwordSaveError: 'Não foi possível atualizar a senha agora.',
+    dangerTitle: 'Zona de perigo',
+    dangerSubtitle: 'Excluir sua conta cancela a cobrança e remove suas preferências permanentemente.',
     deleteButton: 'Excluir conta',
     deleteLoading: 'Excluindo...',
-    deleteConfirm:
-      'Excluir sua conta? Isso encerrará sua sessão imediatamente e interromperá seus canais atuais de entrega.',
-    deleteError: 'Não foi possível excluir sua conta agora.',
-    noSubscriptionSubtitle:
-      '{billingCompact} · desbloqueie seu calendário de sorte de 7 dias. Lembretes são opcionais.',
-    mondayProjectionTime: 'Horário opcional do lembrete',
-    sentOnMondaysAt: 'Se os lembretes estiverem ativos, são enviados todos os dias às {time} em {zone}.',
+    deleteConfirm: 'Excluir sua conta Trimry e cancelar qualquer assinatura? Isso não pode ser desfeito.',
+    deleteError: 'Não foi possível excluir a conta agora.',
+    deliveryHourLabel: 'Horário de entrega',
+    deliveryHourHint: 'Hora local em {zone}.',
     emailDeliveryLabel: 'Entrega por email',
-    whatsappOffSetup:
-      'WhatsApp está desligado. Você pode usar a Trimry só como calendário ou ativar lembretes depois.',
-    whatsappConsentLabel:
-      'Concordo em receber mensagens de assinatura da Trimry por WhatsApp neste número.',
-    whatsappConsentHint:
-      'Você pode sair quando quiser respondendo STOP no WhatsApp ou desativando o WhatsApp aqui.',
-    whatsappConsentError:
-      'Confirme o consentimento do WhatsApp antes de habilitar a entrega por WhatsApp.',
-    pendingTitle: 'Ative sua assinatura Trimry',
-    pendingSubtitle:
-      'Sua preferência de entrega já está salva. Antes do pagamento, passamos por uma etapa breve de ativação e depois abrimos o checkout seguro da Stripe.',
-    pendingDeliveryPreferenceLabel: 'Preferência de entrega',
-    pendingEmailDeliveryLabel: 'Entrega por email',
-    pendingProjectionTimingLabel: 'Horário da projeção',
-    pendingWhatsappLabel: 'Entrega por WhatsApp',
-    continueActivation: 'Continuar ativação',
-    changeDeliverySettings: 'Alterar entrega',
-    activePlanTitle: 'Calendário de sorte Trimry',
-    canceledPlanTitle: 'Sua assinatura Trimry está cancelada',
-    canceledNote:
-      'Você pode reativar quando quiser por esta conta. Seus canais de entrega e horário diário continuam salvos abaixo.',
-    activeNote:
-      'Cancele quando quiser por este painel. Se voltar depois, você pode reativar pela mesma conta.',
-    deliveryPreferenceLabel: 'Preferência de entrega',
-    nextMessageIfReactivated: 'Se reativada hoje, sua próxima mensagem seria',
-    weeklyProjectionTimeLabel: 'Horário opcional do lembrete',
-    futureMessagesHint: 'Se os lembretes estiverem ativos, as futuras mensagens seguirão este horário em {zone}.',
-    whatsappOffActive:
-      'WhatsApp está desativado. Seu calendário continua funcionando; ative só se quiser lembretes no celular.',
-    saveDeliverySettings: 'Salvar configurações de lembrete',
-    reactivateButton: 'Reativar assinatura',
-    reactivateLoading: 'Preparando reativação...',
+    whatsappOffSetup: 'WhatsApp está desligado. Escolha WhatsApp ou ambos para adicionar seu número.',
+    whatsappConsentLabel: 'Aceito receber alertas esportivos da Trimry pelo WhatsApp.',
+    whatsappConsentHint: 'Responda STOP quando quiser para cancelar.',
+    whatsappConsentError: 'Confirme o consentimento do WhatsApp antes de habilitar esse canal.',
+    pendingTitle: 'Termine de ativar seus alertas',
+    pendingSubtitle: 'Suas configurações estão salvas. Conclua o checkout da Stripe para iniciar o teste.',
+    pendingDeliveryPreferenceLabel: 'Canal',
+    pendingEmailDeliveryLabel: 'Email',
+    pendingTimingLabel: 'Horário de entrega',
+    pendingWhatsappLabel: 'WhatsApp',
+    activePlanTitle: 'Alertas ativos',
+    canceledPlanTitle: 'Alertas cancelados',
+    canceledNote: 'Suas preferências estão salvas. Reative quando quiser voltar a receber os digests.',
+    activeNote: 'Sua agenda sai conforme o agendado. Mude o canal ou o horário abaixo.',
+    deliveryPreferenceLabel: 'Canal',
+    nextMessageIfReactivated: 'Próximo digest se reativar',
+    saveDeliverySettings: 'Salvar ajustes de entrega',
+    reactivateButton: 'Reativar alertas',
+    reactivateLoading: 'Reativando...',
     cancelButton: 'Cancelar assinatura',
     cancelLoading: 'Cancelando...',
-    manageBillingButton: 'Gerenciar cobrança na Stripe',
-    manageBillingLoading: 'Abrindo Stripe...',
-    billingFootnoteCanceled:
-      'Você pode reativar por esta conta quando quiser. Stripe Billing continua disponível para faturas e histórico.',
-    billingFootnoteActive:
-      'Mudanças no método de pagamento e histórico de faturas continuam na Stripe Billing, mas agora você também pode cancelar diretamente por este painel.',
-    cancelConfirm:
-      'Cancelar sua assinatura agora? A cobrança futura será interrompida imediatamente e você poderá reativar depois.',
-    cancelSuccess:
-      'Sua assinatura foi cancelada. Suas configurações de entrega continuam salvas e você pode reativar quando quiser.',
-    cancelError: 'Não foi possível cancelar sua assinatura agora.',
-    reactivateError: 'Não foi possível reativar sua assinatura agora.',
-    openBillingError: 'Não foi possível abrir a cobrança da Stripe agora.',
-    saveDeliveryError: 'Não foi possível salvar suas configurações de entrega.',
+    manageBillingButton: 'Gerenciar cobrança',
+    manageBillingLoading: 'Abrindo cobrança...',
+    billingFootnoteCanceled: 'Reativar abre um novo checkout da Stripe.',
+    billingFootnoteActive: 'Faturas, método de pagamento e cancelamento são gerenciados no portal Stripe.',
+    cancelConfirm: 'Cancelar sua assinatura Trimry? Os alertas param no fim do período atual.',
+    cancelSuccess: 'Assinatura cancelada.',
+    cancelError: 'Não foi possível cancelar agora.',
+    reactivateError: 'Não foi possível reativar agora.',
+    openBillingError: 'Não foi possível abrir o portal de cobrança agora.',
+    sportsSync: {
+      title: 'Sync de eventos esportivos',
+      subtitle: 'Cache de próximos eventos obtidos do TheSportsDB para cada liga, time e esporte acompanhado.',
+      runButton: 'Sincronizar pendentes',
+      forceButton: 'Forçar sync completo',
+      running: 'Sincronizando...',
+      eventCount: 'Eventos em cache',
+      upcomingCount: 'Próximos eventos',
+      lastFetched: 'Última busca',
+      freeKeyWarning:
+        'Usando a chave gratuita do TheSportsDB: os resultados são truncados a poucas linhas por consulta. Configure SPORTSDB_API_KEY com uma chave Premium para calendários completos.',
+      summary: 'Alvos {targets} · buscados {fetched} · pulados {skipped} · falhos {failed} · gravados {events}',
+      statesTitle: 'Alvos de sync',
+      loadError: 'Não foi possível carregar o status do sync.',
+    },
+    sendCampaigns: sendCampaignsEn,
   },
-  statuses: {
-    active: 'Ativa',
-    paused: 'Pausada',
-    canceled: 'Cancelada',
+  scout: {
+    name: 'Scout',
+    launcherLabel: 'Falar com o Scout',
+    launcherSubLabel: 'Seu assistente esportivo',
+    title: 'Pergunte sobre qualquer jogo',
+    introAnonymous:
+      '⚽ Olá, eu sou o Scout. Me diga um time ou liga e mostro o que vem por aí. Crie uma conta para eu lembrar seus times.',
+    introAccount:
+      '⚽ Olá, eu sou o Scout. Posso adicionar times, mudar seu ritmo e contar o que tem. Os alertas por email e WhatsApp começam com sua assinatura.',
+    introActive:
+      '⚽ Olá, eu sou o Scout. Seus alertas estão ativos. Pergunte o que tem hoje, adicione um time ou mude suas configurações de entrega.',
+    prompts: ['O que tem neste fim de semana?', 'Seguir Flamengo', 'Muda para semanal'],
+    placeholder: 'Pergunte ao Scout...',
+    send: 'Enviar',
+    typing: 'O Scout está conferindo os calendários',
+    issue:
+      'Tive um problema temporário no canal web. Tente de novo em alguns segundos ou continue no WhatsApp.',
+    memorySaved: 'Memória salva na sua conta',
+    temporaryMemory: 'Memória temporária',
+    alertsActive: 'Alertas ativos',
+    alertsInactive: 'Alertas não ativos',
+    createAccount: 'Criar conta',
+    activateAlerts: 'Ativar alertas',
+    openDashboard: 'Abrir painel',
+    whatsappCta: 'Continuar no WhatsApp',
+    preferencesUpdated: 'Preferências atualizadas',
   },
-  legal: {
-    terms: 'Termos de serviço',
-    privacy: 'Política de privacidade',
-    disclaimer: 'Aviso ritual',
-    dataDeletion: 'Instruções de exclusão de dados',
-    englishNotice:
-      'O texto legal principal é mantido em inglês. Esta tradução é fornecida por conveniência.',
-  },
+  statuses: { active: 'Ativa', paused: 'Pausada', canceled: 'Cancelada' },
+  legal: legalPt,
   cookieConsent: {
     title: 'Cookies e analytics',
     description:
@@ -2814,31 +2364,17 @@ const portugueseMessages = mergeMessages(englishMessages, {
     success: 'Salvo com sucesso.',
     error: 'Algo deu errado. Tente novamente.',
   },
-  carousel: {
-    proofLabel: 'Prova rotativa de mentalidade',
-    whyTitle: 'Por que isso importa',
-    whyText:
-      'Quando as pessoas sentem que o timing as favorece, carregam mais confiança, percebem mais aberturas e se movem com menos hesitação.',
-    effectTitle: 'Efeito Trimry',
-    effectText:
-      'A mensagem diária foi criada para aguçar a atenção, reforçar o otimismo e transformar ritual em impulso que você realmente sente.',
-    sequenceLabel: 'Sequência de citações',
-  },
   notFound: {
     title: 'Página não encontrada',
     description: 'A página solicitada não está disponível.',
     cta: 'Voltar ao início',
   },
-} satisfies DeepPartial<MessageSection>)
-
-const translations: Record<LanguageCode, MessageSection> = {
-  en: englishMessages,
-  es: spanishMessages,
-  pt: portugueseMessages,
 }
 
+const messages: Record<LanguageCode, MessageSection> = { en, es, pt }
+
 export function isLanguageCode(value: string): value is LanguageCode {
-  return LANGUAGE_OPTIONS.some((language) => language.code === value)
+  return LANGUAGE_OPTIONS.some((option) => option.code === value)
 }
 
 export function languageFromLocale(value?: string | null): LanguageCode | null {
@@ -2860,16 +2396,14 @@ export function languageFromLocale(value?: string | null): LanguageCode | null {
     return 'en'
   }
 
-  return null
+  return isLanguageCode(candidate) ? candidate : null
 }
 
 export function normalizeLanguageCode(value?: string | null): LanguageCode {
   return languageFromLocale(value) ?? DEFAULT_LANGUAGE
 }
 
-export function languageFromCountryCode(
-  countryCode?: string | null,
-): LanguageCode | null {
+export function languageFromCountryCode(countryCode?: string | null): LanguageCode | null {
   const normalized = countryCode?.trim().toUpperCase()
 
   if (!normalized) {
@@ -2887,9 +2421,7 @@ export function languageFromCountryCode(
   return null
 }
 
-export function languageFromAcceptLanguage(
-  acceptLanguage?: string | null,
-): LanguageCode | null {
+export function languageFromAcceptLanguage(acceptLanguage?: string | null): LanguageCode | null {
   const candidates =
     acceptLanguage
       ?.split(',')
@@ -2922,17 +2454,14 @@ export function languageToIntlLocale(language?: string | null) {
 }
 
 export function getMessages(language: LanguageCode): MessageSection {
-  return translations[language] ?? englishMessages
+  return messages[language] ?? messages.en
 }
 
-export function interpolate(
-  template: string,
-  values: Record<string, string | number>,
-) {
-  return Object.entries(values).reduce(
-    (result, [key, value]) => result.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value)),
-    template,
-  )
+export function interpolate(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => {
+    const value = values[key]
+    return value === undefined ? match : String(value)
+  })
 }
 
 export const DEFAULT_LANGUAGE: LanguageCode = 'en'

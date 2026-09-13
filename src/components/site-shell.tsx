@@ -8,11 +8,10 @@ import type { ReactNode } from 'react'
 
 import { BrandLogo } from '@/components/brand-logo'
 import { LanguageSwitcher } from '@/components/language-switcher'
-import { LuckGuruChatWidget } from '@/components/luck-guru-chat-widget'
+import { ScoutChatWidget } from '@/components/scout-chat-widget'
 import { useLanguage } from '@/components/language-provider'
 import type { AuthViewer } from '@/lib/auth-viewer'
 import { COMPANY } from '@/lib/company'
-import { BLOG_PATH, GOOD_BAD_GUIDE_PATH } from '@/lib/seo'
 
 function MenuIcon({ open }: { open: boolean }) {
   return (
@@ -36,6 +35,19 @@ function MenuIcon({ open }: { open: boolean }) {
   )
 }
 
+function Avatar({ label, size = 'md' }: { label: string; size?: 'sm' | 'md' }) {
+  return (
+    <span
+      className={clsx(
+        'inline-flex items-center justify-center rounded-full bg-brand-gradient font-black uppercase tracking-[0.1em] text-white shadow-glow',
+        size === 'md' ? 'h-10 w-10 text-xs' : 'h-9 w-9 text-[11px]',
+      )}
+    >
+      {label}
+    </span>
+  )
+}
+
 export function SiteShell({
   children,
   viewer,
@@ -56,59 +68,32 @@ export function SiteShell({
     avatarFallback && avatarFallback.length > 0
       ? avatarFallback
       : viewer?.email.slice(0, 2).toUpperCase() ?? 'TR'
-  const hideLuckGuruChat = pathname === '/' || pathname?.startsWith('/activate')
+  const hideScoutChat = pathname?.startsWith('/activate') || pathname?.startsWith('/checkout')
 
   const baseLinks = [
-    { href: '/', label: messages.nav.home, active: pathname === '/' },
-    {
-      href: BLOG_PATH,
-      label: messages.nav.blog,
-      active: pathname === BLOG_PATH,
-    },
-    {
-      href: GOOD_BAD_GUIDE_PATH,
-      label: messages.nav.guide,
-      active: pathname === GOOD_BAD_GUIDE_PATH,
-    },
-    { href: '/#how-it-works', label: messages.nav.howItWorks, active: false },
-    { href: '/#pricing', label: messages.nav.pricing, active: false },
-    { href: '/#faq', label: messages.nav.faq, active: false },
+    { href: '/#how-it-works', label: messages.nav.howItWorks },
+    { href: '/#sports', label: messages.nav.sports },
+    { href: '/#pricing', label: messages.nav.pricing },
+    { href: '/#faq', label: messages.nav.faq },
   ]
 
-  const desktopNavLinkClass = (active: boolean) =>
-    clsx(
-      'rounded-full px-4 py-2.5 text-sm font-semibold',
-      active ? 'cosmic-tab-active-alt' : 'cosmic-tab',
-    )
-
   return (
-    <div className="relative min-h-screen overflow-hidden text-slate-100">
-      <div className="cosmic-nebula pointer-events-none absolute inset-0" />
-      <div className="cosmic-stars pointer-events-none absolute inset-0" />
-      <div className="cosmic-grid pointer-events-none absolute inset-0" />
-      <div className="cosmic-orb orb-1 pointer-events-none" />
-      <div className="cosmic-orb orb-2 pointer-events-none" />
-      <div className="cosmic-orb orb-3 pointer-events-none" />
-
+    <div className="relative flex min-h-screen flex-col">
       <Disclosure
         as="header"
-        className="relative z-20 border-b border-[rgba(134,190,255,0.2)] bg-[linear-gradient(180deg,rgba(5,11,28,0.82),rgba(8,18,45,0.62))] backdrop-blur-xl"
+        className="sticky top-0 z-30 border-b border-trimry-line/80 bg-white/85 backdrop-blur-xl"
       >
         {({ open }) => (
           <>
-            <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+            <div className="tr-container py-3.5">
               <div className="flex items-center justify-between gap-4 lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-8">
                 <div className="min-w-0">
                   <BrandLogo />
                 </div>
 
-                <nav className="hidden min-w-0 items-center justify-center gap-2 lg:flex">
+                <nav className="hidden min-w-0 items-center justify-center gap-1 lg:flex">
                   {baseLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={desktopNavLinkClass(link.active)}
-                    >
+                    <Link key={link.href} href={link.href} className="tr-tab">
                       {link.label}
                     </Link>
                   ))}
@@ -117,27 +102,31 @@ export function SiteShell({
                 <div className="hidden items-center justify-end gap-3 lg:flex">
                   <LanguageSwitcher compact />
                   {isAuthenticated ? (
-                    <Link
-                      href="/dashboard"
-                      aria-label={messages.nav.profile}
-                      title={viewer?.fullName || viewer?.email || messages.nav.profile}
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(247,223,161,0.3)] bg-[linear-gradient(135deg,rgba(241,191,85,0.2),rgba(121,242,255,0.16),rgba(120,88,255,0.24))] text-sm font-black uppercase tracking-[0.12em] text-slate-50 shadow-[0_10px_28px_rgba(5,18,38,0.35)] transition hover:scale-[1.03] hover:border-[rgba(247,223,161,0.44)]"
-                    >
-                      {avatarLabel}
-                    </Link>
-                  ) : (
                     <>
                       <Link
-                        href="/account/login"
-                        className="cosmic-outline-button rounded-full px-4 py-2.5 text-sm font-semibold"
+                        href="/dashboard"
+                        className={clsx(
+                          'tr-tab',
+                          pathname?.startsWith('/dashboard') && 'tr-tab-active',
+                        )}
                       >
-                        {messages.nav.login}
+                        {messages.nav.dashboard}
                       </Link>
                       <Link
-                        href="/account/register"
-                        className="cosmic-button-primary rounded-full px-4 py-2.5 text-sm font-black uppercase tracking-[0.1em] transition"
+                        href="/dashboard?tab=account"
+                        aria-label={messages.nav.profile}
+                        title={viewer?.fullName || viewer?.email || messages.nav.profile}
                       >
-                        {messages.nav.register}
+                        <Avatar label={avatarLabel} />
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/account/login" className="tr-btn-secondary tr-btn-sm">
+                        {messages.nav.login}
+                      </Link>
+                      <Link href="/activate" className="tr-btn-primary tr-btn-sm">
+                        {messages.nav.startFree}
                       </Link>
                     </>
                   )}
@@ -149,13 +138,12 @@ export function SiteShell({
                       href="/dashboard"
                       aria-label={messages.nav.profile}
                       title={viewer?.fullName || viewer?.email || messages.nav.profile}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(247,223,161,0.28)] bg-[linear-gradient(135deg,rgba(241,191,85,0.18),rgba(121,242,255,0.16),rgba(120,88,255,0.2))] text-xs font-black uppercase tracking-[0.12em] text-slate-50"
                     >
-                      {avatarLabel}
+                      <Avatar label={avatarLabel} size="sm" />
                     </Link>
                   ) : null}
 
-                  <Disclosure.Button className="cosmic-outline-button inline-flex h-11 w-11 items-center justify-center rounded-full p-0 text-cyan-50">
+                  <Disclosure.Button className="tr-btn-secondary h-10 w-10 rounded-full p-0">
                     <span className="sr-only">Toggle menu</span>
                     <MenuIcon open={open} />
                   </Disclosure.Button>
@@ -163,27 +151,22 @@ export function SiteShell({
               </div>
             </div>
 
-            <Disclosure.Panel className="border-t border-[rgba(134,190,255,0.12)] bg-[linear-gradient(180deg,rgba(5,11,28,0.9),rgba(12,17,47,0.86))] px-4 pb-5 pt-3 backdrop-blur-xl lg:hidden">
-              <div className="mx-auto max-w-7xl space-y-5">
-                <nav className="grid gap-2">
+            <Disclosure.Panel className="border-t border-trimry-line bg-white px-4 pb-5 pt-3 lg:hidden">
+              <div className="mx-auto max-w-6xl space-y-4">
+                <nav className="grid gap-1">
                   {baseLinks.map((link) => (
                     <Disclosure.Button
                       key={link.href}
                       as={Link}
                       href={link.href}
-                      className={clsx(
-                        'rounded-2xl px-4 py-3 text-left text-sm font-semibold',
-                        link.active
-                          ? 'cosmic-tab-active-alt'
-                          : 'cosmic-tab',
-                      )}
+                      className="rounded-xl px-4 py-3 text-left text-sm font-semibold text-trimry-slate hover:bg-trimry-surface"
                     >
                       {link.label}
                     </Disclosure.Button>
                   ))}
                 </nav>
 
-                <div className="cosmic-info-box rounded-[1.5rem] p-4">
+                <div className="tr-card-muted p-4">
                   <LanguageSwitcher fullWidth />
                 </div>
 
@@ -191,35 +174,25 @@ export function SiteShell({
                   <Disclosure.Button
                     as={Link}
                     href="/dashboard"
-                    className="cosmic-info-box flex items-center justify-between rounded-[1.5rem] px-4 py-3 text-left transition hover:border-[rgba(247,223,161,0.28)]"
+                    className="tr-card flex items-center justify-between px-4 py-3 text-left"
                   >
                     <div>
-                      <p className="text-sm font-semibold text-slate-50">
+                      <p className="text-sm font-semibold text-trimry-ink">
                         {viewer?.fullName || viewer?.email}
                       </p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[rgba(247,223,161,0.72)]">
-                        {messages.nav.profile}
+                      <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-trimry-blue">
+                        {messages.nav.dashboard}
                       </p>
                     </div>
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(247,223,161,0.28)] bg-[linear-gradient(135deg,rgba(241,191,85,0.18),rgba(121,242,255,0.16),rgba(120,88,255,0.2))] text-xs font-black uppercase tracking-[0.12em] text-slate-50">
-                      {avatarLabel}
-                    </span>
+                    <Avatar label={avatarLabel} size="sm" />
                   </Disclosure.Button>
                 ) : (
                   <div className="grid gap-2">
-                    <Disclosure.Button
-                      as={Link}
-                      href="/account/login"
-                      className="cosmic-outline-button rounded-2xl px-4 py-3 text-center text-sm font-semibold"
-                    >
+                    <Disclosure.Button as={Link} href="/account/login" className="tr-btn-secondary">
                       {messages.nav.login}
                     </Disclosure.Button>
-                    <Disclosure.Button
-                      as={Link}
-                      href="/account/register"
-                      className="cosmic-button-primary rounded-2xl px-4 py-3 text-center text-sm font-black uppercase tracking-[0.1em]"
-                    >
-                      {messages.nav.register}
+                    <Disclosure.Button as={Link} href="/activate" className="tr-btn-primary">
+                      {messages.nav.startFree}
                     </Disclosure.Button>
                   </div>
                 )}
@@ -229,39 +202,59 @@ export function SiteShell({
         )}
       </Disclosure>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-6 py-10 lg:px-8">{children}</main>
-      {hideLuckGuruChat ? null : <LuckGuruChatWidget />}
+      <main className="tr-container flex-1 py-8 lg:py-12">{children}</main>
+      {hideScoutChat ? null : <ScoutChatWidget />}
 
-      <footer className="relative z-10 border-t border-[rgba(134,190,255,0.18)] bg-[linear-gradient(180deg,rgba(4,10,27,0.78),rgba(8,15,38,0.9))] backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 text-sm text-[color:var(--cosmic-copy)] lg:px-8">
-          <p className="font-semibold text-slate-50">
-            © {new Date().getFullYear()} {COMPANY.legalName}. {messages.footer.rightsReserved}
-          </p>
-          <p>
-            {messages.footer.companyNumber}: {COMPANY.companyNumber}. {messages.footer.registeredOffice}:{' '}
-            {COMPANY.registeredOffice}
-          </p>
-          <p>{messages.footer.operationsOffice}: {COMPANY.operationsOffice}</p>
-          <p>
-            {messages.footer.contact}:{' '}
-            <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a>
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Link href={GOOD_BAD_GUIDE_PATH} className="cosmic-link">
-              Good/Bad Days Guide
+      <footer className="border-t border-trimry-line bg-white">
+        <div className="tr-container grid gap-8 py-10 text-sm text-trimry-slate lg:grid-cols-[1.2fr_1fr_1fr]">
+          <div className="space-y-3">
+            <BrandLogo />
+            <p className="max-w-sm">{messages.footer.tagline}</p>
+            <p className="tr-meta text-xs">{messages.footer.dataSource}</p>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-trimry-ink">
+              Trimry
+            </p>
+            <Link href="/#how-it-works" className="block hover:text-trimry-ink">
+              {messages.nav.howItWorks}
             </Link>
-            <Link href="/legal/terms" className="cosmic-link">
+            <Link href="/#pricing" className="block hover:text-trimry-ink">
+              {messages.nav.pricing}
+            </Link>
+            <Link href="/#faq" className="block hover:text-trimry-ink">
+              {messages.nav.faq}
+            </Link>
+            <Link href="/legal/terms" className="block hover:text-trimry-ink">
               {messages.legal.terms}
             </Link>
-            <Link href="/legal/privacy" className="cosmic-link">
+            <Link href="/legal/privacy" className="block hover:text-trimry-ink">
               {messages.legal.privacy}
             </Link>
-            <Link href="/legal/disclaimer" className="cosmic-link">
+            <Link href="/legal/disclaimer" className="block hover:text-trimry-ink">
               {messages.legal.disclaimer}
             </Link>
-            <Link href="/legal/data-deletion" className="cosmic-link">
+            <Link href="/legal/data-deletion" className="block hover:text-trimry-ink">
               {messages.legal.dataDeletion}
             </Link>
+          </div>
+          <div className="space-y-2 text-xs leading-5">
+            <p className="font-semibold text-trimry-ink">
+              © {new Date().getFullYear()} {COMPANY.legalName}. {messages.footer.rightsReserved}
+            </p>
+            <p>
+              {messages.footer.companyNumber}: {COMPANY.companyNumber}. {messages.footer.registeredOffice}:{' '}
+              {COMPANY.registeredOffice}
+            </p>
+            <p>
+              {messages.footer.operationsOffice}: {COMPANY.operationsOffice}
+            </p>
+            <p>
+              {messages.footer.contact}:{' '}
+              <a href={`mailto:${COMPANY.supportEmail}`} className="tr-link">
+                {COMPANY.supportEmail}
+              </a>
+            </p>
           </div>
         </div>
       </footer>

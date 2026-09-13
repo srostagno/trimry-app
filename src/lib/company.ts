@@ -10,11 +10,14 @@ export const COMPANY = {
 } as const
 
 export const SUBSCRIPTION_PLAN = {
-  id: 'trimry-weekly-whatsapp',
-  name: 'Trimry Daily Fortune Delivery',
+  id: 'trimry-sports-alerts',
+  name: 'Trimry Sports Alerts',
   cadence: 'Daily',
   monthlyPriceUsd: 2.99,
   currency: 'USD',
   internalTrialPeriodDays: 0,
   stripeTrialPeriodDays: 7,
 } as const
+
+export const ASSISTANT_NAME = 'Scout'
+export const SCOUT_WHATSAPP_NUMBER = '34689269278'

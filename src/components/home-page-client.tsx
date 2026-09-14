@@ -21,6 +21,7 @@ const PREVIEW_SPORTS: SportKey[] = [
   'motorsport',
   'fighting',
   'tennis',
+  'golf',
 ]
 
 function LivePreview() {

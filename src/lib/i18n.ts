@@ -75,6 +75,7 @@ export type MessageSection = {
     previewTitle: string
     previewSubtitle: string
     previewEmpty: string
+    previewWarming: string
     previewLoading: string
     previewError: string
     previewTimeZoneNote: string
@@ -1027,7 +1028,8 @@ const en: MessageSection = {
     previewEyebrow: 'Live preview',
     previewTitle: 'What is coming up this week',
     previewSubtitle: 'Pick a sport to see the real upcoming events Trimry tracks right now.',
-    previewEmpty: 'No events cached for this sport yet. Try another one or come back in a few minutes.',
+    previewEmpty: 'No events scheduled in the next two weeks for the featured competitions of this sport.',
+    previewWarming: 'Building the calendar for this sport… the first load takes about 30 seconds.',
     previewLoading: 'Loading upcoming events...',
     previewError: 'Unable to load the preview right now.',
     previewTimeZoneNote: 'Times shown in',
@@ -1498,7 +1500,8 @@ const es: MessageSection = {
     previewEyebrow: 'Vista en vivo',
     previewTitle: 'Lo que viene esta semana',
     previewSubtitle: 'Elige un deporte para ver los eventos reales que Trimry sigue ahora mismo.',
-    previewEmpty: 'Aún no hay eventos en caché para este deporte. Prueba otro o vuelve en unos minutos.',
+    previewEmpty: 'No hay eventos programados en las próximas dos semanas para las competiciones destacadas de este deporte.',
+    previewWarming: 'Preparando el calendario de este deporte… la primera carga tarda unos 30 segundos.',
     previewLoading: 'Cargando próximos eventos...',
     previewError: 'No pudimos cargar la vista previa en este momento.',
     previewTimeZoneNote: 'Horarios en',
@@ -1969,7 +1972,8 @@ const pt: MessageSection = {
     previewEyebrow: 'Prévia ao vivo',
     previewTitle: 'O que vem nesta semana',
     previewSubtitle: 'Escolha um esporte para ver os eventos reais que a Trimry acompanha agora.',
-    previewEmpty: 'Ainda não há eventos em cache para este esporte. Tente outro ou volte em alguns minutos.',
+    previewEmpty: 'Nenhum evento programado nas próximas duas semanas para as competições em destaque deste esporte.',
+    previewWarming: 'Montando o calendário deste esporte… o primeiro carregamento leva cerca de 30 segundos.',
     previewLoading: 'Carregando próximos eventos...',
     previewError: 'Não foi possível carregar a prévia agora.',
     previewTimeZoneNote: 'Horários em',

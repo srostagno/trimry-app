@@ -37,16 +37,27 @@ function LivePreview() {
     setTimeZone(detectBrowserTimeZone())
   }, [])
 
+  const [attempt, setAttempt] = useState(0)
+
   useEffect(() => {
     let cancelled = false
+    let retry: number | undefined
 
     setLoading(true)
     setError('')
 
-    fetchEventsPreview({ sport, days: 5, language, timeZone })
+    fetchEventsPreview({ sport, days: 14, language, timeZone })
       .then((payload) => {
-        if (!cancelled) {
-          setFeed(payload)
+        if (cancelled) {
+          return
+        }
+
+        setFeed(payload)
+
+        // First load of a sport: the API is still fetching its competitions.
+        // Poll a few times so the panel fills in without a manual reload.
+        if (payload.totalEvents === 0 && payload.cacheState === 'warming' && attempt < 5) {
+          retry = window.setTimeout(() => setAttempt((value) => value + 1), 8_000)
         }
       })
       .catch(() => {
@@ -63,8 +74,9 @@ function LivePreview() {
 
     return () => {
       cancelled = true
+      window.clearTimeout(retry)
     }
-  }, [language, messages.home.previewError, sport, timeZone])
+  }, [attempt, language, messages.home.previewError, sport, timeZone])
 
   const chips = useMemo(
     () =>
@@ -84,6 +96,7 @@ function LivePreview() {
             type="button"
             onClick={() => {
               setSport(chip.key)
+              setAttempt(0)
               trackEvent('home_preview_sport_selected', { sport: chip.key })
             }}
             className={clsx('tr-chip text-xs', chip.key === sport && 'tr-chip-active')}
@@ -101,7 +114,9 @@ function LivePreview() {
             feed={feed}
             loading={loading}
             error={error}
-            emptyMessage={messages.home.previewEmpty}
+            emptyMessage={
+              feed?.cacheState === 'warming' ? messages.home.previewWarming : messages.home.previewEmpty
+            }
             compact
             maxEventsPerDay={4}
           />

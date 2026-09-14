@@ -107,6 +107,7 @@ export type FeedDay = {
 }
 
 export type UpcomingFeed = {
+  cacheState?: 'ready' | 'warming'
   generatedAt: string
   timeZone: string
   locale: string

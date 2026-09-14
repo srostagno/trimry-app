@@ -92,6 +92,8 @@ export async function fetchSeoFeed(query: FeedQuery): Promise<UpcomingFeed | nul
     timeZone: query.timeZone,
     days: String(query.days ?? 14),
     wait: 'false',
+    // SEO pages never trigger provider fetches; the sync cron keeps them warm.
+    refresh: 'false',
   })
 
   if (query.sport) params.set('sport', query.sport)

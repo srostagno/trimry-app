@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 
 import { COMPANY, SUBSCRIPTION_PLAN } from '@/lib/company'
-import { DEFAULT_LANGUAGE, getMessages } from '@/lib/i18n'
+import { DEFAULT_LANGUAGE, getMessages, type LanguageCode } from '@/lib/i18n'
 
-const DEFAULT_PRODUCTION_SITE_URL = COMPANY.websiteUrl
+// Canonical host is www (the apex domain 308-redirects there).
+const DEFAULT_PRODUCTION_SITE_URL = 'https://www.trimry.com'
 
 function normalizeUrl(value: string) {
   return value.replace(/\/+$/, '')
@@ -63,7 +64,7 @@ export const SOCIAL_IMAGE_PATH = '/opengraph-image'
 export const TWITTER_IMAGE_PATH = '/twitter-image'
 
 const englishMessages = getMessages(DEFAULT_LANGUAGE)
-const rootCanonicalUrl = absoluteUrl('/')
+const rootCanonicalUrl = absoluteUrl('/es')
 
 function resolveIndexingAllowed(siteUrl: string) {
   const explicitIndexing = process.env.NEXT_PUBLIC_ALLOW_INDEXING
@@ -134,6 +135,29 @@ type PageMetadataOptions = {
   path?: string
   keywords?: string[]
   noIndex?: boolean
+  locale?: LanguageCode
+  /** Path shared by all languages (e.g. "/legal/terms"); builds hreflang links. */
+  localizedPath?: string
+  /** Languages the localizedPath exists in (defaults to all). */
+  languages?: LanguageCode[]
+}
+
+const OG_LOCALES: Record<LanguageCode, string> = {
+  en: 'en_US',
+  es: 'es_ES',
+  pt: 'pt_BR',
+}
+
+export function localizedAlternates(localizedPath: string, languages: LanguageCode[] = ['es', 'en', 'pt']) {
+  const normalized = localizedPath === '/' ? '' : localizedPath
+  const entries: Record<string, string> = {}
+
+  for (const language of languages) {
+    entries[language === 'pt' ? 'pt-BR' : language] = absoluteUrl(`/${language}${normalized}`)
+  }
+
+  entries['x-default'] = absoluteUrl(`/${languages.includes('es') ? 'es' : languages[0]}${normalized}`)
+  return entries
 }
 
 export function createPageMetadata({
@@ -142,6 +166,9 @@ export function createPageMetadata({
   path = '/',
   keywords = [],
   noIndex = false,
+  locale,
+  localizedPath,
+  languages,
 }: PageMetadataOptions): Metadata {
   const shouldNoIndex = noIndex || !IS_INDEXING_ALLOWED
   const canonical = absoluteUrl(path)
@@ -153,10 +180,17 @@ export function createPageMetadata({
     },
     description,
     keywords: [...SITE_KEYWORDS, ...keywords],
-    alternates: shouldNoIndex ? undefined : { canonical },
+    alternates: shouldNoIndex
+      ? undefined
+      : {
+          canonical,
+          ...(localizedPath !== undefined
+            ? { languages: localizedAlternates(localizedPath, languages) }
+            : {}),
+        },
     openGraph: {
       type: 'website',
-      locale: SITE_LOCALE,
+      locale: locale ? OG_LOCALES[locale] : SITE_LOCALE,
       url: canonical,
       siteName: SITE_NAME,
       title: resolvedTitle,

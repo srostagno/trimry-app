@@ -38,7 +38,7 @@ type LanguageContextValue = {
   messages: ReturnType<typeof getMessages>
 }
 
-type InitialLanguageSource = 'viewer' | 'stored' | 'detected' | 'default'
+type InitialLanguageSource = 'url' | 'viewer' | 'stored' | 'detected' | 'default'
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(
   undefined,
@@ -57,7 +57,7 @@ export function LanguageProvider({
   const [planPricing, setPlanPricing] = useState<CheckoutPlanPricing | null>(null)
 
   useEffect(() => {
-    if (initialLanguageSource === 'viewer') {
+    if (initialLanguageSource === 'viewer' || initialLanguageSource === 'url') {
       window.localStorage.setItem('trimry-language', initialLanguage)
       return
     }

@@ -51,7 +51,8 @@ export function SiteShell({
   viewer: AuthViewer | null
 }) {
   const pathname = usePathname()
-  const { messages } = useLanguage()
+  const { language, messages } = useLanguage()
+  const home = `/${language}`
   const isAuthenticated = Boolean(viewer)
   const avatarFallback = viewer?.fullName
     ?.split(/\s+/)
@@ -66,10 +67,10 @@ export function SiteShell({
   const hideScoutChat = pathname?.startsWith('/activate') || pathname?.startsWith('/checkout')
 
   const baseLinks = [
-    { href: '/#how-it-works', label: messages.nav.howItWorks },
-    { href: '/#sports', label: messages.nav.sports },
-    { href: '/#pricing', label: messages.nav.pricing },
-    { href: '/#faq', label: messages.nav.faq },
+    { href: `${home}#how-it-works`, label: messages.nav.howItWorks },
+    { href: `${home}#sports`, label: messages.nav.sports },
+    { href: `${home}#pricing`, label: messages.nav.pricing },
+    { href: `${home}#faq`, label: messages.nav.faq },
   ]
 
   return (
@@ -83,7 +84,7 @@ export function SiteShell({
             <div className="tr-container py-3.5">
               <div className="flex items-center justify-between gap-4 lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-8">
                 <div className="min-w-0">
-                  <BrandLogo />
+                  <BrandLogo href={home} />
                 </div>
 
                 <nav className="hidden min-w-0 items-center justify-center gap-1 lg:flex">
@@ -206,7 +207,7 @@ export function SiteShell({
       <footer className="border-t border-trimry-line bg-white">
         <div className="tr-container grid grid-cols-1 gap-8 py-10 text-sm text-trimry-slate sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr]">
           <div className="min-w-0 space-y-3 sm:col-span-2 lg:col-span-1">
-            <BrandLogo />
+            <BrandLogo href={home} />
             <p className="max-w-sm">{messages.footer.tagline}</p>
             <p className="tr-meta text-xs">{messages.footer.dataSource}</p>
           </div>
@@ -214,25 +215,25 @@ export function SiteShell({
             <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-trimry-ink">
               Trimry
             </p>
-            <Link href="/#how-it-works" className="block hover:text-trimry-ink">
+            <Link href={`${home}#how-it-works`} className="block hover:text-trimry-ink">
               {messages.nav.howItWorks}
             </Link>
-            <Link href="/#pricing" className="block hover:text-trimry-ink">
+            <Link href={`${home}#pricing`} className="block hover:text-trimry-ink">
               {messages.nav.pricing}
             </Link>
-            <Link href="/#faq" className="block hover:text-trimry-ink">
+            <Link href={`${home}#faq`} className="block hover:text-trimry-ink">
               {messages.nav.faq}
             </Link>
-            <Link href="/legal/terms" className="block hover:text-trimry-ink">
+            <Link href={`${home}/legal/terms`} className="block hover:text-trimry-ink">
               {messages.legal.terms}
             </Link>
-            <Link href="/legal/privacy" className="block hover:text-trimry-ink">
+            <Link href={`${home}/legal/privacy`} className="block hover:text-trimry-ink">
               {messages.legal.privacy}
             </Link>
-            <Link href="/legal/disclaimer" className="block hover:text-trimry-ink">
+            <Link href={`${home}/legal/disclaimer`} className="block hover:text-trimry-ink">
               {messages.legal.disclaimer}
             </Link>
-            <Link href="/legal/data-deletion" className="block hover:text-trimry-ink">
+            <Link href={`${home}/legal/data-deletion`} className="block hover:text-trimry-ink">
               {messages.legal.dataDeletion}
             </Link>
           </div>

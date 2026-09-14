@@ -21,6 +21,10 @@ type LegalSection = {
 }
 
 export type MessageSection = {
+  seo: {
+    homeTitle: string
+    homeDescription: string
+  }
   common: {
     loading: string
     saving: string
@@ -976,6 +980,11 @@ const legalPt: MessageSection['legal'] = {
 }
 
 const en: MessageSection = {
+  seo: {
+    homeTitle: 'Sports alerts by WhatsApp and email: never miss a game',
+    homeDescription:
+      'Pick the sports, leagues and teams you follow and get a personal agenda of upcoming matches, races and fights by email and WhatsApp, in your time zone.',
+  },
   common: {
     loading: 'Loading...',
     saving: 'Saving...',
@@ -1448,6 +1457,11 @@ const en: MessageSection = {
 }
 
 const es: MessageSection = {
+  seo: {
+    homeTitle: 'Alertas de partidos por WhatsApp y email: no te pierdas ningún partido',
+    homeDescription:
+      'Elige tus deportes, ligas y equipos y recibe cada mañana la agenda con los próximos partidos, carreras y peleas por WhatsApp o email, en tu horario.',
+  },
   common: {
     loading: 'Cargando...',
     saving: 'Guardando...',
@@ -1920,6 +1934,11 @@ const es: MessageSection = {
 }
 
 const pt: MessageSection = {
+  seo: {
+    homeTitle: 'Alertas de jogos por WhatsApp e email: nunca mais perca um jogo',
+    homeDescription:
+      'Escolha seus esportes, ligas e times e receba toda manhã a agenda com os próximos jogos, corridas e lutas por WhatsApp ou email, no seu fuso.',
+  },
   common: {
     loading: 'Carregando...',
     saving: 'Salvando...',

@@ -110,7 +110,7 @@ export function GoogleAnalytics() {
             >
               {messages.cookieConsent.decline}
             </button>
-            <Link href="/legal/privacy" className="tr-link text-xs">
+            <Link href="/es/legal/privacy" className="tr-link text-xs">
               {messages.cookieConsent.learnMore}
             </Link>
           </div>

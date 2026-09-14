@@ -18,7 +18,7 @@ import { rootMetadata, sitewideJsonLd } from '@/lib/seo'
 
 export const metadata = rootMetadata
 
-type InitialLanguageSource = 'viewer' | 'stored' | 'detected' | 'default'
+type InitialLanguageSource = 'url' | 'viewer' | 'stored' | 'detected' | 'default'
 
 const COUNTRY_HEADER_NAMES = [
   'cf-ipcountry',
@@ -57,8 +57,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   const languageFromSettings = languageFromLocale(viewerLanguage)
   const languageFromCookie = languageFromLocale(cookieLanguage)
+  // Set by middleware for /es, /en and /pt routes: the URL always wins so
+  // indexable pages render deterministically per language.
+  const languageFromUrl = languageFromLocale(headerStore.get('x-trimry-lang'))
 
-  if (languageFromSettings) {
+  if (languageFromUrl) {
+    initialLanguage = languageFromUrl
+    initialLanguageSource = 'url'
+  } else if (languageFromSettings) {
     initialLanguage = languageFromSettings
     initialLanguageSource = 'viewer'
   } else if (languageFromCookie) {

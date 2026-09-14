@@ -2,7 +2,7 @@ export const COMPANY = {
   brandName: 'Trimry',
   legalName: 'Trimry Limited',
   companyNumber: '752517',
-  websiteUrl: 'https://trimry.com',
+  websiteUrl: 'https://www.trimry.com',
   registeredOffice:
     '71 Lower Baggot Street, Co. Dublin, D02 P593, Dublin 2, Ireland',
   operationsOffice: 'Carrer Emili Darder 1, Balearic Islands, Mallorca, 07181',

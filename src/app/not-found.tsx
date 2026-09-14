@@ -12,7 +12,7 @@ export default function NotFound() {
       <p className="tr-eyebrow">404</p>
       <h1 className="mt-3 text-3xl">{messages.notFound.title}</h1>
       <p className="tr-copy mt-3">{messages.notFound.description}</p>
-      <Link href="/" className="tr-btn-primary mt-6">
+      <Link href="/es" className="tr-btn-primary mt-6">
         {messages.notFound.cta}
       </Link>
     </section>

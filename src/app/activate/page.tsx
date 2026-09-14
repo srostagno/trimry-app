@@ -43,6 +43,42 @@ import {
 
 const TOTAL_STEPS = 4
 
+const SPORT_KEYS_SET = new Set<string>([
+  'soccer', 'basketball', 'american_football', 'baseball', 'ice_hockey', 'tennis',
+  'motorsport', 'fighting', 'rugby', 'golf', 'cycling', 'cricket',
+])
+
+// SEO pages link here with a team or league to follow; merge it into the draft.
+function applyPrefillFromQuery(
+  draft: SportsPreferences | null,
+  searchParams: { get: (name: string) => string | null },
+): SportsPreferences | null {
+  const sport = searchParams.get('sport')
+  const teamId = searchParams.get('teamId')
+  const teamName = searchParams.get('teamName')
+  const leagueId = searchParams.get('leagueId')
+  const leagueName = searchParams.get('leagueName')
+
+  if (!sport || !SPORT_KEYS_SET.has(sport) || (!teamId && !leagueId)) {
+    return draft
+  }
+
+  const next: SportsPreferences = draft ? { ...draft } : emptyPreferences()
+  const sportKey = sport as SportsPreferences['sports'][number]
+  next.sports = next.sports.includes(sportKey) ? next.sports : [...next.sports, sportKey]
+
+  if (teamId && teamName && !next.teams.some((team) => team.id === teamId)) {
+    next.teams = [
+      ...next.teams,
+      { id: teamId, name: teamName, sport: sportKey, leagueId: leagueId ?? null, leagueName: leagueName ?? null, badge: null },
+    ]
+  } else if (leagueId && leagueName && !teamId && !next.leagues.some((league) => league.id === leagueId)) {
+    next.leagues = [...next.leagues, { id: leagueId, name: leagueName, sport: sportKey }]
+  }
+
+  return next
+}
+
 function clampStep(value: string | null) {
   const parsed = Number.parseInt(value ?? '', 10)
 
@@ -104,7 +140,7 @@ export default function ActivatePage() {
         return
       }
 
-      const draft = loadPreferencesDraft()
+      const draft = applyPrefillFromQuery(loadPreferencesDraft(), searchParams)
 
       if (snapshot) {
         setAccount(snapshot)
@@ -130,6 +166,11 @@ export default function ActivatePage() {
         setPreferences(draft)
       }
 
+      if (hasAnyPreferences(draft) && searchParams.get('teamId')) {
+        // Arriving from a team page: jump straight to teams & leagues with it followed.
+        setStep((current) => (current === 1 ? 2 : current))
+      }
+
       initializedRef.current = true
       setAccountLoaded(true)
     }
@@ -139,6 +180,8 @@ export default function ActivatePage() {
     return () => {
       cancelled = true
     }
+    // Mount-only: the prefill query is read once on first load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

@@ -6,16 +6,15 @@ import { AlertsCta, Breadcrumbs, EventsSection, LinkGrid, eventsJsonLd } from '@
 import { absoluteUrl, createPageMetadata } from '@/lib/seo'
 import {
   countryHubPath,
-  countryOfPhrase,
-  countryPhrase,
   countryTimePhrase,
   langRoot,
   leagueDisplayName,
   leaguePagePath,
   nowLabel,
-  seoText,
+  seoCopy,
   todayPagePath,
 } from '@/lib/seo-copy'
+import type { TodayCtx } from '@/lib/seo-copy/types'
 import { fetchSeoFeed, findLeague, resolveSeoContext } from '@/lib/seo-data'
 import type { UpcomingFeed } from '@/lib/sports'
 
@@ -68,80 +67,60 @@ async function load(countryCode: string) {
       }),
     ),
   )
-  return { catalog, country, leagues, feed: mergeFeeds(feeds) }
+  const feed = mergeFeeds(feeds)
+  const ctx: TodayCtx = {
+    country,
+    timePhrase: countryTimePhrase(country),
+    leagueNames: leagues.map((league) => leagueDisplayName(league, country.language)).join(', '),
+    eventsCount: feed?.totalEvents ?? 0,
+  }
+  return { catalog, country, leagues, feed, ctx }
 }
 
 export async function todayPageMetadata(countryCode: string): Promise<Metadata> {
   const data = await load(countryCode)
   if (!data) return {}
-  const { country, feed } = data
-  const lang = country.language
-  const count = feed?.totalEvents ?? 0
+  const { country, ctx } = data
+  const copy = seoCopy(country.language).today
 
   return createPageMetadata({
-    title:
-      lang === 'pt'
-        ? `Jogos de hoje ${countryPhrase(country)}: horários de futebol e esportes`
-        : `Partidos de hoy ${countryPhrase(country)}: horarios de fútbol y deportes`,
-    description:
-      lang === 'pt'
-        ? `${count} jogos hoje e amanhã no ${countryTimePhrase(country)}: Brasileirão, Libertadores, Champions, NBA, F1, UFC. Atualizado várias vezes por dia.`
-        : `${count} eventos hoy y mañana con hora ${countryOfPhrase(country)}: fútbol, Champions, NBA, F1, UFC. Actualizado varias veces al día.`,
+    title: copy.metaTitle(ctx),
+    description: copy.metaDescription(ctx),
     path: todayPagePath(country),
-    locale: lang,
+    locale: country.language,
   })
 }
 
 export async function TodayPage({ countryCode }: { countryCode: string }) {
   const data = await load(countryCode)
   if (!data) notFound()
-  const { catalog, country, leagues, feed } = data
+  const { catalog, country, feed, ctx } = data
   const lang = country.language
-  const t = seoText(lang)
+  const copy = seoCopy(lang)
+  const ui = copy.ui(country)
   const events = feed?.days.flatMap((day) => day.events) ?? []
-  const timePhrase = countryTimePhrase(country)
-  const leagueNames = leagues.map((league) => leagueDisplayName(league, lang)).join(', ')
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Breadcrumbs
         items={[
-          { href: langRoot(country), label: t.home },
+          { href: langRoot(country), label: ui.home },
           { href: countryHubPath(country), label: country.name },
-          { href: todayPagePath(country), label: t.todayLabel },
+          { href: todayPagePath(country), label: ui.todayLabel },
         ]}
       />
       <header>
-        <p className="tr-eyebrow">{nowLabel(country.timeZone, lang)}</p>
-        <h1 className="mt-2 text-3xl sm:text-5xl">
-          {t.todayLabel} {countryPhrase(country)}
-        </h1>
-        <p className="tr-copy mt-4 max-w-3xl text-lg">
-          {lang === 'pt'
-            ? `O que tem jogo hoje e amanhã em ${leagueNames}, no ${timePhrase}.`
-            : `Lo que se juega hoy y mañana en ${leagueNames}, con ${timePhrase}.`}
-        </p>
+        <p className="tr-eyebrow">{nowLabel(country)}</p>
+        <h1 className="mt-2 text-3xl sm:text-5xl">{copy.today.h1(ctx)}</h1>
+        <p className="tr-copy mt-4 max-w-3xl text-lg">{copy.today.intro(ctx)}</p>
       </header>
 
-      <EventsSection
-        title={lang === 'pt' ? `Agenda de hoje e amanhã (${timePhrase})` : `Agenda de hoy y mañana (${timePhrase})`}
-        feed={feed}
-        empty={lang === 'pt' ? 'Sem jogos confirmados para hoje.' : 'Sin eventos confirmados para hoy.'}
-      />
+      <EventsSection title={copy.today.eventsTitle(ctx)} feed={feed} empty={copy.today.eventsEmpty(ctx)} />
 
-      <AlertsCta
-        title={lang === 'pt' ? 'Esta agenda, toda manhã no seu WhatsApp' : 'Esta agenda, cada mañana en tu WhatsApp'}
-        text={
-          lang === 'pt'
-            ? 'Só seus times e ligas, no seu horário. Sem procurar no Google todo dia.'
-            : 'Solo tus equipos y ligas, en tu horario. Sin buscar en Google cada día.'
-        }
-        href="/activate"
-        language={lang}
-      />
+      <AlertsCta title={copy.today.ctaTitle(ctx)} text={copy.today.ctaText(ctx)} href="/activate" country={country} />
 
       <LinkGrid
-        title={t.fullCalendars}
+        title={ui.fullCalendars}
         links={country.leagues
           .map((slug) => findLeague(catalog, slug))
           .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))

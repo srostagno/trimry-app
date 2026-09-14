@@ -7,7 +7,7 @@ import type { SportKey, UpcomingFeed } from '@/lib/sports'
 // cache-first on the API side (wait=false) and revalidated by Next, so pages
 // render instantly even when a schedule is being refreshed in the background.
 
-export type SeoLanguage = 'es' | 'pt'
+export type SeoLanguage = 'es' | 'pt' | 'en'
 
 export type SeoCountry = {
   code: string
@@ -24,6 +24,7 @@ export type SeoTeam = {
   name: string
   shortName?: string
   ptName?: string
+  enName?: string
   sport: SportKey
   leagueSlug: string
   national?: boolean
@@ -35,6 +36,7 @@ export type SeoLeague = {
   ptName?: string
   sport: SportKey
   country: string
+  countryCode?: string
 }
 
 export type SeoCatalog = {

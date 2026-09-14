@@ -13,22 +13,23 @@ import {
 } from '@/components/seo/seo-blocks'
 import { absoluteUrl, createPageMetadata } from '@/lib/seo'
 import {
-  atTime,
   countryHubPath,
-  countryOfPhrase,
-  countryPhrase,
   countryTimePhrase,
   eventTitle,
-  formatLongDate,
+  isDomesticLeague,
   langRoot,
   leagueDisplayName,
   leaguePagePath,
   nextEvent,
-  seoText,
+  seoCopy,
   teamGrammar,
   teamPagePath,
+  whenPhrase,
 } from '@/lib/seo-copy'
+import type { LeagueCtx } from '@/lib/seo-copy/types'
 import { fetchSeoFeed, findLeague, findTeam, resolveSeoContext } from '@/lib/seo-data'
+
+const TEAM_SPORTS = new Set(['soccer', 'basketball', 'american_football', 'baseball', 'ice_hockey', 'rugby', 'cricket', 'volleyball', 'handball'])
 
 async function load(countryCode: string, leagueSlug: string) {
   const { catalog, country } = await resolveSeoContext(countryCode)
@@ -46,35 +47,35 @@ async function load(countryCode: string, leagueSlug: string) {
     timeZone: country.timeZone,
     days: 14,
   })
+  const upcoming = nextEvent(feed)
+  const events = feed?.days.flatMap((day) => day.events) ?? []
+  const ctx: LeagueCtx = {
+    name: leagueDisplayName(league, country.language),
+    teamSport: TEAM_SPORTS.has(league.sport),
+    country,
+    timePhrase: countryTimePhrase(country),
+    domestic: isDomesticLeague(league, country),
+    upcoming,
+    when: whenPhrase(upcoming, country),
+    eventTitle: upcoming ? eventTitle(upcoming, country.language) : null,
+    eventsCount: events.length,
+  }
 
-  return { catalog, country, league, feed }
+  return { catalog, country, league, feed, events, ctx }
 }
 
 export async function leaguePageMetadata(countryCode: string, leagueSlug: string): Promise<Metadata> {
   const data = await load(countryCode, leagueSlug)
   if (!data) return {}
-  const { country, league, feed } = data
-  const lang = country.language
-  const name = leagueDisplayName(league, lang)
-  const count = feed?.totalEvents ?? 0
-  const domestic = league.country === country.name
-  const suffix = domestic ? '' : ` ${countryPhrase(country)}`
+  const { country, league, ctx } = data
+  const copy = seoCopy(country.language).league
 
   return createPageMetadata({
-    title:
-      lang === 'pt'
-        ? `Tabela ${name}${suffix}: horários e próximos jogos`
-        : `Calendario ${name}${suffix}: horarios y próximos partidos`,
-    description:
-      lang === 'pt'
-        ? `${count > 0 ? `${count} jogos do ${name} nos próximos 14 dias` : `Tabela do ${name}`} no ${countryTimePhrase(country)}. Calendário atualizado e alertas no WhatsApp.`
-        : `${count > 0 ? `${count} eventos de ${name} en los próximos 14 días` : `Calendario de ${name}`} con hora ${countryOfPhrase(country)}. Fixture actualizado y alertas por WhatsApp.`,
+    title: copy.metaTitle(ctx),
+    description: copy.metaDescription(ctx),
     path: leaguePagePath(country, league),
-    locale: lang,
-    keywords:
-      lang === 'pt'
-        ? [`tabela ${name.toLowerCase()}`, `jogos ${name.toLowerCase()}`, `horario ${name.toLowerCase()}`]
-        : [`calendario ${name.toLowerCase()}`, `horario ${name.toLowerCase()} ${country.name.toLowerCase()}`, `partidos ${name.toLowerCase()}`],
+    locale: country.language,
+    keywords: copy.keywords(ctx),
   })
 }
 
@@ -82,116 +83,56 @@ export async function LeaguePage({ countryCode, leagueSlug }: { countryCode: str
   const data = await load(countryCode, leagueSlug)
   if (!data) notFound()
 
-  const { catalog, country, league, feed } = data
+  const { catalog, country, league, feed, events, ctx } = data
   const lang = country.language
-  const t = seoText(lang)
-  const name = leagueDisplayName(league, lang)
-  const upcoming = nextEvent(feed)
-  const events = feed?.days.flatMap((day) => day.events) ?? []
+  const copy = seoCopy(lang)
+  const ui = copy.ui(country)
   const pagePath = leaguePagePath(country, league)
-  const timePhrase = countryTimePhrase(country)
-  const domestic = league.country === country.name
-  const suffix = domestic ? '' : ` ${countryPhrase(country)}`
-  const when = upcoming ? `${formatLongDate(upcoming.localDateKey, lang)}${atTime(upcoming, lang)}` : ''
   const teams = country.teams
     .map((slug) => findTeam(catalog, slug))
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
     .filter((entry) => entry.leagueSlug === league.slug)
 
-  const intro =
-    lang === 'pt'
-      ? upcoming
-        ? `O próximo jogo do ${name} é ${eventTitle(upcoming, lang)}, ${when} (${timePhrase}). Aqui estão todos os jogos dos próximos 14 dias no ${timePhrase}.`
-        : `Não há jogos confirmados do ${name} nos próximos 14 dias. Quando forem publicados, aparecem aqui no ${timePhrase}.`
-      : upcoming
-        ? `El próximo evento de ${name} es ${eventTitle(upcoming, lang)}, ${when} (${timePhrase}). Aquí tienes todos los partidos de los próximos 14 días en horario ${countryOfPhrase(country)}.`
-        : `No hay eventos confirmados de ${name} en los próximos 14 días. Cuando se publiquen aparecerán aquí en horario ${countryOfPhrase(country)}.`
-
-  const faq =
-    lang === 'pt'
-      ? [
-          {
-            question: `Que horas são os jogos do ${name} ${countryPhrase(country)}?`,
-            answer: upcoming
-              ? `O próximo jogo é ${eventTitle(upcoming, lang)}, ${when} (${timePhrase}). Cada jogo tem seu horário na lista acima.`
-              : `Não há jogos marcados nos próximos 14 dias. O Trimry atualiza o calendário várias vezes por dia.`,
-          },
-          {
-            question: `Como acompanhar a tabela do ${name} sem perder jogos?`,
-            answer: `Ative os alertas do Trimry: escolha o ${name} (e seus times) e receba toda manhã os jogos do dia no WhatsApp ou por e-mail, no ${timePhrase}.`,
-          },
-        ]
-      : [
-          {
-            question: `¿A qué hora se juega ${name} ${countryPhrase(country)}?`,
-            answer: upcoming
-              ? `El próximo evento es ${eventTitle(upcoming, lang)}, ${when} (${timePhrase}). Cada partido tiene su horario en la lista de arriba.`
-              : `No hay eventos programados en los próximos 14 días. Trimry actualiza el calendario varias veces al día.`,
-          },
-          {
-            question: `¿Cómo sigo el calendario de ${name} sin perderme partidos?`,
-            answer: `Activa las alertas de Trimry: eliges ${name} (y tus equipos) y recibes cada mañana los partidos del día por WhatsApp o email, con la hora ${countryOfPhrase(country)}.`,
-          },
-        ]
-
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Breadcrumbs
         items={[
-          { href: langRoot(country), label: t.home },
+          { href: langRoot(country), label: ui.home },
           { href: countryHubPath(country), label: country.name },
-          { href: pagePath, label: name },
+          { href: pagePath, label: ctx.name },
         ]}
       />
       <header>
         <p className="tr-eyebrow">
-          {t.calendar} · {country.name}
+          {ui.calendar} · {country.name}
         </p>
-        <h1 className="mt-2 text-3xl sm:text-5xl">
-          {lang === 'pt' ? 'Tabela' : 'Calendario'} {name}
-          {suffix}
-        </h1>
-        <p className="tr-copy mt-4 max-w-3xl text-lg">{intro}</p>
+        <h1 className="mt-2 text-3xl sm:text-5xl">{copy.league.h1(ctx)}</h1>
+        <p className="tr-copy mt-4 max-w-3xl text-lg">{copy.league.intro(ctx)}</p>
       </header>
 
-      <NextEventCard event={upcoming} timeZoneLabel={timePhrase} eyebrow={t.nextEvent} language={lang} />
+      <NextEventCard event={ctx.upcoming} timeZoneLabel={ctx.timePhrase} eyebrow={ui.nextEvent} country={country} />
 
       <AlertsCta
-        title={lang === 'pt' ? `Receba a agenda do ${name} toda manhã` : `Recibe la agenda de ${name} cada mañana`}
-        text={
-          lang === 'pt'
-            ? `Siga o ${name} no Trimry e receba no WhatsApp ou por e-mail o que tem jogo hoje, no ${timePhrase}.`
-            : `Sigue ${name} en Trimry y te llega por WhatsApp o email lo que se juega hoy, en horario ${countryOfPhrase(country)}.`
-        }
+        title={copy.league.ctaTitle(ctx)}
+        text={copy.league.ctaText(ctx)}
         href={`/activate?leagueId=${encodeURIComponent(league.slug)}&leagueName=${encodeURIComponent(league.name)}&sport=${league.sport}`}
-        language={lang}
+        country={country}
       />
 
-      <EventsSection
-        title={lang === 'pt' ? `Próximos 14 dias do ${name} (${timePhrase})` : `Próximos 14 días de ${name} (${timePhrase})`}
-        feed={feed}
-        empty={
-          lang === 'pt'
-            ? `Sem jogos confirmados do ${name} nos próximos 14 dias.`
-            : `Sin eventos confirmados de ${name} en los próximos 14 días.`
-        }
-      />
+      <EventsSection title={copy.league.eventsTitle(ctx)} feed={feed} empty={copy.league.eventsEmpty(ctx)} />
 
-      <FaqSection items={faq} language={lang} />
+      <FaqSection items={copy.league.faq(ctx)} country={country} />
 
       <LinkGrid
-        title={lang === 'pt' ? `Times do ${name}` : `Equipos de ${name}`}
-        links={teams.map((team) => {
-          const g = teamGrammar(team, lang)
-          return {
-            href: teamPagePath(country, team, 'time'),
-            label: lang === 'pt' ? `Que horas ${g.verb} ${g.withArticle}?` : `¿A qué hora ${g.verb} ${g.withArticle}?`,
-          }
-        })}
+        title={copy.league.teamsTitle(ctx)}
+        links={teams.map((team) => ({
+          href: teamPagePath(country, team, 'time'),
+          label: copy.league.teamLink(teamGrammar(team, country)),
+        }))}
       />
 
       <LinkGrid
-        title={lang === 'pt' ? `Mais tabelas ${countryPhrase(country)}` : `Más calendarios ${countryPhrase(country)}`}
+        title={copy.league.moreTitle(ctx)}
         links={country.leagues
           .filter((slug) => slug !== league.slug)
           .map((slug) => findLeague(catalog, slug))

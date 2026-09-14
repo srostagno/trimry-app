@@ -6,12 +6,11 @@ import { Breadcrumbs, LinkGrid, AlertsCta } from '@/components/seo/seo-blocks'
 import { createPageMetadata } from '@/lib/seo'
 import {
   countryHubPath,
-  countryOfPhrase,
   countryPhrase,
   langRoot,
   leagueDisplayName,
   leaguePagePath,
-  seoText,
+  seoCopy,
   teamDisplayName,
   teamPagePath,
   todayPagePath,
@@ -25,19 +24,14 @@ type Params = { params: { lang: string; country: string } }
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { country } = await resolveSeoContext(params.country)
   if (!country || country.language !== params.lang) return {}
-  const lang = country.language
+  const copy = seoCopy(country.language).hub
+  const ctx = { country }
 
   return createPageMetadata({
-    title:
-      lang === 'pt'
-        ? `Horários de jogos ${countryPhrase(country)}: que horas joga o seu time?`
-        : `Horarios de partidos ${countryPhrase(country)}: ¿a qué hora juega tu equipo?`,
-    description:
-      lang === 'pt'
-        ? `Horário exato dos jogos dos times e ligas mais acompanhados ${countryPhrase(country)}, no horário local, com alertas no WhatsApp.`
-        : `Hora exacta de los partidos de los equipos y ligas más seguidos ${countryPhrase(country)}, en horario local, con alertas por WhatsApp.`,
+    title: copy.metaTitle(ctx),
+    description: copy.metaDescription(ctx),
     path: countryHubPath(country),
-    locale: lang,
+    locale: country.language,
   })
 }
 
@@ -45,7 +39,9 @@ export default async function CountryHubPage({ params }: Params) {
   const { catalog, country } = await resolveSeoContext(params.country)
   if (!country || country.language !== params.lang) notFound()
   const lang = country.language
-  const t = seoText(lang)
+  const copy = seoCopy(lang)
+  const ui = copy.ui(country)
+  const ctx = { country }
 
   const teams = country.teams
     .map((slug) => findTeam(catalog, slug))
@@ -56,45 +52,28 @@ export default async function CountryHubPage({ params }: Params) {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-      <Breadcrumbs items={[{ href: langRoot(country), label: t.home }, { href: countryHubPath(country), label: country.name }]} />
+      <Breadcrumbs items={[{ href: langRoot(country), label: ui.home }, { href: countryHubPath(country), label: country.name }]} />
       <header>
         <p className="tr-eyebrow">
-          {t.schedules} · {country.name}
+          {ui.schedules} · {country.name}
         </p>
-        <h1 className="mt-2 text-3xl sm:text-5xl">
-          {lang === 'pt'
-            ? `Que horas joga o seu time ${countryPhrase(country)}?`
-            : `¿A qué hora juega tu equipo ${countryPhrase(country)}?`}
-        </h1>
-        <p className="tr-copy mt-4 max-w-3xl text-lg">
-          {lang === 'pt'
-            ? `Horários dos próximos jogos convertidos para o horário ${countryOfPhrase(country)}, atualizados várias vezes por dia. Escolha seu time ou competição.`
-            : `Horarios de los próximos partidos convertidos a la hora ${countryOfPhrase(country)}, actualizados varias veces al día. Elige tu equipo o competición.`}
-        </p>
+        <h1 className="mt-2 text-3xl sm:text-5xl">{copy.hub.h1(ctx)}</h1>
+        <p className="tr-copy mt-4 max-w-3xl text-lg">{copy.hub.intro(ctx)}</p>
         <Link href={todayPagePath(country)} className="tr-btn-secondary mt-5">
-          {t.todayLabel} {countryPhrase(country)} →
+          {ui.todayLabel} {countryPhrase(country)} →
         </Link>
       </header>
 
       <LinkGrid
-        title={t.teams}
+        title={ui.teams}
         links={teams.map((team) => ({ href: teamPagePath(country, team, 'time'), label: teamDisplayName(team, lang) }))}
       />
       <LinkGrid
-        title={t.leagues}
+        title={ui.leagues}
         links={leagues.map((league) => ({ href: leaguePagePath(country, league), label: leagueDisplayName(league, lang) }))}
       />
 
-      <AlertsCta
-        title={lang === 'pt' ? 'Sua agenda esportiva toda manhã no WhatsApp' : 'Tu agenda deportiva cada mañana por WhatsApp'}
-        text={
-          lang === 'pt'
-            ? `Siga seus times e ligas e o Trimry avisa o que tem jogo hoje e a que horas, no horário ${countryOfPhrase(country)}.`
-            : `Sigue tus equipos y ligas y Trimry te avisa qué se juega hoy y a qué hora, en horario ${countryOfPhrase(country)}.`
-        }
-        href="/activate"
-        language={lang}
-      />
+      <AlertsCta title={copy.hub.ctaTitle(ctx)} text={copy.hub.ctaText(ctx)} href="/activate" country={country} />
     </div>
   )
 }

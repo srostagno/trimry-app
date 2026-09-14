@@ -4,8 +4,8 @@ import { JsonLd } from '@/components/json-ld'
 import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import type { FeedEvent, UpcomingFeed } from '@/lib/sports'
 import { absoluteUrl } from '@/lib/seo'
-import type { SeoLanguage } from '@/lib/seo-data'
-import { eventTitle, formatLongDate, seoText } from '@/lib/seo-copy'
+import type { SeoCountry, SeoLanguage } from '@/lib/seo-data'
+import { eventTitle, formatLongDate, seoCopy } from '@/lib/seo-copy'
 
 // Server-rendered building blocks shared by the programmatic pages.
 
@@ -46,21 +46,21 @@ export function NextEventCard({
   event,
   timeZoneLabel,
   eyebrow,
-  language,
+  country,
 }: {
   event: FeedEvent | null
   timeZoneLabel: string
   eyebrow: string
-  language: SeoLanguage
+  country: SeoCountry
 }) {
-  const t = seoText(language)
+  const ui = seoCopy(country.language).ui(country)
 
   if (!event) {
     return (
       <div className="tr-card-muted p-6">
         <p className="tr-eyebrow">{eyebrow}</p>
-        <p className="mt-2 text-lg font-bold text-trimry-ink">{t.noEventsCard}</p>
-        <p className="tr-meta mt-1">{t.noEventsHint}</p>
+        <p className="mt-2 text-lg font-bold text-trimry-ink">{ui.noEventsCard}</p>
+        <p className="tr-meta mt-1">{ui.noEventsHint}</p>
       </div>
     )
   }
@@ -69,14 +69,14 @@ export function NextEventCard({
     <div className="tr-gradient-panel p-6 sm:p-8">
       <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-white/80">{eyebrow}</p>
       <p className="mt-3 text-3xl font-extrabold leading-tight sm:text-4xl">
-        {event.localTimeLabel ?? t.timeTbc}
+        {event.localTimeLabel ?? ui.timeTbc}
         <span className="ml-3 text-base font-semibold text-white/85">{timeZoneLabel}</span>
       </p>
       <p className="mt-3 text-xl font-bold">
-        {event.sportEmoji} {eventTitle(event, language)}
+        {event.sportEmoji} {eventTitle(event, country.language)}
       </p>
       <p className="mt-1 text-sm text-white/90">
-        {formatLongDate(event.localDateKey, language)} · {event.leagueName}
+        {formatLongDate(event.localDateKey, country)} · {event.leagueName}
         {event.round ? ` · ${event.round}` : ''}
         {event.venue ? ` · ${event.venue}` : ''}
       </p>
@@ -97,14 +97,14 @@ export function EventsSection({ title, feed, empty }: { title: string; feed: Upc
 
 export function FaqSection({
   items,
-  language,
+  country,
 }: {
   items: Array<{ question: string; answer: string }>
-  language: SeoLanguage
+  country: SeoCountry
 }) {
   return (
     <section className="tr-shell p-6 sm:p-8">
-      <h2 className="text-2xl">{seoText(language).faqTitle}</h2>
+      <h2 className="text-2xl">{seoCopy(country.language).ui(country).faqTitle}</h2>
       <dl className="mt-5 divide-y divide-trimry-line">
         {items.map((item) => (
           <div key={item.question} className="py-4">
@@ -132,12 +132,12 @@ export function AlertsCta({
   title,
   text,
   href,
-  language,
+  country,
 }: {
   title: string
   text: string
   href: string
-  language: SeoLanguage
+  country: SeoCountry
 }) {
   return (
     <section className="tr-hero px-6 py-8 sm:px-10">
@@ -148,7 +148,7 @@ export function AlertsCta({
           <p className="tr-copy mt-2 max-w-xl text-sm">{text}</p>
         </div>
         <Link href={href} className="tr-btn-primary shrink-0 px-7">
-          {seoText(language).ctaButton}
+          {seoCopy(country.language).ui(country).ctaButton}
         </Link>
       </div>
     </section>

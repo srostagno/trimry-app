@@ -52,8 +52,8 @@ export function EventRow({ event, compact = false }: { event: FeedEvent; compact
         ) : event.localTimeLabel ? (
           event.localTimeLabel
         ) : (
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-trimry-muted">
-            {messages.agenda.timeTbc}
+          <span className="text-trimry-muted" aria-label={messages.agenda.timeTbc}>
+            —
           </span>
         )}
       </div>
@@ -71,6 +71,7 @@ export function EventRow({ event, compact = false }: { event: FeedEvent; compact
         </p>
         <p className="mt-0.5 truncate text-xs text-trimry-muted">
           {meta}
+          {!event.localTimeLabel && !isLive ? ` · ${messages.agenda.timeTbc}` : ''}
           {isOff ? ` · ${event.status}` : ''}
         </p>
         <div className="mt-1.5 sm:hidden">

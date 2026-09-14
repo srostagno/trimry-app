@@ -76,7 +76,7 @@ function LivePreview() {
 
   return (
     <div className="tr-shell min-w-0 overflow-hidden p-4 sm:p-6">
-      <div className="tr-chip-strip">
+      <div className="tr-chip-strip sm:justify-center">
         {chips.map((chip) => (
           <button
             key={chip.key}
@@ -95,7 +95,7 @@ function LivePreview() {
 
       {/* Fixed-height scroll area so the hero keeps its proportions on desktop. */}
       <div className="relative mt-4">
-        <div className="max-h-[26rem] overflow-y-auto pr-1 lg:max-h-[30rem]">
+        <div className="max-h-[28rem] overflow-y-auto pr-1 lg:max-h-[34rem]">
           <UpcomingEventsFeed
             feed={feed}
             loading={loading}
@@ -117,31 +117,31 @@ export function HomePageClient() {
   return (
     <div className="space-y-20 pb-8">
       <section className="tr-hero px-5 py-10 sm:px-10 sm:py-16 lg:px-14">
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="tr-fade-up min-w-0">
-            <p className="tr-badge tr-badge-blue">{messages.home.badge}</p>
-            <h1 className="mt-5 break-words text-[2.5rem] leading-[1.05] sm:text-5xl lg:text-6xl">
-              {messages.home.title}{' '}
-              <span className="tr-gradient-text">{messages.home.titleHighlight}</span>
-            </h1>
-            <p className="tr-copy mt-5 max-w-xl text-lg">{messages.home.subtitle}</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <StartFlowButton className="tr-btn-primary px-7" analyticsLocation="hero">
-                {messages.home.primaryCta}
-              </StartFlowButton>
-              <Link href="#how-it-works" className="tr-btn-secondary">
-                {messages.home.secondaryCta}
-              </Link>
-            </div>
-            <p className="tr-meta mt-4 text-xs">{messages.home.trustLine}</p>
+        <div className="tr-fade-up mx-auto max-w-3xl text-center">
+          <p className="tr-badge tr-badge-blue">{messages.home.badge}</p>
+          <h1 className="mt-5 break-words text-[2.5rem] leading-[1.05] sm:text-5xl lg:text-6xl">
+            {messages.home.title}{' '}
+            <span className="tr-gradient-text">{messages.home.titleHighlight}</span>
+          </h1>
+          <p className="tr-copy mx-auto mt-5 max-w-2xl text-lg">{messages.home.subtitle}</p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
+            <StartFlowButton className="tr-btn-primary px-7" analyticsLocation="hero">
+              {messages.home.primaryCta}
+            </StartFlowButton>
+            <Link href="#how-it-works" className="tr-btn-secondary">
+              {messages.home.secondaryCta}
+            </Link>
           </div>
+          <p className="tr-meta mt-4 text-xs">{messages.home.trustLine}</p>
+        </div>
 
-          <div className="tr-fade-up-delay relative min-w-0">
+        <div className="tr-fade-up-delay mx-auto mt-12 max-w-3xl sm:mt-16">
+          <div className="text-center">
             <p className="tr-eyebrow mb-3">{messages.home.previewEyebrow}</p>
-            <h2 className="text-2xl">{messages.home.previewTitle}</h2>
-            <p className="tr-meta mt-1 mb-4">{messages.home.previewSubtitle}</p>
-            <LivePreview />
+            <h2 className="text-2xl sm:text-3xl">{messages.home.previewTitle}</h2>
+            <p className="tr-meta mx-auto mt-1 mb-5 max-w-xl">{messages.home.previewSubtitle}</p>
           </div>
+          <LivePreview />
         </div>
       </section>
 

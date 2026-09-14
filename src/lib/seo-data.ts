@@ -7,9 +7,12 @@ import type { SportKey, UpcomingFeed } from '@/lib/sports'
 // cache-first on the API side (wait=false) and revalidated by Next, so pages
 // render instantly even when a schedule is being refreshed in the background.
 
+export type SeoLanguage = 'es' | 'pt'
+
 export type SeoCountry = {
   code: string
   name: string
+  language: SeoLanguage
   timeZone: string
   demonym: string
   leagues: string[]
@@ -20,6 +23,7 @@ export type SeoTeam = {
   slug: string
   name: string
   shortName?: string
+  ptName?: string
   sport: SportKey
   leagueSlug: string
   national?: boolean
@@ -28,6 +32,7 @@ export type SeoTeam = {
 export type SeoLeague = {
   slug: string
   name: string
+  ptName?: string
   sport: SportKey
   country: string
 }
@@ -69,6 +74,7 @@ export function findLeague(catalog: SeoCatalog, slug: string) {
 }
 
 type FeedQuery = {
+  locale: SeoLanguage
   sport?: SportKey
   teamId?: string
   teamName?: string
@@ -80,7 +86,7 @@ type FeedQuery = {
 
 export async function fetchSeoFeed(query: FeedQuery): Promise<UpcomingFeed | null> {
   const params = new URLSearchParams({
-    locale: 'es',
+    locale: query.locale,
     timeZone: query.timeZone,
     days: String(query.days ?? 14),
     wait: 'false',

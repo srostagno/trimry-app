@@ -21,9 +21,11 @@ export function LanguageSwitcher({
     setLanguage(next)
     const [, first, ...rest] = (pathname ?? '/').split('/')
 
-    // Localized public pages: move to the same page in the new language.
+    // Localized public pages: move to the same page in the new language. The
+    // programmatic country pages exist in one language only, so go to the home.
     if (isLanguageCode(first)) {
-      router.push(`/${next}${rest.length ? `/${rest.join('/')}` : ''}`)
+      const keepPath = rest.length === 0 || rest[0] === 'legal'
+      router.push(`/${next}${keepPath && rest.length ? `/${rest.join('/')}` : ''}`)
     }
   }
 

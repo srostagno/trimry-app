@@ -157,7 +157,9 @@ export function UpcomingEventsFeed({
                 ) : null}
               </h3>
               <span className="tr-meta shrink-0 whitespace-nowrap text-xs">
-                {interpolate(messages.agenda.countLabel, { count: day.events.length })}
+                {day.events.length === 1
+                  ? messages.agenda.countLabelOne
+                  : interpolate(messages.agenda.countLabel, { count: day.events.length })}
               </span>
             </div>
             <ul className="space-y-2">

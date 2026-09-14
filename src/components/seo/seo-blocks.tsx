@@ -4,7 +4,8 @@ import { JsonLd } from '@/components/json-ld'
 import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import type { FeedEvent, UpcomingFeed } from '@/lib/sports'
 import { absoluteUrl } from '@/lib/seo'
-import { eventTitle, formatLongDate } from '@/lib/seo-copy'
+import type { SeoLanguage } from '@/lib/seo-data'
+import { eventTitle, formatLongDate, seoText } from '@/lib/seo-copy'
 
 // Server-rendered building blocks shared by the programmatic pages.
 
@@ -45,22 +46,21 @@ export function NextEventCard({
   event,
   timeZoneLabel,
   eyebrow,
+  language,
 }: {
   event: FeedEvent | null
   timeZoneLabel: string
   eyebrow: string
+  language: SeoLanguage
 }) {
+  const t = seoText(language)
+
   if (!event) {
     return (
       <div className="tr-card-muted p-6">
         <p className="tr-eyebrow">{eyebrow}</p>
-        <p className="mt-2 text-lg font-bold text-trimry-ink">
-          Sin partidos confirmados en los próximos 14 días.
-        </p>
-        <p className="tr-meta mt-1">
-          Actualizamos el calendario varias veces al día; activa las alertas y te avisamos apenas se
-          publique la fecha.
-        </p>
+        <p className="mt-2 text-lg font-bold text-trimry-ink">{t.noEventsCard}</p>
+        <p className="tr-meta mt-1">{t.noEventsHint}</p>
       </div>
     )
   }
@@ -69,14 +69,14 @@ export function NextEventCard({
     <div className="tr-gradient-panel p-6 sm:p-8">
       <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-white/80">{eyebrow}</p>
       <p className="mt-3 text-3xl font-extrabold leading-tight sm:text-4xl">
-        {event.localTimeLabel ?? 'Hora por confirmar'}
+        {event.localTimeLabel ?? t.timeTbc}
         <span className="ml-3 text-base font-semibold text-white/85">{timeZoneLabel}</span>
       </p>
       <p className="mt-3 text-xl font-bold">
-        {event.sportEmoji} {eventTitle(event)}
+        {event.sportEmoji} {eventTitle(event, language)}
       </p>
       <p className="mt-1 text-sm text-white/90">
-        {formatLongDate(event.localDateKey)} · {event.leagueName}
+        {formatLongDate(event.localDateKey, language)} · {event.leagueName}
         {event.round ? ` · ${event.round}` : ''}
         {event.venue ? ` · ${event.venue}` : ''}
       </p>
@@ -95,10 +95,16 @@ export function EventsSection({ title, feed, empty }: { title: string; feed: Upc
   )
 }
 
-export function FaqSection({ items }: { items: Array<{ question: string; answer: string }> }) {
+export function FaqSection({
+  items,
+  language,
+}: {
+  items: Array<{ question: string; answer: string }>
+  language: SeoLanguage
+}) {
   return (
     <section className="tr-shell p-6 sm:p-8">
-      <h2 className="text-2xl">Preguntas frecuentes</h2>
+      <h2 className="text-2xl">{seoText(language).faqTitle}</h2>
       <dl className="mt-5 divide-y divide-trimry-line">
         {items.map((item) => (
           <div key={item.question} className="py-4">
@@ -122,7 +128,17 @@ export function FaqSection({ items }: { items: Array<{ question: string; answer:
   )
 }
 
-export function AlertsCta({ title, text, href }: { title: string; text: string; href: string }) {
+export function AlertsCta({
+  title,
+  text,
+  href,
+  language,
+}: {
+  title: string
+  text: string
+  href: string
+  language: SeoLanguage
+}) {
   return (
     <section className="tr-hero px-6 py-8 sm:px-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -132,7 +148,7 @@ export function AlertsCta({ title, text, href }: { title: string; text: string; 
           <p className="tr-copy mt-2 max-w-xl text-sm">{text}</p>
         </div>
         <Link href={href} className="tr-btn-primary shrink-0 px-7">
-          Avísame por WhatsApp →
+          {seoText(language).ctaButton}
         </Link>
       </div>
     </section>
@@ -158,11 +174,11 @@ export function LinkGrid({ title, links }: { title: string; links: Array<{ href:
   )
 }
 
-export function eventsJsonLd(events: FeedEvent[], pageUrl: string) {
+export function eventsJsonLd(events: FeedEvent[], pageUrl: string, language: SeoLanguage = 'es') {
   return events.slice(0, 10).map((event) => ({
     '@context': 'https://schema.org',
     '@type': 'SportsEvent',
-    name: eventTitle(event),
+    name: eventTitle(event, language),
     startDate: event.startsAt,
     eventStatus:
       event.status === 'postponed'

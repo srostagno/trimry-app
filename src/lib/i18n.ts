@@ -276,6 +276,7 @@ export type MessageSection = {
     timeZoneNote: string
     highlightsTitle: string
     countLabel: string
+    countLabelOne: string
     lastDigestLabel: string
     lastDigestNever: string
     loadError: string
@@ -1303,6 +1304,7 @@ const en: MessageSection = {
     timeZoneNote: 'Times in {zone}',
     highlightsTitle: 'Highlights',
     countLabel: '{count} events',
+    countLabelOne: '1 event',
     lastDigestLabel: 'Last digest sent',
     lastDigestNever: 'No digest sent yet',
     loadError: 'Unable to load your agenda right now.',
@@ -1780,6 +1782,7 @@ const es: MessageSection = {
     timeZoneNote: 'Horarios en {zone}',
     highlightsTitle: 'Destacados',
     countLabel: '{count} eventos',
+    countLabelOne: '1 evento',
     lastDigestLabel: 'Último digest enviado',
     lastDigestNever: 'Aún no se envió ningún digest',
     loadError: 'No pudimos cargar tu agenda en este momento.',
@@ -2257,6 +2260,7 @@ const pt: MessageSection = {
     timeZoneNote: 'Horários em {zone}',
     highlightsTitle: 'Destaques',
     countLabel: '{count} eventos',
+    countLabelOne: '1 evento',
     lastDigestLabel: 'Último digest enviado',
     lastDigestNever: 'Nenhum digest enviado ainda',
     loadError: 'Não foi possível carregar sua agenda agora.',

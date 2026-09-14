@@ -22,6 +22,7 @@ type MetaStandardEventName =
   | 'Contact'
   | 'CompleteRegistration'
   | 'InitiateCheckout'
+  | 'StartTrial'
   | 'Subscribe'
 
 declare global {

@@ -14,7 +14,7 @@ import { SCOUT_PREFERENCES_UPDATED_EVENT } from '@/components/scout-chat-widget'
 import { SportsPreferencesEditor } from '@/components/sports-preferences-editor'
 import { TimeZoneSelect } from '@/components/time-zone-select'
 import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
-import { trackEvent } from '@/lib/analytics'
+import { trackEvent, trackEventOnce, trackMetaStandardEventOnce } from '@/lib/analytics'
 import { apiFetch, readApiError } from '@/lib/api-client'
 import { BillingSessionError, createBillingSession } from '@/lib/billing'
 import { interpolate, languageToIntlLocale } from '@/lib/i18n'
@@ -147,6 +147,22 @@ export default function DashboardPage() {
             break
           }
         }
+      }
+
+      if (billingSuccess && snapshot.subscription && snapshot.subscription.status !== 'pending_checkout') {
+        // Stripe checkout completed: report the trial/subscription once per session.
+        const key = `subscription-started:${snapshot.subscription.id ?? snapshot.user.id}`
+        trackEventOnce(key, 'subscription_started', {
+          status: snapshot.subscription.status,
+          delivery_preference: snapshot.subscription.deliveryPreference ?? 'email',
+        })
+        trackMetaStandardEventOnce(key, 'StartTrial', {
+          content_name: 'Trimry subscription',
+          predicted_ltv: 0,
+        })
+        trackMetaStandardEventOnce(`${key}:subscribe`, 'Subscribe', {
+          content_name: 'Trimry subscription',
+        })
       }
 
       applySnapshot(snapshot)

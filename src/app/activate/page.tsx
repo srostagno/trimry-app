@@ -17,7 +17,7 @@ import {
   useSportsCatalog,
 } from '@/components/sports-preferences-editor'
 import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
-import { trackEvent, trackMetaStandardEvent } from '@/lib/analytics'
+import { trackEvent, trackMetaStandardEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { apiFetch, readApiError } from '@/lib/api-client'
 import { interpolate, isLanguageCode } from '@/lib/i18n'
 import { EMAIL_PATTERN, registerAccount } from '@/lib/registration'
@@ -368,6 +368,18 @@ export default function ActivatePage() {
         delivery_preference: deliveryPreference,
         frequency: preferences.frequency,
         sports: preferences.sports,
+        teams: preferences.teams.length,
+        leagues: preferences.leagues.length,
+      })
+      // Meta: an activated agenda is the lead we optimize ads for.
+      trackMetaStandardEvent('Lead', {
+        content_name: 'Sports agenda activated',
+        content_category: preferences.sports.join(','),
+        delivery_preference: deliveryPreference,
+      })
+      trackMetaCustomEvent('ActivationCompleted', {
+        delivery_preference: deliveryPreference,
+        frequency: preferences.frequency,
         teams: preferences.teams.length,
         leagues: preferences.leagues.length,
       })

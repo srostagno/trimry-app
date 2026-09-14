@@ -341,6 +341,10 @@ export type MessageSection = {
     deliveryPreferenceLabel: string
     nextMessageIfReactivated: string
     saveDeliverySettings: string
+    sendNowButton: string
+    sendNowSending: string
+    sendNowSuccess: string
+    sendNowWhatsappPending: string
     reactivateButton: string
     reactivateLoading: string
     cancelButton: string
@@ -1359,6 +1363,10 @@ const en: MessageSection = {
     deliveryPreferenceLabel: 'Channel',
     nextMessageIfReactivated: 'Next digest if reactivated',
     saveDeliverySettings: 'Save delivery settings',
+    sendNowButton: 'Send me my agenda now',
+    sendNowSending: 'Sending...',
+    sendNowSuccess: 'Agenda sent ({count} events). Check your inbox.',
+    sendNowWhatsappPending: 'Email sent; WhatsApp is pending Meta template approval.',
     reactivateButton: 'Reactivate alerts',
     reactivateLoading: 'Reactivating...',
     cancelButton: 'Cancel subscription',
@@ -1826,6 +1834,10 @@ const es: MessageSection = {
     deliveryPreferenceLabel: 'Canal',
     nextMessageIfReactivated: 'Próximo digest si reactivas',
     saveDeliverySettings: 'Guardar ajustes de entrega',
+    sendNowButton: 'Enviarme mi agenda ahora',
+    sendNowSending: 'Enviando...',
+    sendNowSuccess: 'Agenda enviada ({count} eventos). Revisa tu correo.',
+    sendNowWhatsappPending: 'Email enviado; WhatsApp queda pendiente hasta que Meta apruebe la plantilla.',
     reactivateButton: 'Reactivar alertas',
     reactivateLoading: 'Reactivando...',
     cancelButton: 'Cancelar suscripción',
@@ -2293,6 +2305,10 @@ const pt: MessageSection = {
     deliveryPreferenceLabel: 'Canal',
     nextMessageIfReactivated: 'Próximo digest se reativar',
     saveDeliverySettings: 'Salvar ajustes de entrega',
+    sendNowButton: 'Enviar minha agenda agora',
+    sendNowSending: 'Enviando...',
+    sendNowSuccess: 'Agenda enviada ({count} eventos). Confira seu email.',
+    sendNowWhatsappPending: 'Email enviado; WhatsApp fica pendente até a Meta aprovar o template.',
     reactivateButton: 'Reativar alertas',
     reactivateLoading: 'Reativando...',
     cancelButton: 'Cancelar assinatura',

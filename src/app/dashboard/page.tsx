@@ -357,15 +357,15 @@ export default function DashboardPage() {
     }
   }
 
-  const sendSample = async () => {
-    setDeliveryBusy('sample')
+  const sendNow = async () => {
+    setDeliveryBusy('send-now')
     setDeliveryError('')
     setDeliveryMessage('')
 
     try {
       const response = await apiFetch('/subscription', {
         method: 'POST',
-        body: JSON.stringify({ action: 'send-sample', sampleChannel: 'email' }),
+        body: JSON.stringify({ action: 'send-now' }),
       })
 
       if (!response.ok) {
@@ -373,7 +373,32 @@ export default function DashboardPage() {
         return
       }
 
-      setDeliveryMessage(messages.notifications.success)
+      const payload = (await response.json()) as {
+        result: {
+          eventCount: number
+          email: 'sent' | 'skipped' | 'failed'
+          whatsapp: 'sent' | 'skipped' | 'failed'
+          errors: string[]
+        }
+      }
+      const failed = payload.result.errors.filter(
+        (entry) => !entry.toLowerCase().includes('template is not configured'),
+      )
+
+      if (failed.length > 0) {
+        setDeliveryError(failed.join(' '))
+      }
+
+      if (payload.result.email === 'sent' || payload.result.whatsapp === 'sent') {
+        setDeliveryMessage(
+          `${interpolate(copy.sendNowSuccess, { count: payload.result.eventCount })}${
+            requiresWhatsappDelivery(deliveryPreference) && payload.result.whatsapp !== 'sent'
+              ? ` ${copy.sendNowWhatsappPending}`
+              : ''
+          }`,
+        )
+      }
+
       await loadAccount()
     } catch {
       setDeliveryError(messages.notifications.error)
@@ -820,13 +845,11 @@ export default function DashboardPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => void sendSample()}
+                        onClick={() => void sendNow()}
                         disabled={deliveryBusy !== null || !hasPreferences}
                         className="tr-btn-secondary"
                       >
-                        {deliveryBusy === 'sample'
-                          ? messages.common.loading
-                          : `${messages.deliveryChannels.emailTitle} · sample`}
+                        {deliveryBusy === 'send-now' ? copy.sendNowSending : copy.sendNowButton}
                       </button>
                     </div>
                   </form>

@@ -362,6 +362,12 @@ export default function ActivatePage() {
         return
       }
 
+      const result = (await response.json().catch(() => null)) as {
+        subscription?: { status?: string }
+        trialStarted?: boolean
+      } | null
+      const subscriptionLive = hasLiveSubscription || result?.subscription?.status === 'active'
+
       savePreferencesDraft(null)
       trackEvent('activation_completed', {
         action,
@@ -384,8 +390,13 @@ export default function ActivatePage() {
         leagues: preferences.leagues.length,
       })
 
-      if (hasLiveSubscription) {
-        router.push('/dashboard')
+      if (result?.trialStarted) {
+        trackEvent('trial_started', { source: 'activate', delivery_preference: deliveryPreference })
+        trackMetaStandardEvent('StartTrial', { content_name: 'Trimry internal trial', predicted_ltv: 0 })
+      }
+
+      if (subscriptionLive) {
+        router.push(result?.trialStarted ? '/dashboard?trial=started' : '/dashboard')
       } else {
         router.push('/checkout/start')
       }

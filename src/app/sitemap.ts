@@ -4,6 +4,7 @@ import { LANGUAGE_OPTIONS } from '@/lib/i18n'
 import { IS_INDEXING_ALLOWED, absoluteUrl } from '@/lib/seo'
 import { countryHubPath, leaguePagePath, teamPagePath, todayPagePath } from '@/lib/seo-copy'
 import { fetchSeoCatalog, findLeague, findTeam } from '@/lib/seo-data'
+import { LANDING_SPORTS, landingPath } from '@/lib/sport-landing'
 
 export const revalidate = 3600
 
@@ -26,6 +27,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: now,
         changeFrequency: 'monthly',
         priority: 0.2,
+      })
+    }
+
+    for (const sport of LANDING_SPORTS) {
+      entries.push({
+        url: absoluteUrl(landingPath(option.code, sport)),
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.9,
       })
     }
   }

@@ -307,6 +307,10 @@ export type MessageSection = {
     paymentPending: string
     paymentIssue: string
     billingSuccess: string
+    trialDaysLeft: string
+    trialLastDay: string
+    trialCta: string
+    trialNote: string
     profileTitle: string
     profileSubtitle: string
     profileSave: string
@@ -1199,7 +1203,7 @@ const en: MessageSection = {
     hourLabel: 'Delivery hour',
     hourHint: 'Local time in {zone}.',
     whatsappNumberLabel: 'WhatsApp number',
-    whatsappConsentLabel: 'I agree to receive Trimry sports alerts on WhatsApp.',
+    whatsappConsentLabel: 'I agree to receive my Trimry sports alerts and messages about my subscription on WhatsApp.',
     whatsappConsentHint: 'Required only if you choose WhatsApp delivery. Reply STOP anytime.',
     whatsappConsentError: 'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
     reviewTitle: 'Review and start',
@@ -1336,6 +1340,10 @@ const en: MessageSection = {
     paymentPending: 'Payment pending',
     paymentIssue: 'Payment issue',
     billingSuccess: 'Your subscription is active. Your first agenda is on its way.',
+    trialDaysLeft: 'Free trial: {days} days left.',
+    trialLastDay: 'Free trial: last day.',
+    trialCta: 'Subscribe for US${price}/month',
+    trialNote: 'Keep your alerts going after the trial. Cancel anytime.',
     profileTitle: 'Profile',
     profileSubtitle: 'Name and time zone used across your agenda and digests.',
     profileSave: 'Save profile',
@@ -1360,7 +1368,7 @@ const en: MessageSection = {
     deliveryHourHint: 'Local time in {zone}.',
     emailDeliveryLabel: 'Email delivery',
     whatsappOffSetup: 'WhatsApp is off. Choose WhatsApp or both to add your number.',
-    whatsappConsentLabel: 'I agree to receive Trimry sports alerts on WhatsApp.',
+    whatsappConsentLabel: 'I agree to receive my Trimry sports alerts and messages about my subscription on WhatsApp.',
     whatsappConsentHint: 'Reply STOP anytime to opt out.',
     whatsappConsentError: 'Please confirm WhatsApp consent before enabling WhatsApp delivery.',
     pendingTitle: 'Finish activating your alerts',
@@ -1677,7 +1685,7 @@ const es: MessageSection = {
     hourLabel: 'Hora de entrega',
     hourHint: 'Hora local en {zone}.',
     whatsappNumberLabel: 'Número de WhatsApp',
-    whatsappConsentLabel: 'Acepto recibir alertas deportivas de Trimry por WhatsApp.',
+    whatsappConsentLabel: 'Acepto recibir por WhatsApp mis alertas deportivas y mensajes sobre mi suscripción a Trimry.',
     whatsappConsentHint: 'Necesario solo si eliges WhatsApp. Responde STOP cuando quieras.',
     whatsappConsentError: 'Confirma el consentimiento de WhatsApp antes de habilitar ese canal.',
     reviewTitle: 'Revisa y empieza',
@@ -1814,6 +1822,10 @@ const es: MessageSection = {
     paymentPending: 'Pago pendiente',
     paymentIssue: 'Problema de pago',
     billingSuccess: 'Tu suscripción está activa. Tu primera agenda va en camino.',
+    trialDaysLeft: 'Prueba gratis: te quedan {days} días.',
+    trialLastDay: 'Prueba gratis: último día.',
+    trialCta: 'Suscribirme por US${price}/mes',
+    trialNote: 'Sigue recibiendo tus alertas después de la prueba. Cancela cuando quieras.',
     profileTitle: 'Perfil',
     profileSubtitle: 'Nombre y zona horaria que usamos en tu agenda y tus digests.',
     profileSave: 'Guardar perfil',
@@ -1838,7 +1850,7 @@ const es: MessageSection = {
     deliveryHourHint: 'Hora local en {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffSetup: 'WhatsApp está apagado. Elige WhatsApp o ambos para agregar tu número.',
-    whatsappConsentLabel: 'Acepto recibir alertas deportivas de Trimry por WhatsApp.',
+    whatsappConsentLabel: 'Acepto recibir por WhatsApp mis alertas deportivas y mensajes sobre mi suscripción a Trimry.',
     whatsappConsentHint: 'Responde STOP cuando quieras para darte de baja.',
     whatsappConsentError: 'Confirma el consentimiento de WhatsApp antes de habilitar ese canal.',
     pendingTitle: 'Termina de activar tus alertas',
@@ -2155,7 +2167,7 @@ const pt: MessageSection = {
     hourLabel: 'Horário de entrega',
     hourHint: 'Hora local em {zone}.',
     whatsappNumberLabel: 'Número de WhatsApp',
-    whatsappConsentLabel: 'Aceito receber alertas esportivos da Trimry pelo WhatsApp.',
+    whatsappConsentLabel: 'Aceito receber pelo WhatsApp meus alertas esportivos e mensagens sobre minha assinatura da Trimry.',
     whatsappConsentHint: 'Necessário apenas se escolher WhatsApp. Responda STOP quando quiser.',
     whatsappConsentError: 'Confirme o consentimento do WhatsApp antes de habilitar esse canal.',
     reviewTitle: 'Revise e comece',
@@ -2292,6 +2304,10 @@ const pt: MessageSection = {
     paymentPending: 'Pagamento pendente',
     paymentIssue: 'Problema de pagamento',
     billingSuccess: 'Sua assinatura está ativa. Sua primeira agenda está a caminho.',
+    trialDaysLeft: 'Teste grátis: faltam {days} dias.',
+    trialLastDay: 'Teste grátis: último dia.',
+    trialCta: 'Assinar por US${price}/mês',
+    trialNote: 'Continue recebendo seus alertas depois do teste. Cancele quando quiser.',
     profileTitle: 'Perfil',
     profileSubtitle: 'Nome e fuso horário usados na sua agenda e nos digests.',
     profileSave: 'Salvar perfil',
@@ -2316,7 +2332,7 @@ const pt: MessageSection = {
     deliveryHourHint: 'Hora local em {zone}.',
     emailDeliveryLabel: 'Entrega por email',
     whatsappOffSetup: 'WhatsApp está desligado. Escolha WhatsApp ou ambos para adicionar seu número.',
-    whatsappConsentLabel: 'Aceito receber alertas esportivos da Trimry pelo WhatsApp.',
+    whatsappConsentLabel: 'Aceito receber pelo WhatsApp meus alertas esportivos e mensagens sobre minha assinatura da Trimry.',
     whatsappConsentHint: 'Responda STOP quando quiser para cancelar.',
     whatsappConsentError: 'Confirme o consentimento do WhatsApp antes de habilitar esse canal.',
     pendingTitle: 'Termine de ativar seus alertas',

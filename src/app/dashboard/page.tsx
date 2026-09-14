@@ -108,6 +108,11 @@ export default function DashboardPage() {
   const hasPreferences = hasAnyPreferences(account?.user.sportsPreferences)
   const subscriptionActive =
     subscription?.status === 'active' || subscription?.status === 'past_due' || subscription?.status === 'paused'
+  // Card-less internal trial: show the days left and a direct subscribe link.
+  const trialDaysLeft =
+    subscription?.status === 'active' && subscription.trialSource === 'internal' && subscription.internalTrialEndsAt
+      ? Math.max(0, Math.ceil((new Date(subscription.internalTrialEndsAt).getTime() - Date.now()) / 86_400_000))
+      : null
 
   const applySnapshot = useCallback((snapshot: AccountSnapshot) => {
     setAccount(snapshot)
@@ -610,6 +615,20 @@ export default function DashboardPage() {
 
       {billingSuccess && subscriptionActive ? (
         <p className="tr-alert-success">{copy.billingSuccess}</p>
+      ) : null}
+
+      {trialDaysLeft !== null ? (
+        <div className="tr-card-muted flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-extrabold text-trimry-ink">
+              {trialDaysLeft <= 1 ? copy.trialLastDay : interpolate(copy.trialDaysLeft, { days: trialDaysLeft })}
+            </p>
+            <p className="tr-meta mt-0.5 text-xs">{copy.trialNote}</p>
+          </div>
+          <Link href="/checkout/start" className="tr-btn-primary tr-btn-sm shrink-0">
+            {interpolate(copy.trialCta, { price: subscription?.monthlyPriceUsd ?? 2.99 })}
+          </Link>
+        </div>
       ) : null}
 
       <nav className="tr-tab-strip">

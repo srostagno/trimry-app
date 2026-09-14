@@ -2,7 +2,6 @@
 
 import { Disclosure } from '@headlessui/react'
 import clsx from 'clsx'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -43,7 +42,7 @@ function LivePreview() {
     setLoading(true)
     setError('')
 
-    fetchEventsPreview({ sport, days: 7, language, timeZone })
+    fetchEventsPreview({ sport, days: 5, language, timeZone })
       .then((payload) => {
         if (!cancelled) {
           setFeed(payload)
@@ -94,15 +93,19 @@ function LivePreview() {
         ))}
       </div>
 
-      <div className="mt-5">
-        <UpcomingEventsFeed
-          feed={feed}
-          loading={loading}
-          error={error}
-          emptyMessage={messages.home.previewEmpty}
-          compact
-          maxEventsPerDay={4}
-        />
+      {/* Fixed-height scroll area so the hero keeps its proportions on desktop. */}
+      <div className="relative mt-4">
+        <div className="max-h-[26rem] overflow-y-auto pr-1 lg:max-h-[30rem]">
+          <UpcomingEventsFeed
+            feed={feed}
+            loading={loading}
+            error={error}
+            emptyMessage={messages.home.previewEmpty}
+            compact
+            maxEventsPerDay={4}
+          />
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
       </div>
     </div>
   )
@@ -134,16 +137,6 @@ export function HomePageClient() {
           </div>
 
           <div className="tr-fade-up-delay relative min-w-0">
-            <div className="tr-float absolute -left-6 -top-8 hidden lg:block">
-              <Image
-                src="/brand/trimry-icon-rounded-256.png"
-                alt=""
-                width={88}
-                height={88}
-                priority
-                className="h-22 w-22 rounded-3xl shadow-glow"
-              />
-            </div>
             <p className="tr-eyebrow mb-3">{messages.home.previewEyebrow}</p>
             <h2 className="text-2xl">{messages.home.previewTitle}</h2>
             <p className="tr-meta mt-1 mb-4">{messages.home.previewSubtitle}</p>

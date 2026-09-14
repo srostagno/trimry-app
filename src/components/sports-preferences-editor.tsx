@@ -103,7 +103,7 @@ export function SportPicker({
               )
             }
             className={clsx(
-              'flex items-center gap-3 rounded-2xl border p-4 text-left transition',
+              'flex min-w-0 items-center gap-3 overflow-hidden rounded-2xl border p-3.5 text-left transition sm:p-4',
               active
                 ? 'border-transparent bg-brand-gradient text-white shadow-glow'
                 : 'border-trimry-line bg-white text-trimry-ink hover:border-trimry-blue/40',
@@ -112,7 +112,7 @@ export function SportPicker({
             <span className="text-2xl leading-none" aria-hidden="true">
               {sport.emoji}
             </span>
-            <span className="text-sm font-bold leading-tight">{sport.label}</span>
+            <span className="min-w-0 break-words text-sm font-bold leading-tight">{sport.label}</span>
           </button>
         )
       })}
@@ -150,7 +150,7 @@ export function TeamSearch({
   value: TeamPreference[]
   onChange: (next: TeamPreference[]) => void
 }) {
-  const { messages } = useLanguage()
+  const { language, messages } = useLanguage()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<TeamSearchResult[]>([])
   const [searching, setSearching] = useState(false)
@@ -172,7 +172,7 @@ export function TeamSearch({
     setSearching(true)
 
     const timeout = window.setTimeout(() => {
-      searchTeams(trimmed, sports.length === 1 ? sports[0] : null)
+      searchTeams(trimmed, sports.length === 1 ? sports[0] : null, language)
         .then((payload) => {
           if (requestRef.current !== requestId) {
             return
@@ -203,7 +203,7 @@ export function TeamSearch({
     }, 320)
 
     return () => window.clearTimeout(timeout)
-  }, [messages.notifications.error, query, sports])
+  }, [language, messages.notifications.error, query, sports])
 
   const followedIds = useMemo(() => new Set(value.map((team) => team.id)), [value])
 
@@ -248,18 +248,18 @@ export function TeamSearch({
       {error ? <p className="tr-alert-error text-xs">{error}</p> : null}
 
       {results.length > 0 ? (
-        <ul className="grid gap-2 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {results.map((team) => {
             const active = followedIds.has(team.id)
 
             return (
-              <li key={team.id}>
+              <li key={team.id} className="min-w-0">
                 <button
                   type="button"
                   onClick={() => toggleTeam(team)}
                   disabled={!team.sport}
                   className={clsx(
-                    'flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition',
+                    'grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-2xl border p-3 text-left transition',
                     active
                       ? 'border-trimry-blue bg-trimry-blue/5 ring-2 ring-trimry-blue/20'
                       : 'border-trimry-line bg-white hover:border-trimry-blue/40',
@@ -427,7 +427,7 @@ export function LeaguePicker({
   return (
     <div className="space-y-4">
       {sports.length > 1 ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="tr-chip-strip">
           {sports.map((sport) => (
             <button
               key={sport}
@@ -456,17 +456,17 @@ export function LeaguePicker({
       {loading && leagues.length === 0 ? (
         <p className="tr-meta text-xs">{messages.onboarding.leaguesLoading}</p>
       ) : (
-        <ul className="grid max-h-80 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 max-h-80 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
           {visibleLeagues.map((league) => {
             const active = followedIds.has(league.id)
 
             return (
-              <li key={league.id}>
+              <li key={league.id} className="min-w-0">
                 <button
                   type="button"
                   onClick={() => toggleLeague(league)}
                   className={clsx(
-                    'flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition',
+                    'grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-2xl border px-4 py-3 text-left transition',
                     active
                       ? 'border-trimry-blue bg-trimry-blue/5 ring-2 ring-trimry-blue/20'
                       : 'border-trimry-line bg-white hover:border-trimry-blue/40',
@@ -543,7 +543,7 @@ export function RhythmPicker({
     <div className="space-y-5">
       <div>
         <p className="tr-label mb-2">{messages.onboarding.frequencyLabel}</p>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {options.map((option) => {
             const active = option.value === frequency
 
@@ -605,7 +605,7 @@ export function PreferencesSummary({
   const { messages } = useLanguage()
 
   return (
-    <dl className="grid gap-3 sm:grid-cols-3">
+    <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       <div className="tr-card-muted p-4">
         <dt className="tr-eyebrow">{messages.onboarding.reviewSports}</dt>
         <dd className="mt-2 flex flex-wrap gap-1.5 text-sm text-trimry-ink">

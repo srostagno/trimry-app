@@ -541,9 +541,9 @@ export default function DashboardPage() {
   const tabs: DashboardTab[] = isAdmin ? [...TAB_ORDER, ...ADMIN_TABS] : TAB_ORDER
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+    <div className="min-w-0 space-y-6">
+      <header className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
           <p className="tr-eyebrow">{copy.title}</p>
           <h1 className="mt-1 text-3xl">
             {account.user.firstName ? `${account.user.firstName} 👋` : copy.title}
@@ -565,7 +565,7 @@ export default function DashboardPage() {
         <p className="tr-alert-success">{copy.billingSuccess}</p>
       ) : null}
 
-      <nav className="flex flex-wrap gap-1 rounded-full border border-trimry-line bg-white p-1">
+      <nav className="tr-tab-strip">
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -579,9 +579,9 @@ export default function DashboardPage() {
       </nav>
 
       {activeTab === 'agenda' ? (
-        <section className="tr-shell p-6 sm:p-8">
+        <section className="tr-shell min-w-0 p-5 sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
+            <div className="min-w-0">
               <h2 className="text-2xl">{messages.agenda.title}</h2>
               <p className="tr-copy mt-1 text-sm">{messages.agenda.subtitle}</p>
               <p className="tr-meta mt-2 text-xs">
@@ -692,7 +692,7 @@ export default function DashboardPage() {
               <>
                 <h2 className="text-2xl">{copy.pendingTitle}</h2>
                 <p className="tr-copy mt-1 text-sm">{copy.pendingSubtitle}</p>
-                <dl className="mt-5 grid gap-3 sm:grid-cols-3">
+                <dl className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div className="tr-card-muted p-4">
                     <dt className="tr-eyebrow">{copy.pendingDeliveryPreferenceLabel}</dt>
                     <dd className="mt-1 text-sm font-bold text-trimry-ink">
@@ -728,7 +728,7 @@ export default function DashboardPage() {
                   <span className={clsx('tr-badge', statusBadge.className)}>{statusBadge.label}</span>
                 </div>
 
-                <dl className="mt-5 grid gap-3 sm:grid-cols-3">
+                <dl className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div className="tr-card-muted p-4">
                     <dt className="tr-eyebrow">{copy.deliveryPreferenceLabel}</dt>
                     <dd className="mt-1 text-sm font-bold text-trimry-ink">
@@ -765,7 +765,7 @@ export default function DashboardPage() {
                       ) : null}
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <label className="tr-label" htmlFor="dashboard-delivery-hour">
                         {copy.deliveryHourLabel}
                         <DeliveryHourSelect
@@ -882,7 +882,7 @@ export default function DashboardPage() {
           <div className="tr-shell p-6 sm:p-8">
             <h2 className="text-2xl">{copy.profileTitle}</h2>
             <p className="tr-copy mt-1 text-sm">{copy.profileSubtitle}</p>
-            <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={saveProfile}>
+            <form className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2" onSubmit={saveProfile}>
               <label className="tr-label">
                 {messages.auth.firstNameLabel}
                 <input
@@ -930,7 +930,7 @@ export default function DashboardPage() {
           <div className="tr-shell p-6 sm:p-8">
             <h2 className="text-2xl">{copy.passwordTitle}</h2>
             <p className="tr-copy mt-1 text-sm">{copy.passwordSubtitle}</p>
-            <form className="mt-6 grid gap-4 sm:grid-cols-3" onSubmit={savePassword}>
+            <form className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3" onSubmit={savePassword}>
               <label className="tr-label">
                 {copy.currentPasswordLabel}
                 <input

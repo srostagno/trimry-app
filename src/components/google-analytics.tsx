@@ -88,8 +88,8 @@ export function GoogleAnalytics() {
       <div className="fixed inset-x-3 bottom-3 z-[100] sm:inset-x-6">
         <div className="tr-shell mx-auto max-w-3xl p-4 sm:p-5">
           <p className="text-sm font-extrabold text-trimry-ink">{messages.cookieConsent.title}</p>
-          <p className="mt-1.5 text-sm text-trimry-slate">{messages.cookieConsent.description}</p>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
+          <p className="mt-1 text-xs leading-5 text-trimry-slate sm:text-sm">{messages.cookieConsent.description}</p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             <button
               type="button"
               className="tr-btn-primary tr-btn-sm"

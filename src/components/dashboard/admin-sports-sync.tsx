@@ -119,7 +119,7 @@ export function AdminSportsSync() {
         <p className="tr-meta mt-5">{messages.common.loading}</p>
       ) : status ? (
         <>
-          <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+          <dl className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="tr-card-muted p-4">
               <dt className="tr-eyebrow">{copy.eventCount}</dt>
               <dd className="mt-1 text-2xl font-extrabold text-trimry-ink">{status.eventCount}</dd>

@@ -76,8 +76,8 @@ function LivePreview() {
   )
 
   return (
-    <div className="tr-shell p-5 sm:p-6">
-      <div className="flex flex-wrap gap-2">
+    <div className="tr-shell min-w-0 overflow-hidden p-4 sm:p-6">
+      <div className="tr-chip-strip">
         {chips.map((chip) => (
           <button
             key={chip.key}
@@ -113,16 +113,16 @@ export function HomePageClient() {
 
   return (
     <div className="space-y-20 pb-8">
-      <section className="tr-hero px-6 py-12 sm:px-10 sm:py-16 lg:px-14">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="tr-fade-up">
+      <section className="tr-hero px-5 py-10 sm:px-10 sm:py-16 lg:px-14">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="tr-fade-up min-w-0">
             <p className="tr-badge tr-badge-blue">{messages.home.badge}</p>
-            <h1 className="mt-5 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 break-words text-[2.5rem] leading-[1.05] sm:text-5xl lg:text-6xl">
               {messages.home.title}{' '}
               <span className="tr-gradient-text">{messages.home.titleHighlight}</span>
             </h1>
             <p className="tr-copy mt-5 max-w-xl text-lg">{messages.home.subtitle}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <StartFlowButton className="tr-btn-primary px-7" analyticsLocation="hero">
                 {messages.home.primaryCta}
               </StartFlowButton>
@@ -133,7 +133,7 @@ export function HomePageClient() {
             <p className="tr-meta mt-4 text-xs">{messages.home.trustLine}</p>
           </div>
 
-          <div className="tr-fade-up-delay relative">
+          <div className="tr-fade-up-delay relative min-w-0">
             <div className="tr-float absolute -left-6 -top-8 hidden lg:block">
               <Image
                 src="/brand/trimry-icon-rounded-256.png"
@@ -155,7 +155,7 @@ export function HomePageClient() {
       <section id="how-it-works" className="scroll-mt-24">
         <p className="tr-eyebrow">{messages.home.stepsEyebrow}</p>
         <h2 className="mt-2 text-3xl sm:text-4xl">{messages.home.stepsTitle}</h2>
-        <ol className="mt-8 grid gap-4 md:grid-cols-3">
+        <ol className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
           {messages.home.steps.map((step, index) => (
             <li key={step.title} className="tr-card p-6">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand-gradient text-sm font-black text-white">
@@ -171,7 +171,7 @@ export function HomePageClient() {
       <section id="sports" className="scroll-mt-24">
         <p className="tr-eyebrow">{messages.home.channelsEyebrow}</p>
         <h2 className="mt-2 text-3xl sm:text-4xl">{messages.home.channelsTitle}</h2>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
           {messages.home.channels.map((channel, index) => (
             <div key={channel.title} className="tr-card-muted p-6">
               <span className="text-2xl" aria-hidden="true">
@@ -184,9 +184,9 @@ export function HomePageClient() {
         </div>
       </section>
 
-      <section className="tr-gradient-panel px-6 py-10 sm:px-10 sm:py-14">
-        <div className="grid items-center gap-8 lg:grid-cols-[1fr_0.9fr]">
-          <div>
+      <section className="tr-gradient-panel px-5 py-10 sm:px-10 sm:py-14">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[1fr_0.9fr]">
+          <div className="min-w-0">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-white/80">
               {messages.home.scoutEyebrow}
             </p>
@@ -203,12 +203,12 @@ export function HomePageClient() {
               {messages.home.scoutCta}
             </button>
           </div>
-          <ul className="space-y-3">
+          <ul className="min-w-0 space-y-3">
             {messages.home.scoutBullets.map((bullet, index) => (
               <li
                 key={bullet}
                 className={clsx(
-                  'max-w-sm rounded-2xl px-4 py-3 text-sm font-semibold shadow-card',
+                  'max-w-sm break-words rounded-2xl px-4 py-3 text-sm font-semibold shadow-card',
                   index % 2 === 0
                     ? 'ml-auto rounded-tr-md bg-trimry-ink text-white'
                     : 'rounded-tl-md bg-white text-trimry-ink',
@@ -222,14 +222,14 @@ export function HomePageClient() {
       </section>
 
       <section id="pricing" className="scroll-mt-24">
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <p className="tr-eyebrow">{messages.pricing.eyebrow}</p>
             <h2 className="mt-2 text-3xl sm:text-4xl">{messages.pricing.title}</h2>
             <p className="tr-copy mt-3 max-w-md">{messages.pricing.subtitle}</p>
           </div>
-          <div className="tr-shell p-6 sm:p-8">
-            <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <div className="tr-shell min-w-0 p-6 sm:p-8">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
               <h3 className="text-xl">{messages.pricing.planTitle}</h3>
               <p className="text-2xl font-extrabold text-trimry-ink">{messages.pricing.billing}</p>
             </div>
@@ -281,7 +281,7 @@ export function HomePageClient() {
         </div>
       </section>
 
-      <section className="tr-hero px-6 py-12 text-center sm:px-10">
+      <section className="tr-hero px-5 py-12 text-center sm:px-10">
         <h2 className="text-3xl sm:text-4xl">{messages.home.finalTitle}</h2>
         <p className="tr-copy mt-3">{messages.home.finalSubtitle}</p>
         <div className="mt-6 flex justify-center">

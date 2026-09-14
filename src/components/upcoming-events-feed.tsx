@@ -42,6 +42,7 @@ export function EventRow({ event, compact = false }: { event: FeedEvent; compact
   const { messages } = useLanguage()
   const isLive = event.status === 'live'
   const isOff = event.status === 'postponed' || event.status === 'canceled'
+  const meta = [event.leagueName, event.round, event.venue].filter(Boolean).join(' · ')
 
   return (
     <li className={clsx('tr-event-row', compact && 'p-3', isOff && 'opacity-60')}>
@@ -51,24 +52,32 @@ export function EventRow({ event, compact = false }: { event: FeedEvent; compact
         ) : event.localTimeLabel ? (
           event.localTimeLabel
         ) : (
-          <span className="text-xs font-semibold text-trimry-muted">{messages.agenda.timeTbc}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-trimry-muted">
+            {messages.agenda.timeTbc}
+          </span>
         )}
       </div>
-      <div className="min-w-0 flex-1">
-        <p className={clsx('font-bold text-trimry-ink', compact ? 'text-sm' : 'text-[15px]')}>
+      <div className="min-w-0">
+        <p
+          className={clsx(
+            'break-words font-bold leading-snug text-trimry-ink',
+            compact ? 'text-sm' : 'text-[15px]',
+          )}
+        >
           <span className="mr-1.5" aria-hidden="true">
             {event.sportEmoji}
           </span>
           {eventTitle(event)}
         </p>
         <p className="mt-0.5 truncate text-xs text-trimry-muted">
-          {event.leagueName}
-          {event.round ? ` · ${event.round}` : ''}
-          {event.venue ? ` · ${event.venue}` : ''}
+          {meta}
           {isOff ? ` · ${event.status}` : ''}
         </p>
+        <div className="mt-1.5 sm:hidden">
+          <ReasonBadge event={event} />
+        </div>
       </div>
-      <div className="hidden shrink-0 sm:block">
+      <div className="hidden sm:block">
         <ReasonBadge event={event} />
       </div>
     </li>
@@ -113,14 +122,14 @@ export function UpcomingEventsFeed({
       {showHighlights && feed.highlights.length > 0 ? (
         <section>
           <p className="tr-eyebrow mb-3">{messages.agenda.highlightsTitle}</p>
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {feed.highlights.slice(0, 4).map((event) => (
-              <li key={`highlight-${event.id}`} className="tr-gradient-panel p-4 text-white">
+              <li key={`highlight-${event.id}`} className="tr-gradient-panel min-w-0 overflow-hidden p-4 text-white">
                 <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/80">
                   {event.localDateLabel}
                   {event.localTimeLabel ? ` · ${event.localTimeLabel}` : ''}
                 </p>
-                <p className="mt-1.5 text-base font-extrabold leading-tight">
+                <p className="mt-1.5 break-words text-base font-extrabold leading-tight">
                   <span className="mr-1.5" aria-hidden="true">
                     {event.sportEmoji}
                   </span>
@@ -139,14 +148,14 @@ export function UpcomingEventsFeed({
 
         return (
           <section key={day.dateKey}>
-            <div className="mb-2 flex items-baseline justify-between gap-3">
-              <h3 className={clsx('font-extrabold text-trimry-ink', compact ? 'text-sm' : 'text-base')}>
+            <div className="mb-2 flex min-w-0 items-baseline justify-between gap-3">
+              <h3 className={clsx('min-w-0 truncate font-extrabold text-trimry-ink', compact ? 'text-sm' : 'text-base')}>
                 {day.isToday ? messages.agenda.today : day.label}
                 {day.isToday ? (
                   <span className="ml-2 text-xs font-semibold text-trimry-muted">{day.label}</span>
                 ) : null}
               </h3>
-              <span className="tr-meta text-xs">
+              <span className="tr-meta shrink-0 whitespace-nowrap text-xs">
                 {interpolate(messages.agenda.countLabel, { count: day.events.length })}
               </span>
             </div>

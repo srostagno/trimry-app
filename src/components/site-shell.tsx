@@ -18,19 +18,14 @@ function MenuIcon({ open }: { open: boolean }) {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-5 w-5 stroke-current"
+      width="22"
+      height="22"
       fill="none"
-      strokeWidth="2"
+      stroke="currentColor"
+      strokeWidth="2.25"
       strokeLinecap="round"
     >
-      <path
-        d="M4 7h16M4 12h16M4 17h16"
-        className={clsx('origin-center transition', open && 'scale-75 opacity-0')}
-      />
-      <path
-        d="M7 7l10 10M17 7L7 17"
-        className={clsx('origin-center transition', !open && 'scale-75 opacity-0')}
-      />
+      {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
     </svg>
   )
 }
@@ -132,28 +127,47 @@ export function SiteShell({
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 lg:hidden">
-                  {isAuthenticated ? (
-                    <Link
-                      href="/dashboard"
-                      aria-label={messages.nav.profile}
-                      title={viewer?.fullName || viewer?.email || messages.nav.profile}
-                    >
-                      <Avatar label={avatarLabel} size="sm" />
+                <div className="flex items-center gap-2 lg:hidden">
+                  {!isAuthenticated && !open ? (
+                    <Link href="/activate" className="tr-btn-primary tr-btn-sm px-4">
+                      {messages.nav.startFree}
                     </Link>
                   ) : null}
-
-                  <Disclosure.Button className="tr-btn-secondary h-10 w-10 rounded-full p-0">
-                    <span className="sr-only">Toggle menu</span>
+                  <Disclosure.Button
+                    aria-label="Menu"
+                    className={clsx(
+                      'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border text-trimry-ink transition',
+                      open
+                        ? 'border-trimry-ink bg-trimry-ink text-white'
+                        : 'border-trimry-line bg-white hover:border-trimry-blue/40',
+                    )}
+                  >
                     <MenuIcon open={open} />
                   </Disclosure.Button>
                 </div>
               </div>
             </div>
 
-            <Disclosure.Panel className="border-t border-trimry-line bg-white px-4 pb-5 pt-3 lg:hidden">
+            <Disclosure.Panel className="border-t border-trimry-line bg-white px-4 pb-5 pt-3 shadow-card lg:hidden">
               <div className="mx-auto max-w-6xl space-y-4">
-                <nav className="grid gap-1">
+                {isAuthenticated ? (
+                  <Disclosure.Button
+                    as={Link}
+                    href="/dashboard"
+                    className="tr-card flex items-center justify-between gap-3 px-4 py-3 text-left"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-trimry-ink">
+                        {viewer?.fullName || viewer?.email}
+                      </p>
+                      <p className="mt-0.5 text-xs font-bold uppercase tracking-[0.16em] text-trimry-blue">
+                        {messages.nav.dashboard}
+                      </p>
+                    </div>
+                    <Avatar label={avatarLabel} size="sm" />
+                  </Disclosure.Button>
+                ) : null}
+                <nav className="grid grid-cols-1 gap-1">
                   {baseLinks.map((link) => (
                     <Disclosure.Button
                       key={link.href}
@@ -170,24 +184,8 @@ export function SiteShell({
                   <LanguageSwitcher fullWidth />
                 </div>
 
-                {isAuthenticated ? (
-                  <Disclosure.Button
-                    as={Link}
-                    href="/dashboard"
-                    className="tr-card flex items-center justify-between px-4 py-3 text-left"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-trimry-ink">
-                        {viewer?.fullName || viewer?.email}
-                      </p>
-                      <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-trimry-blue">
-                        {messages.nav.dashboard}
-                      </p>
-                    </div>
-                    <Avatar label={avatarLabel} size="sm" />
-                  </Disclosure.Button>
-                ) : (
-                  <div className="grid gap-2">
+                {isAuthenticated ? null : (
+                  <div className="grid grid-cols-1 gap-2">
                     <Disclosure.Button as={Link} href="/account/login" className="tr-btn-secondary">
                       {messages.nav.login}
                     </Disclosure.Button>
@@ -202,12 +200,12 @@ export function SiteShell({
         )}
       </Disclosure>
 
-      <main className="tr-container flex-1 py-8 lg:py-12">{children}</main>
+      <main className="tr-container flex-1 py-6 sm:py-8 lg:py-12">{children}</main>
       {hideScoutChat ? null : <ScoutChatWidget />}
 
       <footer className="border-t border-trimry-line bg-white">
-        <div className="tr-container grid gap-8 py-10 text-sm text-trimry-slate lg:grid-cols-[1.2fr_1fr_1fr]">
-          <div className="space-y-3">
+        <div className="tr-container grid grid-cols-1 gap-8 py-10 text-sm text-trimry-slate sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr]">
+          <div className="min-w-0 space-y-3 sm:col-span-2 lg:col-span-1">
             <BrandLogo />
             <p className="max-w-sm">{messages.footer.tagline}</p>
             <p className="tr-meta text-xs">{messages.footer.dataSource}</p>
@@ -238,7 +236,7 @@ export function SiteShell({
               {messages.legal.dataDeletion}
             </Link>
           </div>
-          <div className="space-y-2 text-xs leading-5">
+          <div className="min-w-0 space-y-2 break-words text-xs leading-5">
             <p className="font-semibold text-trimry-ink">
               © {new Date().getFullYear()} {COMPANY.legalName}. {messages.footer.rightsReserved}
             </p>

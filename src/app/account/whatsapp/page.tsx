@@ -189,7 +189,7 @@ export default function DeliverySettingsPage() {
 
   return (
     <section className="tr-shell mx-auto max-w-4xl p-6 sm:p-8">
-      <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <p className="tr-badge tr-badge-blue">{isConfirmMode ? copy.confirmBadge : copy.badge}</p>

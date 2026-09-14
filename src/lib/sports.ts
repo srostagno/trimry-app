@@ -252,11 +252,19 @@ export async function fetchLeaguesForSport(sport: SportKey, query?: string) {
   return (await response.json()) as { sport: SportKey; leagues: LeagueSearchResult[] }
 }
 
-export async function searchTeams(query: string, sport?: SportKey | null) {
+export async function searchTeams(
+  query: string,
+  sport?: SportKey | null,
+  language?: LanguageCode,
+) {
   const params = new URLSearchParams({ q: query })
 
   if (sport) {
     params.set('sport', sport)
+  }
+
+  if (language) {
+    params.set('locale', language)
   }
 
   const response = await apiFetch(

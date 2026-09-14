@@ -20,6 +20,19 @@
 html {
   background-color: #ffffff;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
 }
 
 * {
@@ -58,7 +71,21 @@ a {
 /* ---------- Layout ---------- */
 
 .tr-container {
-  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  @apply mx-auto w-full min-w-0 max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+/* Horizontal chip strip on small screens, wrapping row from sm up. */
+.tr-chip-strip {
+  @apply -mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0;
+  scrollbar-width: none;
+}
+
+.tr-chip-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.tr-chip-strip > * {
+  @apply shrink-0 snap-start;
 }
 
 .tr-shell {
@@ -175,7 +202,7 @@ a {
 /* ---------- Chips, badges, tabs ---------- */
 
 .tr-chip {
-  @apply inline-flex items-center gap-2 rounded-full border border-trimry-line bg-white px-4 py-2 text-sm font-semibold text-trimry-slate transition hover:border-trimry-blue/40 hover:text-trimry-ink;
+  @apply inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-trimry-line bg-white px-4 py-2 text-sm font-semibold text-trimry-slate transition hover:border-trimry-blue/40 hover:text-trimry-ink;
 }
 
 .tr-chip-active {
@@ -205,7 +232,16 @@ a {
 }
 
 .tr-tab {
-  @apply rounded-full px-4 py-2.5 text-sm font-semibold text-trimry-slate transition hover:bg-trimry-surface hover:text-trimry-ink;
+  @apply whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold text-trimry-slate transition hover:bg-trimry-surface hover:text-trimry-ink;
+}
+
+.tr-tab-strip {
+  @apply flex gap-1 overflow-x-auto rounded-full border border-trimry-line bg-white p-1;
+  scrollbar-width: none;
+}
+
+.tr-tab-strip::-webkit-scrollbar {
+  display: none;
 }
 
 .tr-tab-active {
@@ -232,12 +268,13 @@ a {
 
 /* ---------- Event feed ---------- */
 
+/* Grid (not flex) so WebKit never sizes the row to the full text width. */
 .tr-event-row {
-  @apply flex items-start gap-4 rounded-2xl border border-trimry-line bg-white p-4 transition hover:border-trimry-blue/40;
+  @apply grid min-w-0 grid-cols-[3.5rem_minmax(0,1fr)] items-start gap-x-3 gap-y-1 overflow-hidden rounded-2xl border border-trimry-line bg-white p-3.5 transition hover:border-trimry-blue/40 sm:grid-cols-[3.75rem_minmax(0,1fr)_auto] sm:gap-x-4 sm:p-4;
 }
 
 .tr-event-time {
-  @apply w-16 shrink-0 text-sm font-extrabold text-trimry-ink;
+  @apply whitespace-nowrap pt-0.5 text-sm font-extrabold tabular-nums text-trimry-ink;
 }
 
 /* ---------- Motion ---------- */

@@ -373,7 +373,7 @@ export default function CheckoutStartPage() {
         <p className="tr-copy mt-4 text-lg">{recoveryCopy}</p>
         {!checkoutCancelled ? (
           <>
-            <ul className="mt-6 grid gap-3 text-sm leading-6">
+            <ul className="mt-6 grid grid-cols-1 gap-3 text-sm leading-6">
               {messages.checkout.trialHighlights.map((highlight) => (
                 <li key={highlight} className="tr-card-muted px-4 py-3 text-trimry-slate">
                   {highlight}
@@ -422,7 +422,7 @@ export default function CheckoutStartPage() {
         <div className="tr-card-muted mt-6 p-5">
           <p className="text-base font-bold text-trimry-ink">{messages.checkout.resumeTitle}</p>
           <p className="tr-copy mt-2 text-sm leading-6">{messages.checkout.resumeSubtitle}</p>
-          <ul className="mt-4 grid gap-3 text-sm leading-6">
+          <ul className="mt-4 grid grid-cols-1 gap-3 text-sm leading-6">
             {messages.checkout.trialHighlights.map((highlight) => (
               <li key={highlight} className="tr-card px-4 py-3 text-trimry-slate">
                 {highlight}
@@ -431,7 +431,7 @@ export default function CheckoutStartPage() {
           </ul>
           <p className="tr-alert-success mt-4">{messages.checkout.unsubscribeHelp}</p>
           {account?.subscription ? (
-            <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+            <div className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               <div className="tr-card p-4">
                 <p className="tr-eyebrow">{messages.checkout.deliveryLabel}</p>
                 <p className="mt-2 font-semibold text-trimry-ink">
@@ -481,7 +481,7 @@ export default function CheckoutStartPage() {
       ) : (
         <div className="tr-card-muted mt-6 p-5 text-trimry-slate">
           <p>{messages.checkout.helper}</p>
-          <ul className="mt-4 grid gap-3 text-sm leading-6">
+          <ul className="mt-4 grid grid-cols-1 gap-3 text-sm leading-6">
             {messages.checkout.trialHighlights.map((highlight) => (
               <li key={highlight} className="tr-card px-4 py-3">
                 {highlight}

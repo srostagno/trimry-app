@@ -362,22 +362,51 @@ export default function ActivatePage() {
   }, [deliveryPreference, isAuthenticated, preferences.sports.length, step, whatsappConsentAccepted, whatsappNumber])
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <header>
+    <div className="mx-auto min-w-0 max-w-4xl space-y-6">
+      <header className="min-w-0">
         <p className="tr-eyebrow">{copy.title}</p>
-        <ol className="mt-3 grid grid-cols-4 gap-2">
+        {/* Compact progress on phones, full step pills from sm up. */}
+        <div className="mt-3 sm:hidden">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-lg font-extrabold text-trimry-ink">{copy.steps[step - 1]}</p>
+            <p className="tr-meta shrink-0 text-xs">
+              {interpolate(copy.stepLabel, { step, total: TOTAL_STEPS })}
+            </p>
+          </div>
+          <div className="mt-2 grid grid-cols-4 gap-1.5">
+            {copy.steps.map((label, index) => {
+              const number = index + 1
+              const reachable = number < step || (number === step + 1 && stepIsValid)
+
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  aria-label={label}
+                  disabled={!reachable && number !== step}
+                  onClick={() => goToStep(number)}
+                  className={clsx(
+                    'h-1.5 rounded-full transition',
+                    number <= step ? 'bg-brand-gradient' : 'bg-trimry-line',
+                  )}
+                />
+              )
+            })}
+          </div>
+        </div>
+        <ol className="mt-3 hidden grid-cols-4 gap-2 sm:grid">
           {copy.steps.map((label, index) => {
             const number = index + 1
             const reachable = number < step || (number === step + 1 && stepIsValid)
 
             return (
-              <li key={label}>
+              <li key={label} className="min-w-0">
                 <button
                   type="button"
                   disabled={!reachable && number !== step}
                   onClick={() => goToStep(number)}
                   className={clsx(
-                    'w-full rounded-2xl border px-3 py-2.5 text-left transition',
+                    'w-full min-w-0 rounded-2xl border px-3 py-2.5 text-left transition',
                     number === step
                       ? 'border-transparent bg-brand-gradient text-white shadow-glow'
                       : number < step
@@ -385,7 +414,7 @@ export default function ActivatePage() {
                         : 'border-trimry-line bg-trimry-surface text-trimry-muted',
                   )}
                 >
-                  <span className="block text-[10px] font-black uppercase tracking-[0.16em] opacity-80">
+                  <span className="block truncate text-[10px] font-black uppercase tracking-[0.16em] opacity-80">
                     {interpolate(copy.stepLabel, { step: number, total: TOTAL_STEPS })}
                   </span>
                   <span className="block truncate text-sm font-bold">{label}</span>
@@ -396,7 +425,7 @@ export default function ActivatePage() {
         </ol>
       </header>
 
-      <section className="tr-shell p-6 sm:p-8">
+      <section className="tr-shell min-w-0 p-5 sm:p-8">
         {step === 1 ? (
           <>
             <h1 className="text-2xl sm:text-3xl">{copy.sportsTitle}</h1>
@@ -454,7 +483,7 @@ export default function ActivatePage() {
           <>
             <h1 className="text-2xl sm:text-3xl">{copy.accountTitle}</h1>
             <p className="tr-copy mt-2">{copy.accountSubtitle}</p>
-            <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={handleRegister}>
+            <form className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2" onSubmit={handleRegister}>
               <label className="tr-label">
                 {messages.auth.firstNameLabel}
                 <input
@@ -518,7 +547,7 @@ export default function ActivatePage() {
                 ) : null}
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label className="tr-label" htmlFor="delivery-hour">
                   {copy.hourLabel}
                   <DeliveryHourSelect
@@ -572,7 +601,7 @@ export default function ActivatePage() {
             <p className="tr-copy mt-2">{copy.reviewSubtitle}</p>
             <div className="mt-6 space-y-6">
               <PreferencesSummary catalog={catalog} preferences={preferences} />
-              <dl className="grid gap-3 sm:grid-cols-3">
+              <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="tr-card-muted p-4">
                   <dt className="tr-eyebrow">{copy.reviewFrequency}</dt>
                   <dd className="mt-2 text-sm font-bold text-trimry-ink">
@@ -619,7 +648,7 @@ export default function ActivatePage() {
 
         {error && !(step === 3 && !isAuthenticated) ? <p className="tr-alert-error mt-6">{error}</p> : null}
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-trimry-line pt-6">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-trimry-line pt-5">
           <button
             type="button"
             onClick={() => goToStep(step - 1)}

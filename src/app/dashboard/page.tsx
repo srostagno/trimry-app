@@ -18,7 +18,7 @@ import { trackEvent } from '@/lib/analytics'
 import { apiFetch, readApiError } from '@/lib/api-client'
 import { BillingSessionError, createBillingSession } from '@/lib/billing'
 import { interpolate, languageToIntlLocale } from '@/lib/i18n'
-import { DEFAULT_WEEKLY_DELIVERY_HOUR, formatNextDelivery } from '@/lib/schedule'
+import { DEFAULT_WEEKLY_DELIVERY_HOUR, detectBrowserTimeZone, formatNextDelivery } from '@/lib/schedule'
 import {
   emptyPreferences,
   fetchMemberUpcomingEvents,
@@ -80,6 +80,7 @@ export default function DashboardPage() {
 
   const [deliveryPreference, setDeliveryPreference] = useState<DeliveryPreference>('email')
   const [deliveryHourLocal, setDeliveryHourLocal] = useState(DEFAULT_WEEKLY_DELIVERY_HOUR)
+  const [deliveryTimeZone, setDeliveryTimeZone] = useState('UTC')
   const [whatsappNumber, setWhatsappNumber] = useState('')
   const [whatsappConsentAccepted, setWhatsappConsentAccepted] = useState(false)
   const [deliveryBusy, setDeliveryBusy] = useState<string | null>(null)
@@ -118,6 +119,10 @@ export default function DashboardPage() {
     if (snapshot.subscription) {
       setDeliveryPreference(snapshot.subscription.deliveryPreference ?? 'email')
       setDeliveryHourLocal(snapshot.subscription.deliveryHourLocal ?? DEFAULT_WEEKLY_DELIVERY_HOUR)
+      // Accounts created before time zones were captured default to UTC; offer the
+      // browser zone instead so the delivery hour means what the user expects.
+      const storedZone = snapshot.subscription.timeZone || snapshot.user.timeZone
+      setDeliveryTimeZone(!storedZone || storedZone === 'UTC' ? detectBrowserTimeZone() : storedZone)
       setWhatsappNumber(snapshot.subscription.whatsappNumber?.trim() ?? '')
       setWhatsappConsentAccepted(Boolean(snapshot.subscription.whatsappNumber?.trim()))
     }
@@ -264,6 +269,7 @@ export default function DashboardPage() {
           action: 'update-delivery',
           deliveryPreference,
           deliveryHourLocal,
+          timeZone: deliveryTimeZone,
           whatsappNumber,
           whatsappConsentAccepted: requiresWhatsappDelivery(deliveryPreference)
             ? whatsappConsentAccepted
@@ -800,8 +806,17 @@ export default function DashboardPage() {
                           locale={language}
                           className="tr-input mt-2"
                         />
+                      </label>
+                      <label className="tr-label" htmlFor="dashboard-delivery-zone">
+                        {messages.auth.timeZoneLabel}
+                        <TimeZoneSelect
+                          id="dashboard-delivery-zone"
+                          value={deliveryTimeZone}
+                          onChange={setDeliveryTimeZone}
+                          className="tr-input mt-2"
+                        />
                         <span className="tr-meta mt-2 block text-xs">
-                          {interpolate(copy.deliveryHourHint, { zone: timeZone })}
+                          {interpolate(copy.deliveryHourHint, { zone: deliveryTimeZone })}
                         </span>
                       </label>
                       {requiresWhatsappDelivery(deliveryPreference) ? (

@@ -9,12 +9,15 @@ type DeliveryPreferenceSelectorProps = {
   value: DeliveryPreference
   onChange: (value: DeliveryPreference) => void
   includeNone?: boolean
+  // Icon + title only, in one row: for short signup forms.
+  compact?: boolean
 }
 
 export function DeliveryPreferenceSelector({
   value,
   onChange,
   includeNone = true,
+  compact = false,
 }: DeliveryPreferenceSelectorProps) {
   const { messages } = useLanguage()
   const deliveryOptions: Array<{
@@ -54,9 +57,36 @@ export function DeliveryPreferenceSelector({
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div className={clsx('grid gap-3', compact ? 'grid-cols-3 gap-2' : 'grid-cols-1 sm:grid-cols-2')}>
       {deliveryOptions.map((option) => {
         const active = option.value === value
+
+        if (compact) {
+          return (
+            <label
+              key={option.value}
+              className={clsx(
+                'flex cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-3 text-center transition',
+                active
+                  ? 'border-trimry-blue bg-trimry-blue/5 shadow-card ring-2 ring-trimry-blue/20'
+                  : 'border-trimry-line bg-white hover:border-trimry-blue/40',
+              )}
+            >
+              <input
+                type="radio"
+                name="delivery-preference"
+                value={option.value}
+                checked={active}
+                onChange={() => onChange(option.value)}
+                className="sr-only"
+              />
+              <span className="text-xl leading-none" aria-hidden="true">
+                {option.icon}
+              </span>
+              <span className="text-xs font-extrabold leading-tight text-trimry-ink">{option.title}</span>
+            </label>
+          )
+        }
 
         return (
           <label

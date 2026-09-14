@@ -41,7 +41,7 @@ export function SportLandingClient({ language, sport }: { language: LanguageCode
   const [stage, setStage] = useState<Stage>('form')
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
-  const [deliveryPreference, setDeliveryPreference] = useState<DeliveryPreference>('whatsapp')
+  const [deliveryPreference, setDeliveryPreference] = useState<DeliveryPreference>('both')
   const [whatsappNumber, setWhatsappNumber] = useState('')
   const [consent, setConsent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -181,27 +181,16 @@ export function SportLandingClient({ language, sport }: { language: LanguageCode
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
-      <header className="grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-        <div className="min-w-0">
+      {/* Mobile order: title, form, then proof. Desktop: copy left, form right. */}
+      <header className="grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6">
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
           <p className="tr-eyebrow">{copy.eyebrow}</p>
-          <h1 className="mt-2 text-3xl sm:text-5xl">{copy.title}</h1>
-          <p className="tr-copy mt-4 max-w-2xl text-lg">{copy.subtitle}</p>
-          <ul className="mt-5 space-y-2">
-            {copy.bullets.map((bullet) => (
-              <li key={bullet} className="flex gap-2 text-sm text-trimry-slate">
-                <span aria-hidden="true">✅</span>
-                <span>{bullet}</span>
-              </li>
-            ))}
-          </ul>
+          <h1 className="mt-2 text-[28px] leading-[1.15] sm:text-4xl lg:text-5xl">{copy.title}</h1>
+          <p className="tr-copy mt-3 max-w-2xl text-base sm:text-lg">{copy.subtitle}</p>
+        </div>
 
-          {stage === 'form' ? (
-            <a href="#signup" className="tr-btn-primary mt-6 w-full lg:hidden">
-              {copy.submit} →
-            </a>
-          ) : null}
-
-          <div className="tr-gradient-panel mt-6 max-w-md p-4 text-white">
+        <div className="min-w-0 order-3 lg:order-none lg:col-start-1 lg:row-start-2">
+          <div className="tr-gradient-panel max-w-md p-4 text-white">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/80">WhatsApp · 09:00</p>
             <p className="mt-1 text-sm font-extrabold">📣 {messages.agenda.today}</p>
             <ul className="mt-2 space-y-1 text-sm">
@@ -210,9 +199,17 @@ export function SportLandingClient({ language, sport }: { language: LanguageCode
               ))}
             </ul>
           </div>
+          <ul className="mt-5 space-y-2">
+            {copy.bullets.map((bullet) => (
+              <li key={bullet} className="flex gap-2 text-sm text-trimry-slate">
+                <span aria-hidden="true">✅</span>
+                <span>{bullet}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div id="signup" className="tr-shell p-6 sm:p-8">
+        <div id="signup" className="tr-shell order-2 p-5 sm:p-8 lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2">
           {stage === 'existing' ? (
             <>
               <h2 className="text-2xl">{copy.alreadyTitle}</h2>
@@ -271,6 +268,7 @@ export function SportLandingClient({ language, sport }: { language: LanguageCode
                     value={deliveryPreference}
                     onChange={setDeliveryPreference}
                     includeNone={false}
+                    compact
                   />
                 </div>
               </div>

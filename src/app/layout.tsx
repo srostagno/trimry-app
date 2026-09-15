@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { cookies, headers } from 'next/headers'
 
 import './globals.css'
+import { AttributionTracker } from '@/components/attribution-tracker'
 import { GoogleAnalytics } from '@/components/google-analytics'
 import { JsonLd } from '@/components/json-ld'
 import { LanguageProvider } from '@/components/language-provider'
@@ -82,6 +83,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           initialLanguage={initialLanguage}
           initialLanguageSource={initialLanguageSource}
         >
+          <AttributionTracker />
           <GoogleAnalytics />
           <JsonLd data={sitewideJsonLd} />
           <SiteShell viewer={viewer}>{children}</SiteShell>

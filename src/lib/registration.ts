@@ -1,4 +1,5 @@
 import { apiFetch, readApiError } from '@/lib/api-client'
+import { readAttribution } from '@/lib/attribution'
 import type { LanguageCode } from '@/lib/i18n'
 import type { SportsPreferences } from '@/lib/sports'
 
@@ -76,6 +77,7 @@ export async function registerAccount(input: RegisterAccountInput, fallbackMessa
           ? { formElapsedMs: Math.max(0, Date.now() - input.formOpenedAt) }
           : {}),
         clientMetadata: collectRegistrationClientMetadata(input.timeZone),
+        attribution: readAttribution(),
       }),
     },
     { retryUnauthorized: false },

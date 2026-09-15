@@ -24,6 +24,7 @@ export type AccountSnapshot = {
     fullName: string
     locale: string
     timeZone: string
+    countryCode: string | null
     admin: boolean
     sportsPreferences: SerializedSportsPreferences | null
     activationFunnel: {

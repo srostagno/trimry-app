@@ -4,12 +4,21 @@ import type { SportsPreferences } from '@/lib/sports'
 
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+// Country the Vercel edge resolved from the visitor's IP, parked in a cookie by
+// the middleware because the browser calls the API directly.
+function readGeoCountry() {
+  const match = document.cookie.match(/(?:^|;\s*)tr-geo=([A-Za-z]{2})(?:;|$)/)
+
+  return match?.[1]?.toUpperCase() ?? null
+}
+
 export function collectRegistrationClientMetadata(timeZone: string) {
   if (typeof window === 'undefined') {
     return { timeZone }
   }
 
   return {
+    geoCountry: readGeoCountry(),
     browserLocale: navigator.language || null,
     browserLanguages: Array.from(navigator.languages ?? []).slice(0, 12),
     timeZone,

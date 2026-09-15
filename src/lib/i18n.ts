@@ -287,6 +287,15 @@ export type MessageSection = {
     homeCta: string
     eventsTotal: string
     nextUp: string
+    shareCta: string
+    sharePreparing: string
+    shareCopied: string
+    shareError: string
+    shareHeading: string
+    shareSubheading: string
+    shareFooter: string
+    shareMore: string
+    shareText: string
   }
   dashboard: {
     title: string
@@ -1325,6 +1334,15 @@ const en: MessageSection = {
     homeCta: 'Go to my dashboard',
     eventsTotal: '{count} events in the next {days} days',
     nextUp: 'Next up',
+    shareCta: 'Copy agenda',
+    sharePreparing: 'Building your image…',
+    shareCopied: 'Agenda copied. Paste it wherever you want.',
+    shareError: 'We could not build the image. Try again.',
+    shareHeading: 'My sports agenda',
+    shareSubheading: '{count} events coming up · {zone}',
+    shareFooter: 'Alerts by WhatsApp and email',
+    shareMore: '+{count} more in my Trimry agenda',
+    shareText: 'This is my sports agenda on Trimry',
     loadError: 'Unable to load your agenda right now.',
   },
   dashboard: {
@@ -1814,6 +1832,15 @@ const es: MessageSection = {
     homeCta: 'Ir a mi panel',
     eventsTotal: '{count} eventos en los próximos {days} días',
     nextUp: 'Lo próximo',
+    shareCta: 'Copiar agenda',
+    sharePreparing: 'Armando tu imagen…',
+    shareCopied: 'Agenda copiada. Pégala donde quieras.',
+    shareError: 'No pudimos armar la imagen. Inténtalo de nuevo.',
+    shareHeading: 'Mi agenda deportiva',
+    shareSubheading: '{count} eventos que se vienen · {zone}',
+    shareFooter: 'Alertas por WhatsApp y email',
+    shareMore: '+{count} más en mi agenda Trimry',
+    shareText: 'Esta es mi agenda deportiva en Trimry',
     loadError: 'No pudimos cargar tu agenda en este momento.',
   },
   dashboard: {
@@ -2303,6 +2330,15 @@ const pt: MessageSection = {
     homeCta: 'Ir para meu painel',
     eventsTotal: '{count} eventos nos próximos {days} dias',
     nextUp: 'A seguir',
+    shareCta: 'Copiar agenda',
+    sharePreparing: 'Montando sua imagem…',
+    shareCopied: 'Agenda copiada. Cole onde quiser.',
+    shareError: 'Não conseguimos montar a imagem. Tente de novo.',
+    shareHeading: 'Minha agenda esportiva',
+    shareSubheading: '{count} eventos que vêm aí · {zone}',
+    shareFooter: 'Alertas no WhatsApp e por e-mail',
+    shareMore: '+{count} mais na minha agenda Trimry',
+    shareText: 'Esta é a minha agenda esportiva na Trimry',
     loadError: 'Não foi possível carregar sua agenda agora.',
   },
   dashboard: {

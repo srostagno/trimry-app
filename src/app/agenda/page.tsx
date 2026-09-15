@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useLanguage } from '@/components/language-provider'
+import { ShareAgendaButton } from '@/components/share-agenda-button'
 import { EventRow, UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import { trackEvent } from '@/lib/analytics'
 import { interpolate } from '@/lib/i18n'
@@ -113,6 +114,7 @@ export default function AgendaPage() {
         ) : null}
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
+          <ShareAgendaButton feed={visibleFeed} source="agenda" className="tr-btn-primary" />
           <Link href="/dashboard?tab=preferences" className="tr-btn-secondary tr-btn-sm">
             {copy.manageCta}
           </Link>

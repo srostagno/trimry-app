@@ -11,6 +11,7 @@ import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
 import { useLanguage } from '@/components/language-provider'
 import { SCOUT_PREFERENCES_UPDATED_EVENT } from '@/components/scout-chat-widget'
+import { ShareAgendaButton } from '@/components/share-agenda-button'
 import { SportsPreferencesEditor } from '@/components/sports-preferences-editor'
 import { TimeZoneSelect } from '@/components/time-zone-select'
 import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
@@ -662,6 +663,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <ShareAgendaButton feed={feed} source="dashboard" />
               <label className="tr-meta flex items-center gap-2 text-xs">
                 {messages.agenda.lookahead}
                 <select

@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 import { LANGUAGE_OPTIONS } from '@/lib/i18n'
 import { IS_INDEXING_ALLOWED, absoluteUrl } from '@/lib/seo'
-import { countryHubPath, leaguePagePath, teamPagePath, todayPagePath } from '@/lib/seo-copy'
-import { fetchSeoCatalog, findLeague, findTeam } from '@/lib/seo-data'
+import { countryHubPath, leaguePagePath, matchPagePath, teamPagePath, todayPagePath } from '@/lib/seo-copy'
+import { fetchSeoCatalog, fetchSeoMatches, findLeague, findTeam } from '@/lib/seo-data'
 import { LANDING_SPORTS, landingPath } from '@/lib/sport-landing'
 
 export const revalidate = 3600
@@ -60,6 +60,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           entries.push({ url: absoluteUrl(teamPagePath(country, team, 'time')), lastModified: now, changeFrequency: 'daily', priority: 0.9 })
           entries.push({ url: absoluteUrl(teamPagePath(country, team, 'next')), lastModified: now, changeFrequency: 'daily', priority: 0.7 })
         }
+      }
+
+      // One URL per cached fixture. These rotate as matches are played, which
+      // is the freshness signal this niche rewards.
+      for (const match of await fetchSeoMatches(country.code)) {
+        entries.push({
+          url: absoluteUrl(matchPagePath(country, match.slug)),
+          lastModified: now,
+          changeFrequency: 'hourly',
+          priority: 0.8,
+        })
       }
     }
   } catch {

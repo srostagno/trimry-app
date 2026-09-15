@@ -161,6 +161,53 @@ export const enCopy: SeoCopy = {
     moreTitle: (c) => `More ${words(c.country).schedule} ${inCountry(c.country)}`,
   },
 
+  match: {
+    metaTitle: (c) => {
+      const day = c.dayRelative === 'today' ? ' today' : c.dayRelative === 'tomorrow' ? ' tomorrow' : ''
+      return `${c.home} vs ${c.away}: what time is the ${words(c.country).game}${day}${c.timeLabel ? ` (${c.timeLabel})` : ''}`
+    },
+    metaDescription: (c) => {
+      const w = words(c.country)
+      return `${c.home} vs ${c.away} is ${c.when} (${w.timeNoteLong})${c.venue ? ` at ${c.venue}` : ''}, in the ${c.leagueName}. Confirmed ${w.game} time and a WhatsApp alert before the ${w.game}.`
+    },
+    keywords: (c) => {
+      const h = c.home.toLowerCase()
+      const a = c.away.toLowerCase()
+      const w = words(c.country)
+      return [`${h} vs ${a}`, `${h} vs ${a} ${w.game} time`, `what time is ${h} vs ${a}`, `${h} ${a} start time`]
+    },
+    h1: (c) => `${c.home} vs ${c.away}: what time is the ${words(c.country).game}?`,
+    intro: (c) => {
+      const w = words(c.country)
+      return `${c.home} and ${c.away} meet ${c.when} (${w.timeNoteLong})${c.venue ? ` at ${c.venue}` : ''}, in the ${c.leagueName}${c.round ? ` (${c.round})` : ''}. ${c.timeLabel ? 'The time is confirmed and we re-check it several times a day in case it moves.' : 'The start time is not confirmed yet; it will show up here as soon as it is published.'}`
+    },
+    faq: (c) => {
+      const w = words(c.country)
+      return [
+        {
+          question: `What time is ${c.home} vs ${c.away}?`,
+          answer: c.timeLabel
+            ? `The ${w.game} starts at ${c.timeLabel} (${w.timeNoteLong}) on ${c.dateLabel}.`
+            : `The exact time is not confirmed yet. The ${w.game} is on ${c.dateLabel} and we refresh this page several times a day.`,
+        },
+        {
+          question: `What day is ${c.home} vs ${c.away}?`,
+          answer: `It is on ${c.dateLabel}${c.venue ? `, at ${c.venue}` : ''}, in the ${c.leagueName}.`,
+        },
+        {
+          question: `How do I get an alert before the ${w.game}?`,
+          answer: `Follow ${c.home} or ${c.away} on Trimry and every morning you get the day's ${w.games} on WhatsApp or email in ${w.timeNoteLong}. Free for 7 days, no card.`,
+        },
+      ]
+    },
+    ctaTitle: (c) => `Don't miss ${c.home} vs ${c.away}`,
+    ctaText: (c) =>
+      `Turn on the alert and Trimry messages you on the morning of the ${words(c.country).game} with the exact time in ${words(c.country).timeNoteLong}.`,
+    eyebrow: (c) => `${c.leagueName} · ${c.country.name}`,
+    otherMatchesTitle: (c) => `Other ${words(c.country).games} this week`,
+    teamLinksTitle: () => 'Each team\'s schedule',
+  },
+
   today: {
     metaTitle: (c) => `${words(c.country).Games} today ${inCountry(c.country)}: ${words(c.country).game} times for ${words(c.country).sports}`,
     metaDescription: (c) =>

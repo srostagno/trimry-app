@@ -8,12 +8,12 @@ import type { SeoCopy } from '@/lib/seo-copy/types'
 // Language-agnostic helpers for the programmatic pages. Every market has one
 // language (es, pt or en); the URL intents and the copy are localized per language.
 
-export type Intent = 'time' | 'next' | 'calendar' | 'today'
+export type Intent = 'time' | 'next' | 'calendar' | 'today' | 'match'
 
 export const SEO_INTENTS: Record<SeoLanguage, Record<Intent, string>> = {
-  es: { time: 'a-que-hora-juega', next: 'proximo-partido', calendar: 'calendario', today: 'partidos-hoy' },
-  pt: { time: 'que-horas-joga', next: 'proximo-jogo', calendar: 'calendario', today: 'jogos-de-hoje' },
-  en: { time: 'game-time', next: 'next-game', calendar: 'schedule', today: 'games-today' },
+  es: { time: 'a-que-hora-juega', next: 'proximo-partido', calendar: 'calendario', today: 'partidos-hoy', match: 'partido' },
+  pt: { time: 'que-horas-joga', next: 'proximo-jogo', calendar: 'calendario', today: 'jogos-de-hoje', match: 'jogo' },
+  en: { time: 'game-time', next: 'next-game', calendar: 'schedule', today: 'games-today', match: 'game' },
 }
 
 const COPY: Record<SeoLanguage, SeoCopy> = { es: esCopy, pt: ptCopy, en: enCopy }
@@ -161,6 +161,10 @@ export function countryHubPath(country: SeoCountry) {
   return `/${country.language}/${country.code}`
 }
 
+export function matchPagePath(country: SeoCountry, slug: string) {
+  return `/${country.language}/${country.code}/${SEO_INTENTS[country.language].match}/${slug}`
+}
+
 export function todayPagePath(country: SeoCountry) {
   return `/${country.language}/${country.code}/${SEO_INTENTS[country.language].today}`
 }
@@ -217,6 +221,84 @@ export function atTime(event: FeedEvent, language: SeoLanguage) {
   if (language === 'pt') return ` às ${event.localTimeLabel}`
   if (language === 'en') return ` at ${event.localTimeLabel}`
   return ` a las ${event.localTimeLabel}`
+}
+
+// The provider returns the round in English ("Matchweek 8", "Quarter-finals
+// (2nd leg)"). Translate the handful of shapes it actually uses so Spanish and
+// Portuguese pages do not mix languages.
+const ROUND_RULES: Array<{ match: RegExp; es: string; pt: string }> = [
+  { match: /^(matchweek|match week|week|matchday|round)\s*(\d+)/i, es: 'Jornada $2', pt: 'Rodada $2' },
+  { match: /round\s*of\s*16/i, es: 'Octavos de final', pt: 'Oitavas de final' },
+  { match: /round\s*of\s*32/i, es: 'Dieciseisavos de final', pt: '16 avos de final' },
+  { match: /quarter[-\s]?finals?/i, es: 'Cuartos de final', pt: 'Quartas de final' },
+  { match: /semi[-\s]?finals?/i, es: 'Semifinal', pt: 'Semifinal' },
+  { match: /^final$/i, es: 'Final', pt: 'Final' },
+  { match: /third\s*round/i, es: 'Tercera ronda', pt: 'Terceira fase' },
+  { match: /second\s*round/i, es: 'Segunda ronda', pt: 'Segunda fase' },
+  { match: /first\s*round/i, es: 'Primera ronda', pt: 'Primeira fase' },
+  { match: /group\s*stage/i, es: 'Fase de grupos', pt: 'Fase de grupos' },
+  { match: /group\s*([a-h])\b/i, es: 'Grupo $1', pt: 'Grupo $1' },
+  { match: /playoffs?/i, es: 'Playoffs', pt: 'Playoffs' },
+]
+
+export function localizeRound(round: string | null, language: SeoLanguage) {
+  if (!round || language === 'en') return round
+
+  let localized = round.trim()
+
+  for (const rule of ROUND_RULES) {
+    if (rule.match.test(localized)) {
+      localized = localized.replace(rule.match, language === 'pt' ? rule.pt : rule.es)
+      break
+    }
+  }
+
+  // Leg markers can appear alongside any of the above.
+  localized = localized
+    .replace(/\(?\s*1st leg\s*\)?/i, language === 'pt' ? '(ida)' : '(ida)')
+    .replace(/\(?\s*2nd leg\s*\)?/i, language === 'pt' ? '(volta)' : '(vuelta)')
+
+  return localized.replace(/\s+/g, ' ').trim()
+}
+
+// Local clock label of a fixture in the market's zone: 24h for es/pt, 12h for en.
+export function matchTimeLabel(startsAt: string, country: SeoCountry, timeKnown: boolean) {
+  if (!timeKnown) return null
+  try {
+    return new Intl.DateTimeFormat(country.language === 'en' ? 'en-US' : 'es-CL', {
+      // 12h clocks read "6:40 PM", not "06:40 PM".
+      hour: country.language === 'en' ? 'numeric' : '2-digit',
+      minute: '2-digit',
+      hour12: country.language === 'en',
+      timeZone: country.timeZone,
+    }).format(new Date(startsAt))
+  } catch {
+    return null
+  }
+}
+
+export function matchLocalDateKey(startsAt: string, country: SeoCountry) {
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone: country.timeZone,
+    }).formatToParts(new Date(startsAt))
+    const get = (type: string) => parts.find((part) => part.type === type)?.value ?? ''
+    return `${get('year')}-${get('month')}-${get('day')}`
+  } catch {
+    return startsAt.slice(0, 10)
+  }
+}
+
+// 'today' / 'tomorrow' relative to the market's own calendar day, else null.
+export function matchDayRelative(startsAt: string, country: SeoCountry): 'today' | 'tomorrow' | null {
+  const target = matchLocalDateKey(startsAt, country)
+  const today = matchLocalDateKey(new Date().toISOString(), country)
+  if (target === today) return 'today'
+  const tomorrow = matchLocalDateKey(new Date(Date.now() + 86_400_000).toISOString(), country)
+  return target === tomorrow ? 'tomorrow' : null
 }
 
 // "viernes, 25 de septiembre a las 20:00" for the next event, or ''.

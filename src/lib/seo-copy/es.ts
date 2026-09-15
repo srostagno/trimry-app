@@ -117,6 +117,50 @@ export const esCopy: SeoCopy = {
     moreTitle: (c) => `Más calendarios ${inCountry(c.country)}`,
   },
 
+  match: {
+    metaTitle: (c) => {
+      const day = c.dayRelative === 'today' ? ' hoy' : c.dayRelative === 'tomorrow' ? ' mañana' : ''
+      return `${c.home} vs ${c.away}: a qué hora juegan${day}${c.timeLabel ? ` (${c.timeLabel})` : ''}`
+    },
+    metaDescription: (c) =>
+      `${c.home} vs ${c.away} se juega ${c.when} (${c.timePhrase})${c.venue ? ` en ${c.venue}` : ''}, por ${c.leagueName}. Horario confirmado y alerta por WhatsApp antes del partido.`,
+    keywords: (c) => {
+      const h = c.home.toLowerCase()
+      const a = c.away.toLowerCase()
+      return [
+        `${h} vs ${a}`,
+        `a que hora juega ${h} vs ${a}`,
+        `${h} ${a} hora`,
+        `cuando juega ${h} contra ${a}`,
+      ]
+    },
+    h1: (c) => `${c.home} vs ${c.away}: a qué hora juegan`,
+    intro: (c) =>
+      `${c.home} y ${c.away} se enfrentan ${c.when} (${c.timePhrase})${c.venue ? ` en ${c.venue}` : ''}, por ${c.leagueName}${c.round ? ` (${c.round})` : ''}. ${c.timeLabel ? 'El horario está confirmado y lo revisamos varias veces al día por si cambia.' : 'La hora todavía no está confirmada; en cuanto se publique aparece aquí.'}`,
+    faq: (c) => [
+      {
+        question: `¿A qué hora juega ${c.home} vs ${c.away}?`,
+        answer: c.timeLabel
+          ? `El partido empieza a las ${c.timeLabel} (${c.timePhrase}), el ${c.dateLabel}.`
+          : `La hora exacta aún no está confirmada. El partido es el ${c.dateLabel} y actualizamos esta página varias veces al día.`,
+      },
+      {
+        question: `¿Qué día se juega ${c.home} vs ${c.away}?`,
+        answer: `Se juega el ${c.dateLabel}${c.venue ? `, en ${c.venue}` : ''}, por ${c.leagueName}.`,
+      },
+      {
+        question: '¿Cómo me aviso antes del partido?',
+        answer: `Sigue a ${c.home} o a ${c.away} en Trimry y cada mañana recibes por WhatsApp o email los partidos del día en horario ${ofCountry(c.country)}. Prueba gratis 7 días, sin tarjeta.`,
+      },
+    ],
+    ctaTitle: (c) => `No te pierdas ${c.home} vs ${c.away}`,
+    ctaText: (c) =>
+      `Activa la alerta y Trimry te avisa la mañana del partido con la hora exacta en horario ${ofCountry(c.country)}.`,
+    eyebrow: (c) => `${c.leagueName} · ${c.country.name}`,
+    otherMatchesTitle: () => 'Otros partidos de la semana',
+    teamLinksTitle: () => 'Calendario de cada equipo',
+  },
+
   today: {
     metaTitle: (c) => `Partidos de hoy ${inCountry(c.country)}: horarios de fútbol y deportes`,
     metaDescription: (c) =>

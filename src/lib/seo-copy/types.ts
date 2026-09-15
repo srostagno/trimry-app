@@ -31,6 +31,20 @@ export type LeagueCtx = {
   eventsCount: number
 }
 
+export type MatchCtx = {
+  country: SeoCountry
+  home: string
+  away: string
+  leagueName: string
+  timePhrase: string
+  when: string // "viernes, 25 de septiembre a las 20:00"
+  dateLabel: string
+  timeLabel: string | null
+  venue: string | null
+  round: string | null
+  dayRelative: 'today' | 'tomorrow' | null
+}
+
 export type TodayCtx = {
   country: SeoCountry
   timePhrase: string
@@ -96,6 +110,19 @@ export type SeoCopy = {
     teamsTitle(c: LeagueCtx): string
     teamLink(g: TeamGrammar): string
     moreTitle(c: LeagueCtx): string
+  }
+  match: {
+    metaTitle(c: MatchCtx): string
+    metaDescription(c: MatchCtx): string
+    keywords(c: MatchCtx): string[]
+    h1(c: MatchCtx): string
+    intro(c: MatchCtx): string
+    faq(c: MatchCtx): Faq[]
+    ctaTitle(c: MatchCtx): string
+    ctaText(c: MatchCtx): string
+    eyebrow(c: MatchCtx): string
+    otherMatchesTitle(c: MatchCtx): string
+    teamLinksTitle(c: MatchCtx): string
   }
   today: {
     metaTitle(c: TodayCtx): string

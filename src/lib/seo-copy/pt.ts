@@ -125,6 +125,44 @@ export const ptCopy: SeoCopy = {
     moreTitle: (c) => `Mais tabelas ${inCountry(c.country)}`,
   },
 
+  match: {
+    metaTitle: (c) => {
+      const day = c.dayRelative === 'today' ? ' hoje' : c.dayRelative === 'tomorrow' ? ' amanhã' : ''
+      return `${c.home} x ${c.away}: que horas é o jogo${day}${c.timeLabel ? ` (${c.timeLabel})` : ''}`
+    },
+    metaDescription: (c) =>
+      `${c.home} x ${c.away} é ${c.when} (${c.timePhrase})${c.venue ? ` no ${c.venue}` : ''}, ${by(c.leagueName)}. Horário confirmado e alerta no WhatsApp antes do jogo.`,
+    keywords: (c) => {
+      const h = c.home.toLowerCase()
+      const a = c.away.toLowerCase()
+      return [`${h} x ${a}`, `que horas joga ${h} x ${a}`, `${h} ${a} horario`, `quando é ${h} x ${a}`]
+    },
+    h1: (c) => `${c.home} x ${c.away}: que horas é o jogo`,
+    intro: (c) =>
+      `${c.home} e ${c.away} se enfrentam ${c.when} (${c.timePhrase})${c.venue ? ` no ${c.venue}` : ''}, ${by(c.leagueName)}${c.round ? ` (${c.round})` : ''}. ${c.timeLabel ? 'O horário está confirmado e verificamos várias vezes por dia caso mude.' : 'O horário ainda não está confirmado; assim que sair, aparece aqui.'}`,
+    faq: (c) => [
+      {
+        question: `Que horas é ${c.home} x ${c.away}?`,
+        answer: c.timeLabel
+          ? `O jogo começa às ${c.timeLabel} (${c.timePhrase}), em ${c.dateLabel}.`
+          : `O horário exato ainda não está confirmado. O jogo é em ${c.dateLabel} e atualizamos esta página várias vezes por dia.`,
+      },
+      {
+        question: `Que dia é ${c.home} x ${c.away}?`,
+        answer: `É em ${c.dateLabel}${c.venue ? `, no ${c.venue}` : ''}, ${by(c.leagueName)}.`,
+      },
+      {
+        question: 'Como recebo um aviso antes do jogo?',
+        answer: `Siga o ${c.home} ou o ${c.away} no Trimry e receba toda manhã, no WhatsApp ou por e-mail, os jogos do dia no ${c.timePhrase}. Teste grátis por 7 dias, sem cartão.`,
+      },
+    ],
+    ctaTitle: (c) => `Não perca ${c.home} x ${c.away}`,
+    ctaText: (c) => `Ative o alerta e o Trimry avisa você na manhã do jogo com o horário exato no ${c.timePhrase}.`,
+    eyebrow: (c) => `${c.leagueName} · ${c.country.name}`,
+    otherMatchesTitle: () => 'Outros jogos da semana',
+    teamLinksTitle: () => 'Calendário de cada time',
+  },
+
   today: {
     metaTitle: (c) => `Jogos de hoje ${inCountry(c.country)}: horários de futebol e esportes`,
     metaDescription: (c) =>

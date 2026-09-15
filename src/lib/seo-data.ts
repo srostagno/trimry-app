@@ -13,6 +13,7 @@ export type SeoCountry = {
   code: string
   name: string
   language: SeoLanguage
+  priority: number
   timeZone: string
   demonym: string
   leagues: string[]
@@ -39,6 +40,24 @@ export type SeoLeague = {
   countryCode?: string
 }
 
+export type SeoMatch = {
+  slug: string
+  providerId: string
+  sport: SportKey
+  leagueId: string | null
+  leagueName: string
+  homeTeamId: string
+  homeTeamName: string
+  awayTeamId: string
+  awayTeamName: string
+  startsAt: string
+  timeKnown: boolean
+  dateKey: string
+  venue: string | null
+  round: string | null
+  countryTeamSlugs: string[]
+}
+
 export type SeoCatalog = {
   countries: SeoCountry[]
   teams: SeoTeam[]
@@ -58,6 +77,26 @@ export async function fetchSeoCatalog(): Promise<SeoCatalog> {
   }
 
   return (await response.json()) as SeoCatalog
+}
+
+// Cached fixtures of one market, one entry per match. Shared by the per-match
+// pages and the sitemap; Next dedupes the call within a render.
+export async function fetchSeoMatches(countryCode: string): Promise<SeoMatch[]> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/sports/seo/matches?country=${encodeURIComponent(countryCode)}&days=14`,
+      { next: { revalidate: FEED_REVALIDATE_SECONDS } },
+    )
+
+    if (!response.ok) {
+      return []
+    }
+
+    const payload = (await response.json()) as { matches?: SeoMatch[] }
+    return payload.matches ?? []
+  } catch {
+    return []
+  }
 }
 
 export async function resolveSeoContext(countryCode: string) {

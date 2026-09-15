@@ -5,7 +5,7 @@ import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import type { FeedEvent, UpcomingFeed } from '@/lib/sports'
 import { absoluteUrl } from '@/lib/seo'
 import type { SeoCountry, SeoLanguage } from '@/lib/seo-data'
-import { eventTitle, formatLongDate, seoCopy } from '@/lib/seo-copy'
+import { eventTitle, formatLongDate, localizeRound, seoCopy } from '@/lib/seo-copy'
 
 // Server-rendered building blocks shared by the programmatic pages.
 
@@ -77,7 +77,7 @@ export function NextEventCard({
       </p>
       <p className="mt-1 text-sm text-white/90">
         {formatLongDate(event.localDateKey, country)} · {event.leagueName}
-        {event.round ? ` · ${event.round}` : ''}
+        {event.round ? ` · ${localizeRound(event.round, country.language)}` : ''}
         {event.venue ? ` · ${event.venue}` : ''}
       </p>
     </div>

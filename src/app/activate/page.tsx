@@ -20,6 +20,7 @@ import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import { trackEvent, trackMetaStandardEvent, trackMetaCustomEvent } from '@/lib/analytics'
 import { apiFetch, readApiError } from '@/lib/api-client'
 import { interpolate, isLanguageCode } from '@/lib/i18n'
+import { HoneypotField } from '@/components/honeypot-field'
 import { EMAIL_PATTERN, registerAccount } from '@/lib/registration'
 import { DEFAULT_WEEKLY_DELIVERY_HOUR, detectBrowserTimeZone } from '@/lib/schedule'
 import {
@@ -107,6 +108,8 @@ export default function ActivatePage() {
   const [timeZone, setTimeZone] = useState('UTC')
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
+  const [honeypot, setHoneypot] = useState('')
+  const [formOpenedAt] = useState(() => Date.now())
   const [registering, setRegistering] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -298,6 +301,8 @@ export default function ActivatePage() {
           language,
           timeZone,
           sportsPreferences: preferences,
+          honeypot,
+          formOpenedAt,
         },
         copy.registerError,
       )
@@ -574,6 +579,8 @@ export default function ActivatePage() {
               </label>
               {error ? <p className="tr-alert-error sm:col-span-2">{error}</p> : null}
               <div className="sm:col-span-2">
+                <HoneypotField value={honeypot} onChange={setHoneypot} />
+
                 <button type="submit" disabled={registering || !accountLoaded} className="tr-btn-primary w-full sm:w-auto">
                   {registering ? messages.common.loading : messages.auth.registerButton}
                 </button>

@@ -15,6 +15,7 @@ import {
 import { apiFetch, readApiError } from '@/lib/api-client'
 import type { LanguageCode } from '@/lib/i18n'
 import { isLanguageCode } from '@/lib/i18n'
+import { HoneypotField } from '@/components/honeypot-field'
 import { EMAIL_PATTERN, registerAccount } from '@/lib/registration'
 import { DEFAULT_WEEKLY_DELIVERY_HOUR, detectBrowserTimeZone } from '@/lib/schedule'
 import { landingCopy, landingSampleLines, type LandingSport } from '@/lib/sport-landing'
@@ -44,6 +45,8 @@ export function SportLandingClient({ language, sport }: { language: LanguageCode
   const [deliveryPreference, setDeliveryPreference] = useState<DeliveryPreference>('both')
   const [whatsappNumber, setWhatsappNumber] = useState('')
   const [consent, setConsent] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+  const [formOpenedAt] = useState(() => Date.now())
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -116,7 +119,7 @@ export function SportLandingClient({ language, sport }: { language: LanguageCode
 
     try {
       const payload = await registerAccount(
-        { firstName, email, language, timeZone, sportsPreferences: preferences },
+        { firstName, email, language, timeZone, sportsPreferences: preferences, honeypot, formOpenedAt },
         messages.notifications.error,
       )
       const nextLocale = payload.user?.locale
@@ -297,6 +300,8 @@ export function SportLandingClient({ language, sport }: { language: LanguageCode
                 />
                 <span>{messages.onboarding.whatsappConsentLabel}</span>
               </label>
+
+              <HoneypotField value={honeypot} onChange={setHoneypot} />
 
               {error ? <p className="tr-alert-error">{error}</p> : null}
 

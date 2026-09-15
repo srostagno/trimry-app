@@ -280,6 +280,13 @@ export type MessageSection = {
     lastDigestLabel: string
     lastDigestNever: string
     loadError: string
+    allSports: string
+    pageHeadline: string
+    pageIntro: string
+    manageCta: string
+    homeCta: string
+    eventsTotal: string
+    nextUp: string
   }
   dashboard: {
     title: string
@@ -1311,6 +1318,13 @@ const en: MessageSection = {
     countLabelOne: '1 event',
     lastDigestLabel: 'Last digest sent',
     lastDigestNever: 'No digest sent yet',
+    allSports: 'All sports',
+    pageHeadline: 'Your sports agenda',
+    pageIntro: 'Everything coming up for the teams and leagues you follow, in {zone}.',
+    manageCta: 'Edit teams and leagues',
+    homeCta: 'Go to my dashboard',
+    eventsTotal: '{count} events in the next {days} days',
+    nextUp: 'Next up',
     loadError: 'Unable to load your agenda right now.',
   },
   dashboard: {
@@ -1793,6 +1807,13 @@ const es: MessageSection = {
     countLabelOne: '1 evento',
     lastDigestLabel: 'Último digest enviado',
     lastDigestNever: 'Aún no se envió ningún digest',
+    allSports: 'Todos los deportes',
+    pageHeadline: 'Tu agenda deportiva',
+    pageIntro: 'Todo lo que se viene de los equipos y ligas que sigues, en {zone}.',
+    manageCta: 'Editar equipos y ligas',
+    homeCta: 'Ir a mi panel',
+    eventsTotal: '{count} eventos en los próximos {days} días',
+    nextUp: 'Lo próximo',
     loadError: 'No pudimos cargar tu agenda en este momento.',
   },
   dashboard: {
@@ -2275,6 +2296,13 @@ const pt: MessageSection = {
     countLabelOne: '1 evento',
     lastDigestLabel: 'Último digest enviado',
     lastDigestNever: 'Nenhum digest enviado ainda',
+    allSports: 'Todos os esportes',
+    pageHeadline: 'Sua agenda esportiva',
+    pageIntro: 'Tudo o que vem aí dos times e ligas que você acompanha, no {zone}.',
+    manageCta: 'Editar times e ligas',
+    homeCta: 'Ir para meu painel',
+    eventsTotal: '{count} eventos nos próximos {days} dias',
+    nextUp: 'A seguir',
     loadError: 'Não foi possível carregar sua agenda agora.',
   },
   dashboard: {

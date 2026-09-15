@@ -29,6 +29,14 @@ export function collectRegistrationClientMetadata(timeZone: string) {
   }
 }
 
+// Passive bot signals: a hidden field a person never sees, and how long the
+// form was on screen. No captcha, no extra step.
+export const HONEYPOT_FIELD = 'contactReference'
+
+export function useFormTimer() {
+  return Date.now()
+}
+
 export type RegisterAccountInput = {
   firstName: string
   lastName?: string
@@ -37,6 +45,8 @@ export type RegisterAccountInput = {
   language: LanguageCode
   timeZone: string
   sportsPreferences?: SportsPreferences | null
+  honeypot?: string
+  formOpenedAt?: number
 }
 
 export async function registerAccount(input: RegisterAccountInput, fallbackMessage: string) {
@@ -52,6 +62,10 @@ export async function registerAccount(input: RegisterAccountInput, fallbackMessa
         locale: input.language,
         timeZone: input.timeZone,
         ...(input.sportsPreferences ? { sportsPreferences: input.sportsPreferences } : {}),
+        ...(input.honeypot ? { [HONEYPOT_FIELD]: input.honeypot } : {}),
+        ...(input.formOpenedAt
+          ? { formElapsedMs: Math.max(0, Date.now() - input.formOpenedAt) }
+          : {}),
         clientMetadata: collectRegistrationClientMetadata(input.timeZone),
       }),
     },

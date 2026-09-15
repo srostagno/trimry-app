@@ -8,6 +8,7 @@ import { useLanguage } from '@/components/language-provider'
 import { TimeZoneSelect } from '@/components/time-zone-select'
 import { trackEvent, trackMetaStandardEvent } from '@/lib/analytics'
 import { isLanguageCode } from '@/lib/i18n'
+import { HoneypotField } from '@/components/honeypot-field'
 import { EMAIL_PATTERN, registerAccount } from '@/lib/registration'
 import { detectBrowserTimeZone } from '@/lib/schedule'
 import { hasAnyPreferences, loadPreferencesDraft } from '@/lib/sports'
@@ -20,6 +21,8 @@ export default function RegisterPage() {
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
   const [timeZone, setTimeZone] = useState('UTC')
+  const [honeypot, setHoneypot] = useState('')
+  const [formOpenedAt] = useState(() => Date.now())
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const requestedRedirectPath = resolveSafeRedirectPath(searchParams.get('redirect'), '')
@@ -52,6 +55,8 @@ export default function RegisterPage() {
           language,
           timeZone,
           sportsPreferences: hasAnyPreferences(draft) ? draft : null,
+          honeypot,
+          formOpenedAt,
         },
         messages.notifications.error,
       )
@@ -123,6 +128,9 @@ export default function RegisterPage() {
         </label>
 
         {error ? <p className="tr-alert-error">{error}</p> : null}
+
+        <HoneypotField value={honeypot} onChange={setHoneypot} />
+
 
         <button type="submit" disabled={loading} className="tr-btn-primary w-full">
           {loading ? messages.common.loading : messages.auth.registerButton}

@@ -21,7 +21,15 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/account', '/activate', '/checkout', '/dashboard'],
+        disallow: [
+          '/api/',
+          '/account',
+          '/activate',
+          '/agenda',
+          '/checkout',
+          '/dashboard',
+          '/subscribe',
+        ],
       },
     ],
     sitemap: absoluteUrl('/sitemap.xml'),

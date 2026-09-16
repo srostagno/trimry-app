@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 import { JsonLd } from '@/components/json-ld'
 import { AlertsCta, Breadcrumbs, FaqSection, LinkGrid } from '@/components/seo/seo-blocks'
@@ -67,6 +67,25 @@ async function load(countryCode: string, slug: string) {
   return { catalog, country, match, matches, ctx }
 }
 
+// A fixture also leaves the cache when it is postponed or rescheduled, not only
+// when it is played. Middleware already sends clearly expired slugs to the team
+// page with a 308; anything else missing gets a temporary redirect, because the
+// fixture may come back under the same slug.
+async function missingMatchTarget(countryCode: string, slug: string) {
+  const { catalog, country } = await resolveSeoContext(countryCode)
+
+  if (!country) {
+    return null
+  }
+
+  const homeTeamId = /^(.+?)-vs-/.exec(slug)?.[1]
+  const team = homeTeamId ? findTeam(catalog, homeTeamId) : null
+
+  return team && country.teams.includes(team.slug)
+    ? teamPagePath(country, team, 'time')
+    : countryHubPath(country)
+}
+
 export async function matchPageMetadata(countryCode: string, slug: string): Promise<Metadata> {
   const data = await load(countryCode, slug)
 
@@ -110,7 +129,13 @@ export async function MatchPage({ countryCode, slug }: { countryCode: string; sl
   const data = await load(countryCode, slug)
 
   if (!data) {
-    notFound()
+    const target = await missingMatchTarget(countryCode, slug)
+
+    if (!target) {
+      notFound()
+    }
+
+    redirect(target)
   }
 
   const { catalog, country, match, matches, ctx } = data

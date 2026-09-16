@@ -25,6 +25,41 @@ function withGeoCookie(request: NextRequest, response: NextResponse) {
   return response
 }
 
+// Per-match pages expire: once a fixture is played its slug drops out of the
+// fixture cache and the page would 404, wasting crawl budget and stranding any
+// link that pointed at it. The slug carries the kickoff date, so a match that is
+// clearly in the past redirects permanently to the home team's page. These slugs
+// mirror SEO_INTENTS in src/lib/seo-copy.ts.
+const MATCH_INTENTS: Record<string, { match: string; time: string }> = {
+  es: { match: 'partido', time: 'a-que-hora-juega' },
+  pt: { match: 'jogo', time: 'que-horas-joga' },
+  en: { match: 'game', time: 'game-time' },
+}
+// Enough slack for the latest time zone plus a long night game.
+const EXPIRED_GRACE_MS = 24 * 60 * 60 * 1_000
+
+function expiredMatchRedirect(request: NextRequest, language: string, pathname: string) {
+  const intents = MATCH_INTENTS[language]
+  const segments = pathname.split('/').filter(Boolean)
+
+  if (!intents || segments.length !== 4 || segments[2] !== intents.match) {
+    return null
+  }
+
+  const parsed = /^(.+?)-vs-(.+)-(\d{4}-\d{2}-\d{2})$/.exec(segments[3] ?? '')
+  const endOfDay = parsed ? Date.parse(`${parsed[3]}T23:59:59Z`) : Number.NaN
+
+  if (!Number.isFinite(endOfDay) || Date.now() - endOfDay < EXPIRED_GRACE_MS) {
+    return null
+  }
+
+  const url = request.nextUrl.clone()
+  url.pathname = `/${language}/${segments[1]}/${intents.time}/${parsed?.[1]}`
+  url.search = ''
+
+  return NextResponse.redirect(url, 308)
+}
+
 // Public, indexable content lives under /es, /en and /pt. The bare root and the
 // old /legal/* URLs redirect permanently to the Spanish version (x-default).
 export function middleware(request: NextRequest) {
@@ -47,6 +82,12 @@ export function middleware(request: NextRequest) {
 
   if (!language) {
     return withGeoCookie(request, NextResponse.next())
+  }
+
+  const expired = expiredMatchRedirect(request, language, pathname)
+
+  if (expired) {
+    return withGeoCookie(request, expired)
   }
 
   const headers = new Headers(request.headers)

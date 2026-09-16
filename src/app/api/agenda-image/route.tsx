@@ -49,12 +49,19 @@ export async function POST(request: Request) {
     const label = text(day.label, 48)
     const events = (Array.isArray(day.events) ? day.events : [])
       .map((rawEvent) => {
-        const event = rawEvent as { time?: unknown; title?: unknown; league?: unknown; sport?: unknown }
+        const event = rawEvent as {
+          time?: unknown
+          title?: unknown
+          league?: unknown
+          sport?: unknown
+          emoji?: unknown
+        }
         return {
           time: optionalText(event.time, 12),
           title: text(event.title, 54),
           league: optionalText(event.league, 40),
           sport: optionalText(event.sport, 24),
+          emoji: optionalText(event.emoji, 8),
         }
       })
       .filter((event) => event.title.length > 0)

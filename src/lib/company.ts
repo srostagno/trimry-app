@@ -13,10 +13,10 @@ export const SUBSCRIPTION_PLAN = {
   id: 'trimry-sports-alerts',
   name: 'Trimry Sports Alerts',
   cadence: 'Daily',
-  monthlyPriceUsd: 2.99,
+  monthlyPriceUsd: 3.99,
   currency: 'USD',
-  internalTrialPeriodDays: 0,
-  stripeTrialPeriodDays: 7,
+  internalTrialPeriodDays: 7,
+  stripeTrialPeriodDays: 0,
 } as const
 
 export const ASSISTANT_NAME = 'Scout'

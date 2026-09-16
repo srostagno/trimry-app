@@ -9,8 +9,9 @@ export const agendaImageSize = {
 
 const BRAND_GRADIENT = 'linear-gradient(135deg,#2b2fb8 0%,#2f7bff 38%,#35d2e5 72%,#2fc56c 100%)'
 
-// Satori renders emoji as blanks unless an emoji font is bundled, so sports are
-// marked with a colour accent and their name instead.
+// ImageResponse substitutes emoji with Twemoji images, so the sport shows its
+// own icon. The colour is kept as the tint behind it, which keeps the rows
+// readable at a glance and still marks the sport if an icon fails to load.
 const SPORT_COLORS: Record<string, string> = {
   soccer: '#2fc56c',
   basketball: '#f97316',
@@ -31,6 +32,7 @@ export type AgendaImageEvent = {
   title: string
   league: string | null
   sport: string | null
+  emoji: string | null
 }
 
 export type AgendaImageDay = {
@@ -154,12 +156,19 @@ export function createAgendaImage(input: AgendaImageInput) {
                   <div
                     style={{
                       display: 'flex',
-                      width: '8px',
-                      height: '40px',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      width: '52px',
+                      height: '52px',
                       borderRadius: '9999px',
-                      background: SPORT_COLORS[event.sport ?? ''] ?? '#2f7bff',
+                      fontSize: 30,
+                      background: `${SPORT_COLORS[event.sport ?? ''] ?? '#2f7bff'}22`,
+                      border: `2px solid ${SPORT_COLORS[event.sport ?? ''] ?? '#2f7bff'}`,
                     }}
-                  />
+                  >
+                    {event.emoji ?? ''}
+                  </div>
                   <div
                     style={{
                       display: 'flex',

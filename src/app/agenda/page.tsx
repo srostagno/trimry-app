@@ -135,7 +135,7 @@ export default function AgendaPage() {
             <p className="tr-meta mt-0.5 text-xs">{messages.dashboard.trialNote}</p>
           </div>
           <Link href="/checkout/start" className="tr-btn-primary tr-btn-sm shrink-0">
-            {interpolate(messages.dashboard.trialCta, { price: subscription?.monthlyPriceUsd ?? 2.99 })}
+            {interpolate(messages.dashboard.trialCta, { price: subscription?.monthlyPriceUsd ?? 3.99 })}
           </Link>
         </div>
       ) : null}

@@ -627,7 +627,7 @@ export default function DashboardPage() {
             <p className="tr-meta mt-0.5 text-xs">{copy.trialNote}</p>
           </div>
           <Link href="/checkout/start" className="tr-btn-primary tr-btn-sm shrink-0">
-            {interpolate(copy.trialCta, { price: subscription?.monthlyPriceUsd ?? 2.99 })}
+            {interpolate(copy.trialCta, { price: subscription?.monthlyPriceUsd ?? 3.99 })}
           </Link>
         </div>
       ) : null}

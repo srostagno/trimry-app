@@ -10,6 +10,9 @@ export type ShareEvent = {
   title: string
   league: string | null
   sport: string | null
+  // The sport's emoji as the API sends it, so the card, the digests and the
+  // dashboard all show the same icon for a sport.
+  emoji: string | null
 }
 
 export type ShareDay = {
@@ -17,13 +20,14 @@ export type ShareDay = {
   events: ShareEvent[]
 }
 
-// Calibrated against the rendered 1080x1350 card: the list area is ~820px, a
-// day heading with its margins costs ~56 and an event row with its border and
-// margin ~108. The budget stays a little under the real height so a long club
-// name that wraps cannot push the footer off the card.
-const CONTENT_BUDGET = 800
-const DAY_COST = 62
-const EVENT_COST = 96
+// Measured on the rendered 1080x1350 card: the list area is ~840px, a day
+// heading with its margins costs ~68, and an event row, now tall enough to hold
+// the sport's emoji, costs ~101 with its border and margin. The budget sits a
+// hair above the measurements so the arithmetic matches what fits, and the card
+// keeps a little slack for a long club name that wraps.
+const CONTENT_BUDGET = 845
+const DAY_COST = 68
+const EVENT_COST = 101
 export const MAX_SHARE_DAYS = 4
 
 export function packAgendaDays(days: ShareDay[]) {

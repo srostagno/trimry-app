@@ -184,7 +184,7 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
       alreadyText: 'Ajuste seus esportes, times e ligas na sua agenda.',
       alreadyCta: 'Ir para minha agenda',
       faq: [
-        { question: 'É grátis mesmo?', answer: 'Sim. Você recebe 7 dias de alertas sem cadastrar cartão. Depois, se quiser continuar, a assinatura custa US$2,99 por mês e pode ser cancelada quando quiser.' },
+        { question: 'É grátis mesmo?', answer: 'Sim. Você recebe 7 dias de alertas sem cadastrar cartão. Depois, se quiser continuar, a assinatura custa US$3,99 por mês e pode ser cancelada quando quiser.' },
         { question: 'A que horas chega o aviso?', answer: 'Toda manhã, às 9h no seu fuso horário por padrão. Você pode mudar a hora na sua agenda.' },
         { question: `Posso escolher só alguns times de ${w.name}?`, answer: 'Sim. Depois do cadastro você pode seguir times e ligas específicas, ou combinar vários esportes.' },
       ],
@@ -220,7 +220,7 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
       alreadyText: 'Adjust your sports, teams and leagues from your agenda.',
       alreadyCta: 'Go to my agenda',
       faq: [
-        { question: 'Is it really free?', answer: 'Yes. You get 7 days of alerts without entering a card. If you want to keep going, the subscription is US$2.99 a month and you can cancel anytime.' },
+        { question: 'Is it really free?', answer: 'Yes. You get 7 days of alerts without entering a card. If you want to keep going, the subscription is US$3.99 a month and you can cancel anytime.' },
         { question: 'What time does the alert arrive?', answer: 'Every morning at 9 AM in your time zone by default. You can change the hour from your agenda.' },
         { question: `Can I follow just a few ${w.name} teams?`, answer: 'Yes. After signing up you can follow specific teams and leagues, or combine several sports.' },
       ],
@@ -255,7 +255,7 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
     alreadyText: 'Ajusta tus deportes, equipos y ligas desde tu agenda.',
     alreadyCta: 'Ir a mi agenda',
     faq: [
-      { question: '¿Es gratis de verdad?', answer: 'Sí. Recibes 7 días de alertas sin ingresar tarjeta. Si quieres seguir, la suscripción cuesta US$2,99 al mes y se cancela cuando quieras.' },
+      { question: '¿Es gratis de verdad?', answer: 'Sí. Recibes 7 días de alertas sin ingresar tarjeta. Si quieres seguir, la suscripción cuesta US$3,99 al mes y se cancela cuando quieras.' },
       { question: '¿A qué hora llega el aviso?', answer: 'Cada mañana a las 9:00 en tu zona horaria por defecto. Puedes cambiar la hora desde tu agenda.' },
       { question: `¿Puedo seguir solo algunos equipos de ${w.name}?`, answer: 'Sí. Después de registrarte puedes seguir equipos y ligas específicas, o combinar varios deportes.' },
     ],

@@ -40,6 +40,7 @@ export function ShareAgendaButton({
           title: eventTitle(event),
           league: event.leagueName,
           sport: event.sport,
+          emoji: event.sportEmoji,
         })),
       })),
     )

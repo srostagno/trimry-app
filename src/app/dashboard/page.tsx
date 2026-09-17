@@ -10,13 +10,14 @@ import { AdminSportsSync } from '@/components/dashboard/admin-sports-sync'
 import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
 import { useLanguage } from '@/components/language-provider'
+import { ProUpgradeSheet } from '@/components/pro-upgrade-sheet'
 import { SCOUT_PREFERENCES_UPDATED_EVENT } from '@/components/scout-chat-widget'
 import { ShareAgendaButton } from '@/components/share-agenda-button'
 import { SportsPreferencesEditor } from '@/components/sports-preferences-editor'
 import { TimeZoneSelect } from '@/components/time-zone-select'
 import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import { trackEvent, trackEventOnce, trackMetaStandardEventOnce } from '@/lib/analytics'
-import { apiFetch, readApiError } from '@/lib/api-client'
+import { apiFetch, isProRequired, readApiError, readApiErrorDetails } from '@/lib/api-client'
 import { BillingSessionError, createBillingSession } from '@/lib/billing'
 import { interpolate, languageToIntlLocale } from '@/lib/i18n'
 import { DEFAULT_WEEKLY_DELIVERY_HOUR, detectBrowserTimeZone, formatNextDelivery } from '@/lib/schedule'
@@ -64,6 +65,7 @@ export default function DashboardPage() {
 
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
   const [loading, setLoading] = useState(true)
+  const [proSheetOpen, setProSheetOpen] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [activeTab, setActiveTab] = useState<DashboardTab>(
     isDashboardTab(requestedTab) ? requestedTab : 'agenda',
@@ -109,6 +111,9 @@ export default function DashboardPage() {
   const hasPreferences = hasAnyPreferences(account?.user.sportsPreferences)
   const subscriptionActive =
     subscription?.status === 'active' || subscription?.status === 'past_due' || subscription?.status === 'paused'
+  // Free accounts keep the email agenda and lose WhatsApp, so the dashboard
+  // says which plan they are on and keeps the upgrade one click away.
+  const isFreePlan = subscription ? subscription.entitlement === 'free' : false
   // Card-less internal trial: show the days left and a direct subscribe link.
   const trialDaysLeft =
     subscription?.status === 'active' && subscription.trialSource === 'internal' && subscription.internalTrialEndsAt
@@ -300,7 +305,15 @@ export default function DashboardPage() {
       })
 
       if (!response.ok) {
-        setDeliveryError(await readApiError(response, messages.delivery.saveError))
+        const details = await readApiErrorDetails(response, messages.delivery.saveError)
+
+        if (isProRequired(details)) {
+          setProSheetOpen(true)
+          trackEvent('pro_paywall_viewed', { source: 'dashboard_save' })
+          return
+        }
+
+        setDeliveryError(details.message)
         return
       }
 
@@ -632,6 +645,28 @@ export default function DashboardPage() {
         </div>
       ) : null}
 
+      {isFreePlan ? (
+        <div className="tr-card-muted flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="flex flex-wrap items-center gap-2 text-sm font-extrabold text-trimry-ink">
+              {messages.pro.statusFree}
+              <span className="tr-badge tr-badge-slate">{messages.pro.freePrice}</span>
+            </p>
+            <p className="tr-meta mt-0.5 text-xs">{messages.pro.freeTagline}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setProSheetOpen(true)
+              trackEvent('pro_paywall_viewed', { source: 'dashboard_banner' })
+            }}
+            className="tr-btn-primary tr-btn-sm shrink-0"
+          >
+            {messages.pro.statusFreeCta}
+          </button>
+        </div>
+      ) : null}
+
       <nav className="tr-tab-strip">
         {tabs.map((tab) => (
           <button
@@ -825,7 +860,15 @@ export default function DashboardPage() {
                   <form className="mt-8 space-y-5" onSubmit={saveDelivery}>
                     <div>
                       <p className="tr-label mb-2">{copy.deliveryPreferenceLabel}</p>
-                      <DeliveryPreferenceSelector value={deliveryPreference} onChange={setDeliveryPreference} />
+                      <DeliveryPreferenceSelector
+                        value={deliveryPreference}
+                        onChange={setDeliveryPreference}
+                        lockedForPro={isFreePlan}
+                        onProRequired={() => {
+                          setProSheetOpen(true)
+                          trackEvent('pro_paywall_viewed', { source: 'dashboard_channels' })
+                        }}
+                      />
                       {requiresWhatsappDelivery(deliveryPreference) ? (
                         <p className="tr-alert-info mt-3 text-xs">
                           {messages.deliveryChannels.whatsappPendingNote}
@@ -1082,6 +1125,19 @@ export default function DashboardPage() {
       ) : null}
 
       {activeTab === 'sportsSync' && isAdmin ? <AdminSportsSync /> : null}
+
+      <ProUpgradeSheet
+        open={proSheetOpen}
+        priceUsd={subscription?.monthlyPriceUsd}
+        // The dashboard only offers this to accounts already past their trial,
+        // so it always routes through checkout.
+        variant="checkout"
+        onUpgrade={() => {
+          trackEvent('pro_upgrade_clicked', { source: 'dashboard' })
+          router.push('/checkout/start')
+        }}
+        onDismiss={() => setProSheetOpen(false)}
+      />
     </div>
   )
 }

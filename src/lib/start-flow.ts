@@ -15,6 +15,25 @@ export function requiresWhatsappDelivery(preference: DeliveryPreference) {
   return preference === 'whatsapp' || preference === 'both'
 }
 
+// Email is free at any cadence; WhatsApp is what Pro pays for. The API decides
+// this for real — everything here only drives what the UI offers and explains.
+export type Entitlement = 'pro' | 'free'
+export type PlanChoice = 'free' | 'pro'
+
+export function planForPreference(preference: DeliveryPreference): PlanChoice {
+  return requiresWhatsappDelivery(preference) ? 'pro' : 'free'
+}
+
+export function trialDaysLeft(endsAt: string | null | undefined, now = Date.now()) {
+  if (!endsAt) {
+    return null
+  }
+
+  const remaining = new Date(endsAt).getTime() - now
+
+  return remaining > 0 ? Math.ceil(remaining / 86_400_000) : 0
+}
+
 export type AccountSnapshot = {
   user: {
     id: string
@@ -39,7 +58,11 @@ export type AccountSnapshot = {
   subscription: {
     id: string
     status: SubscriptionStatus
+    entitlement: Entitlement
     deliveryPreference: DeliveryPreference
+    // What the account actually receives today, after the entitlement applies.
+    effectiveDeliveryPreference: DeliveryPreference
+    activatedAt: string | null
     deliveryHourLocal: number
     timeZone: string
     whatsappNumber: string

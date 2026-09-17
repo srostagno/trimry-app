@@ -212,6 +212,34 @@ export type MessageSection = {
     whatsappDescription: string
     whatsappPendingNote: string
   }
+  pro: {
+    badge: string
+    planPickerLabel: string
+    freeTitle: string
+    freePrice: string
+    freeTagline: string
+    freeFeatures: string[]
+    proTitle: string
+    proPrice: string
+    proTagline: string
+    proFeatures: string[]
+    proRibbon: string
+    choose: string
+    chosen: string
+    sheetTitle: string
+    sheetBody: string
+    sheetBodyCheckout: string
+    sheetCtaCheckout: string
+    sheetFinePrintCheckout: string
+    sheetCta: string
+    sheetDismiss: string
+    sheetFinePrint: string
+    statusPro: string
+    statusTrial: string
+    statusFree: string
+    statusFreeCta: string
+    proRequiredNotice: string
+  }
   delivery: {
     badge: string
     title: string
@@ -1252,6 +1280,47 @@ const en: MessageSection = {
     whatsappPendingNote:
       'WhatsApp digests start as soon as our Meta message template is approved. Email works today.',
   },
+  pro: {
+    badge: 'PRO',
+    planPickerLabel: 'Choose your plan',
+    freeTitle: 'Free',
+    freePrice: 'Always free',
+    freeTagline: 'Your agenda by email',
+    freeFeatures: [
+      'Your agenda by email, daily or weekly',
+      'Every sport, league and team you follow',
+      'Delivered at the hour you pick, in your time zone',
+    ],
+    proTitle: 'Pro',
+    proPrice: '{price}/month',
+    proTagline: '7 days free, no card',
+    proFeatures: [
+      'Everything in Free',
+      'Your agenda on WhatsApp every morning',
+      'A short intro written for you on top of every agenda',
+    ],
+    proRibbon: 'Recommended',
+    choose: 'Choose',
+    chosen: 'Selected',
+    sheetTitle: 'WhatsApp is part of Trimry Pro',
+    sheetBody:
+      'Pro sends your agenda straight to WhatsApp every morning, and opens it with a short summary written for you. Start with 7 days free — we do not ask for a card.',
+    sheetBodyCheckout:
+      'Pro sends your agenda straight to WhatsApp every morning, and opens it with a short summary written for you. Your free trial is already used, so this one goes through checkout.',
+    sheetCtaCheckout: 'Activate Pro',
+    sheetFinePrintCheckout:
+      '{price} a month. Cancel anytime, and your email agenda keeps coming either way.',
+    sheetCta: 'Start 7 free days',
+    sheetDismiss: 'Stay on the free plan',
+    sheetFinePrint:
+      '{price} a month after the trial. Cancel anytime, and your email agenda keeps coming either way.',
+    statusPro: 'Pro',
+    statusTrial: '{days} days of Pro left',
+    statusFree: 'Free plan',
+    statusFreeCta: 'See Pro',
+    proRequiredNotice:
+      'WhatsApp is part of Trimry Pro. Activate it from your dashboard to switch this on.',
+  },
   delivery: {
     badge: 'Delivery settings',
     title: 'How should Trimry deliver your agenda?',
@@ -1750,6 +1819,47 @@ const es: MessageSection = {
     whatsappPendingNote:
       'Los digests por WhatsApp comienzan apenas Meta apruebe nuestra plantilla de mensaje. El email funciona hoy.',
   },
+  pro: {
+    badge: 'PRO',
+    planPickerLabel: 'Elige tu plan',
+    freeTitle: 'Gratis',
+    freePrice: 'Siempre gratis',
+    freeTagline: 'Tu agenda por email',
+    freeFeatures: [
+      'Tu agenda por email, diaria o semanal',
+      'Todos los deportes, ligas y equipos que sigas',
+      'A la hora que elijas, en tu horario',
+    ],
+    proTitle: 'Pro',
+    proPrice: '{price}/mes',
+    proTagline: '7 días gratis, sin tarjeta',
+    proFeatures: [
+      'Todo lo del plan gratis',
+      'Tu agenda en WhatsApp cada mañana',
+      'Un resumen corto escrito para ti al abrir cada agenda',
+    ],
+    proRibbon: 'Recomendado',
+    choose: 'Elegir',
+    chosen: 'Elegido',
+    sheetTitle: 'WhatsApp es parte de Trimry Pro',
+    sheetBody:
+      'Pro te manda la agenda directo a WhatsApp cada mañana, y la abre con un resumen corto escrito para ti. Empieza con 7 días gratis: no te pedimos tarjeta.',
+    sheetBodyCheckout:
+      'Pro te manda la agenda directo a WhatsApp cada mañana, y la abre con un resumen corto escrito para ti. Tu prueba gratis ya la usaste, así que esta vez se activa desde el pago.',
+    sheetCtaCheckout: 'Activar Pro',
+    sheetFinePrintCheckout:
+      '{price} al mes. Cancelas cuando quieras, y tu agenda por email sigue llegando igual.',
+    sheetCta: 'Empezar 7 días gratis',
+    sheetDismiss: 'Seguir con el plan gratis',
+    sheetFinePrint:
+      '{price} al mes después de la prueba. Cancelas cuando quieras, y tu agenda por email sigue llegando igual.',
+    statusPro: 'Pro',
+    statusTrial: 'Te quedan {days} días de Pro',
+    statusFree: 'Plan gratis',
+    statusFreeCta: 'Ver Pro',
+    proRequiredNotice:
+      'WhatsApp es parte de Trimry Pro. Actívalo desde tu panel para encenderlo.',
+  },
   delivery: {
     badge: 'Ajustes de entrega',
     title: '¿Cómo debería Trimry entregar tu agenda?',
@@ -2247,6 +2357,47 @@ const pt: MessageSection = {
     whatsappDescription: 'A agenda como mensagem, mais o Scout no WhatsApp.',
     whatsappPendingNote:
       'Os digests por WhatsApp começam assim que a Meta aprovar nosso template de mensagem. O email funciona hoje.',
+  },
+  pro: {
+    badge: 'PRO',
+    planPickerLabel: 'Escolha seu plano',
+    freeTitle: 'Grátis',
+    freePrice: 'Sempre grátis',
+    freeTagline: 'Sua agenda por e-mail',
+    freeFeatures: [
+      'Sua agenda por e-mail, diária ou semanal',
+      'Todos os esportes, ligas e times que você seguir',
+      'No horário que você escolher, no seu fuso',
+    ],
+    proTitle: 'Pro',
+    proPrice: '{price}/mês',
+    proTagline: '7 dias grátis, sem cartão',
+    proFeatures: [
+      'Tudo do plano grátis',
+      'Sua agenda no WhatsApp toda manhã',
+      'Um resumo curto escrito para você no topo de cada agenda',
+    ],
+    proRibbon: 'Recomendado',
+    choose: 'Escolher',
+    chosen: 'Escolhido',
+    sheetTitle: 'O WhatsApp faz parte do Trimry Pro',
+    sheetBody:
+      'O Pro manda sua agenda direto no WhatsApp toda manhã, e abre com um resumo curto escrito para você. Comece com 7 dias grátis: não pedimos cartão.',
+    sheetBodyCheckout:
+      'O Pro manda sua agenda direto no WhatsApp toda manhã, e abre com um resumo curto escrito para você. Seu teste grátis já foi usado, então desta vez a ativação é pelo pagamento.',
+    sheetCtaCheckout: 'Ativar o Pro',
+    sheetFinePrintCheckout:
+      '{price} por mês. Cancele quando quiser, e sua agenda por e-mail continua chegando de qualquer jeito.',
+    sheetCta: 'Começar 7 dias grátis',
+    sheetDismiss: 'Continuar no plano grátis',
+    sheetFinePrint:
+      '{price} por mês depois do teste. Cancele quando quiser, e sua agenda por e-mail continua chegando de qualquer jeito.',
+    statusPro: 'Pro',
+    statusTrial: 'Restam {days} dias de Pro',
+    statusFree: 'Plano grátis',
+    statusFreeCta: 'Ver o Pro',
+    proRequiredNotice:
+      'O WhatsApp faz parte do Trimry Pro. Ative pelo seu painel para ligar isso.',
   },
   delivery: {
     badge: 'Ajustes de entrega',

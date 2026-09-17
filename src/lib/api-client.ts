@@ -12,6 +12,7 @@ export const API_BASE_URL = (
 
 type ApiErrorPayload = {
   message?: string
+  code?: string
   error?: {
     message?: string
   }
@@ -93,6 +94,28 @@ export async function apiFetch(
   }
 
   return response
+}
+
+// Same as readApiError, but keeps the machine-readable code. The paywall needs
+// to tell "WhatsApp is part of Pro" apart from any other 402 the API may send.
+export async function readApiErrorDetails(
+  response: Response,
+  fallback: string,
+): Promise<{ message: string; code: string | null }> {
+  const clone = response.clone()
+  const message = await readApiError(response, fallback)
+
+  try {
+    const payload = JSON.parse(await clone.text()) as ApiErrorPayload
+
+    return { message, code: payload.code?.trim() || null }
+  } catch {
+    return { message, code: null }
+  }
+}
+
+export function isProRequired(details: { code: string | null }) {
+  return details.code === 'pro_required'
 }
 
 export async function readApiError(

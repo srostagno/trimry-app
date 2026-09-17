@@ -3,7 +3,7 @@
 import clsx from 'clsx'
 
 import { useLanguage } from '@/components/language-provider'
-import type { DeliveryPreference } from '@/lib/start-flow'
+import { requiresWhatsappDelivery, type DeliveryPreference } from '@/lib/start-flow'
 
 type DeliveryPreferenceSelectorProps = {
   value: DeliveryPreference
@@ -11,6 +11,11 @@ type DeliveryPreferenceSelectorProps = {
   includeNone?: boolean
   // Icon + title only, in one row: for short signup forms.
   compact?: boolean
+  // A free account still sees the WhatsApp options, badged and fully
+  // clickable: a disabled control is a dead end, a badge that opens the offer
+  // is a way into checkout.
+  lockedForPro?: boolean
+  onProRequired?: (value: DeliveryPreference) => void
 }
 
 export function DeliveryPreferenceSelector({
@@ -18,8 +23,18 @@ export function DeliveryPreferenceSelector({
   onChange,
   includeNone = true,
   compact = false,
+  lockedForPro = false,
+  onProRequired,
 }: DeliveryPreferenceSelectorProps) {
   const { messages } = useLanguage()
+  const select = (next: DeliveryPreference) => {
+    if (lockedForPro && requiresWhatsappDelivery(next)) {
+      onProRequired?.(next)
+      return
+    }
+
+    onChange(next)
+  }
   const deliveryOptions: Array<{
     value: DeliveryPreference
     title: string
@@ -77,13 +92,18 @@ export function DeliveryPreferenceSelector({
                 name="delivery-preference"
                 value={option.value}
                 checked={active}
-                onChange={() => onChange(option.value)}
+                onChange={() => select(option.value)}
                 className="sr-only"
               />
               <span className="text-xl leading-none" aria-hidden="true">
                 {option.icon}
               </span>
               <span className="text-xs font-extrabold leading-tight text-trimry-ink">{option.title}</span>
+              {lockedForPro && requiresWhatsappDelivery(option.value) ? (
+                <span className="tr-badge tr-badge-blue px-1.5 py-0.5 text-[9px]">
+                  {messages.pro.badge}
+                </span>
+              ) : null}
             </label>
           )
         }
@@ -103,7 +123,7 @@ export function DeliveryPreferenceSelector({
               name="delivery-preference"
               value={option.value}
               checked={active}
-              onChange={() => onChange(option.value)}
+              onChange={() => select(option.value)}
               className="sr-only"
             />
             <div className="flex items-start gap-3">
@@ -111,7 +131,12 @@ export function DeliveryPreferenceSelector({
                 {option.icon}
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-extrabold text-trimry-ink">{option.title}</p>
+                <p className="flex flex-wrap items-center gap-2 text-sm font-extrabold text-trimry-ink">
+                  {option.title}
+                  {lockedForPro && requiresWhatsappDelivery(option.value) ? (
+                    <span className="tr-badge tr-badge-blue">{messages.pro.badge}</span>
+                  ) : null}
+                </p>
                 <p className="mt-1 text-sm text-trimry-slate">{option.description}</p>
               </div>
             </div>

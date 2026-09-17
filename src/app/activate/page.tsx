@@ -8,6 +8,8 @@ import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
 import { useLanguage } from '@/components/language-provider'
+import { PlanPicker } from '@/components/plan-picker'
+import { ProUpgradeSheet } from '@/components/pro-upgrade-sheet'
 import {
   LeaguePicker,
   PreferencesSummary,
@@ -18,7 +20,7 @@ import {
 } from '@/components/sports-preferences-editor'
 import { UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import { trackEvent, trackMetaStandardEvent, trackMetaCustomEvent } from '@/lib/analytics'
-import { apiFetch, readApiError } from '@/lib/api-client'
+import { apiFetch, isProRequired, readApiErrorDetails } from '@/lib/api-client'
 import { interpolate, isLanguageCode } from '@/lib/i18n'
 import { HoneypotField } from '@/components/honeypot-field'
 import { EMAIL_PATTERN, registerAccount } from '@/lib/registration'
@@ -36,10 +38,12 @@ import {
 } from '@/lib/sports'
 import {
   fetchAccountSnapshot,
+  planForPreference,
   requiresWhatsappDelivery,
   saveActivationFunnelStep,
   type AccountSnapshot,
   type DeliveryPreference,
+  type PlanChoice,
 } from '@/lib/start-flow'
 
 const TOTAL_STEPS = 4
@@ -102,6 +106,10 @@ export default function ActivatePage() {
   const [accountLoaded, setAccountLoaded] = useState(false)
   const [preferences, setPreferences] = useState<SportsPreferences>(emptyPreferences)
   const [deliveryPreference, setDeliveryPreference] = useState<DeliveryPreference>('email')
+  const [plan, setPlan] = useState<PlanChoice>('free')
+  // Opened when the API answers 402: the account already used its trial, so the
+  // only way to WhatsApp is checkout.
+  const [proSheetOpen, setProSheetOpen] = useState(false)
   const [deliveryHourLocal, setDeliveryHourLocal] = useState(DEFAULT_WEEKLY_DELIVERY_HOUR)
   const [whatsappNumber, setWhatsappNumber] = useState('')
   const [whatsappConsentAccepted, setWhatsappConsentAccepted] = useState(false)
@@ -150,11 +158,13 @@ export default function ActivatePage() {
         setTimeZone(snapshot.subscription?.timeZone || snapshot.user.timeZone || detectBrowserTimeZone())
 
         if (snapshot.subscription) {
-          setDeliveryPreference(
+          const storedPreference =
             snapshot.subscription.deliveryPreference === 'none'
               ? 'email'
-              : snapshot.subscription.deliveryPreference,
-          )
+              : snapshot.subscription.deliveryPreference
+
+          setDeliveryPreference(storedPreference)
+          setPlan(planForPreference(storedPreference))
           setDeliveryHourLocal(snapshot.subscription.deliveryHourLocal)
           setWhatsappNumber(snapshot.subscription.whatsappNumber ?? '')
           setWhatsappConsentAccepted(Boolean(snapshot.subscription.whatsappNumber))
@@ -363,7 +373,16 @@ export default function ActivatePage() {
       })
 
       if (!response.ok) {
-        setError(await readApiError(response, copy.saveError))
+        const details = await readApiErrorDetails(response, copy.saveError)
+
+        // The account already spent its card-less trial, so WhatsApp now runs
+        // through checkout. Show the offer rather than a raw error.
+        if (isProRequired(details)) {
+          openProSheet('activate_submit')
+          return
+        }
+
+        setError(details.message)
         return
       }
 
@@ -413,6 +432,29 @@ export default function ActivatePage() {
       setSaving(false)
     }
   }
+
+  // The plan and the channel are two views of one decision, so picking a plan
+  // sets a sensible channel and picking a channel keeps the plan honest.
+  const choosePlan = useCallback(
+    (next: PlanChoice) => {
+      setPlan(next)
+      trackEvent('plan_selected', { plan: next })
+
+      if (next === 'free') {
+        setDeliveryPreference('email')
+        setWhatsappConsentAccepted(false)
+        return
+      }
+
+      setDeliveryPreference((current) => (requiresWhatsappDelivery(current) ? current : 'whatsapp'))
+    },
+    [],
+  )
+
+  const openProSheet = useCallback((source: string) => {
+    setProSheetOpen(true)
+    trackEvent('pro_paywall_viewed', { source })
+  }, [])
 
   const stepIsValid = useMemo(() => {
     if (step === 1) {
@@ -609,16 +651,27 @@ export default function ActivatePage() {
               />
 
               <div>
-                <p className="tr-label mb-2">{copy.channelLabel}</p>
-                <DeliveryPreferenceSelector
-                  value={deliveryPreference}
-                  onChange={setDeliveryPreference}
-                  includeNone={false}
+                <p className="tr-label mb-2">{messages.pro.planPickerLabel}</p>
+                <PlanPicker
+                  value={plan}
+                  onChange={choosePlan}
+                  priceUsd={account?.subscription?.monthlyPriceUsd}
                 />
-                {requiresWhatsappDelivery(deliveryPreference) ? (
-                  <p className="tr-alert-info mt-3 text-xs">{messages.deliveryChannels.whatsappPendingNote}</p>
-                ) : null}
               </div>
+
+              {plan === 'pro' ? (
+                <div>
+                  <p className="tr-label mb-2">{copy.channelLabel}</p>
+                  <DeliveryPreferenceSelector
+                    value={deliveryPreference}
+                    onChange={setDeliveryPreference}
+                    includeNone={false}
+                  />
+                  {requiresWhatsappDelivery(deliveryPreference) ? (
+                    <p className="tr-alert-info mt-3 text-xs">{messages.deliveryChannels.whatsappPendingNote}</p>
+                  ) : null}
+                </div>
+              ) : null}
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label className="tr-label" htmlFor="delivery-hour">
@@ -763,6 +816,20 @@ export default function ActivatePage() {
           )}
         </div>
       </section>
+
+      <ProUpgradeSheet
+        open={proSheetOpen}
+        priceUsd={account?.subscription?.monthlyPriceUsd}
+        variant="checkout"
+        onUpgrade={() => {
+          trackEvent('pro_upgrade_clicked', { source: 'activate' })
+          router.push('/checkout/start')
+        }}
+        onDismiss={() => {
+          setProSheetOpen(false)
+          choosePlan('free')
+        }}
+      />
     </div>
   )
 }

@@ -8,7 +8,7 @@ import { DeliveryHourSelect } from '@/components/delivery-hour-select'
 import { DeliveryPreferenceSelector } from '@/components/delivery-preference-selector'
 import { useLanguage } from '@/components/language-provider'
 import { trackEvent, trackMetaCustomEvent } from '@/lib/analytics'
-import { apiFetch, readApiError } from '@/lib/api-client'
+import { apiFetch, isProRequired, readApiErrorDetails } from '@/lib/api-client'
 import { interpolate } from '@/lib/i18n'
 import { DEFAULT_WEEKLY_DELIVERY_HOUR } from '@/lib/schedule'
 import {
@@ -139,7 +139,9 @@ export default function DeliverySettingsPage() {
       })
 
       if (!response.ok) {
-        setError(await readApiError(response, copy.saveError))
+        const details = await readApiErrorDetails(response, copy.saveError)
+
+        setError(isProRequired(details) ? messages.pro.proRequiredNotice : details.message)
         return
       }
 

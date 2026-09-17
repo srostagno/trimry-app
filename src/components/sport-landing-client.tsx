@@ -12,7 +12,7 @@ import {
   trackMetaCustomEvent,
   trackMetaStandardEvent,
 } from '@/lib/analytics'
-import { apiFetch, readApiError } from '@/lib/api-client'
+import { apiFetch, isProRequired, readApiErrorDetails } from '@/lib/api-client'
 import type { LanguageCode } from '@/lib/i18n'
 import { isLanguageCode } from '@/lib/i18n'
 import { HoneypotField } from '@/components/honeypot-field'
@@ -150,7 +150,9 @@ export function SportLandingClient({ language, sport }: { language: LanguageCode
 
       if (!response.ok) {
         // The account exists; send them on to finish in the guided flow.
-        setError(await readApiError(response, messages.notifications.error))
+        const details = await readApiErrorDetails(response, messages.notifications.error)
+
+        setError(isProRequired(details) ? messages.pro.proRequiredNotice : details.message)
         router.push('/activate?step=3')
         return
       }

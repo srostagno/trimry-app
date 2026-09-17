@@ -12,7 +12,7 @@ export type Intent = 'time' | 'next' | 'calendar' | 'today' | 'match'
 
 export const SEO_INTENTS: Record<SeoLanguage, Record<Intent, string>> = {
   es: { time: 'a-que-hora-juega', next: 'proximo-partido', calendar: 'calendario', today: 'partidos-hoy', match: 'partido' },
-  pt: { time: 'que-horas-joga', next: 'proximo-jogo', calendar: 'calendario', today: 'jogos-de-hoje', match: 'jogo' },
+  pt: { time: 'horario-do-jogo', next: 'proximo-jogo', calendar: 'calendario', today: 'jogos-de-hoje', match: 'jogo' },
   en: { time: 'game-time', next: 'next-game', calendar: 'schedule', today: 'games-today', match: 'game' },
 }
 

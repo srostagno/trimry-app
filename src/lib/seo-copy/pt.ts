@@ -38,7 +38,7 @@ export const ptCopy: SeoCopy = {
   team: {
     metaTitle: (intent, c) =>
       intent === 'time'
-        ? `Que horas ${c.g.verb} ${c.g.withArticle} hoje? Horário ${inCountry(c.country)}`
+        ? `Horário do jogo ${c.g.of} hoje: que horas ${c.g.verb} ${inCountry(c.country)}`
         : `Próximo jogo ${c.g.of}: data, horário e adversário`,
     metaDescription: (intent, c) =>
       intent === 'time'
@@ -46,9 +46,10 @@ export const ptCopy: SeoCopy = {
         : `Próximo jogo ${c.g.of}${c.when ? ` ${c.when}` : ''} (${c.timePhrase}). Tabela completa dos próximos 14 dias e lembrete no WhatsApp.`,
     keywords: (c) => {
       const n = c.g.name.toLowerCase()
-      return [`que horas joga ${n}`, `quando joga ${n}`, `proximo jogo ${n}`, `${n} horario`]
+      const of = c.g.of.toLowerCase()
+      return [`horario do jogo ${of}`, `que horas joga ${n}`, `quando joga ${n}`, `proximo jogo ${n}`]
     },
-    h1: (intent, c) => (intent === 'time' ? `Que horas ${c.g.verb} ${c.g.withArticle}?` : `Próximo jogo ${c.g.of}`),
+    h1: (intent, c) => (intent === 'time' ? `Horário do jogo ${c.g.of}` : `Próximo jogo ${c.g.of}`),
     intro: (intent, c) => {
       if (intent === 'time') {
         return c.upcoming
@@ -85,7 +86,7 @@ export const ptCopy: SeoCopy = {
     ctaText: (c) => `Siga ${c.g.withArticle} no Trimry e receba toda manhã o horário dos jogos no seu WhatsApp, no ${c.timePhrase}.`,
     eventsTitle: (c) => `Calendário ${c.g.of}: próximos 14 dias (${c.timePhrase})`,
     eventsEmpty: (c) => `Sem jogos confirmados ${c.g.of} nos próximos 14 dias.`,
-    otherIntentLabel: (intent, c) => (intent === 'time' ? `Próximo jogo ${c.g.of}` : `Que horas ${c.g.verb} ${c.g.withArticle}?`),
+    otherIntentLabel: (intent, c) => (intent === 'time' ? `Próximo jogo ${c.g.of}` : `Horário do jogo ${c.g.of}`),
     calendarLink: (leagueName) => `Calendário ${leagueName}`,
     countryLink: (country) => `Jogos ${inCountry(country)}`,
     othersTitle: (leagueName) => `Outros times${leagueName ? ` do ${leagueName}` : ''}`,
@@ -121,7 +122,7 @@ export const ptCopy: SeoCopy = {
     eventsTitle: (c) => `Próximos 14 dias do ${c.name} (${c.timePhrase})`,
     eventsEmpty: (c) => `Sem jogos confirmados do ${c.name} nos próximos 14 dias.`,
     teamsTitle: (c) => `Times do ${c.name}`,
-    teamLink: (g) => `Que horas ${g.verb} ${g.withArticle}?`,
+    teamLink: (g) => `Horário do jogo ${g.of}`,
     moreTitle: (c) => `Mais tabelas ${inCountry(c.country)}`,
   },
 
@@ -179,7 +180,7 @@ export const ptCopy: SeoCopy = {
     metaTitle: (c) => `Horários de jogos ${inCountry(c.country)}: que horas joga o seu time?`,
     metaDescription: (c) =>
       `Horário exato dos jogos dos times e ligas mais acompanhados ${inCountry(c.country)}, no horário local, com alertas no WhatsApp.`,
-    h1: (c) => `Que horas joga o seu time ${inCountry(c.country)}?`,
+    h1: (c) => `Horário dos jogos do seu time ${inCountry(c.country)}`,
     intro: (c) =>
       `Horários dos próximos jogos convertidos para o horário ${ofCountry(c.country)}, atualizados várias vezes por dia. Escolha seu time ou competição.`,
     ctaTitle: () => 'Sua agenda esportiva toda manhã no WhatsApp',

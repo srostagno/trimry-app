@@ -32,7 +32,7 @@ function withGeoCookie(request: NextRequest, response: NextResponse) {
 // mirror SEO_INTENTS in src/lib/seo-copy.ts.
 const MATCH_INTENTS: Record<string, { match: string; time: string }> = {
   es: { match: 'partido', time: 'a-que-hora-juega' },
-  pt: { match: 'jogo', time: 'que-horas-joga' },
+  pt: { match: 'jogo', time: 'horario-do-jogo' },
   en: { match: 'game', time: 'game-time' },
 }
 // Enough slack for the latest time zone plus a long night game.

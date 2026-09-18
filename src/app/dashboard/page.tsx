@@ -652,7 +652,7 @@ export default function DashboardPage() {
               {messages.pro.statusFree}
               <span className="tr-badge tr-badge-slate">{messages.pro.freePrice}</span>
             </p>
-            <p className="tr-meta mt-0.5 text-xs">{messages.pro.freeTagline}</p>
+            <p className="tr-meta mt-0.5 text-xs">{messages.pro.proFeatures[1]}</p>
           </div>
           <button
             type="button"
@@ -863,11 +863,6 @@ export default function DashboardPage() {
                       <DeliveryPreferenceSelector
                         value={deliveryPreference}
                         onChange={setDeliveryPreference}
-                        lockedForPro={isFreePlan}
-                        onProRequired={() => {
-                          setProSheetOpen(true)
-                          trackEvent('pro_paywall_viewed', { source: 'dashboard_channels' })
-                        }}
                       />
                       {requiresWhatsappDelivery(deliveryPreference) ? (
                         <p className="tr-alert-info mt-3 text-xs">

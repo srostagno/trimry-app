@@ -162,7 +162,7 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
     return {
       eyebrow: `Alertas de ${w.name}`,
       title: `Todos os ${w.events} de ${w.name} que vêm aí, toda manhã no seu WhatsApp`,
-      subtitle: `Cadastre-se e o Trimry avisa você automaticamente sobre ${w.leagues}, no seu horário. 7 dias grátis, sem cartão.`,
+      subtitle: `Cadastre-se e o Trimry avisa você automaticamente sobre ${w.leagues}, no seu horário. Grátis por e-mail e toda semana no WhatsApp.`,
       bullets: [
         `Cobre ${w.leagues}.`,
         'Horários convertidos para o seu fuso, verificados todos os dias.',
@@ -174,7 +174,7 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
       formSubtitle: 'Seu primeiro aviso chega hoje. Sem cartão de crédito.',
       submit: 'Quero receber os alertas',
       submitting: 'Criando sua agenda…',
-      noCard: '7 dias grátis · sem cartão · cancele quando quiser',
+      noCard: 'Grátis por e-mail e semanal no WhatsApp · Todo dia no WhatsApp com o Pro',
       successTitle: 'Pronto! Sua agenda está ativa',
       successText: `Seu primeiro aviso de ${w.name} chega hoje. Quer ajustar por times ou ligas específicas?`,
       refine: 'Escolher times e ligas',
@@ -184,12 +184,12 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
       alreadyText: 'Ajuste seus esportes, times e ligas na sua agenda.',
       alreadyCta: 'Ir para minha agenda',
       faq: [
-        { question: 'É grátis mesmo?', answer: 'Sim. Você recebe 7 dias de alertas sem cadastrar cartão. Depois, se quiser continuar, a assinatura custa US$3,99 por mês e pode ser cancelada quando quiser.' },
+        { question: 'É grátis mesmo?', answer: 'Sim. A agenda por e-mail é grátis, e uma agenda semanal no WhatsApp também. Receber a agenda no WhatsApp toda manhã é o Trimry Pro: US$3,99 por mês, cancele quando quiser.' },
         { question: 'A que horas chega o aviso?', answer: 'Toda manhã, às 9h no seu fuso horário por padrão. Você pode mudar a hora na sua agenda.' },
         { question: `Posso escolher só alguns times de ${w.name}?`, answer: 'Sim. Depois do cadastro você pode seguir times e ligas específicas, ou combinar vários esportes.' },
       ],
       metaTitle: `Alertas de ${w.name} no WhatsApp: todos os ${w.events} que vêm aí`,
-      metaDescription: `Receba toda manhã os ${w.events} de ${w.name} do dia, no seu horário, por WhatsApp ou e-mail. ${cap(w.leagues)}. 7 dias grátis, sem cartão.`,
+      metaDescription: `Receba toda manhã os ${w.events} de ${w.name} do dia, no seu horário, por WhatsApp ou e-mail. ${cap(w.leagues)}. Grátis por e-mail e semanal no WhatsApp.`,
       keywords: [`alertas ${w.name}`, `${w.events} de ${w.name} hoje`, `agenda ${w.name} whatsapp`],
     }
   }
@@ -198,7 +198,7 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
     return {
       eyebrow: `${cap(w.name)} alerts`,
       title: `Every upcoming ${w.name} ${w.single}, in your WhatsApp every morning`,
-      subtitle: `Sign up and Trimry automatically keeps you on top of ${w.leagues}, in your time zone. 7 days free, no card required.`,
+      subtitle: `Sign up and Trimry automatically keeps you on top of ${w.leagues}, in your time zone. Free by email, and every week on WhatsApp.`,
       bullets: [
         `Covers ${w.leagues}.`,
         'Times converted to your time zone and verified every day.',
@@ -207,10 +207,10 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
       ],
       previewTitle: `What's coming up in ${w.name}`,
       formTitle: 'Start free now',
-      formSubtitle: 'Your first alert arrives today. No credit card.',
+      formSubtitle: 'Your first alert arrives today. Free, no card.',
       submit: 'Send me the alerts',
       submitting: 'Setting up your agenda…',
-      noCard: '7 days free · no card · cancel anytime',
+      noCard: 'Free by email and weekly on WhatsApp · Every morning on WhatsApp with Pro',
       successTitle: 'Done! Your agenda is live',
       successText: `Your first ${w.name} alert arrives today. Want to narrow it down to specific teams or leagues?`,
       refine: 'Pick teams and leagues',
@@ -220,12 +220,12 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
       alreadyText: 'Adjust your sports, teams and leagues from your agenda.',
       alreadyCta: 'Go to my agenda',
       faq: [
-        { question: 'Is it really free?', answer: 'Yes. You get 7 days of alerts without entering a card. If you want to keep going, the subscription is US$3.99 a month and you can cancel anytime.' },
+        { question: 'Is it really free?', answer: 'Yes. The agenda by email is free, and so is a weekly agenda on WhatsApp. Getting the agenda on WhatsApp every morning is Trimry Pro: US$3.99 a month, cancel anytime.' },
         { question: 'What time does the alert arrive?', answer: 'Every morning at 9 AM in your time zone by default. You can change the hour from your agenda.' },
         { question: `Can I follow just a few ${w.name} teams?`, answer: 'Yes. After signing up you can follow specific teams and leagues, or combine several sports.' },
       ],
       metaTitle: `${cap(w.name)} alerts on WhatsApp: every upcoming ${w.single}`,
-      metaDescription: `Get the day's ${w.name} ${w.events} every morning, in your time zone, on WhatsApp or email. ${cap(w.leagues)}. 7 days free, no card.`,
+      metaDescription: `Get the day's ${w.name} ${w.events} every morning, in your time zone, on WhatsApp or email. ${cap(w.leagues)}. Free by email and weekly on WhatsApp.`,
       keywords: [`${w.name} alerts`, `${w.name} ${w.events} today`, `${w.name} schedule whatsapp`],
     }
   }
@@ -233,7 +233,7 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
   return {
     eyebrow: `Alertas de ${w.name}`,
     title: `Todos los ${w.events} de ${w.name} que se vienen, cada mañana en tu WhatsApp`,
-    subtitle: `Regístrate y Trimry te avisa automáticamente de ${w.leagues}, en tu horario. 7 días gratis, sin tarjeta.`,
+    subtitle: `Regístrate y Trimry te avisa automáticamente de ${w.leagues}, en tu horario. Gratis por email y cada semana por WhatsApp.`,
     bullets: [
       `Cubre ${w.leagues}.`,
       'Horarios convertidos a tu zona horaria y verificados cada día.',
@@ -242,10 +242,10 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
     ],
     previewTitle: `Lo que se viene en ${w.name}`,
     formTitle: 'Empieza gratis ahora',
-    formSubtitle: 'Tu primer aviso llega hoy. Sin tarjeta de crédito.',
+    formSubtitle: 'Tu primer aviso llega hoy. Gratis, sin tarjeta.',
     submit: 'Quiero recibir las alertas',
     submitting: 'Creando tu agenda…',
-    noCard: '7 días gratis · sin tarjeta · cancela cuando quieras',
+    noCard: 'Gratis por email y semanal por WhatsApp · Cada mañana por WhatsApp con Pro',
     successTitle: '¡Listo! Tu agenda está activa',
     successText: `Tu primer aviso de ${w.name} llega hoy. ¿Quieres afinarlo por equipos o ligas específicas?`,
     refine: 'Elegir equipos y ligas',
@@ -255,12 +255,12 @@ export function landingCopy(language: LanguageCode, sport: LandingSport): Landin
     alreadyText: 'Ajusta tus deportes, equipos y ligas desde tu agenda.',
     alreadyCta: 'Ir a mi agenda',
     faq: [
-      { question: '¿Es gratis de verdad?', answer: 'Sí. Recibes 7 días de alertas sin ingresar tarjeta. Si quieres seguir, la suscripción cuesta US$3,99 al mes y se cancela cuando quieras.' },
+      { question: '¿Es gratis de verdad?', answer: 'Sí. La agenda por email es gratis, y una agenda semanal por WhatsApp también. Recibir la agenda por WhatsApp cada mañana es Trimry Pro: US$3,99 al mes, cancelas cuando quieras.' },
       { question: '¿A qué hora llega el aviso?', answer: 'Cada mañana a las 9:00 en tu zona horaria por defecto. Puedes cambiar la hora desde tu agenda.' },
       { question: `¿Puedo seguir solo algunos equipos de ${w.name}?`, answer: 'Sí. Después de registrarte puedes seguir equipos y ligas específicas, o combinar varios deportes.' },
     ],
     metaTitle: `Alertas de ${w.name} por WhatsApp: todos los ${w.events} que se vienen`,
-    metaDescription: `Recibe cada mañana los ${w.events} de ${w.name} del día, en tu horario, por WhatsApp o email. ${cap(w.leagues)}. 7 días gratis, sin tarjeta.`,
+    metaDescription: `Recibe cada mañana los ${w.events} de ${w.name} del día, en tu horario, por WhatsApp o email. ${cap(w.leagues)}. Gratis por email y semanal por WhatsApp.`,
     keywords: [`alertas ${w.name}`, `${w.events} de ${w.name} hoy`, `agenda ${w.name} whatsapp`, `a que hora juegan hoy ${w.name}`],
   }
 }

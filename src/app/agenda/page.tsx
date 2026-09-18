@@ -91,6 +91,9 @@ export default function AgendaPage() {
   }, [visibleFeed])
 
   const subscription = account?.subscription ?? null
+  // The agenda is the product; a free reader looking at it is the best moment
+  // to offer the same thing on WhatsApp every morning.
+  const isFreePlan = subscription ? subscription.entitlement === 'free' : false
   const trialDaysLeft =
     subscription?.status === 'active' && subscription.trialSource === 'internal' && subscription.internalTrialEndsAt
       ? Math.max(0, Math.ceil((new Date(subscription.internalTrialEndsAt).getTime() - Date.now()) / 86_400_000))
@@ -123,6 +126,25 @@ export default function AgendaPage() {
           </Link>
         </div>
       </header>
+
+      {isFreePlan && trialDaysLeft === null ? (
+        <div className="tr-gradient-panel flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="flex flex-wrap items-center gap-2 text-sm font-extrabold text-white">
+              <span className="tr-badge bg-white/20 text-white">{messages.pro.badge}</span>
+              {messages.pro.sheetTitle}
+            </p>
+            <p className="mt-1 text-sm text-white/85">{messages.pro.sheetBody}</p>
+          </div>
+          <Link
+            href="/checkout/start"
+            onClick={() => trackEvent('pro_upgrade_clicked', { source: 'agenda_banner' })}
+            className="tr-btn-secondary tr-btn-sm shrink-0"
+          >
+            {messages.pro.sheetCta}
+          </Link>
+        </div>
+      ) : null}
 
       {trialDaysLeft !== null ? (
         <div className="tr-card-muted flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">

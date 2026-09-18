@@ -13,8 +13,7 @@ type ProUpgradeSheetProps = {
   onUpgrade: () => void
   onDismiss: () => void
   priceUsd?: number
-  // 'trial' offers the seven card-less days; 'checkout' is for an account that
-  // already spent them, where promising a free trial again would be a lie.
+  // Kept for callers; Pro is bought at checkout, there is no trial any more.
   variant?: 'trial' | 'checkout'
 }
 
@@ -55,10 +54,10 @@ export function ProUpgradeSheet({
   }
 
   const price = `US${priceUsd.toFixed(2)}`
-  const isTrial = variant === 'trial'
-  const body = isTrial ? copy.sheetBody : copy.sheetBodyCheckout
-  const cta = isTrial ? copy.sheetCta : copy.sheetCtaCheckout
-  const finePrint = isTrial ? copy.sheetFinePrint : copy.sheetFinePrintCheckout
+  void variant
+  const body = copy.sheetBody
+  const cta = copy.sheetCta
+  const finePrint = copy.sheetFinePrint
 
   return (
     <div

@@ -60,8 +60,12 @@ export type AccountSnapshot = {
     status: SubscriptionStatus
     entitlement: Entitlement
     deliveryPreference: DeliveryPreference
-    // What the account actually receives today, after the entitlement applies.
+    // Kept for older bundles; nothing is degraded any more.
     effectiveDeliveryPreference: DeliveryPreference
+    // What each channel delivers today: email at the cadence the user picked,
+    // WhatsApp weekly on the free plan and daily on Pro.
+    emailCadence: 'daily' | 'weekly' | null
+    whatsappCadence: 'daily' | 'weekly' | null
     activatedAt: string | null
     deliveryHourLocal: number
     timeZone: string

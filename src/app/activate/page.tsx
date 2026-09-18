@@ -390,7 +390,10 @@ export default function ActivatePage() {
         subscription?: { status?: string }
         trialStarted?: boolean
       } | null
-      const subscriptionLive = hasLiveSubscription || result?.subscription?.status === 'active'
+      // Free is live the moment it is saved. Pro is bought at checkout, so a Pro
+      // choice continues there unless the account already pays.
+      const alreadyPro = account?.subscription?.entitlement === 'pro'
+      const subscriptionLive = plan === 'free' || alreadyPro || result?.subscription?.status === 'active'
 
       savePreferencesDraft(null)
       trackEvent('activation_completed', {
@@ -419,7 +422,7 @@ export default function ActivatePage() {
         trackMetaStandardEvent('StartTrial', { content_name: 'Trimry internal trial', predicted_ltv: 0 })
       }
 
-      if (subscriptionLive) {
+      if (subscriptionLive && !(plan === 'pro' && !alreadyPro)) {
         router.push(result?.trialStarted ? '/dashboard?trial=started' : '/dashboard')
       } else {
         router.push('/checkout/start')
@@ -440,13 +443,11 @@ export default function ActivatePage() {
       setPlan(next)
       trackEvent('plan_selected', { plan: next })
 
-      if (next === 'free') {
-        setDeliveryPreference('email')
-        setWhatsappConsentAccepted(false)
-        return
+      // The channel is the user's either way; the plan only changes how often
+      // WhatsApp arrives. Picking Pro nudges WhatsApp on if it was off.
+      if (next === 'pro') {
+        setDeliveryPreference((current) => (requiresWhatsappDelivery(current) ? current : 'whatsapp'))
       }
-
-      setDeliveryPreference((current) => (requiresWhatsappDelivery(current) ? current : 'whatsapp'))
     },
     [],
   )
@@ -659,19 +660,17 @@ export default function ActivatePage() {
                 />
               </div>
 
-              {plan === 'pro' ? (
-                <div>
-                  <p className="tr-label mb-2">{copy.channelLabel}</p>
-                  <DeliveryPreferenceSelector
-                    value={deliveryPreference}
-                    onChange={setDeliveryPreference}
-                    includeNone={false}
-                  />
-                  {requiresWhatsappDelivery(deliveryPreference) ? (
-                    <p className="tr-alert-info mt-3 text-xs">{messages.deliveryChannels.whatsappPendingNote}</p>
-                  ) : null}
-                </div>
-              ) : null}
+              <div>
+                <p className="tr-label mb-2">{copy.channelLabel}</p>
+                <DeliveryPreferenceSelector
+                  value={deliveryPreference}
+                  onChange={setDeliveryPreference}
+                  includeNone={false}
+                />
+                {requiresWhatsappDelivery(deliveryPreference) ? (
+                  <p className="tr-alert-info mt-3 text-xs">{messages.deliveryChannels.whatsappPendingNote}</p>
+                ) : null}
+              </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label className="tr-label" htmlFor="delivery-hour">
@@ -805,9 +804,11 @@ export default function ActivatePage() {
               >
                 {saving
                   ? copy.saving
-                  : hasLiveSubscription
-                    ? copy.savePreferencesCta
-                    : copy.startTrialCta}
+                  : plan === 'pro' && account?.subscription?.entitlement !== 'pro'
+                    ? messages.pro.sheetCta
+                    : hasLiveSubscription
+                      ? copy.savePreferencesCta
+                      : copy.startTrialCta}
               </button>
               {!hasLiveSubscription ? (
                 <p className="tr-meta mt-2 text-xs">{copy.startTrialHint}</p>

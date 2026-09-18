@@ -51,6 +51,10 @@ export function EventRow({ event, compact = false }: { event: FeedEvent; compact
           <span className="tr-badge bg-rose-100 text-rose-700">Live</span>
         ) : event.localTimeLabel ? (
           event.localTimeLabel
+        ) : event.endLocalDateLabel ? (
+          // A tournament has no tee time to show on its third day; how much
+          // longer it runs is the useful thing in this slot.
+          <span className="whitespace-nowrap">{`→ ${event.endLocalDateLabel}`}</span>
         ) : (
           <span className="text-trimry-muted" aria-label={messages.agenda.timeTbc}>
             —
@@ -71,7 +75,10 @@ export function EventRow({ event, compact = false }: { event: FeedEvent; compact
         </p>
         <p className="mt-0.5 truncate text-xs text-trimry-muted">
           {meta}
-          {!event.localTimeLabel && !isLive ? ` · ${messages.agenda.timeTbc}` : ''}
+          {event.multiDay && event.inProgress ? ` · ${messages.agenda.inPlay}` : ''}
+          {!event.localTimeLabel && !event.multiDay && !isLive
+            ? ` · ${messages.agenda.timeTbc}`
+            : ''}
           {isOff ? ` · ${event.status}` : ''}
         </p>
         <div className="mt-1.5 sm:hidden">

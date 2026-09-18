@@ -296,6 +296,7 @@ export type MessageSection = {
     today: string
     tomorrow: string
     timeTbc: string
+    inPlay: string
     followedTeam: string
     followedLeague: string
     sportWide: string
@@ -1385,6 +1386,7 @@ const en: MessageSection = {
     today: 'Today',
     tomorrow: 'Tomorrow',
     timeTbc: 'Time TBC',
+    inPlay: 'Under way',
     followedTeam: 'Your team',
     followedLeague: 'Your league',
     sportWide: 'Featured',
@@ -1924,6 +1926,7 @@ const es: MessageSection = {
     today: 'Hoy',
     tomorrow: 'Mañana',
     timeTbc: 'Hora por confirmar',
+    inPlay: 'En juego',
     followedTeam: 'Tu equipo',
     followedLeague: 'Tu liga',
     sportWide: 'Destacado',
@@ -2463,6 +2466,7 @@ const pt: MessageSection = {
     today: 'Hoje',
     tomorrow: 'Amanhã',
     timeTbc: 'Horário a confirmar',
+    inPlay: 'Em andamento',
     followedTeam: 'Seu time',
     followedLeague: 'Sua liga',
     sportWide: 'Destaque',

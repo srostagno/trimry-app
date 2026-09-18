@@ -83,6 +83,14 @@ export type FeedEvent = {
   awayTeamId: string | null
   awayTeamName: string | null
   startsAt: string
+  // A multi-day event (a golf or tennis tournament, a stage race) reports the
+  // last day it runs; single-day fixtures leave these null.
+  endsAt: string | null
+  startLocalDateKey: string
+  endLocalDateKey: string | null
+  endLocalDateLabel: string | null
+  multiDay: boolean
+  inProgress: boolean
   timeKnown: boolean
   localDateKey: string
   localTime: string | null

@@ -6,11 +6,18 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useLanguage } from '@/components/language-provider'
+import { ResultsFeed } from '@/components/results-feed'
 import { ShareAgendaButton } from '@/components/share-agenda-button'
 import { EventRow, UpcomingEventsFeed } from '@/components/upcoming-events-feed'
 import { trackEvent } from '@/lib/analytics'
 import { interpolate } from '@/lib/i18n'
-import { fetchMemberUpcomingEvents, type MemberUpcomingFeed, type SportKey } from '@/lib/sports'
+import {
+  fetchMemberResults,
+  fetchMemberUpcomingEvents,
+  type MemberResultsFeed,
+  type MemberUpcomingFeed,
+  type SportKey,
+} from '@/lib/sports'
 import { fetchAccountSnapshot, type AccountSnapshot } from '@/lib/start-flow'
 import { useSportsCatalog } from '@/components/sports-preferences-editor'
 
@@ -24,6 +31,7 @@ export default function AgendaPage() {
 
   const [account, setAccount] = useState<AccountSnapshot | null>(null)
   const [feed, setFeed] = useState<MemberUpcomingFeed | null>(null)
+  const [results, setResults] = useState<MemberResultsFeed | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [days, setDays] = useState<number | null>(null)
@@ -43,7 +51,13 @@ export default function AgendaPage() {
         }
 
         setAccount(snapshot)
-        setFeed(await fetchMemberUpcomingEvents({ language, days: nextDays, refresh: false }))
+        // Results are a companion to the agenda, never a reason for it to fail.
+        const [nextFeed, nextResults] = await Promise.all([
+          fetchMemberUpcomingEvents({ language, days: nextDays, refresh: false }),
+          fetchMemberResults({ language }).catch(() => null),
+        ])
+        setFeed(nextFeed)
+        setResults(nextResults)
       } catch {
         setError(copy.loadError)
       } finally {
@@ -65,8 +79,13 @@ export default function AgendaPage() {
         seen.add(event.sport)
       }
     }
+    for (const day of results?.days ?? []) {
+      for (const event of day.events) {
+        seen.add(event.sport)
+      }
+    }
     return Array.from(seen)
-  }, [feed])
+  }, [feed, results])
 
   // Client-side filter so switching sports is instant and costs no request.
   const visibleFeed = useMemo(() => {
@@ -81,6 +100,18 @@ export default function AgendaPage() {
       totalEvents: filteredDays.reduce((sum, day) => sum + day.events.length, 0),
     }
   }, [feed, sport])
+
+  const visibleResults = useMemo(() => {
+    if (!results || sport === 'all') return results
+    const filteredDays = results.days
+      .map((day) => ({ ...day, events: day.events.filter((event) => event.sport === sport) }))
+      .filter((day) => day.events.length > 0)
+    return {
+      ...results,
+      days: filteredDays,
+      totalResults: filteredDays.reduce((sum, day) => sum + day.events.length, 0),
+    }
+  }, [results, sport])
 
   const nextEvent = useMemo(() => {
     for (const day of visibleFeed?.days ?? []) {
@@ -197,6 +228,27 @@ export default function AgendaPage() {
             )
           })}
         </div>
+      ) : null}
+
+      {feed?.hasPreferences !== false ? (
+        <section className="tr-shell min-w-0 overflow-hidden p-5 sm:p-8">
+          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-2xl">{copy.resultsTitle}</h2>
+              <p className="tr-meta mt-1 text-xs">
+                {interpolate(copy.resultsIntro, { days: results?.lookbackDays ?? 7 })}
+              </p>
+            </div>
+            {visibleResults && visibleResults.totalResults > 0 ? (
+              <span className="tr-badge tr-badge-blue shrink-0">
+                {visibleResults.totalResults === 1
+                  ? copy.resultsCountOne
+                  : interpolate(copy.resultsCount, { count: visibleResults.totalResults })}
+              </span>
+            ) : null}
+          </div>
+          <ResultsFeed results={visibleResults} loading={loading} />
+        </section>
       ) : null}
 
       <section className="tr-shell min-w-0 overflow-hidden p-5 sm:p-8">

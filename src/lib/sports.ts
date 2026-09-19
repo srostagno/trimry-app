@@ -132,6 +132,66 @@ export type MemberUpcomingFeed = UpcomingFeed & {
   refresh: { fetched: number; skipped: number; failed: number } | null
 }
 
+export type EventResult = {
+  homeScore: number | null
+  awayScore: number | null
+  scoreText: string | null
+  winner: string | null
+  summary: string | null
+}
+
+export type ResultOutcome = 'win' | 'loss' | 'draw'
+
+export type ResultEvent = {
+  id: string
+  sport: SportKey
+  sportLabel: string
+  sportEmoji: string
+  leagueId: string | null
+  leagueName: string
+  name: string
+  homeTeamId: string | null
+  homeTeamName: string | null
+  awayTeamId: string | null
+  awayTeamName: string | null
+  startsAt: string
+  localDateKey: string
+  localDateLabel: string
+  localTimeLabel: string | null
+  multiDay: boolean
+  venue: string | null
+  round: string | null
+  status: FeedEvent['status']
+  result: EventResult
+  scoreLabel: string | null
+  followedSide: 'home' | 'away' | null
+  outcome: ResultOutcome | null
+  matchReasons: Array<'team' | 'league' | 'sport'>
+  matchedTeamNames: string[]
+  score: number
+}
+
+export type ResultsDay = {
+  dateKey: string
+  label: string
+  isToday: boolean
+  isYesterday: boolean
+  events: ResultEvent[]
+}
+
+export type ResultsFeed = {
+  generatedAt: string
+  timeZone: string
+  locale: string
+  fromDateKey: string
+  toDateKey: string
+  lookbackDays: number
+  totalResults: number
+  days: ResultsDay[]
+}
+
+export type MemberResultsFeed = ResultsFeed & { hasPreferences: boolean }
+
 export const SPORT_KEYS: SportKey[] = [
   'soccer',
   'basketball',
@@ -366,6 +426,22 @@ export async function fetchMemberUpcomingEvents(input: {
   }
 
   return (await response.json()) as MemberUpcomingFeed
+}
+
+export async function fetchMemberResults(input: { days?: number; language: LanguageCode }) {
+  const params = new URLSearchParams({ locale: input.language })
+
+  if (input.days) {
+    params.set('days', String(input.days))
+  }
+
+  const response = await apiFetch(`/me/results?${params.toString()}`, { cache: 'no-store' })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, 'Unable to load your results.'))
+  }
+
+  return (await response.json()) as MemberResultsFeed
 }
 
 export async function saveSportsPreferences(preferences: SportsPreferences) {

@@ -325,6 +325,18 @@ export type MessageSection = {
     shareFooter: string
     shareMore: string
     shareText: string
+    resultsTitle: string
+    resultsIntro: string
+    resultsEmpty: string
+    resultsCount: string
+    resultsCountOne: string
+    yesterday: string
+    won: string
+    lost: string
+    drew: string
+    winner: string
+    showAllResults: string
+    showFewerResults: string
   }
   dashboard: {
     title: string
@@ -1416,6 +1428,18 @@ const en: MessageSection = {
     shareMore: '+{count} more in my Trimry agenda',
     shareText: 'This is my sports agenda on Trimry',
     loadError: 'Unable to load your agenda right now.',
+    resultsTitle: 'Recent results',
+    resultsIntro: 'How the last {days} days went for what you follow.',
+    resultsEmpty: 'No results yet for your teams and leagues. They show up here the morning after each game.',
+    resultsCount: '{count} results',
+    resultsCountOne: '1 result',
+    yesterday: 'Yesterday',
+    won: 'Won',
+    lost: 'Lost',
+    drew: 'Draw',
+    winner: 'Winner',
+    showAllResults: 'Show all {count} results',
+    showFewerResults: 'Show fewer',
   },
   dashboard: {
     title: 'Dashboard',
@@ -1957,6 +1981,18 @@ const es: MessageSection = {
     shareMore: '+{count} más en mi agenda Trimry',
     shareText: 'Esta es mi agenda deportiva en Trimry',
     loadError: 'No pudimos cargar tu agenda en este momento.',
+    resultsTitle: 'Resultados recientes',
+    resultsIntro: 'Cómo les fue en los últimos {days} días a los que sigues.',
+    resultsEmpty: 'Aún no hay resultados de tus equipos y ligas. Aparecen aquí la mañana siguiente a cada partido.',
+    resultsCount: '{count} resultados',
+    resultsCountOne: '1 resultado',
+    yesterday: 'Ayer',
+    won: 'Ganó',
+    lost: 'Perdió',
+    drew: 'Empate',
+    winner: 'Ganador',
+    showAllResults: 'Ver los {count} resultados',
+    showFewerResults: 'Ver menos',
   },
   dashboard: {
     title: 'Panel',
@@ -2498,6 +2534,18 @@ const pt: MessageSection = {
     shareMore: '+{count} mais na minha agenda Trimry',
     shareText: 'Esta é a minha agenda esportiva na Trimry',
     loadError: 'Não foi possível carregar sua agenda agora.',
+    resultsTitle: 'Resultados recentes',
+    resultsIntro: 'Como foram os últimos {days} dias para quem você acompanha.',
+    resultsEmpty: 'Ainda não há resultados dos seus times e ligas. Eles aparecem aqui na manhã seguinte a cada jogo.',
+    resultsCount: '{count} resultados',
+    resultsCountOne: '1 resultado',
+    yesterday: 'Ontem',
+    won: 'Venceu',
+    lost: 'Perdeu',
+    drew: 'Empate',
+    winner: 'Vencedor',
+    showAllResults: 'Ver todos os {count} resultados',
+    showFewerResults: 'Ver menos',
   },
   dashboard: {
     title: 'Painel',
